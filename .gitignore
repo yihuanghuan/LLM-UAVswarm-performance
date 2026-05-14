@@ -1,0 +1,41 @@
+# ROS2 编译生成目录（必排除）
+build/
+install/
+log/
+
+# 虚拟环境
+llm_env/
+
+# Claude Code 相关文件
+Claude.md
+.claude/
+start_claude.sh
+claude/
+.claude.json
+
+# 不想上传的第三方/外部依赖包
+px4_msgs/
+
+# Python 缓存文件
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 编辑器配置与临时文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 编译与 CMake 相关文件
+*.o
+*.so
+*.d
+*.cmake
+CMakeLists.txt.user
