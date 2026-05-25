@@ -57,6 +57,13 @@ void LADRCController::reset()
   }
 }
 
+void LADRCController::setObserverInitialState(double z1, double z2, double z3)
+{
+  if (observer_) {
+    observer_->setInitialState(z1, z2, z3);
+  }
+}
+
 void LADRCController::setParameters(const LADRCParams& params)
 {
   params_ = params;

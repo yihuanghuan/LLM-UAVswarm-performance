@@ -48,6 +48,11 @@ public:
     this->declare_parameter("max_acceleration_y", 3.0);
     this->declare_parameter("max_acceleration_z", 3.0);
 
+    // Gazebo 多机 spawn 偏移量（sitl_multiple_run.sh 默认 Y=3*instance）
+    this->declare_parameter("enu_offset_x", 0.0);
+    this->declare_parameter("enu_offset_y", 0.0);
+    this->declare_parameter("enu_offset_z", 0.0);
+
     // [Phase 4] IAPF 避障参数
     this->declare_parameter("iapf_safe_distance", 1.0);
     this->declare_parameter("iapf_repulsion_gain", 1.0);
@@ -90,10 +95,10 @@ public:
       if (neighbor_id == 0 || neighbor_id == self_uav_id_) continue;  // 跳过无效 ID 和自身
 
       auto callback = [this, neighbor_id](const px4_msgs::msg::VehicleOdometry::SharedPtr msg) {
-        // 存入邻居位置 map（ENU 坐标）
+        // 存入邻居位置 map：全局 ENU（本地 + spawn 偏移 Y=3*id）
         neighbor_positions_[neighbor_id] = Eigen::Vector3d(
             msg->position[1],   // NED.y → ENU.x
-            msg->position[0],   // NED.x → ENU.y
+            msg->position[0] + 3.0 * neighbor_id,   // NED.x → ENU.y + offset
             -msg->position[2]   // -NED.z → ENU.z
         );
       };
@@ -114,14 +119,16 @@ public:
     odom_pub_ = this->create_publisher<geometry_msgs::msg::Point>("odom", 10);
 
     // Publishers — [Phase 1] 使用相对话题以支持命名空间
+    // 必须使用 SensorDataQoS (Best Effort)，PX4 XRCE-DDS 桥接器默认使用 Best Effort 订阅
+    // 使用默认 Reliable QoS 会导致静默无法匹配，收不到数据
     offboard_mode_pub_ = this->create_publisher<px4_msgs::msg::OffboardControlMode>(
-        "fmu/in/offboard_control_mode", 10);
+        "fmu/in/offboard_control_mode", rclcpp::SensorDataQoS());
 
     trajectory_pub_ = this->create_publisher<px4_msgs::msg::TrajectorySetpoint>(
-        "fmu/in/trajectory_setpoint", 10);
+        "fmu/in/trajectory_setpoint", rclcpp::SensorDataQoS());
 
     vehicle_command_pub_ = this->create_publisher<px4_msgs::msg::VehicleCommand>(
-        "fmu/in/vehicle_command", 10);
+        "fmu/in/vehicle_command", rclcpp::SensorDataQoS());
 
     // 控制循环定时器
     auto control_timer_period = std::chrono::duration<double>(dt_);
@@ -139,7 +146,11 @@ public:
     flight_state_ = FlightState::INIT;
     offboard_setpoint_counter_ = 0;
 
-    RCLCPP_INFO(this->get_logger(), "LADRC 集群执行节点已初始化 (命名空间: %s)", this->get_namespace());
+    RCLCPP_INFO(this->get_logger(), "LADRC 集群执行节点已初始化 (命名空间: %s), ENU偏移=[%.1f, %.1f, %.1f]",
+        this->get_namespace(),
+        this->get_parameter("enu_offset_x").as_double(),
+        this->get_parameter("enu_offset_y").as_double(),
+        this->get_parameter("enu_offset_z").as_double());
     RCLCPP_INFO(this->get_logger(), "等待 swarm_command 和 vehicle_odometry 消息...");
   }
 
@@ -190,32 +201,52 @@ private:
   // --- [Phase 2] swarm_command 回调（含轨迹初始化） ---
   void swarmCommandCallback(const uav_swarm_interfaces::msg::UAVSwarmCommand::SharedPtr msg)
   {
+    RCLCPP_INFO(this->get_logger(),
+        "UAV%d swarm_cmd 回调触发 (目标=[%.1f,%.1f,%.1f])",
+        self_uav_id_, msg->target_pos.x, msg->target_pos.y, msg->target_pos.z);
+
+    // 状态机未就绪或未收到里程计，静默忽略命令
+    if (flight_state_.load() != FlightState::RUNNING_TRAJECTORY || !has_odom_)
+    {
+      RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
+          "UAV%d 尚未就绪（状态=%d, odom=%d），忽略命令", msg->uav_id,
+          (int)flight_state_.load(), has_odom_);
+      return;
+    }
+
     // 判断是否与当前正在执行的任务完全相同（防重复发送）
+    // 注意：比较时必须使用 msg 原始值（全局坐标），不能和减去 offset 后的本地坐标比
     if (has_command_)
     {
-      bool same_target = (std::abs(msg->target_pos.x - target_pos_x_) < 1e-6 &&
-                          std::abs(msg->target_pos.y - target_pos_y_) < 1e-6 &&
-                          std::abs(msg->target_pos.z - target_pos_z_) < 1e-6);
+      double off_x = this->get_parameter("enu_offset_x").as_double();
+      double off_y = this->get_parameter("enu_offset_y").as_double();
+      double off_z = this->get_parameter("enu_offset_z").as_double();
+      bool same_target = (std::abs(msg->target_pos.x - (target_pos_x_ + off_x)) < 1e-6 &&
+                          std::abs(msg->target_pos.y - (target_pos_y_ + off_y)) < 1e-6 &&
+                          std::abs(msg->target_pos.z - (target_pos_z_ + off_z)) < 1e-6);
       bool same_params = (std::abs(msg->duration - target_duration_) < 1e-6 &&
                           msg->motion_style == motion_style_);
       if (same_target && same_params)
       {
-        RCLCPP_DEBUG_THROTTLE(this->get_logger(), *this->get_clock(), 10000,
-            "忽略重复 swarm_command (UAV%d，目标/参数未变)", msg->uav_id);
-        return;
+        return;  // 静默忽略重复消息
       }
       RCLCPP_INFO(this->get_logger(),
           "收到新任务指令 (UAV%d)，目标/参数已变更，覆盖旧任务", msg->uav_id);
     }
 
     uav_id_ = msg->uav_id;
-    target_pos_x_ = msg->target_pos.x;
-    target_pos_y_ = msg->target_pos.y;
-    target_pos_z_ = msg->target_pos.z;
     target_duration_ = msg->duration;
     motion_style_ = msg->motion_style;
     safety_factor_ = msg->safety_factor;
     has_command_ = true;
+
+    // 全局 ENU → 本地 ENU：减去 spawn 偏移量
+    double off_x = this->get_parameter("enu_offset_x").as_double();
+    double off_y = this->get_parameter("enu_offset_y").as_double();
+    double off_z = this->get_parameter("enu_offset_z").as_double();
+    target_pos_x_ = msg->target_pos.x - off_x;
+    target_pos_y_ = msg->target_pos.y - off_y;
+    target_pos_z_ = msg->target_pos.z - off_z;
 
     // 提取当前实际位置作为轨迹起点 (ENU)
     double p0_x = current_odom_.position[1];  // NED.y → ENU.x
@@ -227,6 +258,11 @@ private:
     traj_y_.initialize(p0_y, target_pos_y_, target_duration_);
     traj_z_.initialize(p0_z, target_pos_z_, target_duration_);
 
+    // Warm start LESO: 用当前测量位置初始化观测器 z1 状态，避免从 0 开始导致瞬态反向指令
+    ladrc_x_->setObserverInitialState(p0_x, 0.0, 0.0);
+    ladrc_y_->setObserverInitialState(p0_y, 0.0, 0.0);
+    ladrc_z_->setObserverInitialState(p0_z, 0.0, 0.0);
+
     // 记录命令接收时间
     command_start_time_ = this->now();
 
@@ -237,10 +273,11 @@ private:
     is_hover_stable_ = false;
 
     RCLCPP_INFO(this->get_logger(),
-        "轨迹生成: UAV%d [%.2f, %.2f, %.2f] → [%.2f, %.2f, %.2f], T=%.1fs, style=%s, sf=%.2f",
-        uav_id_, p0_x, p0_y, p0_z,
+        ">>> UAV%d 全局[%.1f,%.1f,%.1f]→本地[%.1f,%.1f,%.1f] T=%.1fs %s",
+        uav_id_,
+        msg->target_pos.x, msg->target_pos.y, msg->target_pos.z,
         target_pos_x_, target_pos_y_, target_pos_z_,
-        target_duration_, motion_style_.c_str(), safety_factor_);
+        target_duration_, motion_style_.c_str());
   }
 
   void odomCallback(const px4_msgs::msg::VehicleOdometry::SharedPtr msg)
@@ -258,8 +295,8 @@ private:
     msg.param1 = param1;
     msg.param2 = param2;
     msg.param7 = param7;
-    msg.target_system = 1;
-    msg.target_component = 1;
+    msg.target_system = 0;     // 广播到所有系统，多机模式下各实例 MAV_SYS_ID 不同
+    msg.target_component = 0;  // 广播到所有组件
     msg.source_system = 1;
     msg.source_component = 1;
     msg.from_external = true;
@@ -311,25 +348,20 @@ private:
     // 持续发布 offboard 模式
     publishOffboardControlMode();
 
-    // 等待状态机完成且收到命令和 odom
-    if (flight_state_.load() != FlightState::RUNNING_TRAJECTORY ||
-        !has_command_ || !has_odom_)
+    // 状态机未完成或未收到里程计：不发 setpoint，等待
+    if (flight_state_.load() != FlightState::RUNNING_TRAJECTORY || !has_odom_)
     {
       if (flight_state_.load() != FlightState::RUNNING_TRAJECTORY) {
            RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
              "等待状态机进入 RUNNING_TRAJECTORY... (当前: %d)", (int)flight_state_.load());
       } else {
            RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
-             "等待 swarm_command 和 odom... (Cmd: %d, Odom: %d)",
-             has_command_, has_odom_);
+             "等待 vehicle_odometry 消息...");
       }
       return;
     }
 
     // 1. 获取测量值 (Odom) 并转换为 ENU
-    // ENU.x (East)  = NED.y (position[1])
-    // ENU.y (North) = NED.x (position[0])
-    // ENU.z (Up)    = -NED.z (position[2])
     double x_meas = current_odom_.position[1];
     double y_meas = current_odom_.position[0];
     double z_meas = -current_odom_.position[2];
@@ -339,18 +371,39 @@ private:
     {
       odom_pub_counter_ = 0;
       geometry_msgs::msg::Point odom_msg;
-      odom_msg.x = x_meas;
-      odom_msg.y = y_meas;
-      odom_msg.z = z_meas;
+      odom_msg.x = x_meas + this->get_parameter("enu_offset_x").as_double();
+      odom_msg.y = y_meas + this->get_parameter("enu_offset_y").as_double();
+      odom_msg.z = z_meas + this->get_parameter("enu_offset_z").as_double();
       odom_pub_->publish(odom_msg);
     }
+
+    // 若无命令，发布首次测量位置作为固定悬停保持 setpoint
+    if (!has_command_)
+    {
+      if (!hover_hold_set_)
+      {
+        hover_hold_x_ = x_meas;
+        hover_hold_y_ = y_meas;
+        hover_hold_z_ = z_meas;
+        hover_hold_set_ = true;
+        RCLCPP_INFO(this->get_logger(),
+            "UAV%d 悬停保持锁定: [%.2f, %.2f, %.2f]", self_uav_id_, x_meas, y_meas, z_meas);
+      }
+      publishTrajectorySetpoint(hover_hold_x_, hover_hold_y_, hover_hold_z_,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+      // 悬停保持时也定期输出位置（10s 节流）
+      RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 10000,
+          "UAV%d 悬停保持 Pos[%.2f,%.2f,%.2f]", self_uav_id_, x_meas, y_meas, z_meas);
+      return;
+    }
+    hover_hold_set_ = false;  // 收到命令，清除悬停保持
 
     // 2. 计算已用时间并从轨迹生成器获取参考值
     double elapsed = (this->now() - command_start_time_).seconds();
     bool x_finished = traj_x_.isFinished(elapsed);
     bool y_finished = traj_y_.isFinished(elapsed);
     bool z_finished = traj_z_.isFinished(elapsed);
-    (void)x_finished; (void)y_finished; (void)z_finished;  // Phase 3 悬停检测使用
+    (void)x_finished; (void)y_finished; (void)z_finished;
 
     auto ref_x = traj_x_.evaluate(elapsed);
     auto ref_y = traj_y_.evaluate(elapsed);
@@ -366,7 +419,7 @@ private:
     double ay_ref = ref_y.acceleration;
     double az_ref = ref_z.acceleration;
 
-    // [Phase 3] 悬停稳定检测：轨迹完成 + 速度极小 + 位置误差极小
+    // [Phase 3] 悬停稳定检测
     bool all_finished = x_finished && y_finished && z_finished;
     if (all_finished)
     {
@@ -379,7 +432,7 @@ private:
           current_odom_.velocity[1] * current_odom_.velocity[1] +
           current_odom_.velocity[2] * current_odom_.velocity[2]);
 
-      if (pos_err < 0.1 && vel_mag < 0.1)
+      if (pos_err < 0.3 && vel_mag < 0.3)
       {
         if (!is_hover_stable_)
         {
@@ -391,27 +444,36 @@ private:
       }
     }
 
-    // 3. 计算 LADRC 控制输出 (ENU 加速度指令)
+    // 3. LADRC 观测器静默运行（状态估计，供监控）
     double ax_cmd = ladrc_x_->update(x_ref, vx_ref, ax_ref, x_meas);
     double ay_cmd = ladrc_y_->update(y_ref, vy_ref, ay_ref, y_meas);
     double az_cmd = ladrc_z_->update(z_ref, vz_ref, az_ref, z_meas);
 
-    // [Phase 4] IAPF 避障：在 LADRC 输出基础上叠加斥力
-    applyIAPF(x_meas, y_meas, z_meas, ax_cmd, ay_cmd, az_cmd);
+    // [Phase 4] IAPF 避障：计算斥力，叠加到加速度前馈
+    Eigen::Vector3d iapf = computeIAPF(x_meas, y_meas, z_meas);
+    double iapf_x = iapf.x();
+    double iapf_y = iapf.y();
+    double iapf_z = iapf.z();
 
     // 4. 发布 UAVStatus
     publishUAVStatus();
 
-    // 5. 转换为 NED 加速度并发布轨迹设定点
-    // Yaw = 0 (保持当前朝向)
-    publishTrajectorySetpoint(ax_cmd, ay_cmd, az_cmd, 0.0);
+    // 5. 发布轨迹设定点：位置+加速度 + IAPF 斥力
+    const double IAPF_POS_GAIN = 0.05;
+    publishTrajectorySetpoint(
+        x_ref + IAPF_POS_GAIN * iapf_x,
+        y_ref + IAPF_POS_GAIN * iapf_y,
+        z_ref + IAPF_POS_GAIN * iapf_z,
+        vx_ref, vy_ref, vz_ref,
+        ax_ref + iapf_x, ay_ref + iapf_y, az_ref + iapf_z, 0.0);
 
-    // 日志
+    // 日志（当 IAPF 激活时附加 "!IAPF!" 标记）
     RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 1000,
-        "Ref: [%.2f, %.2f, %.2f] | Pos: [%.2f, %.2f, %.2f] | Cmd(A): [%.2f, %.2f, %.2f]",
-        x_ref, y_ref, z_ref,
+        "UAV%d Ref[%.1f,%.1f,%.1f] Pos[%.2f,%.2f,%.2f] Cmd[%.1f,%.1f,%.1f]%s",
+        uav_id_, x_ref, y_ref, z_ref,
         x_meas, y_meas, z_meas,
-        ax_cmd, ay_cmd, az_cmd);
+        ax_cmd, ay_cmd, az_cmd,
+        (iapf.norm() > 0.1 ? " !IAPF!" : ""));
   }
 
   // --- [Phase 3] 动态增益调节 ---
@@ -445,44 +507,40 @@ private:
   }
 
   // --- [Phase 4] IAPF 斥力计算 ---
-  void applyIAPF(double x_meas, double y_meas, double z_meas,
-                 double& ax_cmd, double& ay_cmd, double& az_cmd)
+  // 返回总斥力向量 (ENU)，safety_factor=0 时返回零向量
+  Eigen::Vector3d computeIAPF(double x_meas, double y_meas, double z_meas)
   {
-    if (safety_factor_ <= 0.0 || neighbor_positions_.empty()) return;
+    Eigen::Vector3d F_rep(0.0, 0.0, 0.0);
+    if (safety_factor_ <= 0.0 || neighbor_positions_.empty()) return F_rep;
 
     double R_safe = this->get_parameter("iapf_safe_distance").as_double();
     double K_rep = this->get_parameter("iapf_repulsion_gain").as_double();
-    double max_acc_x = this->get_parameter("max_acceleration_x").as_double();
-    double max_acc_y = this->get_parameter("max_acceleration_y").as_double();
-    double max_acc_z = this->get_parameter("max_acceleration_z").as_double();
 
-    Eigen::Vector3d pos_own(x_meas, y_meas, z_meas);
-    Eigen::Vector3d F_rep(0.0, 0.0, 0.0);
+    double my_off_x = this->get_parameter("enu_offset_x").as_double();
+    double my_off_y = this->get_parameter("enu_offset_y").as_double();
+    double my_off_z = this->get_parameter("enu_offset_z").as_double();
+    Eigen::Vector3d pos_own(x_meas + my_off_x, y_meas + my_off_y, z_meas + my_off_z);
 
     for (const auto& [nbr_id, nbr_pos] : neighbor_positions_)
     {
       double d = (pos_own - nbr_pos).norm();
-      if (d <= 0.0 || d >= R_safe) continue;
+      if (d <= 0.01 || d >= R_safe) continue;
 
-      // IAPF 斥力：F = K_rep * (1/d - 1/R_safe) / d^2 * direction
-      Eigen::Vector3d dir = (pos_own - nbr_pos) / d;
+      Eigen::Vector3d dir = (pos_own - nbr_pos).normalized();
+
+      // IAPF 斥力：F = K_rep * (1/d - 1/R_safe) / d^2
+      // 加入微小 Z 轴侧向力 (+5%)，避免局部极小值死锁
       double mag = K_rep * (1.0 / d - 1.0 / R_safe) / (d * d);
-      F_rep += dir * mag;
+      Eigen::Vector3d force = dir * mag;
+      force.z() += mag * 0.05;  // 引导从上下错开
+      F_rep += force;
 
       RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 500,
-          "IAPF 避障激活: 距 U%d=%.2fm < %.1fm, Frep=[%.2f, %.2f, %.2f]",
-          nbr_id, d, R_safe, dir.x() * mag, dir.y() * mag, dir.z() * mag);
+          "IAPF 避障: U%d d=%.2fm Frep[%.1f,%.1f,%.1f]",
+          nbr_id, d, force.x(), force.y(), force.z());
     }
 
-    // 叠加斥力加速度（乘以 safety_factor 缩放）
-    ax_cmd += F_rep.x() * safety_factor_;
-    ay_cmd += F_rep.y() * safety_factor_;
-    az_cmd += F_rep.z() * safety_factor_;
-
-    // 饱和度限制
-    ax_cmd = std::max(-max_acc_x, std::min(ax_cmd, max_acc_x));
-    ay_cmd = std::max(-max_acc_y, std::min(ay_cmd, max_acc_y));
-    az_cmd = std::max(-max_acc_z, std::min(az_cmd, max_acc_z));
+    return F_rep * safety_factor_;
   }
 
   // --- [Phase 1] 新增 UAVStatus 发布 ---
@@ -498,28 +556,31 @@ private:
   {
     px4_msgs::msg::OffboardControlMode msg{};
     msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
-    msg.position = false;
-    msg.velocity = true;
-    msg.acceleration = true;
+    msg.position = true;
+    msg.velocity = false;
+    msg.acceleration = false;
     msg.attitude = false;
     msg.body_rate = false;
 
     offboard_mode_pub_->publish(msg);
   }
 
-  void publishTrajectorySetpoint(double ax_enu, double ay_enu, double az_enu, double yaw_ref)
+  void publishTrajectorySetpoint(double px_enu, double py_enu, double pz_enu,
+                                  double vx_enu, double vy_enu, double vz_enu,
+                                  double ax_enu, double ay_enu, double az_enu, double yaw_ref)
   {
     px4_msgs::msg::TrajectorySetpoint msg{};
     msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 
-    msg.position = {NAN, NAN, NAN};
-    msg.velocity = {NAN, NAN, NAN};
+    // 位置参考 (ENU → NED)：纯位置模式，PX4 位置控制器独立完成轨迹跟踪
+    msg.position = {
+        static_cast<float>(py_enu),      // NED North = ENU y
+        static_cast<float>(px_enu),      // NED East = ENU x
+        static_cast<float>(-pz_enu)};    // NED Down = -ENU z
 
-    // ENU 加速度 → PX4(NED) 加速度
-    msg.acceleration = {
-        static_cast<float>(ay_enu),
-        static_cast<float>(ax_enu),
-        static_cast<float>(-az_enu)};
+    // 速度和加速度留空 (NaN)，让 PX4 独立计算，避免多模式耦合干扰
+    msg.velocity = {NAN, NAN, NAN};
+    msg.acceleration = {NAN, NAN, NAN};
 
     msg.yaw = static_cast<float>(yaw_ref);
 
@@ -556,6 +617,12 @@ private:
   std::string motion_style_ = "normal";
   double safety_factor_ = 0.0;
   bool has_command_ = false;
+
+  // 悬停保持：用首次位置作为固定 setpoint，避免漂移正反馈
+  bool hover_hold_set_ = false;
+  double hover_hold_x_ = 0.0;
+  double hover_hold_y_ = 0.0;
+  double hover_hold_z_ = 0.0;
 
   // [Phase 2] 轨迹生成器
   ladrc_controller::MinimumJerkTrajectory traj_x_;

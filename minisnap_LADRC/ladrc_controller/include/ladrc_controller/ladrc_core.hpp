@@ -47,6 +47,9 @@ public:
     
   // Reset controller state
   void reset();
+
+  // Warm start observer with initial position/velocity/disturbance estimates
+  void setObserverInitialState(double z1, double z2, double z3);
   
   // Setters
   void setParameters(const LADRCParams& params);

@@ -27,6 +27,9 @@ public:
   
   // Reset observer state
   void reset();
+
+  // Warm start: set initial observer state to avoid transient output reversal
+  void setInitialState(double z1, double z2, double z3);
   
   // Setters
   void setObserverBandwidth(double omega_o);

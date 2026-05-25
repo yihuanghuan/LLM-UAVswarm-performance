@@ -169,18 +169,30 @@ class UAVFormationNode(Node):
 
         duration = float(task.get('duration_seconds', 3.0))
         motion_style = task.get('motion_profile', 'normal')
-        safety_factor = float(task.get('iapf_safety_margin_factor') or 1.0)
+        val = task.get('iapf_safety_margin_factor')
+        # null 时默认 1.0（配合 YAML 中 K_rep=20, R_safe=2 提供标准避障）
+        # 非 null 时按 LLM 指定值单独调节
+        safety_factor = float(val) if val is not None else 1.0
 
-        for _ in range(3):
-            for uid, pos in zip(task_uav_ids, allocated_positions):
-                self._publish_single_goal(uid, pos, duration, motion_style, safety_factor)
-                self.get_logger().debug(f"UAV{uid} -> {[round(x,2) for x in pos]} "
-                                        f"dur={duration}s style={motion_style} sf={safety_factor}")
-            time.sleep(0.5)
+        # 先重置悬停状态，再发命令
+        for uid in task_uav_ids:
+            self.uav_hover_status[uid] = False
 
-    def wait_for_hover_and_time(self, task_uav_ids: List[int], wait_seconds: float, timeout: float = 60.0):
+        for uid, pos in zip(task_uav_ids, allocated_positions):
+            self._publish_single_goal(uid, pos, duration, motion_style, safety_factor)
+            self.get_logger().info(f"UAV{uid} -> {[round(x,2) for x in pos]} "
+                                    f"dur={duration}s style={motion_style} sf={safety_factor}")
+
+    def wait_for_hover_and_time(self, task_uav_ids: List[int], wait_seconds: float, timeout: float = 120.0):
         """等待所有参与任务的无人机到达目标并悬停稳定 (基于 /uav{id}/status 真实反馈)"""
         self.get_logger().info(f">>> 等待 {len(task_uav_ids)} 架无人机到达并悬停 (超时: {timeout}s) ...")
+
+        # 先重置悬停状态，排空 DDS 队列中旧消息
+        for uid in task_uav_ids:
+            self.uav_hover_status[uid] = False
+        flush_start = time.time()
+        while time.time() - flush_start < 2.0:
+            rclpy.spin_once(self, timeout_sec=0.1)
 
         start_time = time.time()
         while time.time() - start_time < timeout:
@@ -211,7 +223,7 @@ class UAVFormationNode(Node):
         unstable_list = [uid for uid in task_uav_ids if not self.uav_hover_status.get(uid, False)]
         self.get_logger().warn(f">>> 悬停等待超时! 已稳定: {stable_list}, 未稳定: {unstable_list}")
 
-    def execute_task(self, task: Dict):
+    def execute_task(self, task: Dict, skip_wait: bool = False):
         """执行单步任务（核心修改：支持分群）"""
         print(f"\n{'='*60}")
         self.get_logger().info(f"执行任务 {task['task_sequence_id']}")
@@ -230,7 +242,13 @@ class UAVFormationNode(Node):
         self.get_logger().info(f"任务参与无人机ID: {task_uav_ids}")
 
         # ==========================================
-        # 2. 从全局状态中提取参与机的当前位置
+        # 2. 收一轮 odom 数据，确保读取的是当前真实位置
+        # ==========================================
+        for _ in range(10):
+            rclpy.spin_once(self, timeout_sec=0.05)
+
+        # ==========================================
+        # 3. 从全局状态中提取参与机的当前位置
         # ==========================================
         current_subset = []
         for uid in task_uav_ids:
@@ -299,9 +317,11 @@ class UAVFormationNode(Node):
         # ==========================================
         # 7. 处理阻塞逻辑
         # ==========================================
-        if task['trigger_condition'] == 'hover_and_wait':
-            wt = task.get('wait_time', 2.0)
-            self.wait_for_hover_and_time(task_uav_ids, wt)
+        if not skip_wait:
+            if task.get('trigger_condition') in ('hover_and_wait', 'continuous_transit', 'direct_execution') \
+               or task.get('task_sequence_id', 1) > 1:
+                wt = task.get('wait_time') or 0.0
+                self.wait_for_hover_and_time(task_uav_ids, wt)
 
     def run_mission(self, llm_output: Dict):
         tasks = llm_output.get('task_sequences', [])
@@ -309,8 +329,34 @@ class UAVFormationNode(Node):
             self.get_logger().error("LLM 输出为空，没有任务可执行")
             return
 
-        for task in tasks:
-            self.execute_task(task)
+        i = 0
+        while i < len(tasks):
+            # 收集连续、UAV 集合不重叠的任务编组（并行执行）
+            group = [tasks[i]]
+            group_ids = set(tasks[i].get('uav_id', []))
+            j = i + 1
+            while j < len(tasks):
+                next_ids = set(tasks[j].get('uav_id', []))
+                if group_ids & next_ids:  # 有重叠 → 不能并行
+                    break
+                group.append(tasks[j])
+                group_ids |= next_ids
+                j += 1
+
+            if len(group) > 1:
+                self.get_logger().info(f">>> 并行执行任务 {i+1}-{j}（UAV 集合不重叠）")
+                for task in group:
+                    self.execute_task(task, skip_wait=True)  # 先全部发送，不等
+                all_ids = list(group_ids)
+                self.get_logger().info(f">>> 等待 {len(all_ids)} 架无人机全部悬停...")
+                self.wait_for_hover_and_time(all_ids, 1.0)
+            else:
+                if i > 0:
+                    prev_ids = set(tasks[i-1].get('uav_id', []))
+                    self.get_logger().info(f">>> 等待前一任务悬停...")
+                    self.wait_for_hover_and_time(list(prev_ids), 1.0)
+                self.execute_task(tasks[i])
+            i = j
 
         self.get_logger().info(">>> 所有任务序列执行完毕！")
 

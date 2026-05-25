@@ -40,6 +40,13 @@ void LESO::reset()
   z_.setZero();
 }
 
+void LESO::setInitialState(double z1, double z2, double z3)
+{
+  z_(0) = z1;
+  z_(1) = z2;
+  z_(2) = z3;
+}
+
 void LESO::setObserverBandwidth(double omega_o)
 {
   omega_o_ = omega_o;
