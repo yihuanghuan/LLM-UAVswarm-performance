@@ -30,7 +30,7 @@ import time
 import httpx
 
 # -------------------------- 配置项（硬编码KEY） --------------------------
-API_KEY = "sk-cp-9x3kcvFzbvnOjYlnl_pPis_CACTgZd0x7GKTmAU6YqjbDt951u5nTB7u__UvQjR7IdU0Ea5G2IZQydKfy6zbxGmhO7vg4EMwiGnPvr5KCv4sLoCtoGSPhuA"
+API_KEY = ""
 BASE_URL = "https://api.minimax.chat/v1"
 MODEL_NAME = "MiniMax-M2.7-highspeed"
 # -------------------------------------------------------------------------
