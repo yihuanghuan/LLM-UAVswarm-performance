@@ -28,9 +28,12 @@ import re
 import json
 import time
 import os
+import uuid
 import httpx
 
+from .llm_parse_logger import append_llm_parse_log
 from .lfs_validator import (
+    estimate_field_accuracy,
     parse_available_uav_ids,
     validate_and_compile_lfs,
 )
@@ -232,9 +235,56 @@ def purify_json_content(raw_content: str) -> str:
     return match.group(0) if match else raw_content
 
 
+def classify_command_type(llm_output: dict) -> str:
+    tasks = llm_output.get("task_sequences", [])
+    if not tasks:
+        return "invalid"
+    if len(tasks) == 1:
+        return "simple"
+
+    seen_ids = set()
+    has_overlap = False
+    for task in tasks:
+        task_ids = set(task.get("uav_id", []))
+        if seen_ids & task_ids:
+            has_overlap = True
+            break
+        seen_ids |= task_ids
+    return "sequential" if has_overlap else "grouped"
+
+
+def _usage_tokens(response, field_name: str) -> int:
+    usage = getattr(response, "usage", None)
+    return int(getattr(usage, field_name, 0) or 0)
+
+
+def _log_parse_attempt(command_id: str, raw_command: str, retry_count: int, **kwargs):
+    append_llm_parse_log({
+        "command_id": command_id,
+        "command_type": kwargs.get("command_type", "invalid"),
+        "raw_command": raw_command,
+        "prompt_tokens": kwargs.get("prompt_tokens", 0),
+        "completion_tokens": kwargs.get("completion_tokens", 0),
+        "latency_ms": kwargs.get("latency_ms", 0),
+        "valid_json": kwargs.get("valid_json", False),
+        "schema_valid": kwargs.get("schema_valid", False),
+        "field_accuracy": kwargs.get("field_accuracy", 0.0),
+        "retry_count": retry_count,
+        "error_type": kwargs.get("error_type", ""),
+    })
+
+
 # ====================== 核心解析函数（新格式） ======================
 def parse_uav_command(user_command: str, ros_aux_info: str = ""):
+    command_id = uuid.uuid4().hex[:12]
+
     if not API_KEY:
+        _log_parse_attempt(
+            command_id,
+            user_command,
+            0,
+            error_type="missing_api_key",
+        )
         return {
             "task_sequences": [],
             "error_code": 4,
@@ -258,6 +308,11 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
     max_retries = 3
 
     for attempt in range(max_retries):
+        response = None
+        start_time = time.time()
+        valid_json = False
+        schema_valid = False
+        field_accuracy = 0.0
         try:
             print(f"第{attempt + 1}次调用API解析指令...")
             response = client.chat.completions.create(
@@ -269,17 +324,46 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
                 response_format={"type": "json_object"},
                 timeout=60
             )
+            latency_ms = int((time.time() - start_time) * 1000)
 
             raw_result = response.choices[0].message.content
             pure_json_str = purify_json_content(raw_result)
             cfr_result = json.loads(pure_json_str)
+            valid_json = True
+            field_accuracy = estimate_field_accuracy(cfr_result)
             available_uav_ids = parse_available_uav_ids(ros_aux_info)
             cfr_result = validate_and_compile_lfs(cfr_result, available_uav_ids)
+            schema_valid = True
 
+            _log_parse_attempt(
+                command_id,
+                user_command,
+                attempt,
+                command_type=classify_command_type(cfr_result),
+                prompt_tokens=_usage_tokens(response, "prompt_tokens"),
+                completion_tokens=_usage_tokens(response, "completion_tokens"),
+                latency_ms=latency_ms,
+                valid_json=valid_json,
+                schema_valid=schema_valid,
+                field_accuracy=field_accuracy,
+            )
             print(" 解析结果校验通过！")
             return cfr_result
 
         except Exception as e:
+            latency_ms = int((time.time() - start_time) * 1000)
+            _log_parse_attempt(
+                command_id,
+                user_command,
+                attempt,
+                prompt_tokens=_usage_tokens(response, "prompt_tokens") if response else 0,
+                completion_tokens=_usage_tokens(response, "completion_tokens") if response else 0,
+                latency_ms=latency_ms,
+                valid_json=valid_json,
+                schema_valid=schema_valid,
+                field_accuracy=field_accuracy,
+                error_type=type(e).__name__,
+            )
             print(f" 第{attempt + 1}次解析失败：{str(e)}")
             if attempt == max_retries - 1:
                 return {
