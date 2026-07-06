@@ -4,7 +4,10 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from jsonschema import Draft202012Validator
+try:
+    from jsonschema import Draft202012Validator
+except ModuleNotFoundError:
+    Draft202012Validator = None
 
 
 DEFAULT_CONSTRAINTS = [
@@ -78,6 +81,9 @@ def load_lfs_schema() -> Dict[str, Any]:
 
 
 def validate_schema(payload: Dict[str, Any], schema: Optional[Dict[str, Any]] = None) -> None:
+    if Draft202012Validator is None:
+        raise LFSValidationError("缺少 jsonschema 依赖，请安装 python3-jsonschema 或在虚拟环境中执行 pip install jsonschema")
+
     validator = Draft202012Validator(schema or load_lfs_schema())
     errors = sorted(validator.iter_errors(payload), key=lambda err: list(err.path))
     if errors:

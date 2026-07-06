@@ -27,10 +27,16 @@ from openai import OpenAI
 import re
 import json
 import time
+import os
 import httpx
 
-# -------------------------- 配置项（硬编码KEY） --------------------------
-API_KEY = ""
+from .lfs_validator import (
+    parse_available_uav_ids,
+    validate_and_compile_lfs,
+)
+
+# -------------------------- 配置项 --------------------------
+API_KEY = os.getenv("LLM_API_KEY") or os.getenv("MINIMAX_API_KEY")
 BASE_URL = "https://api.minimax.chat/v1"
 MODEL_NAME = "MiniMax-M2.7-highspeed"
 # -------------------------------------------------------------------------
@@ -68,7 +74,7 @@ SYSTEM_PROMPT = """
 1. iapf_safety_margin_factor：指令未提及修改该参数时，固定输出null，仅在明确要求修改时输出有效数值
 2. motion_profile：指令未明确要求"柔和/快速"时，固定输出"normal"
 3. constraints：固定输出默认值 ["minimal_topology_change", "no_trajectory_cross", "keep_safety_distance"]
-4. wait_time：仅在trigger_condition为"hover_and_wait"且指令明确要求悬停时间时输出，否则固定输出None
+4. wait_time：仅在trigger_condition为"hover_and_wait"且指令明确要求悬停时间时输出，否则固定输出null
 
 # 固定CFR-JSON输出规范（零修改，严格遵循字段顺序）
 【强制输出格式】无论单任务还是多任务，必须统一输出以下外层结构：
@@ -90,8 +96,8 @@ SYSTEM_PROMPT = """
   "uav_id":"指令中指定无人机编号，格式[num1,num2,...],若无明确编号，则默认为从ROS中获得的所有UAV编号"
   "uav_count": "整数，必填，执行本次任务的无人机总数量，从指令中提取，若指令里未体现数量，则默认为从ROS中获得的所有UAV数量",
   "trigger_condition": "字符串，必填，枚举仅限：direct_execution/hover_and_wait/continuous_transit",
-  "wait_time":"浮点数，必填,单位：秒",
-  "iapf_safety_margin_factor": "必填，指令未提及时固定输出None",
+  "wait_time":"浮点数或null，必填,单位：秒",
+  "iapf_safety_margin_factor": "必填，指令未提及时固定输出null",
   "motion_profile": "字符串，必填，运动轮廓约束，枚举值仅限：normal/smooth/aggressive；默认值为normal；smooth=柔和舒缓/无急加减速/放宽时间分配，aggressive=快速激进/尽快到位/收紧时间分配",
   "constraints":"数组，必填，指令提取的所有约束条件，默认必须包含[\"minimal_topology_change\", \"no_trajectory_cross\", \"keep_safety_distance\"]，可根据指令新增额外约束",
   "global_center": "数组，必填，编队全局中心3D坐标，格式[X,Y,Z]，指令未提及时用默认值[0.0, 0.0, 1.5]",
@@ -131,10 +137,10 @@ ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
     {
       "task_sequence_id": 1,
       "duration_seconds": 3.0,
-      "uav_id":[1,2,3,4,5,6]
+      "uav_id":[1,2,3,4,5,6],
       "uav_count": 6,
       "trigger_condition": "direct_execution",
-      "wait_time":None,
+      "wait_time":null,
       "iapf_safety_margin_factor": null,
       "motion_profile": "normal",
       "constraints": ["minimal_topology_change", "no_trajectory_cross", "keep_safety_distance"],
@@ -143,7 +149,7 @@ ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
       "parametric_data": {
         "formation_type": "Circle",
         "formation_radius": 1.5
-      },
+      }
     }
   ]
 }
@@ -169,7 +175,7 @@ ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
       "parametric_data": {
         "formation_type": "Sphere",
         "formation_radius": 1.5
-      },
+      }
     },
     {
       "task_sequence_id": 2,
@@ -177,7 +183,7 @@ ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
       "uav_id":[1,2,3,4,5,6,7,8,9,10],
       "uav_count": 10,
       "trigger_condition": "direct_execution",
-      "wait_time":None,
+      "wait_time":null,
       "iapf_safety_margin_factor": null,
       "motion_profile": "normal",
       "constraints": ["minimal_topology_change", "no_trajectory_cross", "keep_safety_distance"],
@@ -186,7 +192,7 @@ ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
       "parametric_data": {
         "formation_type": "Free",
         "formation_radius": 1.5
-      },
+      }
     }
   ]
 }
@@ -203,7 +209,7 @@ ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
       "uav_id":[1,2,3,4,5,6,7,8,9,10],
       "uav_count": 10,
       "trigger_condition": "direct_execution",
-      "wait_time":None,
+      "wait_time":null,
       "iapf_safety_margin_factor": null,
       "motion_profile": "normal",
       "constraints": ["minimal_topology_change", "no_trajectory_cross", "keep_safety_distance"],
@@ -212,7 +218,7 @@ ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
       "parametric_data": {
         "formation_type": "Line",
         "formation_radius": 2.0
-      },
+      }
     }
   ]
 }
@@ -228,6 +234,13 @@ def purify_json_content(raw_content: str) -> str:
 
 # ====================== 核心解析函数（新格式） ======================
 def parse_uav_command(user_command: str, ros_aux_info: str = ""):
+    if not API_KEY:
+        return {
+            "task_sequences": [],
+            "error_code": 4,
+            "error_msg": "缺少 LLM API Key，请设置 LLM_API_KEY 或 MINIMAX_API_KEY 环境变量"
+        }
+
     full_prompt = (
             SYSTEM_PROMPT + "\n"
             + FEW_SHOT_EXAMPLES + "\n"
@@ -260,29 +273,8 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
             raw_result = response.choices[0].message.content
             pure_json_str = purify_json_content(raw_result)
             cfr_result = json.loads(pure_json_str)
-
-            # ====================== 新格式轻量级校验 ======================
-            if "task_sequences" not in cfr_result or not isinstance(cfr_result["task_sequences"], list):
-                raise ValueError("输出缺少task_sequences数组，外层结构错误")
-
-            for task in cfr_result["task_sequences"]:
-                # 校验必填字段
-                required_fields = ["task_sequence_id", "duration_seconds", "trigger_condition",
-                                   "iapf_safety_margin_factor", "motion_profile", "constraints",
-                                   "global_center", "uav_count", "generation_mode",
-                                   "parametric_data","uav_id","wait_time"]
-                for field in required_fields:
-                    if field not in task:
-                        raise ValueError(f"子任务{task.get('task_sequence_id', '未知')}缺少必填字段：{field}")
-
-                # 校验trigger_condition合法性
-                legal_trigger = {"direct_execution", "hover_and_wait", "continuous_transit"}
-                if task["trigger_condition"] not in legal_trigger:
-                    raise ValueError(f"非法trigger_condition值：{task['trigger_condition']}")
-
-                # 校验generation_mode
-                if task["generation_mode"] != "parametric":
-                    raise ValueError(f"本阶段仅支持parametric模式，实际输出：{task['generation_mode']}")
+            available_uav_ids = parse_available_uav_ids(ros_aux_info)
+            cfr_result = validate_and_compile_lfs(cfr_result, available_uav_ids)
 
             print(" 解析结果校验通过！")
             return cfr_result
