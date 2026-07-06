@@ -1,8 +1,6 @@
 import math
 import time
-import numpy as np
 from typing import List, Dict
-from scipy.optimize import linear_sum_assignment
 import json
 
 # -------------------------- ROS2 依赖导入 --------------------------
@@ -12,6 +10,7 @@ from uav_swarm_interfaces.msg import UAVSwarmCommand, UAVStatus
 from geometry_msgs.msg import Point
 # -------------------------------------------------------------------
 from .no_location import parse_uav_command
+from .safety_aware_allocator import SafetyAwareTopologyAllocator
 
 # ====================== 硬编码：无人机初始坐标 + ID (全局地图) ======================
 # 注意：这里是全局数据库，存储所有无人机的状态
@@ -65,32 +64,11 @@ class FormationGenerator:
         elif formation_type == "Free": return []
         else: raise ValueError(f"不支持的编队类型: {formation_type}")
 
-# ====================== 2. 匈牙利算法分配层 (保持不变) ======================
-class TopologyAllocator:
-    @staticmethod
-    def _is_segments_cross(p1, p2, p3, p4):
-        if max(p1[0], p2[0]) < min(p3[0], p4[0]) or max(p3[0], p4[0]) < min(p1[0], p2[0]): return False
-        if max(p1[1], p2[1]) < min(p3[1], p4[1]) or max(p3[1], p4[1]) < min(p1[1], p2[1]): return False
-        cross = lambda a, b: a[0]*b[1] - a[1]*b[0]
-        v1, v2, v3 = p3-p1, p4-p1, p2-p1
-        c1, c2 = cross(v1, v3), cross(v2, v3)
-        v1, v2, v3 = p1-p3, p2-p3, p4-p3
-        c3, c4 = cross(v1, v3), cross(v2, v3)
-        return (c1 * c2 < 0) and (c3 * c4 < 0)
-
-    @staticmethod
-    def allocate(initial, target, cross_penalty=10.0):
-        n = len(initial)
-        init_np, tgt_np = np.array(initial), np.array(target)
-        cost = np.linalg.norm(init_np[:, None] - tgt_np, axis=2)
-
-        row_ind, col_ind = linear_sum_assignment(cost)
-        total_dist = np.linalg.norm(init_np[row_ind] - tgt_np[col_ind], axis=1).sum()
-        print(f"   全局最优总飞行距离: {total_dist:.3f} 米")
-        
-        res = [[] for _ in range(n)]
-        for r, c in zip(row_ind, col_ind): res[r] = target[c]
-        return res
+# ====================== 2. 安全感知拓扑分配层 ======================
+class TopologyAllocator(SafetyAwareTopologyAllocator):
+    def allocate(self, initial, target, cross_penalty=10.0, duration=3.0):
+        del cross_penalty
+        return super().allocate(initial, target, duration=duration)
 
 # ====================== 3. ROS2 核心调度层  ======================
 class UAVFormationNode(Node):
@@ -289,7 +267,18 @@ class UAVFormationNode(Node):
         # ==========================================
         allocator = TopologyAllocator()
         # 输入：参与机的当前位置，参与机的目标点
-        allocated_subset = allocator.allocate(current_subset, targets)
+        allocation_duration = float(task.get('duration_seconds', 3.0))
+        allocated_subset = allocator.allocate(current_subset, targets, duration=allocation_duration)
+        metrics = allocator.metrics_dict()
+        self.get_logger().info(
+            "   safety-aware topology cost: "
+            f"total={metrics['total']:.3f}, dist={metrics['distance']:.3f}m, "
+            f"xy_cross={metrics['xy_crossings']}, "
+            f"prox_cross={metrics['proximity_crossings']}, "
+            f"safety={metrics['safety']:.3f}, "
+            f"d_min={metrics['min_distance']:.3f}m, "
+            f"swap_iter={metrics['iterations']}"
+        )
 
          #打印分配结果映射表
         # ==========================================
@@ -409,4 +398,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
