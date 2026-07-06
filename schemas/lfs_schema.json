@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/lfs_schema.json",
+  "title": "Language-to-Formation Specification",
+  "description": "Schema for formal LFS payloads and the legacy scheduler-compatible task_sequences payload.",
+  "type": "object",
+  "oneOf": [
+    {
+      "title": "Formal LFS payload",
+      "oneOf": [
+        {
+          "required": ["tasks"]
+        },
+        {
+          "required": ["M"]
+        }
+      ],
+      "properties": {
+        "lfs_version": {
+          "type": "string"
+        },
+        "tasks": {
+          "$ref": "#/$defs/lfs_task_array"
+        },
+        "M": {
+          "$ref": "#/$defs/lfs_task_array"
+        }
+      },
+      "additionalProperties": true
+    },
+    {
+      "title": "Legacy scheduler payload",
+      "required": ["task_sequences"],
+      "properties": {
+        "task_sequences": {
+          "$ref": "#/$defs/legacy_task_array"
+        },
+        "error_code": {
+          "type": "integer"
+        },
+        "error_msg": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  ],
+  "$defs": {
+    "uav_id_array": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "center": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "formation_type": {
+      "type": "string",
+      "enum": ["Circle", "Line", "Sphere", "Free", "Triangle", "Polygon", "Lineup"]
+    },
+    "motion_profile": {
+      "type": "string",
+      "enum": ["smooth", "normal", "aggressive"]
+    },
+    "lfs_trigger": {
+      "type": "string",
+      "enum": ["direct", "hover-and-wait", "continuous"]
+    },
+    "legacy_trigger": {
+      "type": "string",
+      "enum": ["direct_execution", "hover_and_wait", "continuous_transit"]
+    },
+    "lfs_task_array": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/lfs_task"
+      },
+      "minItems": 1
+    },
+    "legacy_task_array": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/legacy_task"
+      },
+      "minItems": 1
+    },
+    "lfs_task": {
+      "type": "object",
+      "required": ["U", "F", "c", "r", "T", "m", "s", "q"],
+      "properties": {
+        "task_sequence_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "task_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "U": {
+          "$ref": "#/$defs/uav_id_array"
+        },
+        "F": {
+          "$ref": "#/$defs/formation_type"
+        },
+        "c": {
+          "$ref": "#/$defs/center"
+        },
+        "r": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "T": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "m": {
+          "$ref": "#/$defs/motion_profile"
+        },
+        "s": {
+          "type": "number",
+          "minimum": 0
+        },
+        "q": {
+          "$ref": "#/$defs/lfs_trigger"
+        },
+        "wait_time": {
+          "type": ["number", "null"],
+          "minimum": 0
+        },
+        "parallel_group": {
+          "type": ["string", "integer"]
+        }
+      },
+      "additionalProperties": true
+    },
+    "legacy_task": {
+      "type": "object",
+      "required": [
+        "task_sequence_id",
+        "duration_seconds",
+        "uav_id",
+        "uav_count",
+        "trigger_condition",
+        "wait_time",
+        "iapf_safety_margin_factor",
+        "motion_profile",
+        "constraints",
+        "global_center",
+        "generation_mode",
+        "parametric_data"
+      ],
+      "properties": {
+        "task_sequence_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "duration_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "uav_id": {
+          "$ref": "#/$defs/uav_id_array"
+        },
+        "uav_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "trigger_condition": {
+          "$ref": "#/$defs/legacy_trigger"
+        },
+        "wait_time": {
+          "type": ["number", "null"],
+          "minimum": 0
+        },
+        "iapf_safety_margin_factor": {
+          "type": ["number", "null"],
+          "minimum": 0
+        },
+        "motion_profile": {
+          "$ref": "#/$defs/motion_profile"
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "global_center": {
+          "$ref": "#/$defs/center"
+        },
+        "generation_mode": {
+          "const": "parametric"
+        },
+        "parametric_data": {
+          "type": "object",
+          "required": ["formation_type", "formation_radius"],
+          "properties": {
+            "formation_type": {
+              "$ref": "#/$defs/formation_type"
+            },
+            "formation_radius": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "additionalProperties": true
+        },
+        "parallel_group": {
+          "type": ["string", "integer"]
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}
