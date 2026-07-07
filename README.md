@@ -102,15 +102,17 @@ make px4_sitl gazebo-classic
 
 # 终端 3: C++ 控制节点
 source ~/learning/LLM_swarm_ws/install/setup.bash
-ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1]
+ros2 launch ladrc_controller swarm_launch.py uav_ids:=[0]
 
 # 终端 4: 发送飞行指令
 source ~/learning/LLM_swarm_ws/install/setup.bash
-ros2 topic pub --once /uav1/swarm_command uav_swarm_interfaces/msg/UAVSwarmCommand \
-  "{header: {stamp: {sec: 0, nanosec: 0}, frame_id: 'world'}, mission_id: 1, uav_id: 1, \
+ros2 topic pub --once /uav0/swarm_command uav_swarm_interfaces/msg/UAVSwarmCommand \
+  "{header: {stamp: {sec: 0, nanosec: 0}, frame_id: 'world'}, mission_id: 1, uav_id: 0, \
     target_pos: {x: 3.0, y: 0.0, z: 3.0}, duration: 5.0, \
     motion_style: 'normal', safety_factor: 0.0}"
 ```
+
+单机 `make px4_sitl gazebo-classic` 使用 PX4 instance 0，话题为 `/fmu/...`；`swarm_launch.py` 中用 `uav_ids:=[0]` 对应该单机实例。多机 `sitl_multiple_run.sh` 仍使用 `uav_ids:=[1,2,...]`。
 
 ### 多机编队（调度器完整链路）
 
