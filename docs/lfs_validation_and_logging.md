@@ -20,6 +20,11 @@ This update formalizes the LLM parsing layer around a Language-to-Formation Spec
   - `LLM_API_KEY`
   - `MINIMAX_API_KEY`
 - Added LLM parse attempt logging to `logs/llm_parse_log.csv`.
+- Updated the LLM prompt and few-shot examples so the model now emits formal LFS directly:
+  - `lfs_version`
+  - `tasks`
+  - `U`, `F`, `c`, `r`, `T`, `m`, `s`, `q`
+- Added package dependency declarations for the LLM parser, schema validator, and safety-aware allocator.
 
 ## Log Fields
 
@@ -43,6 +48,24 @@ The CSV log contains:
 
 Runtime logs are intentionally ignored by git through `logs/` in `.gitignore`.
 
+The LLM-facing interface now asks for formal LFS, while the ROS scheduler-facing interface remains `task_sequences`. This keeps the paper-facing LFS representation aligned with the implementation without changing the controller or topic protocol.
+
+## Dependency Declarations
+
+`location_allocate/setup.py` now declares the Python packages used by the parser and allocation layer:
+
+- `jsonschema`
+- `openai`
+- `httpx`
+- `numpy`
+- `scipy`
+
+`location_allocate/package.xml` declares the ROS/system Python dependencies that have stable package names:
+
+- `python3-jsonschema`
+- `python3-numpy`
+- `python3-scipy`
+
 ## Validation
 
 Local checks performed during implementation:
@@ -51,3 +74,5 @@ Local checks performed during implementation:
 - Legacy `task_sequences` payload validates and remains compatible.
 - Invalid UAV IDs fail semantic validation.
 - Missing API key returns a structured parser error and writes a parse log row.
+- The prompt examples now use formal LFS and compile back to scheduler-compatible payloads.
+- Safety-aware allocator tests pass with the declared NumPy/SciPy dependency path.
