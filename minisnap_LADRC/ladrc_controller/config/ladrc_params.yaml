@@ -30,4 +30,8 @@
     # IAPF 避障参数 (Phase 5)
     iapf_safe_distance: 1.5   # 安全距离 (m)，增大预警范围
     iapf_repulsion_gain: 25.0 # 斥力增益，经位置+加速度双通道生效
+    enable_iapf_accel_feedforward: true  # 是否向 PX4 发布 IAPF 加速度前馈
+    iapf_position_gain: 0.05             # 位置 setpoint 斥力增益 alpha
+    iapf_accel_gain: 0.3                 # 加速度 setpoint 斥力增益 beta
+    iapf_accel_limit: 2.0                # IAPF 加速度前馈限幅 (m/s^2)
     neighbor_uav_ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  # 需要监听的邻居 UAV ID 列表

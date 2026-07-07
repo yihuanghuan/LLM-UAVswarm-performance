@@ -56,6 +56,10 @@ public:
     // [Phase 4] IAPF 避障参数
     this->declare_parameter("iapf_safe_distance", 1.0);
     this->declare_parameter("iapf_repulsion_gain", 1.0);
+    this->declare_parameter("enable_iapf_accel_feedforward", true);
+    this->declare_parameter("iapf_position_gain", 0.05);
+    this->declare_parameter("iapf_accel_gain", 0.3);
+    this->declare_parameter("iapf_accel_limit", 2.0);
     this->declare_parameter("neighbor_uav_ids", std::vector<int64_t>{});
 
     // 获取参数
@@ -451,21 +455,35 @@ private:
 
     // [Phase 4] IAPF 避障：计算斥力，叠加到加速度前馈
     Eigen::Vector3d iapf = computeIAPF(x_meas, y_meas, z_meas);
-    double iapf_x = iapf.x();
-    double iapf_y = iapf.y();
-    double iapf_z = iapf.z();
 
     // 4. 发布 UAVStatus
     publishUAVStatus();
 
     // 5. 发布轨迹设定点：位置+加速度 + IAPF 斥力
-    const double IAPF_POS_GAIN = 0.05;
+    double iapf_position_gain = this->get_parameter("iapf_position_gain").as_double();
+    double iapf_accel_gain = this->get_parameter("iapf_accel_gain").as_double();
+    double iapf_accel_limit = this->get_parameter("iapf_accel_limit").as_double();
+    bool enable_iapf_accel_feedforward =
+        this->get_parameter("enable_iapf_accel_feedforward").as_bool();
+
+    Eigen::Vector3d iapf_position_offset = iapf_position_gain * iapf;
+    Eigen::Vector3d iapf_accel_feedforward = iapf_accel_gain * iapf;
+    if (iapf_accel_limit > 0.0 && iapf_accel_feedforward.norm() > iapf_accel_limit)
+    {
+      iapf_accel_feedforward =
+          iapf_accel_feedforward.normalized() * iapf_accel_limit;
+    }
+
     publishTrajectorySetpoint(
-        x_ref + IAPF_POS_GAIN * iapf_x,
-        y_ref + IAPF_POS_GAIN * iapf_y,
-        z_ref + IAPF_POS_GAIN * iapf_z,
+        x_ref + iapf_position_offset.x(),
+        y_ref + iapf_position_offset.y(),
+        z_ref + iapf_position_offset.z(),
         vx_ref, vy_ref, vz_ref,
-        ax_ref + iapf_x, ay_ref + iapf_y, az_ref + iapf_z, 0.0);
+        ax_ref + iapf_accel_feedforward.x(),
+        ay_ref + iapf_accel_feedforward.y(),
+        az_ref + iapf_accel_feedforward.z(),
+        0.0,
+        enable_iapf_accel_feedforward);
 
     // 日志（当 IAPF 激活时附加 "!IAPF!" 标记）
     RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 1000,
@@ -567,7 +585,9 @@ private:
 
   void publishTrajectorySetpoint(double px_enu, double py_enu, double pz_enu,
                                   double vx_enu, double vy_enu, double vz_enu,
-                                  double ax_enu, double ay_enu, double az_enu, double yaw_ref)
+                                  double ax_enu, double ay_enu, double az_enu,
+                                  double yaw_ref,
+                                  bool publish_accel_feedforward = false)
   {
     px4_msgs::msg::TrajectorySetpoint msg{};
     msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
@@ -578,9 +598,23 @@ private:
         static_cast<float>(px_enu),      // NED East = ENU x
         static_cast<float>(-pz_enu)};    // NED Down = -ENU z
 
-    // 速度和加速度留空 (NaN)，让 PX4 独立计算，避免多模式耦合干扰
+    (void)vx_enu;
+    (void)vy_enu;
+    (void)vz_enu;
+
+    // 速度留空 (NaN)，仅在参数开启时注入加速度前馈。
     msg.velocity = {NAN, NAN, NAN};
-    msg.acceleration = {NAN, NAN, NAN};
+    if (publish_accel_feedforward)
+    {
+      msg.acceleration = {
+          static_cast<float>(ay_enu),      // NED North = ENU y
+          static_cast<float>(ax_enu),      // NED East = ENU x
+          static_cast<float>(-az_enu)};    // NED Down = -ENU z
+    }
+    else
+    {
+      msg.acceleration = {NAN, NAN, NAN};
+    }
 
     msg.yaw = static_cast<float>(yaw_ref);
 
