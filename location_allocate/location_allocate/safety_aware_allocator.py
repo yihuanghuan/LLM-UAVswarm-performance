@@ -26,7 +26,9 @@ class SafetyAwareTopologyAllocator:
         sample_hz: float = 20.0,
         d_safe: float = 2.0,
         alpha: float = 1.0,
-        beta: float = 10.0,
+        beta: float | None = 10.0,
+        beta_xy: float | None = None,
+        beta_prox: float | None = None,
         gamma: float = 1.0,
         epsilon: float = 1e-3,
         min_improvement: float = 1e-6,
@@ -41,7 +43,10 @@ class SafetyAwareTopologyAllocator:
         self.sample_hz = float(sample_hz)
         self.d_safe = float(d_safe)
         self.alpha = float(alpha)
-        self.beta = float(beta)
+        crossing_default = 10.0 if beta is None else float(beta)
+        self.beta = crossing_default
+        self.beta_xy = crossing_default if beta_xy is None else float(beta_xy)
+        self.beta_prox = crossing_default if beta_prox is None else float(beta_prox)
         self.gamma = float(gamma)
         self.epsilon = float(epsilon)
         self.min_improvement = float(min_improvement)
@@ -141,10 +146,10 @@ class SafetyAwareTopologyAllocator:
         if len(init_np) < 2:
             min_distance = float("inf")
 
-        crossing_cost = proximity_crossings
         total = (
             self.alpha * distance_cost
-            + self.beta * crossing_cost
+            + self.beta_xy * xy_crossings
+            + self.beta_prox * proximity_crossings
             + self.gamma * safety_cost
         )
         return AssignmentMetrics(

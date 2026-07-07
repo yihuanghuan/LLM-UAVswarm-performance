@@ -16,7 +16,14 @@ def test_minimum_jerk_samples_start_and_end():
 
 
 def test_safety_cost_is_added_when_trajectories_get_too_close():
-    allocator = SafetyAwareTopologyAllocator(sample_hz=20.0, d_safe=0.8)
+    allocator = SafetyAwareTopologyAllocator(
+        sample_hz=20.0,
+        d_safe=0.8,
+        alpha=1.0,
+        beta_xy=5.0,
+        beta_prox=13.0,
+        gamma=17.0,
+    )
     initial = [[-1.0, 0.0, 0.0], [1.0, 0.0, 0.0]]
     targets = [[1.0, 0.0, 0.0], [-1.0, 0.0, 0.0]]
 
@@ -25,10 +32,16 @@ def test_safety_cost_is_added_when_trajectories_get_too_close():
     assert metrics.min_distance < allocator.d_safe
     assert metrics.proximity_crossings == 1
     assert metrics.safety > 0.0
+    assert metrics.total == metrics.distance + 13.0 + 17.0 * metrics.safety
 
 
-def test_xy_crossing_is_tracked_separately_from_proximity_crossing():
-    allocator = SafetyAwareTopologyAllocator(sample_hz=20.0, d_safe=1.0)
+def test_xy_crossing_is_penalized_separately_from_proximity_crossing():
+    allocator = SafetyAwareTopologyAllocator(
+        sample_hz=20.0,
+        d_safe=1.0,
+        beta_xy=7.0,
+        beta_prox=11.0,
+    )
     initial = [[-1.0, 0.0, 0.0], [1.0, 0.0, 10.0]]
     targets = [[1.0, 2.0, 0.0], [-1.0, 2.0, 10.0]]
 
@@ -37,6 +50,19 @@ def test_xy_crossing_is_tracked_separately_from_proximity_crossing():
     assert metrics.xy_crossings == 1
     assert metrics.proximity_crossings == 0
     assert metrics.safety == 0.0
+    assert metrics.total == metrics.distance + 7.0
+
+
+def test_legacy_beta_sets_both_crossing_penalties():
+    allocator = SafetyAwareTopologyAllocator(sample_hz=20.0, d_safe=1.0, beta=6.0)
+    initial = [[-1.0, 0.0, 0.0], [1.0, 0.0, 10.0]]
+    targets = [[1.0, 2.0, 0.0], [-1.0, 2.0, 10.0]]
+
+    metrics = allocator.evaluate(initial, targets, [0, 1], duration=3.0)
+
+    assert allocator.beta_xy == 6.0
+    assert allocator.beta_prox == 6.0
+    assert metrics.total == metrics.distance + 6.0
 
 
 def test_local_swap_refinement_reduces_unsafe_assignment_cost():
