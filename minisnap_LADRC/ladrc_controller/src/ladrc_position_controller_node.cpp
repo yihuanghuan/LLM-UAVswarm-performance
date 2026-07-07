@@ -6,12 +6,14 @@
 #include <px4_msgs/msg/vehicle_control_mode.hpp>
 #include <uav_swarm_interfaces/msg/uav_swarm_command.hpp>
 #include <uav_swarm_interfaces/msg/uav_status.hpp>
+#include <uav_swarm_interfaces/msg/trajectory_metrics.hpp>
 #include <geometry_msgs/msg/point.hpp>
 #include "ladrc_controller/ladrc_core.hpp"
 #include "ladrc_controller/minimum_jerk_trajectory.hpp"
 #include <cmath>
 #include <chrono>
 #include <atomic>
+#include <limits>
 #include <unordered_map>
 #include <Eigen/Dense>
 
@@ -122,6 +124,11 @@ public:
 
     // 低频 ENU 位置发布器（供调度层获取真实坐标）
     odom_pub_ = this->create_publisher<geometry_msgs::msg::Point>("odom", 10);
+
+    // 低频轨迹指标发布器（供外部订阅查看 Minimum Jerk 编译结果）
+    trajectory_metrics_pub_ =
+        this->create_publisher<uav_swarm_interfaces::msg::TrajectoryMetrics>(
+            "trajectory_metrics", 10);
 
     // Publishers — [Phase 1] 使用相对话题以支持命名空间
     // 必须使用 SensorDataQoS (Best Effort)，PX4 XRCE-DDS 桥接器默认使用 Best Effort 订阅
@@ -263,6 +270,10 @@ private:
     traj_y_.initialize(p0_y, target_pos_y_, target_duration_);
     traj_z_.initialize(p0_z, target_pos_z_, target_duration_);
 
+    initializeTrajectoryMetrics(
+        p0_x, p0_y, p0_z,
+        msg->target_pos.x, msg->target_pos.y, msg->target_pos.z);
+
     // Warm start LESO: 用当前测量位置初始化观测器 z1 状态，避免从 0 开始导致瞬态反向指令
     ladrc_x_->setObserverInitialState(p0_x, 0.0, 0.0);
     ladrc_y_->setObserverInitialState(p0_y, 0.0, 0.0);
@@ -276,6 +287,9 @@ private:
 
     // 重置悬停状态
     is_hover_stable_ = false;
+    arrival_time_recorded_ = false;
+    arrival_time_error_ = std::numeric_limits<double>::quiet_NaN();
+    trajectory_metrics_pub_counter_ = 0;
 
     RCLCPP_INFO(this->get_logger(),
         ">>> UAV%d 全局[%.1f,%.1f,%.1f]→本地[%.1f,%.1f,%.1f] T=%.1fs %s",
@@ -443,11 +457,22 @@ private:
         if (!is_hover_stable_)
         {
           is_hover_stable_ = true;
+          if (!arrival_time_recorded_)
+          {
+            arrival_time_error_ = elapsed - target_duration_;
+            arrival_time_recorded_ = true;
+          }
           RCLCPP_INFO(this->get_logger(),
               "悬停稳定! pos_err=%.2fm, vel=%.2fm/s → is_hover_stable=true",
               pos_err, vel_mag);
         }
       }
+    }
+
+    if (++trajectory_metrics_pub_counter_ >= 5)
+    {
+      trajectory_metrics_pub_counter_ = 0;
+      publishTrajectoryMetrics(elapsed, x_meas, y_meas, z_meas, all_finished);
     }
 
     // 3. LADRC 观测器静默运行（状态估计，供监控）
@@ -572,6 +597,92 @@ private:
     status_pub_->publish(msg);
   }
 
+  void initializeTrajectoryMetrics(double p0_x, double p0_y, double p0_z,
+                                   double target_global_x,
+                                   double target_global_y,
+                                   double target_global_z)
+  {
+    double off_x = this->get_parameter("enu_offset_x").as_double();
+    double off_y = this->get_parameter("enu_offset_y").as_double();
+    double off_z = this->get_parameter("enu_offset_z").as_double();
+
+    metrics_msg_ = uav_swarm_interfaces::msg::TrajectoryMetrics();
+    metrics_msg_.header.frame_id = "world";
+    metrics_msg_.uav_id = uav_id_;
+    metrics_msg_.start_pos.x = p0_x + off_x;
+    metrics_msg_.start_pos.y = p0_y + off_y;
+    metrics_msg_.start_pos.z = p0_z + off_z;
+    metrics_msg_.target_pos.x = target_global_x;
+    metrics_msg_.target_pos.y = target_global_y;
+    metrics_msg_.target_pos.z = target_global_z;
+    metrics_msg_.requested_duration = static_cast<float>(target_duration_);
+    metrics_msg_.trajectory_duration = static_cast<float>(traj_x_.getDuration());
+    metrics_msg_.motion_style = motion_style_;
+    metrics_msg_.safety_factor = static_cast<float>(safety_factor_);
+
+    double dx = target_pos_x_ - p0_x;
+    double dy = target_pos_y_ - p0_y;
+    double dz = target_pos_z_ - p0_z;
+    double distance = std::sqrt(dx * dx + dy * dy + dz * dz);
+    double duration = traj_x_.getDuration();
+    double duration2 = duration * duration;
+    double duration3 = duration2 * duration;
+    double duration5 = duration3 * duration2;
+
+    metrics_msg_.path_length = static_cast<float>(distance);
+    metrics_msg_.max_velocity = static_cast<float>(1.875 * distance / duration);
+    metrics_msg_.max_acceleration =
+        static_cast<float>((10.0 * std::sqrt(3.0) / 3.0) * distance / duration2);
+    metrics_msg_.max_jerk = static_cast<float>(60.0 * distance / duration3);
+    metrics_msg_.integrated_squared_jerk =
+        static_cast<float>(720.0 * distance * distance / duration5);
+    metrics_msg_.elapsed_time = 0.0f;
+    metrics_msg_.arrival_time_error =
+        std::numeric_limits<float>::quiet_NaN();
+    metrics_msg_.final_position_error =
+        static_cast<float>(distance);
+    metrics_msg_.is_finished = false;
+    metrics_msg_.is_hover_stable = false;
+    has_trajectory_metrics_ = true;
+
+    RCLCPP_INFO(this->get_logger(),
+        "轨迹指标: path=%.2fm vmax=%.2fm/s amax=%.2fm/s^2 jmax=%.2fm/s^3 ISJ=%.2f",
+        metrics_msg_.path_length,
+        metrics_msg_.max_velocity,
+        metrics_msg_.max_acceleration,
+        metrics_msg_.max_jerk,
+        metrics_msg_.integrated_squared_jerk);
+  }
+
+  void publishTrajectoryMetrics(double elapsed,
+                                double x_meas,
+                                double y_meas,
+                                double z_meas,
+                                bool is_finished)
+  {
+    if (!has_trajectory_metrics_) return;
+
+    double off_x = this->get_parameter("enu_offset_x").as_double();
+    double off_y = this->get_parameter("enu_offset_y").as_double();
+    double off_z = this->get_parameter("enu_offset_z").as_double();
+    double x_global = x_meas + off_x;
+    double y_global = y_meas + off_y;
+    double z_global = z_meas + off_z;
+    double dx = metrics_msg_.target_pos.x - x_global;
+    double dy = metrics_msg_.target_pos.y - y_global;
+    double dz = metrics_msg_.target_pos.z - z_global;
+
+    metrics_msg_.header.stamp = this->now();
+    metrics_msg_.elapsed_time = static_cast<float>(elapsed);
+    metrics_msg_.arrival_time_error = static_cast<float>(arrival_time_error_);
+    metrics_msg_.final_position_error =
+        static_cast<float>(std::sqrt(dx * dx + dy * dy + dz * dz));
+    metrics_msg_.is_finished = is_finished;
+    metrics_msg_.is_hover_stable = is_hover_stable_;
+
+    trajectory_metrics_pub_->publish(metrics_msg_);
+  }
+
   void publishOffboardControlMode()
   {
     px4_msgs::msg::OffboardControlMode msg{};
@@ -633,6 +744,8 @@ private:
   rclcpp::Subscription<px4_msgs::msg::VehicleOdometry>::SharedPtr odom_sub_;
   rclcpp::Publisher<uav_swarm_interfaces::msg::UAVStatus>::SharedPtr status_pub_;
   rclcpp::Publisher<geometry_msgs::msg::Point>::SharedPtr odom_pub_;
+  rclcpp::Publisher<uav_swarm_interfaces::msg::TrajectoryMetrics>::SharedPtr
+      trajectory_metrics_pub_;
 
   rclcpp::Publisher<px4_msgs::msg::OffboardControlMode>::SharedPtr offboard_mode_pub_;
   rclcpp::Publisher<px4_msgs::msg::TrajectorySetpoint>::SharedPtr trajectory_pub_;
@@ -665,6 +778,12 @@ private:
   ladrc_controller::MinimumJerkTrajectory traj_y_;
   ladrc_controller::MinimumJerkTrajectory traj_z_;
   rclcpp::Time command_start_time_;
+
+  uav_swarm_interfaces::msg::TrajectoryMetrics metrics_msg_;
+  bool has_trajectory_metrics_ = false;
+  bool arrival_time_recorded_ = false;
+  double arrival_time_error_ = std::numeric_limits<double>::quiet_NaN();
+  int trajectory_metrics_pub_counter_ = 0;
 
   // Odom 数据
   px4_msgs::msg::VehicleOdometry current_odom_;
