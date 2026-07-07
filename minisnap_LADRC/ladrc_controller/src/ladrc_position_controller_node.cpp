@@ -7,13 +7,19 @@
 #include <uav_swarm_interfaces/msg/uav_swarm_command.hpp>
 #include <uav_swarm_interfaces/msg/uav_status.hpp>
 #include <uav_swarm_interfaces/msg/trajectory_metrics.hpp>
+#include <uav_swarm_interfaces/msg/control_adaptation_log.hpp>
 #include <geometry_msgs/msg/point.hpp>
 #include "ladrc_controller/ladrc_core.hpp"
 #include "ladrc_controller/minimum_jerk_trajectory.hpp"
 #include <cmath>
 #include <chrono>
 #include <atomic>
+#include <algorithm>
+#include <filesystem>
+#include <fstream>
+#include <iomanip>
 #include <limits>
+#include <string>
 #include <unordered_map>
 #include <Eigen/Dense>
 
@@ -64,6 +70,9 @@ public:
     this->declare_parameter("iapf_accel_gain", 0.3);
     this->declare_parameter("iapf_accel_limit", 2.0);
     this->declare_parameter("neighbor_uav_ids", std::vector<int64_t>{});
+    this->declare_parameter(
+        "control_adaptation_log_path",
+        defaultControlAdaptationLogPath());
 
     // 获取参数
     double control_freq = this->get_parameter("control_frequency").as_double();
@@ -129,6 +138,10 @@ public:
     trajectory_metrics_pub_ =
         this->create_publisher<uav_swarm_interfaces::msg::TrajectoryMetrics>(
             "trajectory_metrics", 10);
+
+    control_adaptation_pub_ =
+        this->create_publisher<uav_swarm_interfaces::msg::ControlAdaptationLog>(
+            "control_adaptation", 10);
 
     // Publishers — [Phase 1] 使用相对话题以支持命名空间
     // 必须使用 SensorDataQoS (Best Effort)，PX4 XRCE-DDS 桥接器默认使用 Best Effort 订阅
@@ -237,15 +250,18 @@ private:
                           std::abs(msg->target_pos.y - (target_pos_y_ + off_y)) < 1e-6 &&
                           std::abs(msg->target_pos.z - (target_pos_z_ + off_z)) < 1e-6);
       bool same_params = (std::abs(msg->duration - target_duration_) < 1e-6 &&
-                          msg->motion_style == motion_style_);
+                          msg->motion_style == motion_style_ &&
+                          msg->mission_id == mission_id_);
       if (same_target && same_params)
       {
         return;  // 静默忽略重复消息
       }
+      writeControlAdaptationCsvRow();
       RCLCPP_INFO(this->get_logger(),
           "收到新任务指令 (UAV%d)，目标/参数已变更，覆盖旧任务", msg->uav_id);
     }
 
+    mission_id_ = msg->mission_id;
     uav_id_ = msg->uav_id;
     target_duration_ = msg->duration;
     motion_style_ = msg->motion_style;
@@ -264,6 +280,12 @@ private:
     double p0_x = current_odom_.position[1];  // NED.y → ENU.x
     double p0_y = current_odom_.position[0];  // NED.x → ENU.y
     double p0_z = -current_odom_.position[2]; // -NED.z → ENU.z
+
+    double dx = target_pos_x_ - p0_x;
+    double dy = target_pos_y_ - p0_y;
+    double dz = target_pos_z_ - p0_z;
+    target_distance_ = std::sqrt(dx * dx + dy * dy + dz * dz);
+    average_speed_ = target_distance_ / std::max(target_duration_, 1e-3);
 
     // 初始化三个轴的 Minimum Jerk 轨迹
     traj_x_.initialize(p0_x, target_pos_x_, target_duration_);
@@ -289,11 +311,12 @@ private:
     is_hover_stable_ = false;
     arrival_time_recorded_ = false;
     arrival_time_error_ = std::numeric_limits<double>::quiet_NaN();
+    resetControlAdaptationRuntimeMetrics();
     trajectory_metrics_pub_counter_ = 0;
 
     RCLCPP_INFO(this->get_logger(),
-        ">>> UAV%d 全局[%.1f,%.1f,%.1f]→本地[%.1f,%.1f,%.1f] T=%.1fs %s",
-        uav_id_,
+        ">>> Mission%u UAV%d 全局[%.1f,%.1f,%.1f]→本地[%.1f,%.1f,%.1f] T=%.1fs %s",
+        mission_id_, uav_id_,
         msg->target_pos.x, msg->target_pos.y, msg->target_pos.z,
         target_pos_x_, target_pos_y_, target_pos_z_,
         target_duration_, motion_style_.c_str());
@@ -439,6 +462,9 @@ private:
     double ay_ref = ref_y.acceleration;
     double az_ref = ref_z.acceleration;
 
+    updateControlAdaptationRuntimeMetrics(
+        elapsed, x_ref, y_ref, z_ref, x_meas, y_meas, z_meas);
+
     // [Phase 3] 悬停稳定检测
     bool all_finished = x_finished && y_finished && z_finished;
     if (all_finished)
@@ -462,6 +488,8 @@ private:
             arrival_time_error_ = elapsed - target_duration_;
             arrival_time_recorded_ = true;
           }
+          settling_time_ = elapsed;
+          writeControlAdaptationCsvRow();
           RCLCPP_INFO(this->get_logger(),
               "悬停稳定! pos_err=%.2fm, vel=%.2fm/s → is_hover_stable=true",
               pos_err, vel_mag);
@@ -473,6 +501,7 @@ private:
     {
       trajectory_metrics_pub_counter_ = 0;
       publishTrajectoryMetrics(elapsed, x_meas, y_meas, z_meas, all_finished);
+      publishControlAdaptationLog();
     }
 
     // 3. LADRC 观测器静默运行（状态估计，供监控）
@@ -522,33 +551,71 @@ private:
   }
 
   // --- [Phase 3] 动态增益调节 ---
-  void applyDynamicGains()
+  double computeSemanticTaskGain(
+      const std::string& motion_style,
+      double target_distance,
+      double duration)
   {
-    double gain_mult = 1.0;
-    if (motion_style_ == "smooth") {
-      gain_mult = 0.7;
-    } else if (motion_style_ == "aggressive") {
-      gain_mult = 1.5;
+    struct StyleProfile
+    {
+      double base_gain;
+      double reference_speed;
+    };
+
+    StyleProfile profile{1.0, 1.8};
+    if (motion_style == "smooth")
+    {
+      profile = {0.75, 1.0};
+    }
+    else if (motion_style == "normal")
+    {
+      profile = {1.0, 1.8};
+    }
+    else if (motion_style == "aggressive")
+    {
+      profile = {1.3, 2.6};
+    }
+    else
+    {
+      RCLCPP_WARN(this->get_logger(),
+          "未知 motion_style='%s'，按 normal 计算任务带宽倍率",
+          motion_style.c_str());
     }
 
+    double safe_duration = std::max(duration, 1e-3);
+    double average_speed = target_distance / safe_duration;
+    double urgency = average_speed / std::max(profile.reference_speed, 1e-3);
+    double kappa = profile.base_gain * (0.75 + 0.25 * urgency);
+    return std::clamp(kappa, 0.5, 2.0);
+  }
+
+  void applyDynamicGains()
+  {
+    gain_multiplier_ = computeSemanticTaskGain(
+        motion_style_, target_distance_, target_duration_);
+
     // 读取配置文件的基值，乘以增益系数后应用到各轴
-    auto apply_axis = [this, gain_mult](
+    auto apply_axis = [this](
         std::unique_ptr<ladrc_controller::LADRCController>& ctrl,
-        const std::string& param_o, const std::string& param_c)
+        const std::string& param_o, const std::string& param_c,
+        double& omega_o_out, double& omega_c_out)
     {
       double base_omega_o = this->get_parameter(param_o).as_double();
       double base_omega_c = this->get_parameter(param_c).as_double();
-      ctrl->setObserverBandwidth(base_omega_o * gain_mult);
-      ctrl->setControllerBandwidth(base_omega_c * gain_mult);
+      omega_o_out = base_omega_o * gain_multiplier_;
+      omega_c_out = base_omega_c * gain_multiplier_;
+      ctrl->setObserverBandwidth(omega_o_out);
+      ctrl->setControllerBandwidth(omega_c_out);
     };
 
-    apply_axis(ladrc_x_, "omega_o_x", "omega_c_x");
-    apply_axis(ladrc_y_, "omega_o_y", "omega_c_y");
-    apply_axis(ladrc_z_, "omega_o_z", "omega_c_z");
+    apply_axis(ladrc_x_, "omega_o_x", "omega_c_x", omega_o_x_, omega_c_x_);
+    apply_axis(ladrc_y_, "omega_o_y", "omega_c_y", omega_o_y_, omega_c_y_);
+    apply_axis(ladrc_z_, "omega_o_z", "omega_c_z", omega_o_z_, omega_c_z_);
 
     RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
-        "动态增益: %s → multiplier=%.1f (ωo, ωc adjusted)",
-        motion_style_.c_str(), gain_mult);
+        "任务条件化带宽: mission=%u style=%s distance=%.2fm duration=%.2fs avg_v=%.2fm/s kappa=%.3f",
+        mission_id_, motion_style_.c_str(), target_distance_, target_duration_,
+        average_speed_, gain_multiplier_);
   }
 
   // --- [Phase 4] IAPF 斥力计算 ---
@@ -683,6 +750,190 @@ private:
     trajectory_metrics_pub_->publish(metrics_msg_);
   }
 
+  std::string defaultControlAdaptationLogPath() const
+  {
+    std::filesystem::path source_path(__FILE__);
+    if (source_path.is_relative())
+    {
+      source_path = std::filesystem::current_path() / source_path;
+    }
+
+    for (auto path = source_path.parent_path(); !path.empty(); path = path.parent_path())
+    {
+      if (std::filesystem::exists(path / ".git"))
+      {
+        return (path / "logs" / "control_adaptation_log.csv").string();
+      }
+      if (path == path.root_path())
+      {
+        break;
+      }
+    }
+
+    return "logs/control_adaptation_log.csv";
+  }
+
+  void resetControlAdaptationRuntimeMetrics()
+  {
+    peak_velocity_ = 0.0;
+    peak_acceleration_ = 0.0;
+    tracking_error_squared_sum_ = 0.0;
+    tracking_sample_count_ = 0;
+    settling_time_ = std::numeric_limits<double>::quiet_NaN();
+    previous_velocity_valid_ = false;
+    control_adaptation_csv_written_ = false;
+    has_control_adaptation_metrics_ = true;
+  }
+
+  void updateControlAdaptationRuntimeMetrics(double elapsed,
+                                             double x_ref,
+                                             double y_ref,
+                                             double z_ref,
+                                             double x_meas,
+                                             double y_meas,
+                                             double z_meas)
+  {
+    if (!has_control_adaptation_metrics_) return;
+    latest_elapsed_time_ = elapsed;
+
+    Eigen::Vector3d measured_velocity(
+        current_odom_.velocity[0],
+        current_odom_.velocity[1],
+        current_odom_.velocity[2]);
+    peak_velocity_ = std::max(peak_velocity_, measured_velocity.norm());
+
+    if (previous_velocity_valid_ && dt_ > 1e-6)
+    {
+      double acceleration = (measured_velocity - previous_velocity_).norm() / dt_;
+      peak_acceleration_ = std::max(peak_acceleration_, acceleration);
+    }
+    previous_velocity_ = measured_velocity;
+    previous_velocity_valid_ = true;
+
+    double error = std::sqrt(
+        (x_ref - x_meas) * (x_ref - x_meas) +
+        (y_ref - y_meas) * (y_ref - y_meas) +
+        (z_ref - z_meas) * (z_ref - z_meas));
+    tracking_error_squared_sum_ += error * error;
+    ++tracking_sample_count_;
+  }
+
+  uav_swarm_interfaces::msg::ControlAdaptationLog buildControlAdaptationLogMsg()
+  {
+    uav_swarm_interfaces::msg::ControlAdaptationLog msg;
+    msg.header.stamp = this->now();
+    msg.header.frame_id = "world";
+    msg.mission_id = mission_id_;
+    msg.uav_id = uav_id_;
+    msg.motion_style = motion_style_;
+    msg.target_distance = static_cast<float>(target_distance_);
+    msg.duration = static_cast<float>(target_duration_);
+    msg.average_speed = static_cast<float>(average_speed_);
+    msg.gain_multiplier = static_cast<float>(gain_multiplier_);
+    msg.omega_o_x = static_cast<float>(omega_o_x_);
+    msg.omega_o_y = static_cast<float>(omega_o_y_);
+    msg.omega_o_z = static_cast<float>(omega_o_z_);
+    msg.omega_c_x = static_cast<float>(omega_c_x_);
+    msg.omega_c_y = static_cast<float>(omega_c_y_);
+    msg.omega_c_z = static_cast<float>(omega_c_z_);
+    msg.peak_velocity = static_cast<float>(peak_velocity_);
+    msg.peak_acceleration = static_cast<float>(peak_acceleration_);
+    msg.settling_time = static_cast<float>(settling_time_);
+    msg.tracking_rmse =
+        tracking_sample_count_ > 0
+            ? static_cast<float>(std::sqrt(
+                  tracking_error_squared_sum_ /
+                  static_cast<double>(tracking_sample_count_)))
+            : std::numeric_limits<float>::quiet_NaN();
+    return msg;
+  }
+
+  void publishControlAdaptationLog()
+  {
+    if (!has_control_adaptation_metrics_) return;
+    control_adaptation_pub_->publish(buildControlAdaptationLogMsg());
+  }
+
+  void writeControlAdaptationCsvRow()
+  {
+    if (!has_control_adaptation_metrics_ || control_adaptation_csv_written_)
+    {
+      return;
+    }
+
+    std::filesystem::path log_path(
+        this->get_parameter("control_adaptation_log_path").as_string());
+    if (!log_path.has_parent_path())
+    {
+      log_path = std::filesystem::current_path() / log_path;
+    }
+
+    std::error_code ec;
+    auto parent = log_path.parent_path();
+    if (!parent.empty())
+    {
+      std::filesystem::create_directories(parent, ec);
+      if (ec)
+      {
+        RCLCPP_WARN(this->get_logger(),
+            "无法创建控制适应日志目录 %s: %s",
+            parent.string().c_str(), ec.message().c_str());
+        return;
+      }
+    }
+
+    bool write_header =
+        !std::filesystem::exists(log_path) ||
+        std::filesystem::file_size(log_path, ec) == 0;
+    ec.clear();
+
+    std::ofstream log_file(log_path, std::ios::app);
+    if (!log_file.is_open())
+    {
+      RCLCPP_WARN(this->get_logger(),
+          "无法打开控制适应日志文件: %s", log_path.string().c_str());
+      return;
+    }
+
+    if (write_header)
+    {
+      log_file
+          << "mission_id,uav_id,motion_style,target_distance,duration,"
+          << "average_speed,gain_multiplier,omega_o_x,omega_o_y,omega_o_z,"
+          << "omega_c_x,omega_c_y,omega_c_z,peak_velocity,peak_acceleration,"
+          << "settling_time,tracking_rmse\n";
+    }
+
+    auto msg = buildControlAdaptationLogMsg();
+    auto value = [](float number) {
+      return std::isfinite(number) ? std::to_string(number) : std::string("nan");
+    };
+
+    log_file << std::fixed << std::setprecision(6)
+             << msg.mission_id << ','
+             << static_cast<int>(msg.uav_id) << ','
+             << msg.motion_style << ','
+             << value(msg.target_distance) << ','
+             << value(msg.duration) << ','
+             << value(msg.average_speed) << ','
+             << value(msg.gain_multiplier) << ','
+             << value(msg.omega_o_x) << ','
+             << value(msg.omega_o_y) << ','
+             << value(msg.omega_o_z) << ','
+             << value(msg.omega_c_x) << ','
+             << value(msg.omega_c_y) << ','
+             << value(msg.omega_c_z) << ','
+             << value(msg.peak_velocity) << ','
+             << value(msg.peak_acceleration) << ','
+             << value(msg.settling_time) << ','
+             << value(msg.tracking_rmse) << '\n';
+
+    control_adaptation_csv_written_ = true;
+    RCLCPP_INFO(this->get_logger(),
+        "控制适应日志已写入: %s (mission=%u, uav=%d)",
+        log_path.string().c_str(), mission_id_, static_cast<int>(uav_id_));
+  }
+
   void publishOffboardControlMode()
   {
     px4_msgs::msg::OffboardControlMode msg{};
@@ -746,6 +997,8 @@ private:
   rclcpp::Publisher<geometry_msgs::msg::Point>::SharedPtr odom_pub_;
   rclcpp::Publisher<uav_swarm_interfaces::msg::TrajectoryMetrics>::SharedPtr
       trajectory_metrics_pub_;
+  rclcpp::Publisher<uav_swarm_interfaces::msg::ControlAdaptationLog>::SharedPtr
+      control_adaptation_pub_;
 
   rclcpp::Publisher<px4_msgs::msg::OffboardControlMode>::SharedPtr offboard_mode_pub_;
   rclcpp::Publisher<px4_msgs::msg::TrajectorySetpoint>::SharedPtr trajectory_pub_;
@@ -758,6 +1011,7 @@ private:
   uint8_t self_uav_id_ = 0;
 
   // [Phase 1] Swarm command 数据
+  uint32_t mission_id_ = 0;
   uint8_t uav_id_ = 0;
   double target_pos_x_ = 0.0;
   double target_pos_y_ = 0.0;
@@ -784,6 +1038,27 @@ private:
   bool arrival_time_recorded_ = false;
   double arrival_time_error_ = std::numeric_limits<double>::quiet_NaN();
   int trajectory_metrics_pub_counter_ = 0;
+
+  // 控制适应日志数据
+  bool has_control_adaptation_metrics_ = false;
+  bool control_adaptation_csv_written_ = false;
+  double target_distance_ = 0.0;
+  double average_speed_ = 0.0;
+  double gain_multiplier_ = 1.0;
+  double omega_o_x_ = 0.0;
+  double omega_o_y_ = 0.0;
+  double omega_o_z_ = 0.0;
+  double omega_c_x_ = 0.0;
+  double omega_c_y_ = 0.0;
+  double omega_c_z_ = 0.0;
+  double peak_velocity_ = 0.0;
+  double peak_acceleration_ = 0.0;
+  double settling_time_ = std::numeric_limits<double>::quiet_NaN();
+  double latest_elapsed_time_ = 0.0;
+  double tracking_error_squared_sum_ = 0.0;
+  uint64_t tracking_sample_count_ = 0;
+  Eigen::Vector3d previous_velocity_{0.0, 0.0, 0.0};
+  bool previous_velocity_valid_ = false;
 
   // Odom 数据
   px4_msgs::msg::VehicleOdometry current_odom_;
