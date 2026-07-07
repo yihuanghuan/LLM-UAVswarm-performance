@@ -73,7 +73,7 @@ sudo apt install ros-humble-ros-gz ros-humble-gazebo-ros-pkgs
 # Python 依赖
 python3 -m venv ~/learning/LLM_swarm_ws/llm_env
 source ~/learning/LLM_swarm_ws/llm_env/bin/activate
-pip install openai numpy scipy httpx
+pip install openai numpy scipy httpx jsonschema
 
 # PX4 消息包
 cd ~/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/px4_msgs
