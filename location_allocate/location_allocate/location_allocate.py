@@ -105,7 +105,7 @@ class UAVFormationNode(Node):
                 lambda msg, uid=uid: self._odom_callback(msg, uid), 10)
             self.get_logger().info(f"创建订阅者: /uav{uid}/status, /uav{uid}/odom")
 
-    def _publish_single_goal(self, uav_id: int, position: List[float],
+    def _publish_single_goal(self, mission_id: int, uav_id: int, position: List[float],
                              duration: float, motion_style: str, safety_factor: float):
         """向单个无人机发送 swarm_command 自定义消息"""
         if uav_id not in self.publisher:
@@ -115,6 +115,7 @@ class UAVFormationNode(Node):
         msg = UAVSwarmCommand()
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = "world"
+        msg.mission_id = mission_id
         msg.uav_id = uav_id
         msg.target_pos.x = position[0]
         msg.target_pos.y = position[1]
@@ -146,6 +147,7 @@ class UAVFormationNode(Node):
         self.get_logger().info(f">>> 正在向 {len(task_uav_ids)} 架无人机发送 swarm_command ...")
 
         duration = float(task.get('duration_seconds', 3.0))
+        mission_id = int(task.get('task_sequence_id', 0))
         motion_style = task.get('motion_profile', 'normal')
         val = task.get('iapf_safety_margin_factor')
         # null 时默认 1.0（配合 YAML 中 K_rep=20, R_safe=2 提供标准避障）
@@ -157,9 +159,10 @@ class UAVFormationNode(Node):
             self.uav_hover_status[uid] = False
 
         for uid, pos in zip(task_uav_ids, allocated_positions):
-            self._publish_single_goal(uid, pos, duration, motion_style, safety_factor)
+            self._publish_single_goal(mission_id, uid, pos, duration, motion_style, safety_factor)
             self.get_logger().info(f"UAV{uid} -> {[round(x,2) for x in pos]} "
-                                    f"dur={duration}s style={motion_style} sf={safety_factor}")
+                                    f"mission={mission_id} dur={duration}s "
+                                    f"style={motion_style} sf={safety_factor}")
 
     def wait_for_hover_and_time(self, task_uav_ids: List[int], wait_seconds: float, timeout: float = 120.0):
         """等待所有参与任务的无人机到达目标并悬停稳定 (基于 /uav{id}/status 真实反馈)"""
