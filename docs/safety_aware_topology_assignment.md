@@ -27,16 +27,20 @@ the same `UAVSwarmCommand` messages to `/uav{N}/swarm_command`.
 Default cost weights:
 
 ```text
-J_total = alpha * J_dist + beta * J_cross + gamma * J_safety
+J_total = alpha * J_dist
+        + beta_xy * J_xy_cross
+        + beta_prox * J_proximity_cross
+        + gamma * J_safety
 alpha = 1.0
-beta = 10.0
+beta_xy = 10.0
+beta_prox = 10.0
 gamma = 1.0
 d_safe = 2.0 m
 epsilon = 1e-3
 ```
 
-`J_cross` uses spatiotemporal proximity as the optimization term. XY segment
-crossing is still computed and logged as a topology diagnostic.
+`beta` remains accepted as a compatibility shortcut and sets both crossing
+weights when `beta_xy` and `beta_prox` are not provided.
 
 ## Validation
 
