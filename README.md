@@ -107,7 +107,7 @@ ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1]
 # 终端 4: 发送飞行指令
 source ~/learning/LLM_swarm_ws/install/setup.bash
 ros2 topic pub --once /uav1/swarm_command uav_swarm_interfaces/msg/UAVSwarmCommand \
-  "{header: {stamp: {sec: 0, nanosec: 0}, frame_id: 'world'}, uav_id: 1, \
+  "{header: {stamp: {sec: 0, nanosec: 0}, frame_id: 'world'}, mission_id: 1, uav_id: 1, \
     target_pos: {x: 3.0, y: 0.0, z: 3.0}, duration: 5.0, \
     motion_style: 'normal', safety_factor: 0.0}"
 ```
@@ -156,9 +156,25 @@ python3 -m location_allocate.location_allocate
 
 ### 运动风格
 
-- `smooth`（平滑）: 增益 ×0.7，平稳优先
-- `normal`（标准）: 增益 ×1.0
-- `aggressive`（激进）: 增益 ×1.5，速度优先
+- `smooth`（平滑）：低参考速度和平稳优先的基础带宽
+- `normal`（标准）：中等参考速度的默认带宽
+- `aggressive`（激进）：高参考速度和快速响应优先的基础带宽
+
+执行层不再使用固定 `0.7 / 1.0 / 1.5` 倍率，而是按任务条件计算：
+
+```text
+average_speed = target_distance / duration
+kappa = clamp(style_base * (0.75 + 0.25 * average_speed / style_v_ref), 0.5, 2.0)
+omega_o_new = kappa * omega_o_base
+omega_c_new = kappa * omega_c_base
+```
+
+控制适应数据可通过 topic 和 CSV 查看：
+
+```bash
+ros2 topic echo /uav1/control_adaptation
+tail -f src/LLM-UAVswarm-performance/logs/control_adaptation_log.csv
+```
 
 ### 避障系数
 
@@ -172,7 +188,8 @@ LLM_swarm_ws/
 │   ├── uav_swarm_interfaces/          # 自定义 ROS 2 消息
 │   │   └── msg/
 │   │       ├── UAVSwarmCommand.msg    # 调度层→执行层指令
-│   │       └── UAVStatus.msg          # 执行层→调度层反馈
+│   │       ├── UAVStatus.msg          # 执行层→调度层反馈
+│   │       └── ControlAdaptationLog.msg # LADRC 控制适应日志
 │   ├── location_allocate/             # Python 调度层
 │   │   └── location_allocate/
 │   │       ├── location_allocate.py   # 匈牙利分配 + ROS2 节点
@@ -229,11 +246,31 @@ iapf_repulsion_gain: 20.0 # 斥力增益
 
 ```text
 std_msgs/Header header
+uint32 mission_id                   # 全局任务编号，对应 task_sequence_id
 uint8 uav_id                        # 无人机编号
 geometry_msgs/Point target_pos      # 全局 ENU 目标坐标 [x, y, z]
 float32 duration                    # 期望飞行时间 (s)
 string motion_style                 # "smooth" / "normal" / "aggressive"
 float32 safety_factor               # IAPF 避障系数 (0=关闭)
+```
+
+### ControlAdaptationLog
+
+```text
+std_msgs/Header header
+uint32 mission_id
+uint8 uav_id
+string motion_style
+float32 target_distance
+float32 duration
+float32 average_speed
+float32 gain_multiplier
+float32 omega_o_x/y/z
+float32 omega_c_x/y/z
+float32 peak_velocity
+float32 peak_acceleration
+float32 settling_time
+float32 tracking_rmse
 ```
 
 ### UAVStatus
@@ -255,6 +292,8 @@ TopologyAllocator（匈牙利防交叉分配）
 UAVSwarmCommand → /uav{N}/swarm_command
     ↓
 MinimumJerkTrajectory（轨迹规划）
+    ↓
+任务条件化 LADRC 带宽计算 → /uav{N}/control_adaptation + logs/control_adaptation_log.csv
     ↓
 PX4 Offboard 位置控制（NED 坐标）
     ↓
