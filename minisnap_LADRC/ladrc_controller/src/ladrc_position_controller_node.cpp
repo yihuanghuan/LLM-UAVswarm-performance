@@ -52,6 +52,7 @@ public:
     this->declare_parameter("enu_offset_x", 0.0);
     this->declare_parameter("enu_offset_y", 0.0);
     this->declare_parameter("enu_offset_z", 0.0);
+    this->declare_parameter("px4_target_system", 0);
 
     // [Phase 4] IAPF 避障参数
     this->declare_parameter("iapf_safe_distance", 1.0);
@@ -299,8 +300,9 @@ private:
     msg.param1 = param1;
     msg.param2 = param2;
     msg.param7 = param7;
-    msg.target_system = 0;     // 广播到所有系统，多机模式下各实例 MAV_SYS_ID 不同
-    msg.target_component = 0;  // 广播到所有组件
+    msg.target_system =
+        static_cast<uint8_t>(this->get_parameter("px4_target_system").as_int());
+    msg.target_component = 1;
     msg.source_system = 1;
     msg.source_component = 1;
     msg.from_external = true;

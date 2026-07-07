@@ -64,6 +64,7 @@ def generate_launch_description():
                 'enu_offset_x': 0.0,
                 'enu_offset_y': 3.0 * uid,  # instance N → Y = 3*N
                 'enu_offset_z': 0.0,
+                'px4_target_system': uid + 1,  # sitl_multiple_run.sh: instance N → MAV_SYS_ID=N+1
             }
 
             nodes.append(Node(
