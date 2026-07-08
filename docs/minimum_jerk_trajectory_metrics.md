@@ -114,6 +114,8 @@ ros2 topic echo /uav1/trajectory_metrics --csv \
 
 多机实验建议每架 UAV 单独保存一个 CSV，后续评估脚本可以一次读取多个文件。
 
+当前 ROS 2 Humble 的 `ros2 topic echo --csv` 在本环境中输出无表头 CSV。`eval_trajectory.py` 和 `plot_trajectory_metrics.py` 已按 `TrajectoryMetrics.msg` 字段顺序兼容这种格式，也兼容 `rosbag_to_csv.py` 导出的有表头 CSV。
+
 ### rosbag 转 CSV
 
 如果实验通过 rosbag 记录，使用：

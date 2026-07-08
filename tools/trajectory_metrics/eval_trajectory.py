@@ -41,6 +41,33 @@ SUMMARY_FIELDS = [
     *METRIC_FIELDS,
 ]
 
+TRAJECTORY_METRICS_CSV_FIELDS = [
+    "header_stamp_sec",
+    "header_stamp_nanosec",
+    "header_frame_id",
+    "uav_id",
+    "start_pos_x",
+    "start_pos_y",
+    "start_pos_z",
+    "target_pos_x",
+    "target_pos_y",
+    "target_pos_z",
+    "requested_duration",
+    "trajectory_duration",
+    "motion_style",
+    "safety_factor",
+    "path_length",
+    "max_velocity",
+    "max_acceleration",
+    "max_jerk",
+    "integrated_squared_jerk",
+    "elapsed_time",
+    "arrival_time_error",
+    "final_position_error",
+    "is_finished",
+    "is_hover_stable",
+]
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -103,6 +130,11 @@ def normalize_row(row: Dict[str, str]) -> Dict[str, str]:
     return normalized
 
 
+def looks_like_header(row: List[str]) -> bool:
+    normalized = {normalize_key(item) for item in row}
+    return "uav_id" in normalized and "elapsed_time" in normalized
+
+
 def parse_float(value: object, default: float = math.nan) -> float:
     if value is None:
         return default
@@ -121,10 +153,22 @@ def parse_bool(value: object) -> bool:
 
 def read_metrics_csv(path: Path) -> List[Dict[str, str]]:
     with path.open(newline="") as handle:
-        reader = csv.DictReader(handle)
-        if not reader.fieldnames:
+        raw_rows = list(csv.reader(handle))
+        if not raw_rows:
             return []
-        rows = [normalize_row(row) for row in reader]
+
+    if looks_like_header(raw_rows[0]):
+        headers = [normalize_key(item) for item in raw_rows[0]]
+        data_rows = raw_rows[1:]
+    else:
+        headers = TRAJECTORY_METRICS_CSV_FIELDS
+        data_rows = raw_rows
+
+    rows = [
+        normalize_row(dict(zip(headers, row)))
+        for row in data_rows
+        if any(cell.strip() for cell in row)
+    ]
 
     if not rows:
         return []

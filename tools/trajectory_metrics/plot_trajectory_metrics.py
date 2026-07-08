@@ -19,7 +19,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from eval_trajectory import METRIC_FIELDS, normalize_row, parse_float  # noqa: E402
+from eval_trajectory import METRIC_FIELDS, normalize_row, parse_float, read_metrics_csv  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:
@@ -38,7 +38,10 @@ def parse_args() -> argparse.Namespace:
 def read_csv(path: Path) -> List[Dict[str, str]]:
     with path.open(newline="") as handle:
         reader = csv.DictReader(handle)
-        return [normalize_row(row) for row in reader]
+        rows = [normalize_row(row) for row in reader]
+    if rows and "uav_id" in rows[0] and "elapsed_time" in rows[0]:
+        return rows
+    return read_metrics_csv(path)
 
 
 def final_rows_by_uav(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
