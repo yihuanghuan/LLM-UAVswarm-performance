@@ -47,6 +47,7 @@ python3 experiments/scripts/eval_lfs_compiler.py \
 ### eval_assignment_offline.py
 
 离线比较 `random`、`nearest_neighbor`、`hungarian_distance`、`safety_aware_hungarian` 分配策略。
+自动生成 `small`、`medium`、`large`、`dense`、`crossing-prone` 五类场景。
 
 ```bash
 python3 experiments/scripts/eval_assignment_offline.py \
@@ -55,6 +56,7 @@ python3 experiments/scripts/eval_assignment_offline.py \
 ```
 
 输出：`experiments/results/assignment_results.csv`。
+固定字段：`trial_id/scenario/num_uav/method/total_path_length/avg_path_length/xy_crossings/proximity_crossings/min_distance/safety_cost/total_cost/compute_time_ms`。
 
 ### eval_trajectory_profiles.py
 
@@ -67,6 +69,7 @@ python3 experiments/scripts/eval_trajectory_profiles.py \
 ```
 
 输出：`trajectory_profile_results.csv`、`trajectory_profile_timeseries.csv`。
+summary 固定字段包括 `max_velocity/max_acceleration/max_jerk/integrated_squared_jerk/final_error`。
 
 ### analyze_pairwise_distance.py
 
@@ -81,10 +84,12 @@ python3 experiments/scripts/analyze_pairwise_distance.py \
 ```
 
 输出：`pairwise_distance_timeseries.csv`、`pairwise_distance_summary.csv`。
+summary 固定字段：`experiment_id/num_uav/min_inter_agent_distance/mean_min_distance/safety_threshold/safety_violation_count/near_miss_duration/closest_pair`。
 
 ### eval_iapf.py
 
 汇总不同 IAPF 方法下的机间距离、轨迹指标和任务结果。
+脚本固定输出 `no_iapf`、`iapf_position_only`、`iapf_position_accel`、`safety_assignment_plus_iapf` 四类方法；输入 CSV 可用 `method`、`iapf_method`、`experiment_id` 或 `condition` 字段标识方法。
 
 ```bash
 python3 experiments/scripts/eval_iapf.py \
@@ -125,6 +130,8 @@ bash experiments/scripts/collect_rosbag_topics.sh exp001
 ```bash
 python3 experiments/scripts/plot_all.py --all
 python3 experiments/scripts/plot_all.py --which assignment
+python3 experiments/scripts/plot_all.py --which trajectory_profiles
 ```
 
 输出目录：`experiments/figures/`。
+支持类别：`llm`、`assignment`、`trajectory`、`semantic`、`iapf`；支持单图：`llm_latency`、`llm_success_rate`、`assignment_min_distance`、`assignment_crossings`、`trajectory_profiles`、`semantic_control_summary`、`iapf_min_distance`。
