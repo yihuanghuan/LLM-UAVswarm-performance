@@ -24,6 +24,9 @@
 - `eval_iapf.py` 已用临时 pairwise、trajectory、mission CSV 验证四方法汇总。
 - `collect_rosbag_topics.sh` 已通过 `bash -n` 语法检查，并确认本机 ROS 2 Humble 支持 `ros2 bag record --regex`。
 - `plot_all.py --all` 已用临时结果目录验证 7 类图均可生成 PNG/PDF。
+- `colcon build --symlink-install` 已完成，`uav_swarm_interfaces`、`px4_msgs`、`location_allocate`、`ladrc_controller` 等包构建成功。构建过程中 colcon 会扫描工作区根目录下已存在的 `llm_env` 虚拟环境并打印 numpy 示例包识别警告，但最终 ROS 包构建成功。
+- 已按 README 启动单机 PX4 Gazebo Classic：`MicroXRCEAgent udp4 -p 8888`、`make px4_sitl gazebo-classic`、`ros2 launch ladrc_controller swarm_launch.py uav_ids:=[0]`。
+- 已发布 README 中 `/uav0/swarm_command` 示例，控制节点完成解锁、进入 Offboard、接收目标 `[3.0,0.0,3.0]` 并执行轨迹；日志显示写入 `control_adaptation_log.csv` 且 `is_hover_stable=true`。
 
 ## 原子提交
 
@@ -32,10 +35,11 @@
 - `3e4eee3 Update pairwise distance analysis pipeline`
 - `d6bf657 Add IAPF and semantic control summaries`
 - `89155a1 Add rosbag collection and plotting tools`
+- `ccfdb10 Document experiment evaluation pipeline`
 
-## 后续完整系统验证
+## 系统验证命令
 
-完成文档提交后，按项目 README 执行：
+已按项目 README 执行：
 
 ```bash
 cd ~/learning/LLM_swarm_ws
