@@ -128,6 +128,10 @@ cd ~/PX4-Autopilot
 source ~/learning/LLM_swarm_ws/install/setup.bash
 ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1,2,3,4,5]
 
+# IAPF 加速度前馈对比实验可直接覆盖开关
+ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1,2,3,4,5] enable_iapf_accel_feedforward:=false
+ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1,2,3,4,5] enable_iapf_accel_feedforward:=true
+
 # 终端 4: LLM 调度器
 source ~/learning/LLM_swarm_ws/llm_env/bin/activate
 unset ALL_PROXY all_proxy
@@ -181,6 +185,22 @@ tail -f src/LLM-UAVswarm-performance/logs/control_adaptation_log.csv
 ### 避障系数
 
 LLM 默认 `safety_factor=1.0`（标准避障），可在指令中添加如"避障系数 2.0"单独调节。
+
+### IAPF 实验分析
+
+`/uav{id}/odom` 话题导出的 CSV 可用离线脚本统计机间距离：
+
+```bash
+python3 experiments/scripts/analyze_pairwise_distance.py bag_csv \
+  --out-dir pairwise_distance_analysis \
+  --safety-distance 1.5
+```
+
+输出包括：
+
+- `min_distance.csv`：每个时间点的全局最小机间距离
+- `pairwise_distance_plot.pdf`：两两无人机距离时序曲线
+- `safety_violation_summary.csv`：安全冲突和危险接近汇总
 
 ## 目录结构
 
