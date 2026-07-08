@@ -8,7 +8,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 EXPERIMENT_ID="${1:-$(date +%Y%m%d_%H%M%S)}"
 OUTPUT_DIR="${REPO_ROOT}/experiments/logs/rosbags/${EXPERIMENT_ID}"
-TOPIC_REGEX='/uav[0-9]+/(odom|status|trajectory_metrics|control_adaptation|swarm_command)'
+TOPIC_REGEX='/uav[0-9]+/(odom|status|trajectory_metrics|control_adaptation|swarm_command|fmu/out/vehicle_odometry)'
 
 if ! command -v ros2 >/dev/null 2>&1; then
   echo "错误: 未找到 ros2，请先 source ROS 2 环境。" >&2

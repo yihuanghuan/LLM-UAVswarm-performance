@@ -80,11 +80,13 @@ python3 experiments/scripts/analyze_pairwise_distance.py \
   --input experiments/logs/odom.csv \
   --output-dir experiments/results \
   --safety-threshold 1.5 \
-  --experiment-id exp001
+  --experiment-id exp001 \
+  --time-bin 0.05
 ```
 
 输出：`pairwise_distance_timeseries.csv`、`pairwise_distance_summary.csv`。
 summary 固定字段：`experiment_id/num_uav/min_inter_agent_distance/mean_min_distance/safety_threshold/safety_violation_count/near_miss_duration/closest_pair`。
+默认按 `0.05` 秒时间分箱同步不同 UAV 的 odom；如需恢复精确 timestamp 分组，可设置 `--time-bin 0`。
 
 ### eval_iapf.py
 
@@ -116,6 +118,7 @@ python3 experiments/scripts/eval_semantic_control.py \
 ### collect_rosbag_topics.sh
 
 统一记录论文实验话题。该脚本依赖 ROS 2。
+记录内容包括 `/uav*/odom`、`/uav*/status`、`/uav*/trajectory_metrics`、`/uav*/control_adaptation`、`/uav*/swarm_command` 和 `/uav*/fmu/out/vehicle_odometry`。
 
 ```bash
 bash experiments/scripts/collect_rosbag_topics.sh exp001

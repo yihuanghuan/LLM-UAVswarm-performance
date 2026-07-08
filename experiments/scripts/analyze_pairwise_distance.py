@@ -9,7 +9,7 @@ import math
 from dataclasses import dataclass
 from itertools import combinations
 from pathlib import Path
-from typing import Dict, Iterable, List, Sequence, Tuple
+from typing import Dict, Iterable, List, Sequence
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -65,6 +65,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--safety-threshold", type=float, default=1.5, help="安全距离阈值。")
     parser.add_argument("--experiment-id", default="exp001", help="实验编号。")
+    parser.add_argument(
+        "--time-bin",
+        type=float,
+        default=0.05,
+        help="时间同步分箱宽度，单位秒；设为 0 时按原始 timestamp 精确分组。",
+    )
     return parser.parse_args()
 
 
@@ -113,16 +119,22 @@ def distance(a: OdomSample, b: OdomSample) -> float:
     return math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2)
 
 
-def grouped_by_timestamp(samples: Sequence[OdomSample]) -> Dict[float, Dict[int, OdomSample]]:
+def timestamp_key(timestamp: float, time_bin: float) -> float:
+    if time_bin > 0.0:
+        return round(timestamp / time_bin) * time_bin
+    return timestamp
+
+
+def grouped_by_timestamp(samples: Sequence[OdomSample], time_bin: float) -> Dict[float, Dict[int, OdomSample]]:
     grouped: Dict[float, Dict[int, OdomSample]] = {}
     for sample in samples:
-        grouped.setdefault(sample.timestamp, {})[sample.uav_id] = sample
+        grouped.setdefault(timestamp_key(sample.timestamp, time_bin), {})[sample.uav_id] = sample
     return grouped
 
 
-def compute_distances(samples: Sequence[OdomSample]) -> List[DistanceSample]:
+def compute_distances(samples: Sequence[OdomSample], time_bin: float) -> List[DistanceSample]:
     distances: List[DistanceSample] = []
-    for timestamp, by_uav in sorted(grouped_by_timestamp(samples).items()):
+    for timestamp, by_uav in sorted(grouped_by_timestamp(samples, time_bin).items()):
         if len(by_uav) < 2:
             continue
         for uav_a, uav_b in combinations(sorted(by_uav), 2):
@@ -203,9 +215,11 @@ def main() -> int:
     args = parse_args()
     if args.safety_threshold <= 0.0:
         raise ValueError("--safety-threshold 必须大于 0")
+    if args.time_bin < 0.0:
+        raise ValueError("--time-bin 不能小于 0")
 
     samples = read_odom(Path(args.input))
-    distances = compute_distances(samples)
+    distances = compute_distances(samples, args.time_bin)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
