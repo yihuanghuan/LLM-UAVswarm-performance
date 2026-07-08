@@ -3,6 +3,7 @@ from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
+from launch_ros.parameter_descriptions import ParameterValue
 import os
 
 
@@ -23,12 +24,25 @@ def generate_launch_description():
             description='Namespace for this UAV node (e.g. /uav1)'
         ),
 
+        DeclareLaunchArgument(
+            'enable_iapf_accel_feedforward',
+            default_value='true',
+            description='Whether to publish IAPF acceleration feedforward'
+        ),
+
         Node(
             package='ladrc_controller',
             executable='ladrc_position_controller_node',
             name='ladrc_position_controller',
             namespace=LaunchConfiguration('namespace'),
-            parameters=[LaunchConfiguration('params_file')],
+            parameters=[
+                LaunchConfiguration('params_file'),
+                {
+                    'enable_iapf_accel_feedforward': ParameterValue(
+                        LaunchConfiguration('enable_iapf_accel_feedforward'),
+                        value_type=bool),
+                },
+            ],
             output='screen'
         ),
     ])

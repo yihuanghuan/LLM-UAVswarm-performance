@@ -13,6 +13,7 @@ from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
+from launch_ros.parameter_descriptions import ParameterValue
 import os
 
 
@@ -30,6 +31,9 @@ def generate_launch_description():
     def create_uav_nodes(context):
         ids_str = LaunchConfiguration('uav_ids').perform(context)
         ids = [int(x.strip()) for x in ids_str.strip('[]').split(',') if x.strip()]
+        enable_iapf_accel_feedforward = ParameterValue(
+            LaunchConfiguration('enable_iapf_accel_feedforward'),
+            value_type=bool)
 
         nodes = []
         for uid in ids:
@@ -72,7 +76,14 @@ def generate_launch_description():
                 executable='ladrc_position_controller_node',
                 namespace=f'/uav{uid}',
                 name='ladrc_position_controller',
-                parameters=[config_file, spawn_offset, {'neighbor_uav_ids': ids}],
+                parameters=[
+                    config_file,
+                    spawn_offset,
+                    {
+                        'neighbor_uav_ids': ids,
+                        'enable_iapf_accel_feedforward': enable_iapf_accel_feedforward,
+                    },
+                ],
                 remappings=remappings,
                 output='screen',
                 emulate_tty=True,
@@ -84,5 +95,9 @@ def generate_launch_description():
             'uav_ids',
             default_value='[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]',
             description='要启动的 UAV ID 列表'),
+        DeclareLaunchArgument(
+            'enable_iapf_accel_feedforward',
+            default_value='true',
+            description='是否启用 IAPF 加速度前馈'),
         OpaqueFunction(function=create_uav_nodes),
     ])
