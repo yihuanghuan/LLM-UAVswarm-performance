@@ -22,16 +22,25 @@ source ~/learning/LLM_swarm_ws/install/setup.bash
 
 ### eval_llm_parser.py
 
-批量读取 `experiments/commands/*.json`，调用 `location_allocate.no_location.parse_uav_command`，输出 LLM 解析成功率、延迟和 schema 结果。
+实验 01 专用入口。读取 100 条人工真值数据，使用相同模型配置运行 `plain_json`、
+`few_shot_json`、`lfs_schema`、`dense_waypoints` 四种方法，并保存原始响应、统一 LFS、
+语义指标、token 和延迟。运行目录已存在时默认拒绝覆盖；中断后使用 `--resume` 续跑。
 
 ```bash
+python3 experiments/scripts/build_experiment_01_dataset.py
+
 python3 experiments/scripts/eval_llm_parser.py \
-  --input experiments/commands \
-  --output experiments/results/llm_parser_results.csv \
-  --limit 5
+  --run-id minimax_m27_100x4 \
+  --method all
+
+python3 experiments/scripts/analyze_llm_parser_experiment.py \
+  --run-dir experiments/results/experiments_01/minimax_m27_100x4
 ```
 
-输出：`experiments/results/llm_parser_results.csv`。
+输出目录包含 `dataset.json`、`run_config.json`、`raw_attempts.jsonl`、
+`sample_results.csv`、`summary_by_method.csv`、Table 1 以及 PNG/PDF 图。
+若 API 额度中途耗尽，补充额度后运行同一命令并添加
+`--resume --retry-api-errors`；已成功或已产生语义结论的组合不会重跑，原始 429 尝试仍保留在 JSONL 中。
 
 ### eval_lfs_compiler.py
 
