@@ -55,6 +55,20 @@ python3 experiments/scripts/compare_lfs_fix.py \
 
 输出：`lfs_fix_comparison.csv` 和 `lfs_fix_summary.md`。比较脚本不会修改原始 400 条实验结果。
 
+### plot_lfs_fix_baseline_comparison.py
+
+用最终 LFS 选择性重测替换原 LFS 中对应的 20 条结果，并与原始三个 baseline
+按相同的 100 条指令集合绘制准确性、语义字段、效率、指令类型、复杂度和错误分布对比图。
+
+```bash
+python3 experiments/scripts/plot_lfs_fix_baseline_comparison.py \
+  --baseline-csv experiments/results/experiments_01/minimax_m27_100x4/sample_results.csv \
+  --fixed-lfs-csv experiments/results/experiments_01/minimax_m27_lfs_fix_v3/sample_results.csv \
+  --output-dir experiments/results/experiments_01/minimax_m27_lfs_fix_v3/baseline_comparison
+```
+
+输出目录包含 6 组 PNG/PDF、合并后的 400 行结果、方法汇总、统计口径说明和生成清单。
+
 ### eval_lfs_compiler.py
 
 不调用 LLM，构造 formal LFS、invalid LFS 和 legacy `task_sequences` 样例，调用 `validate_and_compile_lfs`。

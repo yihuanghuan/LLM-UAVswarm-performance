@@ -77,7 +77,18 @@ and contains no API or semantic error.
 
 - Rerun rows: 20, with 20 unique command IDs and only the `lfs_schema` method.
 - Raw API attempts: 20.
-- Unit and regression tests: 22 passed.
+- Unit and regression tests: 24 passed.
 - Python syntax compilation: passed.
 - Git whitespace validation: passed.
 - Full before/after data: `lfs_fix_comparison.csv`.
+
+## Baseline comparison figures
+
+The `baseline_comparison` directory compares the fixed LFS series with the three
+original baselines across accuracy, semantic fields, efficiency, command type,
+complexity, and residual errors. The comparison keeps 100 commands per method:
+the 20 affected LFS observations come from the final rerun and the other 80 LFS
+observations, plus all three baselines, come from the original run.
+
+Six figures are provided as both PNG and vector PDF. The directory also retains
+the merged 400-row comparison dataset, method summary, manifest, and metric-scope notes.

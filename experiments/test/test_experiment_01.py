@@ -16,6 +16,10 @@ from llm_parser_experiment import (  # noqa: E402
     normalize_response,
     purify_json_content,
 )
+from plot_lfs_fix_baseline_comparison import (  # noqa: E402
+    METHODS,
+    build_comparison_rows,
+)
 
 
 AVAILABLE = list(range(1, 11))
@@ -194,3 +198,48 @@ def test_api_runner_stops_immediately_on_exhausted_plan():
     assert result["error_type"] == "quota_exhausted"
     assert result["retry_count"] == 0
     assert len(attempts) == 1
+
+
+def test_fixed_lfs_rows_selectively_replace_only_matching_baseline_rows():
+    baseline = []
+    for method in METHODS:
+        for command_id in ("case_1", "case_2"):
+            baseline.append({
+                "command_id": command_id,
+                "method": method,
+                "exact_task_accuracy": "0.0",
+            })
+    fixed = [{
+        "command_id": "case_2",
+        "method": "lfs_schema",
+        "exact_task_accuracy": "1.0",
+    }]
+
+    comparison = build_comparison_rows(baseline, fixed)
+
+    assert len(comparison) == 8
+    replaced = [
+        row for row in comparison
+        if row["method"] == "lfs_schema" and row["command_id"] == "case_2"
+    ]
+    assert replaced[0]["exact_task_accuracy"] == "1.0"
+    assert replaced[0]["result_source"] == "fixed_lfs_rerun"
+    assert sum(row["result_source"] == "fixed_lfs_rerun" for row in comparison) == 1
+
+
+def test_fixed_lfs_comparison_rejects_duplicate_rerun_ids():
+    baseline = [
+        {"command_id": "case", "method": method}
+        for method in METHODS
+    ]
+    fixed = [
+        {"command_id": "case", "method": "lfs_schema"},
+        {"command_id": "case", "method": "lfs_schema"},
+    ]
+
+    try:
+        build_comparison_rows(baseline, fixed)
+    except ValueError as exc:
+        assert "重复" in str(exc)
+    else:
+        raise AssertionError("duplicate fixed LFS command IDs should fail")

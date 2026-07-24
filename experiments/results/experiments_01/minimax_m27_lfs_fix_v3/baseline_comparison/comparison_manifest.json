@@ -1,0 +1,59 @@
+{
+  "baseline_csv": "experiments/results/experiments_01/minimax_m27_100x4/sample_results.csv",
+  "fixed_lfs_csv": "experiments/results/experiments_01/minimax_m27_lfs_fix_v3/sample_results.csv",
+  "baseline_row_count": 400,
+  "fixed_lfs_row_count": 20,
+  "comparison_row_count": 400,
+  "rows_per_method": {
+    "plain_json": 100,
+    "few_shot_json": 100,
+    "lfs_schema": 100,
+    "dense_waypoints": 100
+  },
+  "fixed_command_ids": [
+    "sequential_01",
+    "sequential_02",
+    "sequential_03",
+    "sequential_04",
+    "sequential_05",
+    "sequential_06",
+    "sequential_07",
+    "sequential_08",
+    "sequential_09",
+    "sequential_10",
+    "sequential_11",
+    "sequential_12",
+    "sequential_13",
+    "sequential_14",
+    "sequential_15",
+    "sequential_16",
+    "sequential_17",
+    "sequential_18",
+    "simple_18",
+    "style_18"
+  ],
+  "method_labels": {
+    "plain_json": "Plain JSON",
+    "few_shot_json": "Few-shot JSON",
+    "lfs_schema": "LFS + Schema (fixed)",
+    "dense_waypoints": "Dense Waypoints"
+  },
+  "metric_scope": {
+    "overall_semantic_success": "82 valid exact-task scores + 18 invalid rejection scores",
+    "valid_metrics": "valid commands only",
+    "rejection_accuracy": "invalid/ambiguous commands only",
+    "efficiency": "all commands"
+  },
+  "selection_note": "The fixed LFS series replaces only the 20 affected commands; it is not a full 100-command rerun.",
+  "generated_files": [
+    "comparison_sample_results.csv",
+    "comparison_summary.csv",
+    "README.md",
+    "fig_accuracy_overview.png/pdf",
+    "fig_semantic_dimensions.png/pdf",
+    "fig_efficiency.png/pdf",
+    "fig_command_type_heatmap.png/pdf",
+    "fig_complexity_comparison.png/pdf",
+    "fig_error_distribution_fixed.png/pdf"
+  ]
+}
