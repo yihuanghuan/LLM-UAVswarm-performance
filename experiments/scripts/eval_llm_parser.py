@@ -98,7 +98,11 @@ def write_rows(path: Path, rows: Sequence[Dict[str, Any]]) -> None:
         writer.writerows(rows)
 
 
-def prepare_run(args: argparse.Namespace, dataset: List[Dict[str, Any]]) -> Tuple[Path, List[Dict[str, str]]]:
+def prepare_run(
+    args: argparse.Namespace,
+    dataset: List[Dict[str, Any]],
+    selected_methods: Sequence[str],
+) -> Tuple[Path, List[Dict[str, str]]]:
     run_dir = Path(args.output_dir) / args.run_id
     result_path = run_dir / "sample_results.csv"
     if run_dir.exists() and not args.resume:
@@ -126,7 +130,7 @@ def prepare_run(args: argparse.Namespace, dataset: List[Dict[str, Any]]) -> Tupl
             "max_retries": args.max_retries,
             "timeout": args.timeout,
             "workers": args.workers,
-            "methods": list(METHODS),
+            "methods": list(selected_methods),
             "numeric_tolerance": 1e-6,
             "prompts": prompt_manifest(),
         }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -170,7 +174,7 @@ def main() -> int:
     if args.limit is not None:
         dataset = dataset[:args.limit]
     methods = list(METHODS) if args.method == "all" else [args.method]
-    run_dir, existing_rows = prepare_run(args, dataset)
+    run_dir, existing_rows = prepare_run(args, dataset, methods)
     result_path = run_dir / "sample_results.csv"
     raw_path = run_dir / "raw_attempts.jsonl"
     completed = {(row["command_id"], row["method"]) for row in existing_rows}

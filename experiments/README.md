@@ -42,6 +42,19 @@ python3 experiments/scripts/analyze_llm_parser_experiment.py \
 若 API 额度中途耗尽，补充额度后运行同一命令并添加
 `--resume --retry-api-errors`；已成功或已产生语义结论的组合不会重跑，原始 429 尝试仍保留在 JSONL 中。
 
+### compare_lfs_fix.py
+
+对只包含 `lfs_schema` 的选择性重测与原始实验逐指令比较，生成修正前后指标表和 Markdown 汇总。
+
+```bash
+python3 experiments/scripts/compare_lfs_fix.py \
+  --baseline-csv experiments/results/experiments_01/minimax_m27_100x4/sample_results.csv \
+  --rerun-csv experiments/results/experiments_01/minimax_m27_lfs_fix_v3/sample_results.csv \
+  --output-dir experiments/results/experiments_01/minimax_m27_lfs_fix_v3
+```
+
+输出：`lfs_fix_comparison.csv` 和 `lfs_fix_summary.md`。比较脚本不会修改原始 400 条实验结果。
+
 ### eval_lfs_compiler.py
 
 不调用 LLM，构造 formal LFS、invalid LFS 和 legacy `task_sequences` 样例，调用 `validate_and_compile_lfs`。

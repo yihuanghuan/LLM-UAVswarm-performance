@@ -33,6 +33,7 @@ import httpx
 
 from .llm_parse_logger import append_llm_parse_log
 from .lfs_validator import (
+    canonicalize_lfs_payload,
     estimate_field_accuracy,
     parse_available_uav_ids,
     validate_and_compile_lfs,
@@ -58,13 +59,13 @@ SYSTEM_PROMPT = """
 # 【LFS任务定义】
 单个任务形式化为 tau = (U, F, c, r, T, m, s, q)：
 - U：参与无人机编号数组，格式为整数数组，如 [1,2,3]
-- F：编队类型，枚举仅限：Circle/Line/Sphere/Free/Triangle/Polygon/Lineup
+- F：编队类型，枚举仅限：Circle/Line/Sphere/Free/Triangle/Polygon；一字长蛇阵统一使用 Line
 - c：编队中心，3D坐标数组 [x,y,z]
-- r：半径或间距，正数；Circle/Sphere/Polygon/Triangle 表示半径，Line/Lineup 表示机间距
+- r：半径或间距，正数；Circle/Sphere/Polygon/Triangle 表示半径，Line 表示机间距
 - T：任务时长，单位秒，正数
-- m：运动风格，枚举仅限：smooth/normal/aggressive
-- s：安全系数，非负数；指令未提及时默认 1.0
-- q：触发条件，枚举仅限：direct/hover-and-wait/continuous
+- m：运动风格，枚举仅限：smooth/normal/aggressive；未提及时可省略，由编译器补 normal
+- s：安全系数，非负数；仅在指令明确提到安全/避障系数时提取，否则可省略，由编译器补 1.0
+- q：到达行为；由 LFS 编译器根据任务依赖确定，明确悬停时才输出 hover-and-wait
 
 # 【字段映射规则】
 - 指令出现「圆形」→ F="Circle"
@@ -77,12 +78,13 @@ SYSTEM_PROMPT = """
 - 指令未明确中心时，c 默认 [0.0, 0.0, 1.5]
 - 指令未明确半径或间距时，r 默认 1.5
 - 指令未明确时长时，T 默认 3.0
-- 指令未明确运动风格时，m 默认 "normal"
+- 指令未明确运动风格时不要输出 m，由编译器补 "normal"
 - 指令提到「柔和、平滑、舒缓」时，m="smooth"
 - 指令提到「快速、激进、尽快」时，m="aggressive"
-- 单任务或立即执行任务默认 q="direct"
+- 指令未明确安全/避障系数时不要输出 s，由编译器补 1.0
+- 单任务或立即执行任务的 q 由编译器补 "direct"
 - 明确要求到达后悬停等待时，q="hover-and-wait"，并额外输出 wait_time
-- 多任务中间途经目标点不停车时，q="continuous"
+- 串行任务只输出 depends_on，由编译器推导中间任务 q="continuous"
 
 # 固定LFS-JSON输出规范
 【强制输出格式】无论单任务还是多任务，必须统一输出以下外层结构：
@@ -95,10 +97,7 @@ SYSTEM_PROMPT = """
       "F": "Circle",
       "c": [0.0,0.0,1.5],
       "r": 1.5,
-      "T": 5.0,
-      "m": "normal",
-      "s": 1.0,
-      "q": "direct"
+      "T": 5.0
     }
   ]
 }
@@ -109,6 +108,10 @@ SYSTEM_PROMPT = """
 3. 禁止输出 task_sequences、uav_allocations、target_pos、global_center、parametric_data 等旧版调度字段；
 4. 禁止计算每架无人机目标坐标，只输出抽象任务参数；
 5. 禁止输出 schema 中不存在的枚举值。
+6. 任务数量只由动作谓词和“随后/同时”等关系决定；smooth/normal/aggressive 只修饰所在任务，绝不能创建新任务或拆分时长。
+7. m 与 s 相互独立；“快速/激进”只能影响 m，绝不能推断或修改 s。
+8. 串行任务按文本顺序输出，并用 depends_on 表示依赖；不要自行判断 continuous/direct。
+9. 当指令已有“首先/随后”等多个任务，末尾的“第一阶段/第二阶段”运动风格按任务顺序一一对应，不是单个任务内部的子阶段，也不是歧义。
 
 # 错误处理规则
 1. 正常解析：error_code=0，error_msg=""
@@ -133,10 +136,7 @@ ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
       "F": "Circle",
       "c": [3.0, 4.0, 5.0],
       "r": 1.5,
-      "T": 3.0,
-      "m": "normal",
-      "s": 1.0,
-      "q": "direct"
+      "T": 3.0
     }
   ]
 }
@@ -155,8 +155,6 @@ ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
       "c": [2.0, 2.0, 10.0],
       "r": 1.5,
       "T": 3.0,
-      "m": "normal",
-      "s": 1.0,
       "q": "hover-and-wait",
       "wait_time": 2.0
     },
@@ -167,9 +165,7 @@ ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
       "c": [0.0, 0.0, 0.0],
       "r": 1.5,
       "T": 4.0,
-      "m": "normal",
-      "s": 1.0,
-      "q": "direct"
+      "depends_on": [1]
     }
   ]
 }
@@ -187,21 +183,55 @@ ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
       "F": "Line",
       "c": [1.0, 4.0, 5.0],
       "r": 2.0,
-      "T": 3.0,
-      "m": "normal",
-      "s": 1.0,
-      "q": "direct"
+      "T": 3.0
     }
   ]
 }
+
+【示例4：串行任务与依赖关系】
+用户指令：1到4号机先用5秒在[3,0,4]组成间距2米的直线，随后用7秒在[0,3,4]组成半径3米的圆形
+ROS信息：当前可用无人机编号: [1,2,3,4]，总数: 4
+输出：
+{"lfs_version":"1.0","tasks":[
+  {"task_id":1,"U":[1,2,3,4],"F":"Line","c":[3,0,4],"r":2,"T":5},
+  {"task_id":2,"U":[1,2,3,4],"F":"Circle","c":[0,3,4],"r":3,"T":7,"depends_on":[1]}
+]}
+
+【示例5：运动风格不是新任务】
+用户指令：1到4号机先用5秒组成直线，随后用7秒快速激进地组成圆形
+ROS信息：当前可用无人机编号: [1,2,3,4]，总数: 4
+输出：
+{"lfs_version":"1.0","tasks":[
+  {"task_id":1,"U":[1,2,3,4],"F":"Line","c":[0,0,1.5],"r":1.5,"T":5},
+  {"task_id":2,"U":[1,2,3,4],"F":"Circle","c":[0,0,1.5],"r":1.5,"T":7,"m":"aggressive","depends_on":[1]}
+]}
+
+【示例6：阶段风格按已有任务顺序映射】
+用户指令：1到4号机先用5秒组成直线，随后用7秒组成圆形，第一阶段normal模式，第二阶段aggressive模式
+ROS信息：当前可用无人机编号: [1,2,3,4]，总数: 4
+输出：
+{"lfs_version":"1.0","tasks":[
+  {"task_id":1,"U":[1,2,3,4],"F":"Line","c":[0,0,1.5],"r":1.5,"T":5,"m":"normal"},
+  {"task_id":2,"U":[1,2,3,4],"F":"Circle","c":[0,0,1.5],"r":1.5,"T":7,"m":"aggressive","depends_on":[1]}
+]}
 """
 
 
 # ====================== 工具函数 ======================
 def purify_json_content(raw_content: str) -> str:
-    raw_content = re.sub(r"```json|```", "", raw_content).strip()
-    match = re.search(r"\{.*\}", raw_content, re.DOTALL)
-    return match.group(0) if match else raw_content
+    cleaned = re.sub(r"<think>.*?</think>", "", raw_content, flags=re.IGNORECASE | re.DOTALL)
+    cleaned = re.sub(r"```(?:json)?|```", "", cleaned, flags=re.IGNORECASE).strip()
+    decoder = json.JSONDecoder()
+    candidates = []
+    for start, character in enumerate(cleaned):
+        if character not in "[{":
+            continue
+        try:
+            _value, length = decoder.raw_decode(cleaned[start:])
+        except json.JSONDecodeError:
+            continue
+        candidates.append((length, start, cleaned[start:start + length]))
+    return max(candidates, key=lambda candidate: (candidate[0], candidate[1]))[2] if candidates else cleaned
 
 
 def classify_command_type(llm_output: dict) -> str:
@@ -275,6 +305,7 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
     )
 
     max_retries = 3
+    repair_feedback = ""
 
     for attempt in range(max_retries):
         response = None
@@ -286,7 +317,7 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
             print(f"第{attempt + 1}次调用API解析指令...")
             response = client.chat.completions.create(
                 model=MODEL_NAME,
-                messages=[{"role": "user", "content": full_prompt}],
+                messages=[{"role": "user", "content": full_prompt + repair_feedback}],
                 temperature=0,
                 top_p=0.01,
                 max_tokens=4000,
@@ -299,9 +330,14 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
             pure_json_str = purify_json_content(raw_result)
             cfr_result = json.loads(pure_json_str)
             valid_json = True
+            cfr_result = canonicalize_lfs_payload(cfr_result, user_command)
             field_accuracy = estimate_field_accuracy(cfr_result)
             available_uav_ids = parse_available_uav_ids(ros_aux_info)
-            cfr_result = validate_and_compile_lfs(cfr_result, available_uav_ids)
+            cfr_result = validate_and_compile_lfs(
+                cfr_result,
+                available_uav_ids,
+                source_command=user_command,
+            )
             schema_valid = True
 
             _log_parse_attempt(
@@ -340,6 +376,12 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
                     "error_code": 4,
                     "error_msg": f"解析失败（重试{max_retries}次）：{str(e)}"
                 }
+            repair_feedback = (
+                "\n【上次输出校验失败】\n"
+                + str(e)
+                + "\n请依据错误只修正任务数量、关系或字段，重新输出完整纯 JSON。"
+                "运动风格不能生成额外任务；不要解释。\n"
+            )
             time.sleep(2)
 
 

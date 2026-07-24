@@ -138,6 +138,14 @@
         },
         "parallel_group": {
           "type": ["string", "integer"]
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "uniqueItems": true
         }
       },
       "additionalProperties": true

@@ -111,6 +111,25 @@ def test_dense_requires_complete_waypoints():
         raise AssertionError("incomplete dense waypoints should fail")
 
 
+def test_lfs_draft_is_canonicalized_before_scoring():
+    payload = {"lfs_version": "1.0", "tasks": [
+        {"task_id": 1, "U": [1, 2, 3], "F": "Lineup", "c": [3, 0, 3], "r": 2, "T": 5},
+        {"task_id": 2, "U": [1, 2, 3], "F": "Circle", "c": [0, 3, 3], "r": 2, "T": 7,
+         "m": "aggressive", "s": 0.5, "depends_on": [1]},
+    ]}
+
+    normalized = normalize_response(
+        "lfs_schema", payload, AVAILABLE,
+        source_command="先组成一字长蛇阵，随后快速激进地组成圆形",
+    )
+
+    assert normalized["tasks"][0]["F"] == "Line"
+    assert [task["q"] for task in normalized["tasks"]] == ["continuous", "direct"]
+    assert normalized["tasks"][0]["m"] == "normal"
+    assert normalized["tasks"][1]["m"] == "aggressive"
+    assert normalized["tasks"][1]["s"] == 1.0
+
+
 def test_grouped_task_order_is_ignored_but_sequence_order_is_not():
     first = formal_task(U=[1, 2], F="Circle")
     second = formal_task(U=[3, 4], F="Line")

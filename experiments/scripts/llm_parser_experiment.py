@@ -7,12 +7,21 @@ import hashlib
 import json
 import math
 import re
+import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from jsonschema import Draft202012Validator
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+PACKAGE_SRC = REPO_ROOT / "location_allocate"
+if str(PACKAGE_SRC) not in sys.path:
+    sys.path.insert(0, str(PACKAGE_SRC))
+
+from location_allocate.lfs_validator import canonicalize_lfs_payload  # noqa: E402
 
 
 METHODS = ("plain_json", "few_shot_json", "lfs_schema", "dense_waypoints")
@@ -58,13 +67,35 @@ trigger_condition 取 direct_execution/hover_and_wait/continuous_transit。
 
 LFS_PROMPT = """
 你是无人机集群 Language-to-Formation Specification (LFS) 解析器。只返回纯 JSON。
-有效输出必须是 {"lfs_version":"1.0","tasks":[...]}，每个任务严格包含：
-U（无人机整数数组）、F（Circle/Line/Sphere/Free/Triangle/Polygon/Lineup）、
-c（三维中心）、r（半径或间距）、T（秒）、m（smooth/normal/aggressive）、
-s（非负安全系数）、q（direct/hover-and-wait/continuous）。并行任务添加相同 parallel_group。
-默认 m="normal"、s=1.0、q="direct"；连续任务的中间任务 q="continuous"。
+有效输出必须是 {"lfs_version":"1.0","tasks":[...]}。每个任务必须包含 U、F、c、r、T；
+F 仅取 Circle/Line/Sphere/Free/Triangle/Polygon，一字长蛇阵统一为 Line。
+m 仅在指令明确表达 smooth/normal/aggressive 时输出；s 仅在明确表达安全或避障系数时输出。
+串行任务按文本顺序输出，后续任务用 depends_on 引用前序 task_id；并行任务添加相同 parallel_group。
+q 和未表达的 m/s 由 LFS 编译器确定，不要猜测。
+任务数量只由动作谓词决定。运动风格只修饰所在任务，绝不能创建新任务、拆分任务或重新分配时长。
+当指令已有“首先/随后”等多个任务，末尾的“第一阶段/第二阶段”运动风格按任务顺序一一对应，
+不是单个任务内部的子阶段，也不是歧义。
+“快速/激进”只能影响 m，绝不能推断或修改 s。
 不得输出逐机坐标。无效指令严格返回
 {"error":{"category":"unrelated|unknown_uav|missing_formation|ambiguous"}}。
+
+示例1：1到3号机以[0,0,3]为中心组成半径2米的圆形编队，5秒完成
+输出：{"lfs_version":"1.0","tasks":[{"task_id":1,"U":[1,2,3],"F":"Circle","c":[0,0,3],"r":2,"T":5}]}
+
+示例2：1到4号机先用5秒在[3,0,4]组成间距2米的直线，随后用7秒在[0,3,4]组成半径3米的圆形
+输出：{"lfs_version":"1.0","tasks":[
+{"task_id":1,"U":[1,2,3,4],"F":"Line","c":[3,0,4],"r":2,"T":5},
+{"task_id":2,"U":[1,2,3,4],"F":"Circle","c":[0,3,4],"r":3,"T":7,"depends_on":[1]}]}
+
+示例3：1到4号机先用5秒组成直线，随后用7秒快速激进地组成圆形
+输出：{"lfs_version":"1.0","tasks":[
+{"task_id":1,"U":[1,2,3,4],"F":"Line","c":[0,0,1.5],"r":1.5,"T":5},
+{"task_id":2,"U":[1,2,3,4],"F":"Circle","c":[0,0,1.5],"r":1.5,"T":7,"m":"aggressive","depends_on":[1]}]}
+
+示例4：1到4号机先用5秒组成直线，随后用7秒组成圆形，第一阶段normal模式，第二阶段aggressive模式
+输出：{"lfs_version":"1.0","tasks":[
+{"task_id":1,"U":[1,2,3,4],"F":"Line","c":[0,0,1.5],"r":1.5,"T":5,"m":"normal"},
+{"task_id":2,"U":[1,2,3,4],"F":"Circle","c":[0,0,1.5],"r":1.5,"T":7,"m":"aggressive","depends_on":[1]}]}
 """.strip()
 
 
@@ -104,7 +135,7 @@ class RunConfig:
     max_tokens: int = 4000
 
 
-def prompt_for(method: str, item: Dict[str, Any]) -> str:
+def prompt_for(method: str, item: Dict[str, Any], repair_feedback: str = "") -> str:
     if method not in PROMPTS:
         raise ValueError(f"未知方法: {method}")
     return (
@@ -112,6 +143,7 @@ def prompt_for(method: str, item: Dict[str, Any]) -> str:
         + "\n\n【ROS实时情报】\n" + str(item.get("ros_aux_info", ""))
         + "\n【用户指令】\n" + str(item["command"])
         + "\n【输出】\n"
+        + repair_feedback
     )
 
 
@@ -193,7 +225,7 @@ def _canonical_task(raw: Dict[str, Any]) -> Dict[str, Any]:
     formation_aliases = {
         "circle": "Circle", "circular": "Circle", "line": "Line", "linear": "Line",
         "sphere": "Sphere", "spherical": "Sphere", "free": "Free", "triangle": "Triangle",
-        "triangular": "Triangle", "polygon": "Polygon", "polygonal": "Polygon", "lineup": "Lineup",
+        "triangular": "Triangle", "polygon": "Polygon", "polygonal": "Polygon", "lineup": "Line",
     }
     trigger_aliases = {
         "direct_execution": "direct", "direct": "direct",
@@ -313,7 +345,12 @@ def validate_normalized_lfs(payload: Dict[str, Any], available_uavs: Optional[Se
             raise ValueError("r/T/s 数值范围非法")
 
 
-def normalize_response(method: str, payload: Any, available_uavs: Optional[Sequence[int]]) -> Dict[str, Any]:
+def normalize_response(
+    method: str,
+    payload: Any,
+    available_uavs: Optional[Sequence[int]],
+    source_command: Optional[str] = None,
+) -> Dict[str, Any]:
     error = normalize_error(payload)
     if error:
         return {"error": error}
@@ -322,6 +359,8 @@ def normalize_response(method: str, payload: Any, available_uavs: Optional[Seque
     elif method == "few_shot_json":
         tasks = _legacy_tasks(payload)
     elif method in {"lfs_schema", "dense_waypoints"}:
+        if method == "lfs_schema":
+            payload = canonicalize_lfs_payload(payload, source_command)
         raw_tasks = payload.get("tasks")
         if not isinstance(raw_tasks, list):
             raise ValueError("formal LFS 缺少 tasks")
@@ -341,7 +380,6 @@ def _usage(response: Any, name: str) -> int:
 
 
 def call_method(client: Any, method: str, item: Dict[str, Any], config: RunConfig) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
-    prompt = prompt_for(method, item)
     attempts: List[Dict[str, Any]] = []
     total_prompt_tokens = 0
     total_completion_tokens = 0
@@ -349,9 +387,11 @@ def call_method(client: Any, method: str, item: Dict[str, Any], config: RunConfi
     final_payload: Optional[Dict[str, Any]] = None
     normalized: Optional[Dict[str, Any]] = None
     last_error = ""
+    repair_feedback = ""
     available_uavs = parse_available_uavs(str(item.get("ros_aux_info", "")))
 
     for attempt_index in range(config.max_retries):
+        prompt = prompt_for(method, item, repair_feedback)
         response = None
         raw_content = ""
         started = time.perf_counter()
@@ -370,7 +410,12 @@ def call_method(client: Any, method: str, item: Dict[str, Any], config: RunConfi
             raw_content = response.choices[0].message.content or ""
             final_payload = json.loads(purify_json_content(raw_content))
             valid_json = True
-            normalized = normalize_response(method, final_payload, available_uavs)
+            normalized = normalize_response(
+                method,
+                final_payload,
+                available_uavs,
+                source_command=str(item.get("command", "")),
+            )
             schema_valid = True
             last_error = ""
         except json.JSONDecodeError as exc:
@@ -405,6 +450,12 @@ def call_method(client: Any, method: str, item: Dict[str, Any], config: RunConfi
         if last_error == "quota_exhausted":
             break
         if attempt_index + 1 < config.max_retries:
+            repair_feedback = (
+                "\n【上次输出校验失败】\n"
+                + error_detail
+                + "\n请只修正上述错误并重新输出完整 JSON。"
+                "运动风格不能创建额外任务，不要解释。\n"
+            )
             time.sleep(2 ** attempt_index)
 
     result = {

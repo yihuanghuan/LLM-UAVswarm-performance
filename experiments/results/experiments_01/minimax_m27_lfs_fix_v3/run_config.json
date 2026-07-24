@@ -1,0 +1,36 @@
+{
+  "experiment": "experiments_01",
+  "run_id": "minimax_m27_lfs_fix_v3",
+  "base_tag": "gazebo-experiment-v1",
+  "base_commit": "6c3496e7a42d7987751dc414396b3d9b11841721",
+  "model": "MiniMax-M2.7-highspeed",
+  "base_url": "https://api.minimax.chat/v1",
+  "temperature": 0.0,
+  "top_p": 0.01,
+  "max_tokens": 4000,
+  "max_retries": 3,
+  "timeout": 60.0,
+  "workers": 4,
+  "methods": [
+    "lfs_schema"
+  ],
+  "numeric_tolerance": 1e-06,
+  "prompts": {
+    "plain_json": {
+      "sha256": "ee69aff551d7f9733d71fc0dc539962ae81fb285edb0318382e7f6b2d1a32fa7",
+      "prompt": "你负责把无人机编队指令转换成普通 JSON。请提取每个任务的无人机编号、编队类型、中心、\n半径或间距、时长、运动风格、安全系数和执行关系。不要解释，只返回 JSON。\n可以使用直观的英文键名。若指令无关、引用不存在的无人机、缺少编队类型或含冲突歧义，\n返回 {\"error\": \"unrelated|unknown_uav|missing_formation|ambiguous\"} 中对应的一类。\n默认运动风格 normal，默认安全系数 1.0，单任务默认 direct。"
+    },
+    "few_shot_json": {
+      "sha256": "3becaa509b03905a2a3c9300df03c7ec598228032fd6f9a6b6d5068b2cb410d9",
+      "prompt": "你负责把无人机编队指令转换成 legacy task_sequences JSON。只返回 JSON，不要解释。\n每个任务使用 task_sequence_id、duration_seconds、uav_id、uav_count、trigger_condition、\nwait_time、iapf_safety_margin_factor、motion_profile、global_center、generation_mode 和\nparametric_data。formation_type 取 Circle/Line/Sphere/Free/Triangle/Polygon/Lineup；\ntrigger_condition 取 direct_execution/hover_and_wait/continuous_transit。\n无效指令返回 {\"error\": {\"category\": \"unrelated|unknown_uav|missing_formation|ambiguous\"}}。\n\n示例：1到3号机以[0,0,3]为中心组成半径2米的圆形编队，5秒完成\n输出：{\"task_sequences\":[{\"task_sequence_id\":1,\"duration_seconds\":5,\"uav_id\":[1,2,3],\n\"uav_count\":3,\"trigger_condition\":\"direct_execution\",\"wait_time\":null,\n\"iapf_safety_margin_factor\":1.0,\"motion_profile\":\"normal\",\"global_center\":[0,0,3],\n\"generation_mode\":\"parametric\",\"parametric_data\":{\"formation_type\":\"Circle\",\n\"formation_radius\":2}}]}\n\n示例：1到4号机先在[3,0,4]组成间距2米的直线，随后在[0,3,4]组成半径3米的圆形\n输出：{\"task_sequences\":[{\"task_sequence_id\":1,\"duration_seconds\":3,\"uav_id\":[1,2,3,4],\n\"uav_count\":4,\"trigger_condition\":\"continuous_transit\",\"wait_time\":null,\n\"iapf_safety_margin_factor\":1.0,\"motion_profile\":\"normal\",\"global_center\":[3,0,4],\n\"generation_mode\":\"parametric\",\"parametric_data\":{\"formation_type\":\"Line\",\"formation_radius\":2}},\n{\"task_sequence_id\":2,\"duration_seconds\":3,\"uav_id\":[1,2,3,4],\"uav_count\":4,\n\"trigger_condition\":\"direct_execution\",\"wait_time\":null,\"iapf_safety_margin_factor\":1.0,\n\"motion_profile\":\"normal\",\"global_center\":[0,3,4],\"generation_mode\":\"parametric\",\n\"parametric_data\":{\"formation_type\":\"Circle\",\"formation_radius\":3}}]}"
+    },
+    "lfs_schema": {
+      "sha256": "c9b3e4f4ab5b7c3902a101f1a8e0fd5d6ced8cc54a8da77422b0cca56b9f0a69",
+      "prompt": "你是无人机集群 Language-to-Formation Specification (LFS) 解析器。只返回纯 JSON。\n有效输出必须是 {\"lfs_version\":\"1.0\",\"tasks\":[...]}。每个任务必须包含 U、F、c、r、T；\nF 仅取 Circle/Line/Sphere/Free/Triangle/Polygon，一字长蛇阵统一为 Line。\nm 仅在指令明确表达 smooth/normal/aggressive 时输出；s 仅在明确表达安全或避障系数时输出。\n串行任务按文本顺序输出，后续任务用 depends_on 引用前序 task_id；并行任务添加相同 parallel_group。\nq 和未表达的 m/s 由 LFS 编译器确定，不要猜测。\n任务数量只由动作谓词决定。运动风格只修饰所在任务，绝不能创建新任务、拆分任务或重新分配时长。\n当指令已有“首先/随后”等多个任务，末尾的“第一阶段/第二阶段”运动风格按任务顺序一一对应，\n不是单个任务内部的子阶段，也不是歧义。\n“快速/激进”只能影响 m，绝不能推断或修改 s。\n不得输出逐机坐标。无效指令严格返回\n{\"error\":{\"category\":\"unrelated|unknown_uav|missing_formation|ambiguous\"}}。\n\n示例1：1到3号机以[0,0,3]为中心组成半径2米的圆形编队，5秒完成\n输出：{\"lfs_version\":\"1.0\",\"tasks\":[{\"task_id\":1,\"U\":[1,2,3],\"F\":\"Circle\",\"c\":[0,0,3],\"r\":2,\"T\":5}]}\n\n示例2：1到4号机先用5秒在[3,0,4]组成间距2米的直线，随后用7秒在[0,3,4]组成半径3米的圆形\n输出：{\"lfs_version\":\"1.0\",\"tasks\":[\n{\"task_id\":1,\"U\":[1,2,3,4],\"F\":\"Line\",\"c\":[3,0,4],\"r\":2,\"T\":5},\n{\"task_id\":2,\"U\":[1,2,3,4],\"F\":\"Circle\",\"c\":[0,3,4],\"r\":3,\"T\":7,\"depends_on\":[1]}]}\n\n示例3：1到4号机先用5秒组成直线，随后用7秒快速激进地组成圆形\n输出：{\"lfs_version\":\"1.0\",\"tasks\":[\n{\"task_id\":1,\"U\":[1,2,3,4],\"F\":\"Line\",\"c\":[0,0,1.5],\"r\":1.5,\"T\":5},\n{\"task_id\":2,\"U\":[1,2,3,4],\"F\":\"Circle\",\"c\":[0,0,1.5],\"r\":1.5,\"T\":7,\"m\":\"aggressive\",\"depends_on\":[1]}]}\n\n示例4：1到4号机先用5秒组成直线，随后用7秒组成圆形，第一阶段normal模式，第二阶段aggressive模式\n输出：{\"lfs_version\":\"1.0\",\"tasks\":[\n{\"task_id\":1,\"U\":[1,2,3,4],\"F\":\"Line\",\"c\":[0,0,1.5],\"r\":1.5,\"T\":5,\"m\":\"normal\"},\n{\"task_id\":2,\"U\":[1,2,3,4],\"F\":\"Circle\",\"c\":[0,0,1.5],\"r\":1.5,\"T\":7,\"m\":\"aggressive\",\"depends_on\":[1]}]}"
+    },
+    "dense_waypoints": {
+      "sha256": "30aef57fe457653f776817bbdaf18fe82db619ac84c3accaba935f51879b013a",
+      "prompt": "你负责直接生成无人机目标点。只返回纯 JSON。有效输出必须是\n{\"lfs_version\":\"1.0\",\"tasks\":[...]}。每个任务包含 U、F、c、r、T、m、s、q，\n并额外包含 waypoints，格式为 [{\"uav_id\":1,\"position\":[x,y,z]}, ...]，必须覆盖 U 中每架无人机。\nF 取 Circle/Line/Sphere/Free/Triangle/Polygon/Lineup，m 取 smooth/normal/aggressive，\nq 取 direct/hover-and-wait/continuous。并行任务添加相同 parallel_group。\n默认 m=\"normal\"、s=1.0、q=\"direct\"。无效指令严格返回\n{\"error\":{\"category\":\"unrelated|unknown_uav|missing_formation|ambiguous\"}}。"
+    }
+  }
+}

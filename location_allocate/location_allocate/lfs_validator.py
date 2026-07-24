@@ -39,6 +39,8 @@ LEGACY_REQUIRED_FIELDS = [
 
 LFS_REQUIRED_FIELDS = ["U", "F", "c", "r", "T", "m", "s", "q"]
 
+SAFETY_TERMS = ("安全系数", "避障系数", "安全裕度", "safety factor", "safety_factor")
+
 
 class LFSValidationError(ValueError):
     """Raised when an LFS payload fails schema or semantic validation."""
@@ -119,14 +121,84 @@ def estimate_field_accuracy(payload: Dict[str, Any]) -> float:
     return round(present / total, 4) if total else 0.0
 
 
+def canonicalize_lfs_payload(
+    payload: Dict[str, Any],
+    source_command: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Normalize a draft LFS before schema validation and compilation.
+
+    The LLM extracts explicit task semantics. Defaults, aliases, and transition
+    behavior are deterministic compiler concerns so they cannot drift with the
+    wording of a prompt.
+    """
+    canonical = copy.deepcopy(payload)
+    if not _is_formal_lfs(canonical):
+        for task in canonical.get("task_sequences", []):
+            parametric = task.get("parametric_data", {})
+            if parametric.get("formation_type") == "Lineup":
+                parametric["formation_type"] = "Line"
+        return canonical
+
+    tasks = _payload_tasks(canonical)
+    safety_is_explicit = source_command is None or any(
+        term in source_command.lower() for term in SAFETY_TERMS
+    )
+    for task in tasks:
+        if task.get("F") == "Lineup":
+            task["F"] = "Line"
+        task.setdefault("m", "normal")
+        if safety_is_explicit:
+            task.setdefault("s", 1.0)
+        else:
+            task["s"] = 1.0
+
+    _reject_style_only_task_splits(tasks)
+    _derive_transition_modes(tasks)
+    return canonical
+
+
+def _derive_transition_modes(tasks: Sequence[Dict[str, Any]]) -> None:
+    for index, task in enumerate(tasks):
+        if task.get("q") == "hover-and-wait":
+            continue
+        current_uavs = set(task.get("U", []))
+        has_sequential_successor = False
+        for later in tasks[index + 1:]:
+            later_uavs = set(later.get("U", []))
+            same_parallel_group = (
+                task.get("parallel_group") is not None
+                and task.get("parallel_group") == later.get("parallel_group")
+            )
+            dependency = task.get("task_id", index + 1) in later.get("depends_on", [])
+            if dependency or (current_uavs & later_uavs and not same_parallel_group):
+                has_sequential_successor = True
+                break
+        task["q"] = "continuous" if has_sequential_successor else "direct"
+
+
+def _reject_style_only_task_splits(tasks: Sequence[Dict[str, Any]]) -> None:
+    for previous, current in zip(tasks, tasks[1:]):
+        same_target = all(
+            previous.get(field) == current.get(field)
+            for field in ("U", "F", "c", "r")
+        )
+        if same_target and previous.get("m", "normal") != current.get("m", "normal"):
+            raise LFSValidationError(
+                "style_split_as_task: 相同目标不能仅因 motion style 不同拆成多个任务；"
+                "请保留一个任务并把 m 设置为用户指定的风格"
+            )
+
+
 def validate_and_compile_lfs(
     payload: Dict[str, Any],
     available_uav_ids: Optional[Sequence[int]] = None,
     schema: Optional[Dict[str, Any]] = None,
+    source_command: Optional[str] = None,
 ) -> Dict[str, Any]:
-    validate_schema(payload, schema)
+    canonical = canonicalize_lfs_payload(payload, source_command)
+    validate_schema(canonical, schema)
 
-    compiled = _compile_formal_lfs(payload) if _is_formal_lfs(payload) else _normalize_legacy_payload(payload)
+    compiled = _compile_formal_lfs(canonical) if _is_formal_lfs(canonical) else _normalize_legacy_payload(canonical)
     _validate_semantics(compiled, available_uav_ids)
     return compiled
 

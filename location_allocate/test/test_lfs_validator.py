@@ -1,6 +1,10 @@
 import pytest
 
-from location_allocate.lfs_validator import LFSValidationError, validate_and_compile_lfs
+from location_allocate.lfs_validator import (
+    LFSValidationError,
+    canonicalize_lfs_payload,
+    validate_and_compile_lfs,
+)
 
 
 AVAILABLE_UAV_IDS = [1, 2, 3, 4, 5]
@@ -112,3 +116,65 @@ def test_invalid_motion_style_raises():
 
     with pytest.raises(LFSValidationError, match="schema"):
         validate_and_compile_lfs(payload, AVAILABLE_UAV_IDS)
+
+
+def test_draft_defaults_and_sequential_triggers_are_compiler_owned():
+    first = formal_lfs_task(task_id=1)
+    second = formal_lfs_task(task_id=2, F="Line", depends_on=[1])
+    for task in (first, second):
+        task.pop("m")
+        task.pop("s")
+        task.pop("q")
+
+    canonical = canonicalize_lfs_payload(
+        {"lfs_version": "1.0", "tasks": [first, second]},
+        "先组成圆形，随后组成直线",
+    )
+
+    assert canonical["tasks"][0]["m"] == "normal"
+    assert canonical["tasks"][0]["s"] == 1.0
+    assert [task["q"] for task in canonical["tasks"]] == ["continuous", "direct"]
+
+
+def test_parallel_tasks_remain_direct():
+    payload = {
+        "lfs_version": "1.0",
+        "tasks": [
+            formal_lfs_task(task_id=1, U=[1, 2], parallel_group="g"),
+            formal_lfs_task(task_id=2, U=[3, 4], parallel_group="g"),
+        ],
+    }
+
+    canonical = canonicalize_lfs_payload(payload)
+
+    assert [task["q"] for task in canonical["tasks"]] == ["direct", "direct"]
+
+
+def test_lineup_is_canonicalized_to_line():
+    payload = {"lfs_version": "1.0", "tasks": [formal_lfs_task(F="Lineup")]}
+
+    compiled = validate_and_compile_lfs(payload, AVAILABLE_UAV_IDS)
+
+    assert compiled["task_sequences"][0]["parametric_data"]["formation_type"] == "Line"
+
+
+def test_unmentioned_safety_factor_cannot_be_inferred_from_aggressive_style():
+    payload = {"lfs_version": "1.0", "tasks": [formal_lfs_task(m="aggressive", s=0.5)]}
+
+    canonical = canonicalize_lfs_payload(payload, "快速激进地组成圆形")
+
+    assert canonical["tasks"][0]["m"] == "aggressive"
+    assert canonical["tasks"][0]["s"] == 1.0
+
+
+def test_style_only_duplicate_task_is_rejected():
+    payload = {
+        "lfs_version": "1.0",
+        "tasks": [
+            formal_lfs_task(task_id=1, m="normal"),
+            formal_lfs_task(task_id=2, m="aggressive"),
+        ],
+    }
+
+    with pytest.raises(LFSValidationError, match="style_split_as_task"):
+        canonicalize_lfs_payload(payload)
