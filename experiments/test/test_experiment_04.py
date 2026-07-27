@@ -70,6 +70,19 @@ def test_crossing_prone_geometry_exercises_crossing_penalty():
     assert crossing_metrics.xy_crossings < distance_metrics.xy_crossings
 
 
+def test_all_scenario_endpoints_are_feasible():
+    for scenario_index, scenario in enumerate(experiment.SCENARIOS):
+        for trial_id in range(10):
+            initial, targets = experiment.generate_scenario(
+                scenario,
+                trial_id,
+                rng=np.random.default_rng(1000 * scenario_index + trial_id),
+                min_distance=2.1,
+            )
+            assert experiment.minimum_pair_distance(initial) >= 2.1
+            assert experiment.minimum_pair_distance(targets) >= 2.1
+
+
 def test_violation_count_failure_and_arrival_variance():
     initial = np.asarray([[-1.0, 0.0, 3.0], [1.0, 0.0, 3.0]])
     targets = np.asarray([[1.0, 0.0, 3.0], [-1.0, 0.0, 3.0]])
@@ -80,10 +93,13 @@ def test_violation_count_failure_and_arrival_variance():
         assignment=[0, 1],
         duration=1.0,
         safety_distance=0.5,
+        critical_distance=0.25,
         nominal_speed=1.0,
     )
     assert metrics.safety_violation_count > 0
+    assert metrics.critical_violation_count > 0
     assert metrics.failed_assignment == 1
+    assert metrics.critical_failed_assignment == 1
     assert metrics.arrival_time_variance == 0.0
 
     unequal_targets = np.asarray([[1.0, 0.0, 3.0], [-3.0, 0.0, 3.0]])
@@ -94,6 +110,7 @@ def test_violation_count_failure_and_arrival_variance():
         assignment=[0, 1],
         duration=1.0,
         safety_distance=0.5,
+        critical_distance=0.25,
         nominal_speed=1.0,
     )
     assert unequal.arrival_time_variance > 0.0
@@ -108,6 +125,8 @@ def test_end_to_end_small_run_and_analysis(tmp_path):
         duration=8.0,
         sample_hz=20.0,
         safety_distance=2.0,
+        critical_distance=1.5,
+        scenario_min_distance=2.1,
         nominal_speed=1.0,
         scenarios=list(experiment.SCENARIOS),
     )

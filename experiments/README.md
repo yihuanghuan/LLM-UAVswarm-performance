@@ -54,15 +54,21 @@ python3 experiments/scripts/eval_lfs_compiler.py \
 ```bash
 python3 experiments/scripts/eval_assignment_offline.py \
   --trials 100 \
-  --output-dir experiments/results/experiments_04
+  --output-dir experiments/results/experiments_04/feasible_scenarios_v3 \
+  --safety-distance 2.0 \
+  --critical-distance 1.5 \
+  --scenario-min-distance 2.1
 
 python3 experiments/scripts/analyze_assignment_offline.py \
-  --input-dir experiments/results/experiments_04
+  --input-dir experiments/results/experiments_04/feasible_scenarios_v3
 ```
 
 输出目录包含原始 CSV、场景 JSONL、汇总 CSV、Markdown 表格、配置、分析清单，
 以及 min distance 箱线图、crossing 柱状图、定性路径图和 Pareto 图。
 默认每个场景运行 100 次；安全违规按同步名义轨迹中低于 2 m 的机对采样点计数。
+所有场景的初始点集和目标点集都保证至少 2.1 m 的机间距，使失败事件只能由过渡轨迹引入。
+`dense` 使用半径 3.2 m 的 8 机紧凑圆形目标；另以低于 1.5 m 记录严重违规和严重失败率，
+但不替代 2 m 的主要安全裕度判据。
 如果指定目录已有内容，评估脚本会自动创建带 UTC 时间戳的子目录，绝不覆盖旧数据。
 
 ### eval_trajectory_profiles.py

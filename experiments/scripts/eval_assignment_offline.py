@@ -52,8 +52,10 @@ RESULT_FIELDS = [
     "min_distance",
     "safety_cost",
     "safety_violation_count",
+    "critical_violation_count",
     "arrival_time_variance",
     "failed_assignment",
+    "critical_failed_assignment",
     "total_cost",
     "compute_time_ms",
 ]
@@ -63,8 +65,10 @@ RESULT_FIELDS = [
 class ExtendedMetrics:
     assignment_metrics: AssignmentMetrics
     safety_violation_count: int
+    critical_violation_count: int
     arrival_time_variance: float
     failed_assignment: int
+    critical_failed_assignment: int
 
 
 def parse_args() -> argparse.Namespace:
@@ -79,6 +83,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--duration", type=float, default=8.0, help="Nominal trajectory duration in seconds.")
     parser.add_argument("--sample-hz", type=float, default=20.0, help="Trajectory evaluation sample rate.")
     parser.add_argument("--safety-distance", type=float, default=2.0, help="Safety threshold in metres.")
+    parser.add_argument(
+        "--critical-distance",
+        type=float,
+        default=1.5,
+        help="Secondary severe-violation threshold in metres.",
+    )
+    parser.add_argument(
+        "--scenario-min-distance",
+        type=float,
+        default=2.1,
+        help="Minimum allowed distance within initial and target point sets.",
+    )
     parser.add_argument("--nominal-speed", type=float, default=1.0, help="Speed used to estimate arrival times.")
     parser.add_argument(
         "--scenarios",
@@ -102,9 +118,39 @@ def resolve_output_dir(requested: Path) -> Path:
     return requested
 
 
-def random_points(rng: np.random.Generator, n: int, xy_span: float, z: float) -> np.ndarray:
-    xy = rng.uniform(-xy_span, xy_span, size=(n, 2))
-    return np.column_stack([xy, np.full(n, z)])
+def minimum_pair_distance(points: np.ndarray) -> float:
+    if len(points) < 2:
+        return float("inf")
+    return min(
+        float(np.linalg.norm(points[i] - points[j]))
+        for i, j in itertools.combinations(range(len(points)), 2)
+    )
+
+
+def feasible_random_points(
+    rng: np.random.Generator,
+    n: int,
+    xy_span: float,
+    z: float,
+    min_distance: float,
+    max_attempts: int = 10000,
+) -> np.ndarray:
+    """Generate planar points using sequential hard-core rejection sampling."""
+    accepted: List[np.ndarray] = []
+    for _ in range(max_attempts):
+        candidate = np.asarray([
+            rng.uniform(-xy_span, xy_span),
+            rng.uniform(-xy_span, xy_span),
+            z,
+        ])
+        if all(float(np.linalg.norm(candidate - point)) >= min_distance for point in accepted):
+            accepted.append(candidate)
+            if len(accepted) == n:
+                return np.asarray(accepted)
+    raise RuntimeError(
+        f"Could not place {n} points at least {min_distance} m apart "
+        f"inside xy_span={xy_span}"
+    )
 
 
 def circle_points(n: int, radius: float, z: float, phase: float = 0.0) -> np.ndarray:
@@ -112,32 +158,50 @@ def circle_points(n: int, radius: float, z: float, phase: float = 0.0) -> np.nda
     return np.column_stack([radius * np.cos(angles), radius * np.sin(angles), np.full(n, z)])
 
 
-def generate_scenario(name: str, trial_id: int, rng: np.random.Generator) -> tuple[np.ndarray, np.ndarray]:
+def generate_scenario(
+    name: str,
+    trial_id: int,
+    rng: np.random.Generator,
+    min_distance: float = 2.1,
+) -> tuple[np.ndarray, np.ndarray]:
     if name == "small":
-        initial = random_points(rng, 3, xy_span=4.0, z=3.0)
+        initial = feasible_random_points(rng, 3, xy_span=4.0, z=3.0, min_distance=min_distance)
         targets = circle_points(3, radius=3.0, z=3.0, phase=0.2 * trial_id)
     elif name == "medium":
-        initial = random_points(rng, 5, xy_span=6.0, z=4.0)
+        initial = feasible_random_points(rng, 5, xy_span=6.0, z=4.0, min_distance=min_distance)
         targets = circle_points(5, radius=4.0, z=4.0, phase=0.1 * trial_id)
     elif name == "large":
-        initial = random_points(rng, 8, xy_span=8.0, z=4.0)
+        initial = feasible_random_points(rng, 8, xy_span=8.0, z=4.0, min_distance=min_distance)
         targets = circle_points(8, radius=5.0, z=4.0, phase=0.07 * trial_id)
     elif name == "dense":
-        initial = random_points(rng, 8, xy_span=1.8, z=3.0)
-        targets = random_points(rng, 8, xy_span=2.2, z=3.0)
+        initial = feasible_random_points(rng, 8, xy_span=4.0, z=3.0, min_distance=min_distance)
+        targets = circle_points(8, radius=3.2, z=3.0, phase=0.05 * trial_id)
     elif name == "crossing-prone":
         # Equal-altitude Euclidean bipartite matching naturally uncrosses straight
         # segments. Coupling reversed Y order to matching altitude levels creates a
-        # realistic 3-D distance optimum whose XY projection is crossing-prone.
-        n = 8
-        y = np.linspace(-2.0, 2.0, n)
-        z = np.linspace(2.0, 8.0, n)
-        initial = np.column_stack([np.full(n, -5.0), y, z])
-        targets = np.column_stack([np.full(n, 5.0), y[::-1], z])
-        initial += rng.normal(0.0, 0.04, size=initial.shape)
-        targets += rng.normal(0.0, 0.04, size=targets.shape)
+        # 3-D distance optimum whose XY projection is crossing-prone. The wider
+        # Y/Z spacing keeps both endpoint sets feasible before trajectories start.
+        n = 5
+        y = np.linspace(-3.2, 3.2, n)
+        z = np.linspace(2.0, 8.4, n)
+        base_initial = np.column_stack([np.full(n, -5.0), y, z])
+        base_targets = np.column_stack([np.full(n, 5.0), y[::-1], z])
+        for _ in range(10000):
+            initial = base_initial + rng.normal(0.0, 0.04, size=base_initial.shape)
+            targets = base_targets + rng.normal(0.0, 0.04, size=base_targets.shape)
+            if (
+                minimum_pair_distance(initial) >= min_distance
+                and minimum_pair_distance(targets) >= min_distance
+            ):
+                break
+        else:
+            raise RuntimeError("Could not generate a feasible crossing-prone scenario")
     else:
         raise ValueError(f"Unknown scenario: {name}")
+    if minimum_pair_distance(initial) < min_distance:
+        raise AssertionError(f"{name} initial points violate the scenario distance constraint")
+    if minimum_pair_distance(targets) < min_distance:
+        raise AssertionError(f"{name} target points violate the scenario distance constraint")
     return initial, targets
 
 
@@ -228,6 +292,7 @@ def evaluate_assignment(
     assignment: Sequence[int],
     duration: float,
     safety_distance: float,
+    critical_distance: float,
     nominal_speed: float,
 ) -> ExtendedMetrics:
     base = evaluator.evaluate(initial, targets, assignment, duration)
@@ -235,9 +300,11 @@ def evaluate_assignment(
     trajectories = evaluator.sample_nominal_trajectories(initial, assigned_targets, duration)
 
     violation_count = 0
+    critical_violation_count = 0
     for i, j in itertools.combinations(range(len(initial)), 2):
         distances = np.linalg.norm(trajectories[i] - trajectories[j], axis=1)
         violation_count += int(np.count_nonzero(distances < safety_distance))
+        critical_violation_count += int(np.count_nonzero(distances < critical_distance))
 
     path_lengths = np.linalg.norm(assigned_targets - initial, axis=1)
     arrival_times = path_lengths / nominal_speed
@@ -245,8 +312,10 @@ def evaluate_assignment(
     return ExtendedMetrics(
         assignment_metrics=base,
         safety_violation_count=violation_count,
+        critical_violation_count=critical_violation_count,
         arrival_time_variance=arrival_variance,
         failed_assignment=int(violation_count > 0),
+        critical_failed_assignment=int(critical_violation_count > 0),
     )
 
 
@@ -269,11 +338,17 @@ def validate_args(args: argparse.Namespace) -> None:
         "--duration": args.duration,
         "--sample-hz": args.sample_hz,
         "--safety-distance": args.safety_distance,
+        "--critical-distance": args.critical_distance,
+        "--scenario-min-distance": args.scenario_min_distance,
         "--nominal-speed": args.nominal_speed,
     }
     for name, value in positive.items():
         if value <= 0:
             raise ValueError(f"{name} must be positive")
+    if args.critical_distance >= args.safety_distance:
+        raise ValueError("--critical-distance must be lower than --safety-distance")
+    if args.scenario_min_distance < args.safety_distance:
+        raise ValueError("--scenario-min-distance must be at least --safety-distance")
 
 
 def run_experiment(args: argparse.Namespace) -> Path:
@@ -291,6 +366,8 @@ def run_experiment(args: argparse.Namespace) -> Path:
         "duration_seconds": args.duration,
         "sample_hz": args.sample_hz,
         "safety_distance_m": args.safety_distance,
+        "critical_distance_m": args.critical_distance,
+        "scenario_min_distance_m": args.scenario_min_distance,
         "nominal_speed_mps": args.nominal_speed,
         "cost_weights": {
             "distance": 1.0,
@@ -300,12 +377,24 @@ def run_experiment(args: argparse.Namespace) -> Path:
         },
         "crossing_prone_geometry": {
             "x_m": [-5.0, 5.0],
-            "y_span_m": [-2.0, 2.0],
-            "z_span_m": [2.0, 8.0],
+            "num_uav": 5,
+            "y_span_m": [-3.2, 3.2],
+            "z_span_m": [2.0, 8.4],
             "noise_std_m": 0.04,
         },
+        "dense_geometry": {
+            "num_uav": 8,
+            "target_shape": "circle",
+            "target_radius_m": 3.2,
+            "initial_xy_span_m": 4.0,
+        },
+        "scenario_feasibility_definition": (
+            "minimum pairwise distance in both endpoint sets >= scenario_min_distance_m"
+        ),
         "safety_violation_definition": "pair-time samples with distance < safety_distance_m",
         "failed_assignment_definition": "safety_violation_count > 0",
+        "critical_violation_definition": "pair-time samples with distance < critical_distance_m",
+        "critical_failed_assignment_definition": "critical_violation_count > 0",
         "arrival_time_variance_definition": "population variance of path_length / nominal_speed_mps",
     }
     (output_dir / "run_config.json").write_text(
@@ -329,7 +418,12 @@ def run_experiment(args: argparse.Namespace) -> Path:
             for trial_id in range(args.trials):
                 scenario_seed = int(master_rng.integers(0, 2**31 - 1))
                 scenario_rng = np.random.default_rng(scenario_seed)
-                initial, targets = generate_scenario(scenario, trial_id, scenario_rng)
+                initial, targets = generate_scenario(
+                    scenario,
+                    trial_id,
+                    scenario_rng,
+                    min_distance=args.scenario_min_distance,
+                )
                 scenario_handle.write(json.dumps({
                     "trial_id": trial_id,
                     "scenario": scenario,
@@ -356,6 +450,7 @@ def run_experiment(args: argparse.Namespace) -> Path:
                         assignment,
                         args.duration,
                         args.safety_distance,
+                        args.critical_distance,
                         args.nominal_speed,
                     )
                     base = metrics.assignment_metrics
@@ -373,8 +468,10 @@ def run_experiment(args: argparse.Namespace) -> Path:
                         "min_distance": format_float(base.min_distance),
                         "safety_cost": format_float(base.safety),
                         "safety_violation_count": metrics.safety_violation_count,
+                        "critical_violation_count": metrics.critical_violation_count,
                         "arrival_time_variance": format_float(metrics.arrival_time_variance),
                         "failed_assignment": metrics.failed_assignment,
+                        "critical_failed_assignment": metrics.critical_failed_assignment,
                         "total_cost": format_float(base.total),
                         "compute_time_ms": format_float(compute_time_ms),
                     })

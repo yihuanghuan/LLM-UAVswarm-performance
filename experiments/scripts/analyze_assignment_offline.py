@@ -44,8 +44,10 @@ SUMMARY_FIELDS = [
     "mean_min_distance",
     "median_min_distance",
     "mean_safety_violation_count",
+    "mean_critical_violation_count",
     "mean_arrival_time_variance",
     "failed_assignment_ratio",
+    "critical_failed_assignment_ratio",
     "mean_compute_time_ms",
 ]
 
@@ -102,8 +104,10 @@ def summarize(rows: Sequence[Dict[str, str]]) -> List[Dict[str, object]]:
                 "mean_min_distance": mean(items, "min_distance"),
                 "median_min_distance": float(np.median(values(items, "min_distance"))),
                 "mean_safety_violation_count": mean(items, "safety_violation_count"),
+                "mean_critical_violation_count": mean(items, "critical_violation_count"),
                 "mean_arrival_time_variance": mean(items, "arrival_time_variance"),
                 "failed_assignment_ratio": mean(items, "failed_assignment"),
+                "critical_failed_assignment_ratio": mean(items, "critical_failed_assignment"),
                 "mean_compute_time_ms": mean(items, "compute_time_ms"),
             })
     return summary
@@ -251,8 +255,9 @@ def write_markdown_table(summary: Sequence[Dict[str, object]], path: Path) -> No
         "# Experiment 04 Assignment Baseline Summary",
         "",
         "| Method | Total path (m) | Avg path (m) | XY crossings | Min distance (m) | "
-        "Safety violations | Arrival variance (s²) | Failed ratio | Compute (ms) |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "Safety violations | Critical violations | Safety-margin failure | Critical failure | "
+        "Arrival variance (s²) | Compute (ms) |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for row in overall:
         lines.append(
@@ -262,8 +267,10 @@ def write_markdown_table(summary: Sequence[Dict[str, object]], path: Path) -> No
             f"| {row['mean_xy_crossings']:.3f} "
             f"| {row['mean_min_distance']:.3f} "
             f"| {row['mean_safety_violation_count']:.3f} "
-            f"| {row['mean_arrival_time_variance']:.3f} "
+            f"| {row['mean_critical_violation_count']:.3f} "
             f"| {row['failed_assignment_ratio']:.3f} "
+            f"| {row['critical_failed_assignment_ratio']:.3f} "
+            f"| {row['mean_arrival_time_variance']:.3f} "
             f"| {row['mean_compute_time_ms']:.3f} |"
         )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
