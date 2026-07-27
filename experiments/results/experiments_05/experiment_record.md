@@ -7,7 +7,7 @@
 - Base: `gazebo-experiment-v1` (`df5c5bc9b7a1af695c41dea5744bcb546b7f0a47`)
 - Status: completed successfully
 - Result directory: `experiments/results/experiments_05`
-- Experiment artifact commit SHA: recorded after the artifact commit
+- Experiment artifact commit SHA: `774a24ee193f505c442066f67e90982faf95de7d`
 - Branch-tip commit SHA: recorded in the final Git handoff because a commit cannot contain its own SHA
 
 ## Configuration
