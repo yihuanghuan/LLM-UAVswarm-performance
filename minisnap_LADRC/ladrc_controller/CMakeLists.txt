@@ -76,4 +76,10 @@ install(DIRECTORY
   DESTINATION share/${PROJECT_NAME}/launch
 )
 
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(test_trajectory_profiles test/test_trajectory_profiles.cpp)
+  target_include_directories(test_trajectory_profiles PRIVATE include)
+endif()
+
 ament_package()

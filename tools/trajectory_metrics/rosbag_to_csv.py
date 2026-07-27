@@ -16,6 +16,10 @@ DEFAULT_TOPIC_PATTERNS = [
     "/uav*/trajectory_metrics",
     "/uav*/control_adaptation",
     "/uav*/odom",
+    "/uav*/status",
+    "/uav*/swarm_command",
+    "/px4_*/fmu/out/vehicle_odometry",
+    "/fmu/out/vehicle_odometry",
 ]
 
 

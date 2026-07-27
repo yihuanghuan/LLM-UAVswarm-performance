@@ -30,6 +30,18 @@ def generate_launch_description():
             description='Whether to publish IAPF acceleration feedforward'
         ),
 
+        DeclareLaunchArgument(
+            'enable_ladrc_accel_feedforward',
+            default_value='false',
+            description='Whether to publish LADRC acceleration feedforward'
+        ),
+
+        DeclareLaunchArgument(
+            'trajectory_profile',
+            default_value='minimum_jerk',
+            description='step/linear/minimum_jerk'
+        ),
+
         Node(
             package='ladrc_controller',
             executable='ladrc_position_controller_node',
@@ -41,6 +53,12 @@ def generate_launch_description():
                     'enable_iapf_accel_feedforward': ParameterValue(
                         LaunchConfiguration('enable_iapf_accel_feedforward'),
                         value_type=bool),
+                    'enable_ladrc_accel_feedforward': ParameterValue(
+                        LaunchConfiguration('enable_ladrc_accel_feedforward'),
+                        value_type=bool),
+                    'trajectory_profile': ParameterValue(
+                        LaunchConfiguration('trajectory_profile'),
+                        value_type=str),
                 },
             ],
             output='screen'

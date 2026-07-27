@@ -71,6 +71,31 @@ python3 experiments/scripts/eval_trajectory_profiles.py \
 输出：`trajectory_profile_results.csv`、`trajectory_profile_timeseries.csv`。
 summary 固定字段包括 `max_velocity/max_acceleration/max_jerk/integrated_squared_jerk/final_error`。
 
+### Experiment 06 closed-loop tracking
+
+实验 06 在 Gazebo 中比较 `px4_step`、`linear_ladrc` 和
+`minimum_jerk_ladrc`。运行器每个 trial 都独立冷启动 PX4/Gazebo，并拒绝覆盖
+已有数据：
+
+```bash
+python3 experiments/scripts/run_experiment_06.py \
+  --output-dir /tmp/experiments_06_staging
+
+python3 experiments/scripts/analyze_tracking_performance.py \
+  /tmp/experiments_06_staging \
+  --output-dir /tmp/experiments_06_staging
+```
+
+控制节点对应的运行参数为：
+
+```text
+trajectory_profile:=step|linear|minimum_jerk
+enable_ladrc_accel_feedforward:=true|false
+```
+
+正式实验固定输出 RMSE、最大跟踪误差、arrival time、连续稳定 1 秒的
+settling time、overshoot、速度、加速度、arrival-time variance 和终点误差。
+
 ### analyze_pairwise_distance.py
 
 读取包含 `timestamp,uav_id,x,y,z` 的 odom CSV，计算所有 UAV 两两距离。
