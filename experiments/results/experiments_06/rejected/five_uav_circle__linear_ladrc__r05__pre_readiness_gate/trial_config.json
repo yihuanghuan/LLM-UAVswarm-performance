@@ -1,0 +1,51 @@
+{
+  "trial_id": "five_uav_circle__linear_ladrc__r05",
+  "scenario": "five_uav_circle",
+  "method": "linear_ladrc",
+  "repeat": 5,
+  "num_uav": 5,
+  "uav_ids": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "targets": {
+    "1": [
+      11.23606798,
+      5.19577393,
+      5.0
+    ],
+    "2": [
+      6.76393202,
+      6.64885899,
+      5.0
+    ],
+    "3": [
+      14.0,
+      9.0,
+      5.0
+    ],
+    "4": [
+      6.76393202,
+      11.35114101,
+      5.0
+    ],
+    "5": [
+      11.23606798,
+      12.80422607,
+      5.0
+    ]
+  },
+  "duration_s": 8.0,
+  "trajectory_profile": "linear",
+  "enable_ladrc_accel_feedforward": true,
+  "motion_style": "normal",
+  "safety_factor": 0.0,
+  "enable_iapf_accel_feedforward": false,
+  "position_threshold_m": 0.3,
+  "velocity_threshold_mps": 0.3,
+  "settling_dwell_s": 1.0,
+  "cold_start": true
+}
