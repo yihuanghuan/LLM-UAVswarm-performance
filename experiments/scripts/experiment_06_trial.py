@@ -16,6 +16,8 @@ from rclpy.duration import Duration
 from rclpy.node import Node
 
 from geometry_msgs.msg import Point
+from px4_msgs.msg import VehicleStatus
+from rclpy.qos import qos_profile_sensor_data
 from uav_swarm_interfaces.msg import TrajectoryMetrics, UAVSwarmCommand
 
 from experiment_06_config import METHODS, SCENARIOS, validate
@@ -29,7 +31,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--repeat", type=int, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--timeout-after-duration", type=float, default=20.0)
-    parser.add_argument("--discovery-timeout", type=float, default=90.0)
+    parser.add_argument("--discovery-timeout", type=float, default=30.0)
     return parser.parse_args()
 
 
@@ -40,6 +42,7 @@ class TrialNode(Node):
         self.config = SCENARIOS[args.scenario]
         self.ids = list(self.config["uav_ids"])
         self.latest: Dict[int, TrajectoryMetrics] = {}
+        self.vehicle_status: Dict[int, VehicleStatus] = {}
         self.ready_odom = set()
         self.command_publishers = {
             uid: self.create_publisher(UAVSwarmCommand, f"/uav{uid}/swarm_command", 10)
@@ -63,6 +66,18 @@ class TrialNode(Node):
             )
             for uid in self.ids
         ]
+        self.vehicle_status_subscriptions = [
+            self.create_subscription(
+                VehicleStatus,
+                (
+                    "/fmu/out/vehicle_status"
+                    if uid == 0 else f"/px4_{uid}/fmu/out/vehicle_status"
+                ),
+                lambda msg, uid=uid: self.vehicle_status.__setitem__(uid, msg),
+                qos_profile_sensor_data,
+            )
+            for uid in self.ids
+        ]
 
     def wait_ready(self) -> None:
         deadline = time.monotonic() + self.args.discovery_timeout
@@ -72,9 +87,28 @@ class TrialNode(Node):
                 self.count_subscribers(f"/uav{uid}/swarm_command") > 0
                 for uid in self.ids
             )
-            if connected and self.ready_odom == set(self.ids):
+            flight_ready = all(
+                uid in self.vehicle_status
+                and self.vehicle_status[uid].arming_state
+                    == VehicleStatus.ARMING_STATE_ARMED
+                and self.vehicle_status[uid].nav_state
+                    == VehicleStatus.NAVIGATION_STATE_OFFBOARD
+                and not self.vehicle_status[uid].failsafe
+                for uid in self.ids
+            )
+            if connected and self.ready_odom == set(self.ids) and flight_ready:
                 return
-        raise TimeoutError("controllers did not expose commands and ready odometry")
+        states = {
+            uid: {
+                "arming_state": self.vehicle_status[uid].arming_state,
+                "nav_state": self.vehicle_status[uid].nav_state,
+                "failsafe": self.vehicle_status[uid].failsafe,
+            }
+            for uid in self.ids if uid in self.vehicle_status
+        }
+        raise TimeoutError(
+            f"controllers/PX4 did not reach armed OFFBOARD readiness: {states}"
+        )
 
     def publish_mission(self) -> float:
         start_delay_s = 2.0

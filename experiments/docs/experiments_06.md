@@ -109,6 +109,8 @@ trajectory_profile:=step|linear|minimum_jerk
 - 场景：单机 8 秒点到点、5 机 8 秒线到圆、8 机 12 秒线到圆。
 - 每个场景和方法进行 5 次独立冷启动，共 45 次正式 trial。
 - 全部实验使用 `normal`，关闭 IAPF，采用固定非交叉目标分配。
+- 正式任务发布前，每架 PX4 必须确认处于 armed、OFFBOARD 且非 failsafe；
+  否则该冷启动尝试进入 `rejected/` 并重试。
 - tracking RMSE 仅统计命令轨迹时段。
 - arrival 条件为目标误差小于 0.3 m 且速度小于 0.3 m/s。
 - settling time 要求 arrival 条件连续保持 1 秒；不满足时保留为缺失值，

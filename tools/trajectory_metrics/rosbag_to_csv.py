@@ -19,7 +19,9 @@ DEFAULT_TOPIC_PATTERNS = [
     "/uav*/status",
     "/uav*/swarm_command",
     "/px4_*/fmu/out/vehicle_odometry",
+    "/px4_*/fmu/out/vehicle_status",
     "/fmu/out/vehicle_odometry",
+    "/fmu/out/vehicle_status",
 ]
 
 

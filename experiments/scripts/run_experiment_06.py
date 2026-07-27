@@ -131,9 +131,13 @@ def topic_list(scenario: str) -> List[str]:
         for suffix in ("swarm_command", "status", "odom", "trajectory_metrics")
     ]
     if ids == [0]:
-        topics.append("/fmu/out/vehicle_odometry")
+        topics.extend([
+            "/fmu/out/vehicle_odometry",
+            "/fmu/out/vehicle_status",
+        ])
     else:
         topics.extend(f"/px4_{uid}/fmu/out/vehicle_odometry" for uid in ids)
+        topics.extend(f"/px4_{uid}/fmu/out/vehicle_status" for uid in ids)
     return topics
 
 
@@ -161,6 +165,7 @@ def write_trial_config(
         "velocity_threshold_mps": 0.3,
         "settling_dwell_s": 1.0,
         "cold_start": True,
+        "readiness_gate": "all PX4 vehicles armed, OFFBOARD, and not failsafe",
     }
     (trial_dir / "trial_config.json").write_text(
         json.dumps(config, indent=2), encoding="utf-8"
@@ -269,7 +274,9 @@ def run_trial(
             "/uav*/trajectory_metrics", "/uav*/swarm_command",
             "/uav*/status", "/uav*/odom",
             "/px4_*/fmu/out/vehicle_odometry",
+            "/px4_*/fmu/out/vehicle_status",
             "/fmu/out/vehicle_odometry",
+            "/fmu/out/vehicle_status",
         ])
         uav_rows, _ = analyze_trial(trial_dir)
         if len(uav_rows) != len(ids):
