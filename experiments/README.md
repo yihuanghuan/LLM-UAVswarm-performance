@@ -46,17 +46,24 @@ python3 experiments/scripts/eval_lfs_compiler.py \
 
 ### eval_assignment_offline.py
 
-离线比较 `random`、`nearest_neighbor`、`hungarian_distance`、`safety_aware_hungarian` 分配策略。
-自动生成 `small`、`medium`、`large`、`dense`、`crossing-prone` 五类场景。
+实验 04 离线比较 `random`、`nearest_neighbor`、`hungarian_distance`、
+`hungarian_crossing_penalty`、`safety_aware_local_swap` 五种分配策略。
+自动生成 `small`、`medium`、`large`、`dense`、`crossing-prone` 五类场景，
+并保存每次试验的场景坐标和分配索引以便复算。
 
 ```bash
 python3 experiments/scripts/eval_assignment_offline.py \
-  --trials 50 \
-  --output experiments/results/assignment_results.csv
+  --trials 100 \
+  --output-dir experiments/results/experiments_04
+
+python3 experiments/scripts/analyze_assignment_offline.py \
+  --input-dir experiments/results/experiments_04
 ```
 
-输出：`experiments/results/assignment_results.csv`。
-固定字段：`trial_id/scenario/num_uav/method/total_path_length/avg_path_length/xy_crossings/proximity_crossings/min_distance/safety_cost/total_cost/compute_time_ms`。
+输出目录包含原始 CSV、场景 JSONL、汇总 CSV、Markdown 表格、配置、分析清单，
+以及 min distance 箱线图、crossing 柱状图、定性路径图和 Pareto 图。
+默认每个场景运行 100 次；安全违规按同步名义轨迹中低于 2 m 的机对采样点计数。
+如果指定目录已有内容，评估脚本会自动创建带 UTC 时间戳的子目录，绝不覆盖旧数据。
 
 ### eval_trajectory_profiles.py
 

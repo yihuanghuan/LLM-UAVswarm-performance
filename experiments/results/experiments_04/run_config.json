@@ -1,0 +1,48 @@
+{
+  "experiment": "experiments_04",
+  "created_at_utc": "2026-07-27T02:33:13Z",
+  "seed": 20260708,
+  "trials_per_scenario": 100,
+  "scenarios": [
+    "small",
+    "medium",
+    "large",
+    "dense",
+    "crossing-prone"
+  ],
+  "methods": [
+    "random",
+    "nearest_neighbor",
+    "hungarian_distance",
+    "hungarian_crossing_penalty",
+    "safety_aware_local_swap"
+  ],
+  "duration_seconds": 8.0,
+  "sample_hz": 20.0,
+  "safety_distance_m": 2.0,
+  "nominal_speed_mps": 1.0,
+  "cost_weights": {
+    "distance": 1.0,
+    "xy_crossing": 10.0,
+    "proximity_crossing": 10.0,
+    "safety": 1.0
+  },
+  "crossing_prone_geometry": {
+    "x_m": [
+      -5.0,
+      5.0
+    ],
+    "y_span_m": [
+      -2.0,
+      2.0
+    ],
+    "z_span_m": [
+      2.0,
+      8.0
+    ],
+    "noise_std_m": 0.04
+  },
+  "safety_violation_definition": "pair-time samples with distance < safety_distance_m",
+  "failed_assignment_definition": "safety_violation_count > 0",
+  "arrival_time_variance_definition": "population variance of path_length / nominal_speed_mps"
+}
