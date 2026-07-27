@@ -1,0 +1,46 @@
+{
+  "experiment": "experiments_02",
+  "run_id": "minimax_m27_100x4",
+  "base_tag": "gazebo-experiment-v1",
+  "base_commit": "df5c5bc9b7a1af695c41dea5744bcb546b7f0a47",
+  "starting_commit": "df5c5bc9b7a1af695c41dea5744bcb546b7f0a47",
+  "branch": "exp/02-lfs-ablation",
+  "started_at_utc": "2026-07-27T01:37:55.621923+00:00",
+  "dataset_path": "experiments/commands/experiment_02_commands.json",
+  "dataset_sha256": "99c12a393da54f1c2b0dab3be4ef6e4f9869901f31ed891b413de62084f7899c",
+  "dataset_size": 100,
+  "valid_commands": 82,
+  "invalid_commands": 18,
+  "model": "MiniMax-M2.7-highspeed",
+  "base_url": "https://api.minimax.chat/v1",
+  "temperature": 0.0,
+  "top_p": 0.01,
+  "max_tokens": 4000,
+  "max_retries": 3,
+  "timeout": 60.0,
+  "workers": 4,
+  "methods": [
+    "direct_waypoint",
+    "task_json_no_schema",
+    "lfs_schema",
+    "lfs_schema_semantic"
+  ],
+  "prompts": {
+    "direct_waypoint": {
+      "sha256": "fdef231c979d234a4bf96696ba7462015784106d5c1a561247fe150b47591330",
+      "prompt": "你负责把自然语言无人机编队指令直接转换为逐机目标点，不经过参数化编队编译器。\n输出 {\"tasks\":[...]}，每个任务严格包含：\ntask_id、formation_type、duration、motion_style、safety_factor、trigger、uav_to_goal。\nuav_to_goal 是 [{\"uav_id\":1,\"goal\":[x,y,z]}, ...]，必须覆盖任务涉及的每架无人机且编号唯一。\nformation_type 仅限 Circle/Line/Sphere/Triangle/Polygon/Lineup/Free；\nmotion_style 仅限 smooth/normal/aggressive；trigger 仅限 direct/hover-and-wait/continuous。\n请自行计算满足指令中心、半径或间距的目标点。并行任务添加相同 parallel_group。\n默认 motion_style=\"normal\"、safety_factor=1.0、trigger=\"direct\"。\n\n示例：1到3号机以[0,0,3]为中心组成半径2米的圆形编队，5秒完成\n输出：{\"tasks\":[{\"task_id\":1,\"formation_type\":\"Circle\",\"duration\":5,\n\"motion_style\":\"normal\",\"safety_factor\":1.0,\"trigger\":\"direct\",\"uav_to_goal\":[\n{\"uav_id\":1,\"goal\":[2,0,3]},{\"uav_id\":2,\"goal\":[-1,1.732,3]},\n{\"uav_id\":3,\"goal\":[-1,-1.732,3]}]}]}\n\n若指令与无人机编队无关、使用不存在的无人机、缺少编队类型或存在互相冲突的歧义，\n只返回 {\"error\":{\"category\":\"unrelated|unknown_uav|missing_formation|ambiguous\"}}。\nROS 信息给出的编号是全部可用无人机。只返回纯 JSON，不要解释或使用 Markdown。"
+    },
+    "task_json_no_schema": {
+      "sha256": "deaeebddf528542d2d52f6934f829ea1aa12d81743049f56d34cea489c9dc6f5",
+      "prompt": "你负责把自然语言无人机编队指令转换成调度器可直接读取的普通 JSON，不使用 LFS。\n输出 {\"task_sequences\":[...]}。每个任务严格包含：\ntask_sequence_id、duration_seconds、uav_id、uav_count、trigger_condition、wait_time、\niapf_safety_margin_factor、motion_profile、constraints、global_center、generation_mode、parametric_data。\ngeneration_mode 固定为 \"parametric\"；parametric_data 包含 formation_type 和 formation_radius。\nformation_type 仅限 Circle/Line/Sphere/Triangle/Polygon/Lineup/Free；\ntrigger_condition 仅限 direct_execution/hover_and_wait/continuous_transit；\nmotion_profile 仅限 smooth/normal/aggressive。并行任务添加相同 parallel_group。\n默认 motion_profile=\"normal\"、iapf_safety_margin_factor=1.0、trigger_condition=\"direct_execution\"。\nconstraints 默认 [\"minimal_topology_change\",\"no_trajectory_cross\",\"keep_safety_distance\"]。\n\n示例：1到3号机以[0,0,3]为中心组成半径2米的圆形编队，5秒完成\n输出：{\"task_sequences\":[{\"task_sequence_id\":1,\"duration_seconds\":5,\"uav_id\":[1,2,3],\n\"uav_count\":3,\"trigger_condition\":\"direct_execution\",\"wait_time\":null,\n\"iapf_safety_margin_factor\":1.0,\"motion_profile\":\"normal\",\n\"constraints\":[\"minimal_topology_change\",\"no_trajectory_cross\",\"keep_safety_distance\"],\n\"global_center\":[0,0,3],\"generation_mode\":\"parametric\",\n\"parametric_data\":{\"formation_type\":\"Circle\",\"formation_radius\":2}}]}\n\n若指令与无人机编队无关、使用不存在的无人机、缺少编队类型或存在互相冲突的歧义，\n只返回 {\"error\":{\"category\":\"unrelated|unknown_uav|missing_formation|ambiguous\"}}。\nROS 信息给出的编号是全部可用无人机。只返回纯 JSON，不要解释或使用 Markdown。"
+    },
+    "lfs_schema": {
+      "sha256": "07441d0abaf0f4a77a46c778b1d363c5d99de7921eab7c8ee32cbd3ac2f4afe7",
+      "prompt": "你是无人机集群 Language-to-Formation Specification (LFS) 解析器。\n有效输出必须是 {\"lfs_version\":\"1.0\",\"tasks\":[...]}，每个任务严格包含：\ntask_id、U、F、c、r、T、m、s、q。\nU 是无人机整数数组；F 仅限 Circle/Line/Sphere/Triangle/Polygon/Lineup/Free；\nc 是三维中心；r 是正的半径或间距；T 是正的秒数；\nm 仅限 smooth/normal/aggressive；s 是非负安全系数；\nq 仅限 direct/hover-and-wait/continuous。并行任务添加相同 parallel_group。\n默认 m=\"normal\"、s=1.0、q=\"direct\"；不得输出逐机目标点。\n\n示例：1到3号机以[0,0,3]为中心组成半径2米的圆形编队，5秒完成\n输出：{\"lfs_version\":\"1.0\",\"tasks\":[{\"task_id\":1,\"U\":[1,2,3],\"F\":\"Circle\",\n\"c\":[0,0,3],\"r\":2,\"T\":5,\"m\":\"normal\",\"s\":1.0,\"q\":\"direct\"}]}\n\n示例：1到4号机先用5秒在[3,0,4]组成间距2米的直线，随后用7秒在[0,3,4]组成半径3米的圆形\n输出：{\"lfs_version\":\"1.0\",\"tasks\":[\n{\"task_id\":1,\"U\":[1,2,3,4],\"F\":\"Line\",\"c\":[3,0,4],\"r\":2,\"T\":5,\n\"m\":\"normal\",\"s\":1.0,\"q\":\"continuous\"},\n{\"task_id\":2,\"U\":[1,2,3,4],\"F\":\"Circle\",\"c\":[0,3,4],\"r\":3,\"T\":7,\n\"m\":\"normal\",\"s\":1.0,\"q\":\"direct\"}]}\n\n若指令与无人机编队无关、使用不存在的无人机、缺少编队类型或存在互相冲突的歧义，\n只返回 {\"error\":{\"category\":\"unrelated|unknown_uav|missing_formation|ambiguous\"}}。\nROS 信息给出的编号是全部可用无人机。只返回纯 JSON，不要解释或使用 Markdown。"
+    },
+    "lfs_schema_semantic": {
+      "sha256": "07441d0abaf0f4a77a46c778b1d363c5d99de7921eab7c8ee32cbd3ac2f4afe7",
+      "prompt": "你是无人机集群 Language-to-Formation Specification (LFS) 解析器。\n有效输出必须是 {\"lfs_version\":\"1.0\",\"tasks\":[...]}，每个任务严格包含：\ntask_id、U、F、c、r、T、m、s、q。\nU 是无人机整数数组；F 仅限 Circle/Line/Sphere/Triangle/Polygon/Lineup/Free；\nc 是三维中心；r 是正的半径或间距；T 是正的秒数；\nm 仅限 smooth/normal/aggressive；s 是非负安全系数；\nq 仅限 direct/hover-and-wait/continuous。并行任务添加相同 parallel_group。\n默认 m=\"normal\"、s=1.0、q=\"direct\"；不得输出逐机目标点。\n\n示例：1到3号机以[0,0,3]为中心组成半径2米的圆形编队，5秒完成\n输出：{\"lfs_version\":\"1.0\",\"tasks\":[{\"task_id\":1,\"U\":[1,2,3],\"F\":\"Circle\",\n\"c\":[0,0,3],\"r\":2,\"T\":5,\"m\":\"normal\",\"s\":1.0,\"q\":\"direct\"}]}\n\n示例：1到4号机先用5秒在[3,0,4]组成间距2米的直线，随后用7秒在[0,3,4]组成半径3米的圆形\n输出：{\"lfs_version\":\"1.0\",\"tasks\":[\n{\"task_id\":1,\"U\":[1,2,3,4],\"F\":\"Line\",\"c\":[3,0,4],\"r\":2,\"T\":5,\n\"m\":\"normal\",\"s\":1.0,\"q\":\"continuous\"},\n{\"task_id\":2,\"U\":[1,2,3,4],\"F\":\"Circle\",\"c\":[0,3,4],\"r\":3,\"T\":7,\n\"m\":\"normal\",\"s\":1.0,\"q\":\"direct\"}]}\n\n若指令与无人机编队无关、使用不存在的无人机、缺少编队类型或存在互相冲突的歧义，\n只返回 {\"error\":{\"category\":\"unrelated|unknown_uav|missing_formation|ambiguous\"}}。\nROS 信息给出的编号是全部可用无人机。只返回纯 JSON，不要解释或使用 Markdown。"
+    }
+  }
+}

@@ -125,10 +125,28 @@ def validate_and_compile_lfs(
     schema: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     validate_schema(payload, schema)
-
-    compiled = _compile_formal_lfs(payload) if _is_formal_lfs(payload) else _normalize_legacy_payload(payload)
-    _validate_semantics(compiled, available_uav_ids)
+    compiled = compile_lfs(payload)
+    validate_semantics(compiled, available_uav_ids)
     return compiled
+
+
+def compile_lfs(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Compile a formal LFS payload, or normalize a legacy scheduler payload.
+
+    This stage deliberately performs no schema or semantic validation.  Keeping
+    it public allows experiments and other callers to evaluate the validation
+    stages independently while ``validate_and_compile_lfs`` remains the safe
+    production entry point.
+    """
+    return _compile_formal_lfs(payload) if _is_formal_lfs(payload) else _normalize_legacy_payload(payload)
+
+
+def validate_semantics(
+    compiled_payload: Dict[str, Any],
+    available_uav_ids: Optional[Sequence[int]] = None,
+) -> None:
+    """Validate cross-field and runtime semantics on compiled scheduler tasks."""
+    _validate_semantics(compiled_payload, available_uav_ids)
 
 
 def _is_formal_lfs(payload: Dict[str, Any]) -> bool:

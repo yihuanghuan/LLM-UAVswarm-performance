@@ -1,6 +1,12 @@
 import pytest
 
-from location_allocate.lfs_validator import LFSValidationError, validate_and_compile_lfs
+from location_allocate.lfs_validator import (
+    LFSValidationError,
+    compile_lfs,
+    validate_and_compile_lfs,
+    validate_schema,
+    validate_semantics,
+)
 
 
 AVAILABLE_UAV_IDS = [1, 2, 3, 4, 5]
@@ -112,3 +118,14 @@ def test_invalid_motion_style_raises():
 
     with pytest.raises(LFSValidationError, match="schema"):
         validate_and_compile_lfs(payload, AVAILABLE_UAV_IDS)
+
+
+def test_schema_and_semantic_stages_can_be_evaluated_independently():
+    payload = {"lfs_version": "1.0", "tasks": [formal_lfs_task(U=[1, 9])]}
+
+    validate_schema(payload)
+    compiled = compile_lfs(payload)
+
+    assert compiled["task_sequences"][0]["uav_id"] == [1, 9]
+    with pytest.raises(LFSValidationError, match="UAV ID"):
+        validate_semantics(compiled, AVAILABLE_UAV_IDS)

@@ -44,6 +44,37 @@ python3 experiments/scripts/eval_lfs_compiler.py \
 
 输出：`experiments/results/lfs_compiler_results.csv`。
 
+### eval_lfs_ablation.py
+
+实验 2 的端到端 LFS 中间表示消融。对同一批 100 条指令分别运行
+`direct_waypoint`、`task_json_no_schema`、`lfs_schema` 和
+`lfs_schema_semantic`，记录可执行率、纠错次数、字段错误和目标点编译结果。
+
+```bash
+python3 experiments/scripts/eval_lfs_ablation.py \
+  --run-id minimax_m27_100x4 \
+  --method all \
+  --workers 4
+
+# API 中断后保留成功行，仅重跑基础设施错误
+python3 experiments/scripts/eval_lfs_ablation.py \
+  --run-id minimax_m27_100x4 \
+  --method all \
+  --workers 4 \
+  --resume \
+  --retry-api-errors
+```
+
+正式运行完成后生成汇总表、错误比例柱状图和编译流程图：
+
+```bash
+python3 experiments/scripts/analyze_lfs_ablation.py \
+  --run-dir experiments/results/experiments_02/minimax_m27_100x4
+```
+
+实验 2 的所有配置、原始响应、CSV、图表和记录均保存在对应 run 目录中；
+分析脚本要求 400 个唯一的“指令 × 方法”结果且不存在最终 API 基础设施失败。
+
 ### eval_assignment_offline.py
 
 离线比较 `random`、`nearest_neighbor`、`hungarian_distance`、`safety_aware_hungarian` 分配策略。
