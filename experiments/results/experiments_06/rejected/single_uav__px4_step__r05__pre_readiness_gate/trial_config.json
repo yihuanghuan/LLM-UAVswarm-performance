@@ -1,0 +1,27 @@
+{
+  "trial_id": "single_uav__px4_step__r05",
+  "scenario": "single_uav",
+  "method": "px4_step",
+  "repeat": 5,
+  "num_uav": 1,
+  "uav_ids": [
+    0
+  ],
+  "targets": {
+    "0": [
+      6.0,
+      0.0,
+      5.0
+    ]
+  },
+  "duration_s": 8.0,
+  "trajectory_profile": "step",
+  "enable_ladrc_accel_feedforward": false,
+  "motion_style": "normal",
+  "safety_factor": 0.0,
+  "enable_iapf_accel_feedforward": false,
+  "position_threshold_m": 0.3,
+  "velocity_threshold_mps": 0.3,
+  "settling_dwell_s": 1.0,
+  "cold_start": true
+}
