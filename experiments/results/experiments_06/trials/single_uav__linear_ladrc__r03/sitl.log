@@ -1,0 +1,91 @@
+[0/4] Performing build step for 'sitl_gazebo-classic'
+ninja: no work to do.
+[2/4] No install step for 'sitl_gazebo-classic'
+[3/4] Completed 'sitl_gazebo-classic'
+[3/4] cd /home/yihuang/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/simulator_mavlink && /home/yihuang/PX4-Autopilot/Tools/simulation/gazebo-classic/sitl_run.sh /home/yihuang/PX4-Autopilot/build/px4_sitl_default/bin/px4 none iris none /home/yihuang/PX4-Autopilot /home/yihuang/PX4-Autopilot/build/px4_sitl_default
+SITL ARGS
+sitl_bin: /home/yihuang/PX4-Autopilot/build/px4_sitl_default/bin/px4
+debugger: none
+model: iris
+world: none
+src_path: /home/yihuang/PX4-Autopilot
+build_path: /home/yihuang/PX4-Autopilot/build/px4_sitl_default
+GAZEBO_PLUGIN_PATH /opt/ros/humble/lib::/home/yihuang/PX4-Autopilot/build/px4_sitl_default/build_gazebo-classic
+GAZEBO_MODEL_PATH :/home/yihuang/PX4-Autopilot/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models
+LD_LIBRARY_PATH /home/yihuang/learning/LLM_swarm_ws/install/uav_swarm_interfaces/lib:/home/yihuang/learning/LLM_swarm_ws/install/px4_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib:/usr/local/cuda-12.8/lib64:/home/yihuang/PX4-Autopilot/build/px4_sitl_default/build_gazebo-classic
+empty world, setting empty.world as default
+Using: /home/yihuang/PX4-Autopilot/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/iris/iris.sdf
+gzserver not ready yet, trying again!
+SITL COMMAND: "/home/yihuang/PX4-Autopilot/build/px4_sitl_default/bin/px4" "/home/yihuang/PX4-Autopilot/build/px4_sitl_default"/etc
+
+______  __   __    ___ 
+| ___ \ \ \ / /   /   |
+| |_/ /  \ V /   / /| |
+|  __/   /   \  / /_| |
+| |     / /^\ \ \___  |
+\_|     \/   \/     |_/
+
+px4 starting.
+
+INFO  [px4] startup script: /bin/sh etc/init.d-posix/rcS 0
+INFO  [init] found model autostart file as SYS_AUTOSTART=10015
+INFO  [param] selected parameter default file parameters.bson
+INFO  [param] importing from 'parameters.bson'
+INFO  [parameters] BSON document size 404 bytes, decoded 404 bytes (INT32:14, FLOAT:6)
+INFO  [param] selected parameter backup file parameters_backup.bson
+INFO  [dataman] data manager file './dataman' size is 7872608 bytes
+INFO  [init] PX4_SIM_HOSTNAME: localhost
+INFO  [simulator_mavlink] Waiting for simulator to accept connection on TCP port 4560
+INFO  [simulator_mavlink] Simulator connected on TCP port 4560.
+INFO  [lockstep_scheduler] setting initial absolute time to 3368000 us
+WARN  [vehicle_angular_velocity] no gyro selected, using sensor_gyro_fifo:0 1310988
+INFO  [commander] LED: open /dev/led0 failed (22)
+WARN  [health_and_arming_checks] Preflight Fail: ekf2 missing data
+INFO  [uxrce_dds_client] init UDP agent IP:127.0.0.1, port:8888
+INFO  [mavlink] mode: Normal, data rate: 4000000 B/s on udp port 18570 remote port 14550
+INFO  [mavlink] mode: Onboard, data rate: 4000000 B/s on udp port 14580 remote port 14540
+INFO  [mavlink] mode: Onboard, data rate: 4000 B/s on udp port 14280 remote port 14030
+INFO  [mavlink] mode: Gimbal, data rate: 400000 B/s on udp port 13030 remote port 13280
+INFO  [logger] logger started (mode=all)
+INFO  [logger] Start file log (type: full)
+INFO  [logger] [logger] ./log/2026-07-27/08_36_34.ulg	
+INFO  [logger] Opened full log file: ./log/2026-07-27/08_36_34.ulg
+INFO  [mavlink] MAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)
+INFO  [mavlink] MAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)
+INFO  [px4] Startup script returned successfully
+pxh> INFO  [tone_alarm] home set
+INFO  [commander] [32mReady for takeoff![0m
+INFO  [uxrce_dds_client] synchronized with time offset 1785141391057133us
+INFO  [uxrce_dds_client] successfully created rt/fmu/out/battery_status data writer, topic id: 19
+INFO  [uxrce_dds_client] successfully created rt/fmu/out/estimator_status_flags data writer, topic id: 87
+INFO  [uxrce_dds_client] successfully created rt/fmu/out/failsafe_flags data writer, topic id: 93
+INFO  [uxrce_dds_client] successfully created rt/fmu/out/manual_control_setpoint data writer, topic id: 141
+INFO  [uxrce_dds_client] successfully created rt/fmu/out/position_setpoint_triplet data writer, topic id: 180
+INFO  [uxrce_dds_client] successfully created rt/fmu/out/sensor_combined data writer, topic id: 203
+INFO  [uxrce_dds_client] successfully created rt/fmu/out/timesync_status data writer, topic id: 226
+INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_attitude data writer, topic id: 242
+INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_control_mode data writer, topic id: 249
+INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_global_position data writer, topic id: 250
+INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_gps_position data writer, topic id: 252
+INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_local_position data writer, topic id: 256
+INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_odometry data writer, topic id: 261
+INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_status data writer, topic id: 266
+INFO  [uxrce_dds_client] time sync converged
+INFO  [commander] Armed by external command	
+INFO  [tone_alarm] arming warning
+INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_command_ack data writer, topic id: 246
+INFO  [commander] Takeoff detected	
+
+PX4 Exiting...
+[2Kpxh> Exiting NOW.
+[INFO] [1785141468.869182662] [rclcpp]: signal_handler(signum=15)
+ninja: build stopped: interrupted by user.
+make: *** [Makefile:232: px4_sitl] 已终止
+Failed sending mavlink message: Broken pipe
+Closing connection.
+Connection closed by client.
+Connection closed by client.
+Connection closed by client.
+Connection closed by client.
+Connection closed by client.
+Connection closed by client.
