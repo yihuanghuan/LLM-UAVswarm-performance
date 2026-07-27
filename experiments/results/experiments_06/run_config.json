@@ -1,0 +1,363 @@
+{
+  "experiment": "experiments_06",
+  "created_at_utc": "2026-07-27T07:21:48.107214+00:00",
+  "base_tag": "gazebo-experiment-v1",
+  "seed": 20260727,
+  "repeats_per_cell": 5,
+  "scenarios": {
+    "single_uav": {
+      "uav_ids": [
+        0
+      ],
+      "duration_s": 8.0,
+      "targets": {
+        "0": [
+          6.0,
+          0.0,
+          5.0
+        ]
+      }
+    },
+    "five_uav_circle": {
+      "uav_ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "duration_s": 8.0,
+      "targets": {
+        "1": [
+          11.23606798,
+          5.19577393,
+          5.0
+        ],
+        "2": [
+          6.76393202,
+          6.64885899,
+          5.0
+        ],
+        "3": [
+          14.0,
+          9.0,
+          5.0
+        ],
+        "4": [
+          6.76393202,
+          11.35114101,
+          5.0
+        ],
+        "5": [
+          11.23606798,
+          12.80422607,
+          5.0
+        ]
+      }
+    },
+    "eight_uav_line_to_circle": {
+      "uav_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "duration_s": 12.0,
+      "targets": {
+        "1": [
+          10.0,
+          7.5,
+          5.0
+        ],
+        "2": [
+          14.24264069,
+          9.25735931,
+          5.0
+        ],
+        "3": [
+          5.75735931,
+          9.25735931,
+          5.0
+        ],
+        "4": [
+          4.0,
+          13.5,
+          5.0
+        ],
+        "5": [
+          16.0,
+          13.5,
+          5.0
+        ],
+        "6": [
+          5.75735931,
+          17.74264069,
+          5.0
+        ],
+        "7": [
+          14.24264069,
+          17.74264069,
+          5.0
+        ],
+        "8": [
+          10.0,
+          19.5,
+          5.0
+        ]
+      }
+    }
+  },
+  "methods": {
+    "px4_step": {
+      "trajectory_profile": "step",
+      "enable_ladrc_accel_feedforward": false
+    },
+    "linear_ladrc": {
+      "trajectory_profile": "linear",
+      "enable_ladrc_accel_feedforward": true
+    },
+    "minimum_jerk_ladrc": {
+      "trajectory_profile": "minimum_jerk",
+      "enable_ladrc_accel_feedforward": true
+    }
+  },
+  "schedule": [
+    {
+      "scenario": "eight_uav_line_to_circle",
+      "method": "linear_ladrc",
+      "repeat": 3
+    },
+    {
+      "scenario": "single_uav",
+      "method": "linear_ladrc",
+      "repeat": 3
+    },
+    {
+      "scenario": "five_uav_circle",
+      "method": "minimum_jerk_ladrc",
+      "repeat": 3
+    },
+    {
+      "scenario": "eight_uav_line_to_circle",
+      "method": "px4_step",
+      "repeat": 3
+    },
+    {
+      "scenario": "single_uav",
+      "method": "px4_step",
+      "repeat": 2
+    },
+    {
+      "scenario": "single_uav",
+      "method": "linear_ladrc",
+      "repeat": 4
+    },
+    {
+      "scenario": "five_uav_circle",
+      "method": "px4_step",
+      "repeat": 5
+    },
+    {
+      "scenario": "five_uav_circle",
+      "method": "linear_ladrc",
+      "repeat": 3
+    },
+    {
+      "scenario": "single_uav",
+      "method": "linear_ladrc",
+      "repeat": 2
+    },
+    {
+      "scenario": "five_uav_circle",
+      "method": "minimum_jerk_ladrc",
+      "repeat": 2
+    },
+    {
+      "scenario": "five_uav_circle",
+      "method": "linear_ladrc",
+      "repeat": 2
+    },
+    {
+      "scenario": "five_uav_circle",
+      "method": "minimum_jerk_ladrc",
+      "repeat": 5
+    },
+    {
+      "scenario": "five_uav_circle",
+      "method": "px4_step",
+      "repeat": 4
+    },
+    {
+      "scenario": "five_uav_circle",
+      "method": "px4_step",
+      "repeat": 2
+    },
+    {
+      "scenario": "single_uav",
+      "method": "px4_step",
+      "repeat": 5
+    },
+    {
+      "scenario": "five_uav_circle",
+      "method": "linear_ladrc",
+      "repeat": 5
+    },
+    {
+      "scenario": "eight_uav_line_to_circle",
+      "method": "minimum_jerk_ladrc",
+      "repeat": 2
+    },
+    {
+      "scenario": "eight_uav_line_to_circle",
+      "method": "minimum_jerk_ladrc",
+      "repeat": 5
+    },
+    {
+      "scenario": "eight_uav_line_to_circle",
+      "method": "linear_ladrc",
+      "repeat": 5
+    },
+    {
+      "scenario": "single_uav",
+      "method": "px4_step",
+      "repeat": 4
+    },
+    {
+      "scenario": "five_uav_circle",
+      "method": "linear_ladrc",
+      "repeat": 4
+    },
+    {
+      "scenario": "single_uav",
+      "method": "px4_step",
+      "repeat": 3
+    },
+    {
+      "scenario": "eight_uav_line_to_circle",
+      "method": "px4_step",
+      "repeat": 4
+    },
+    {
+      "scenario": "eight_uav_line_to_circle",
+      "method": "minimum_jerk_ladrc",
+      "repeat": 1
+    },
+    {
+      "scenario": "five_uav_circle",
+      "method": "minimum_jerk_ladrc",
+      "repeat": 4
+    },
+    {
+      "scenario": "eight_uav_line_to_circle",
+      "method": "px4_step",
+      "repeat": 5
+    },
+    {
+      "scenario": "five_uav_circle",
+      "method": "minimum_jerk_ladrc",
+      "repeat": 1
+    },
+    {
+      "scenario": "eight_uav_line_to_circle",
+      "method": "px4_step",
+      "repeat": 1
+    },
+    {
+      "scenario": "single_uav",
+      "method": "minimum_jerk_ladrc",
+      "repeat": 4
+    },
+    {
+      "scenario": "single_uav",
+      "method": "minimum_jerk_ladrc",
+      "repeat": 1
+    },
+    {
+      "scenario": "single_uav",
+      "method": "minimum_jerk_ladrc",
+      "repeat": 2
+    },
+    {
+      "scenario": "five_uav_circle",
+      "method": "px4_step",
+      "repeat": 1
+    },
+    {
+      "scenario": "eight_uav_line_to_circle",
+      "method": "px4_step",
+      "repeat": 2
+    },
+    {
+      "scenario": "single_uav",
+      "method": "linear_ladrc",
+      "repeat": 5
+    },
+    {
+      "scenario": "single_uav",
+      "method": "px4_step",
+      "repeat": 1
+    },
+    {
+      "scenario": "eight_uav_line_to_circle",
+      "method": "minimum_jerk_ladrc",
+      "repeat": 4
+    },
+    {
+      "scenario": "five_uav_circle",
+      "method": "px4_step",
+      "repeat": 3
+    },
+    {
+      "scenario": "five_uav_circle",
+      "method": "linear_ladrc",
+      "repeat": 1
+    },
+    {
+      "scenario": "eight_uav_line_to_circle",
+      "method": "linear_ladrc",
+      "repeat": 4
+    },
+    {
+      "scenario": "eight_uav_line_to_circle",
+      "method": "linear_ladrc",
+      "repeat": 2
+    },
+    {
+      "scenario": "single_uav",
+      "method": "minimum_jerk_ladrc",
+      "repeat": 5
+    },
+    {
+      "scenario": "eight_uav_line_to_circle",
+      "method": "minimum_jerk_ladrc",
+      "repeat": 3
+    },
+    {
+      "scenario": "single_uav",
+      "method": "linear_ladrc",
+      "repeat": 1
+    },
+    {
+      "scenario": "eight_uav_line_to_circle",
+      "method": "linear_ladrc",
+      "repeat": 1
+    },
+    {
+      "scenario": "single_uav",
+      "method": "minimum_jerk_ladrc",
+      "repeat": 3
+    }
+  ],
+  "control_frequency_hz": 50.0,
+  "motion_style": "normal",
+  "iapf_disabled": true,
+  "cold_start_each_trial": true,
+  "scheduled_start_delay_s": 2.0,
+  "command_publish_repetitions": 10,
+  "command_publish_interval_s": 0.1,
+  "readiness_gate": "all PX4 vehicles armed, OFFBOARD, and not failsafe"
+}
