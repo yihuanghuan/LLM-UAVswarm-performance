@@ -328,6 +328,7 @@ def main() -> int:
         "cold_start_each_trial": True,
         "scheduled_start_delay_s": 2.0,
         "command_publish_repetitions": 10,
+        "command_publish_interval_s": 0.1,
     }
     config_path = output_dir / "run_config.json"
     if not (args.resume and config_path.is_file()):

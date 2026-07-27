@@ -96,9 +96,12 @@ class TrialNode(Node):
             messages[uid] = message
         scheduled = time.monotonic() + start_delay_s
         for _ in range(10):
+            cycle_deadline = time.monotonic() + 0.1
             for uid, message in messages.items():
                 self.command_publishers[uid].publish(message)
-            rclpy.spin_once(self, timeout_sec=0.1)
+            while rclpy.ok() and time.monotonic() < cycle_deadline:
+                remaining = cycle_deadline - time.monotonic()
+                rclpy.spin_once(self, timeout_sec=min(0.02, max(0.0, remaining)))
         return scheduled
 
     def monitor(self, scheduled: float) -> Dict[str, object]:
