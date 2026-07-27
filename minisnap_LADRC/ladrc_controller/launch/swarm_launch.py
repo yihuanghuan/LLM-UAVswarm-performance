@@ -34,6 +34,9 @@ def generate_launch_description():
         enable_iapf_accel_feedforward = ParameterValue(
             LaunchConfiguration('enable_iapf_accel_feedforward'),
             value_type=bool)
+        trajectory_profile = ParameterValue(
+            LaunchConfiguration('trajectory_profile'),
+            value_type=str)
 
         nodes = []
         for uid in ids:
@@ -82,6 +85,7 @@ def generate_launch_description():
                     {
                         'neighbor_uav_ids': ids,
                         'enable_iapf_accel_feedforward': enable_iapf_accel_feedforward,
+                        'trajectory_profile': trajectory_profile,
                     },
                 ],
                 remappings=remappings,
@@ -99,5 +103,9 @@ def generate_launch_description():
             'enable_iapf_accel_feedforward',
             default_value='true',
             description='是否启用 IAPF 加速度前馈'),
+        DeclareLaunchArgument(
+            'trajectory_profile',
+            default_value='minimum_jerk',
+            description='step/linear/trapezoidal/minimum_jerk'),
         OpaqueFunction(function=create_uav_nodes),
     ])

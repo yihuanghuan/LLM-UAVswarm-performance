@@ -1,0 +1,5 @@
+# Experiment 05 contains machine-generated logs, rosbag data, and CSV exports.
+# Preserve their exact bytes and exclude them from textual whitespace checks.
+experiments/results/experiments_05/trials/** -text -diff
+experiments/results/experiments_05/rejected/** -text -diff
+experiments/results/experiments_05/*.csv -text -diff

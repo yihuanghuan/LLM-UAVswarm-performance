@@ -60,7 +60,9 @@ python3 experiments/scripts/eval_assignment_offline.py \
 
 ### eval_trajectory_profiles.py
 
-离线生成 `step`、`linear`、`trapezoidal`、`minimum_jerk` 轨迹时序和指标。
+离线生成 `step`、`linear`、`trapezoidal`、`minimum_jerk` 轨迹时序和解析指标。
+不连续边界不会通过有限差分伪装成有限 jerk：无严格有限值的字段输出 `NaN`
+并带有对应的 `*_valid=false` 标志。
 
 ```bash
 python3 experiments/scripts/eval_trajectory_profiles.py \
@@ -70,6 +72,26 @@ python3 experiments/scripts/eval_trajectory_profiles.py \
 
 输出：`trajectory_profile_results.csv`、`trajectory_profile_timeseries.csv`。
 summary 固定字段包括 `max_velocity/max_acceleration/max_jerk/integrated_squared_jerk/final_error`。
+
+### 实验 5 闭环轨迹对比
+
+`run_experiment_05.py` 对四种轨迹方法各执行三次独立的五机 PX4/Gazebo
+冷启动试验。脚本在确认五架机均已发布实际 odom 后发令，并通过统一的未来
+ROS 时间戳同步启动轨迹。
+
+```bash
+source /opt/ros/humble/setup.bash
+source ~/learning/LLM_swarm_ws/install/setup.bash
+python3 experiments/scripts/run_experiment_05.py \
+  --output-dir experiments/results/experiments_05
+
+python3 experiments/scripts/analyze_experiment_05.py \
+  --input-dir experiments/results/experiments_05
+```
+
+分析输出包括逐机、逐 trial、逐方法 CSV，参考轨迹四联图、闭环指标图、
+平滑性图、三维多机轨迹图和 Markdown 汇总表。缺少任一 UAV metrics 的
+启动尝试会自动隔离到 `rejected/` 并重跑，不参与正式统计。
 
 ### analyze_pairwise_distance.py
 

@@ -55,6 +55,7 @@ public:
     this->declare_parameter("max_acceleration_x", 3.0);
     this->declare_parameter("max_acceleration_y", 3.0);
     this->declare_parameter("max_acceleration_z", 3.0);
+    this->declare_parameter("trajectory_profile", "minimum_jerk");
 
     // Gazebo 多机 spawn 偏移量（sitl_multiple_run.sh 默认 Y=3*instance）
     this->declare_parameter("enu_offset_x", 0.0);
@@ -77,6 +78,10 @@ public:
     // 获取参数
     double control_freq = this->get_parameter("control_frequency").as_double();
     dt_ = 1.0 / control_freq;
+    trajectory_profile_name_ =
+      this->get_parameter("trajectory_profile").as_string();
+    trajectory_profile_ =
+      ladrc_controller::trajectoryProfileFromString(trajectory_profile_name_);
 
     // 初始化 LADRC 控制器
     initializeControllers();
@@ -287,10 +292,10 @@ private:
     target_distance_ = std::sqrt(dx * dx + dy * dy + dz * dz);
     average_speed_ = target_distance_ / std::max(target_duration_, 1e-3);
 
-    // 初始化三个轴的 Minimum Jerk 轨迹
-    traj_x_.initialize(p0_x, target_pos_x_, target_duration_);
-    traj_y_.initialize(p0_y, target_pos_y_, target_duration_);
-    traj_z_.initialize(p0_z, target_pos_z_, target_duration_);
+    // 初始化三个轴的同类型轨迹，确保共享 LFS 时间边界。
+    traj_x_.initialize(p0_x, target_pos_x_, target_duration_, trajectory_profile_);
+    traj_y_.initialize(p0_y, target_pos_y_, target_duration_, trajectory_profile_);
+    traj_z_.initialize(p0_z, target_pos_z_, target_duration_, trajectory_profile_);
 
     initializeTrajectoryMetrics(
         p0_x, p0_y, p0_z,
@@ -301,8 +306,19 @@ private:
     ladrc_y_->setObserverInitialState(p0_y, 0.0, 0.0);
     ladrc_z_->setObserverInitialState(p0_z, 0.0, 0.0);
 
-    // 记录命令接收时间
-    command_start_time_ = this->now();
+    // 实验任务可用 header.stamp 指定近未来的统一开始时间。这样命令可在
+    // 开始前可靠重发，而所有 UAV 仍共享同一个轨迹时间边界。
+    const rclcpp::Time receive_time = this->now();
+    const rclcpp::Time requested_start(msg->header.stamp);
+    const double start_lead = (requested_start - receive_time).seconds();
+    if (start_lead > 0.0 && start_lead <= 5.0)
+    {
+      command_start_time_ = requested_start;
+    }
+    else
+    {
+      command_start_time_ = receive_time;
+    }
 
     // [Phase 3] 动态增益调节
     applyDynamicGains();
@@ -320,6 +336,9 @@ private:
         msg->target_pos.x, msg->target_pos.y, msg->target_pos.z,
         target_pos_x_, target_pos_y_, target_pos_z_,
         target_duration_, motion_style_.c_str());
+    RCLCPP_INFO(
+      this->get_logger(), "UAV%d trajectory_profile=%s",
+      uav_id_, trajectory_profile_name_.c_str());
   }
 
   void odomCallback(const px4_msgs::msg::VehicleOdometry::SharedPtr msg)
@@ -467,12 +486,12 @@ private:
 
     // [Phase 3] 悬停稳定检测
     bool all_finished = x_finished && y_finished && z_finished;
-    if (all_finished)
+    if (!is_hover_stable_)
     {
       double pos_err = std::sqrt(
-          (x_ref - x_meas) * (x_ref - x_meas) +
-          (y_ref - y_meas) * (y_ref - y_meas) +
-          (z_ref - z_meas) * (z_ref - z_meas));
+          (target_pos_x_ - x_meas) * (target_pos_x_ - x_meas) +
+          (target_pos_y_ - y_meas) * (target_pos_y_ - y_meas) +
+          (target_pos_z_ - z_meas) * (target_pos_z_ - z_meas));
       double vel_mag = std::sqrt(
           current_odom_.velocity[0] * current_odom_.velocity[0] +
           current_odom_.velocity[1] * current_odom_.velocity[1] +
@@ -480,27 +499,26 @@ private:
 
       if (pos_err < 0.3 && vel_mag < 0.3)
       {
-        if (!is_hover_stable_)
+        is_hover_stable_ = true;
+        if (!arrival_time_recorded_)
         {
-          is_hover_stable_ = true;
-          if (!arrival_time_recorded_)
-          {
-            arrival_time_error_ = elapsed - target_duration_;
-            arrival_time_recorded_ = true;
-          }
-          settling_time_ = elapsed;
-          writeControlAdaptationCsvRow();
-          RCLCPP_INFO(this->get_logger(),
-              "悬停稳定! pos_err=%.2fm, vel=%.2fm/s → is_hover_stable=true",
-              pos_err, vel_mag);
+          arrival_time_error_ = elapsed - target_duration_;
+          arrival_time_recorded_ = true;
         }
+        settling_time_ = elapsed;
+        writeControlAdaptationCsvRow();
+        RCLCPP_INFO(this->get_logger(),
+            "悬停稳定! pos_err=%.2fm, vel=%.2fm/s → is_hover_stable=true",
+            pos_err, vel_mag);
       }
     }
 
     if (++trajectory_metrics_pub_counter_ >= 5)
     {
       trajectory_metrics_pub_counter_ = 0;
-      publishTrajectoryMetrics(elapsed, x_meas, y_meas, z_meas, all_finished);
+      publishTrajectoryMetrics(
+        elapsed, x_meas, y_meas, z_meas, all_finished,
+        ref_x, ref_y, ref_z);
       publishControlAdaptationLog();
     }
 
@@ -685,6 +703,7 @@ private:
     metrics_msg_.requested_duration = static_cast<float>(target_duration_);
     metrics_msg_.trajectory_duration = static_cast<float>(traj_x_.getDuration());
     metrics_msg_.motion_style = motion_style_;
+    metrics_msg_.trajectory_profile = trajectory_profile_name_;
     metrics_msg_.safety_factor = static_cast<float>(safety_factor_);
 
     double dx = target_pos_x_ - p0_x;
@@ -696,13 +715,45 @@ private:
     double duration3 = duration2 * duration;
     double duration5 = duration3 * duration2;
 
+    const float nan = std::numeric_limits<float>::quiet_NaN();
     metrics_msg_.path_length = static_cast<float>(distance);
-    metrics_msg_.max_velocity = static_cast<float>(1.875 * distance / duration);
-    metrics_msg_.max_acceleration =
-        static_cast<float>((10.0 * std::sqrt(3.0) / 3.0) * distance / duration2);
-    metrics_msg_.max_jerk = static_cast<float>(60.0 * distance / duration3);
-    metrics_msg_.integrated_squared_jerk =
-        static_cast<float>(720.0 * distance * distance / duration5);
+    metrics_msg_.max_velocity = nan;
+    metrics_msg_.max_acceleration = nan;
+    metrics_msg_.max_jerk = nan;
+    metrics_msg_.integrated_squared_jerk = nan;
+    metrics_msg_.max_velocity_valid = false;
+    metrics_msg_.max_acceleration_valid = false;
+    metrics_msg_.max_jerk_valid = false;
+    metrics_msg_.integrated_squared_jerk_valid = false;
+
+    switch (trajectory_profile_) {
+      case ladrc_controller::TrajectoryProfile::STEP:
+        break;
+      case ladrc_controller::TrajectoryProfile::LINEAR:
+        metrics_msg_.max_velocity = static_cast<float>(distance / duration);
+        metrics_msg_.max_velocity_valid = true;
+        break;
+      case ladrc_controller::TrajectoryProfile::TRAPEZOIDAL:
+        metrics_msg_.max_velocity =
+          static_cast<float>((4.0 / 3.0) * distance / duration);
+        metrics_msg_.max_acceleration =
+          static_cast<float>((16.0 / 3.0) * distance / duration2);
+        metrics_msg_.max_velocity_valid = true;
+        metrics_msg_.max_acceleration_valid = true;
+        break;
+      case ladrc_controller::TrajectoryProfile::MINIMUM_JERK:
+        metrics_msg_.max_velocity = static_cast<float>(1.875 * distance / duration);
+        metrics_msg_.max_acceleration =
+          static_cast<float>((10.0 * std::sqrt(3.0) / 3.0) * distance / duration2);
+        metrics_msg_.max_jerk = static_cast<float>(60.0 * distance / duration3);
+        metrics_msg_.integrated_squared_jerk =
+          static_cast<float>(720.0 * distance * distance / duration5);
+        metrics_msg_.max_velocity_valid = true;
+        metrics_msg_.max_acceleration_valid = true;
+        metrics_msg_.max_jerk_valid = true;
+        metrics_msg_.integrated_squared_jerk_valid = true;
+        break;
+    }
     metrics_msg_.elapsed_time = 0.0f;
     metrics_msg_.arrival_time_error =
         std::numeric_limits<float>::quiet_NaN();
@@ -713,7 +764,8 @@ private:
     has_trajectory_metrics_ = true;
 
     RCLCPP_INFO(this->get_logger(),
-        "轨迹指标: path=%.2fm vmax=%.2fm/s amax=%.2fm/s^2 jmax=%.2fm/s^3 ISJ=%.2f",
+        "轨迹指标(%s): path=%.2fm vmax=%.2fm/s amax=%.2fm/s^2 jmax=%.2fm/s^3 ISJ=%.2f",
+        trajectory_profile_name_.c_str(),
         metrics_msg_.path_length,
         metrics_msg_.max_velocity,
         metrics_msg_.max_acceleration,
@@ -725,7 +777,10 @@ private:
                                 double x_meas,
                                 double y_meas,
                                 double z_meas,
-                                bool is_finished)
+                                bool is_finished,
+                                const ladrc_controller::MinimumJerkTrajectory::TrajectoryPoint & ref_x,
+                                const ladrc_controller::MinimumJerkTrajectory::TrajectoryPoint & ref_y,
+                                const ladrc_controller::MinimumJerkTrajectory::TrajectoryPoint & ref_z)
   {
     if (!has_trajectory_metrics_) return;
 
@@ -744,6 +799,21 @@ private:
     metrics_msg_.arrival_time_error = static_cast<float>(arrival_time_error_);
     metrics_msg_.final_position_error =
         static_cast<float>(std::sqrt(dx * dx + dy * dy + dz * dz));
+    metrics_msg_.reference_pos.x = ref_x.position + off_x;
+    metrics_msg_.reference_pos.y = ref_y.position + off_y;
+    metrics_msg_.reference_pos.z = ref_z.position + off_z;
+    metrics_msg_.reference_velocity.x = ref_x.velocity;
+    metrics_msg_.reference_velocity.y = ref_y.velocity;
+    metrics_msg_.reference_velocity.z = ref_z.velocity;
+    metrics_msg_.reference_acceleration.x = ref_x.acceleration;
+    metrics_msg_.reference_acceleration.y = ref_y.acceleration;
+    metrics_msg_.reference_acceleration.z = ref_z.acceleration;
+    metrics_msg_.reference_jerk.x = ref_x.jerk;
+    metrics_msg_.reference_jerk.y = ref_y.jerk;
+    metrics_msg_.reference_jerk.z = ref_z.jerk;
+    metrics_msg_.actual_pos.x = x_global;
+    metrics_msg_.actual_pos.y = y_global;
+    metrics_msg_.actual_pos.z = z_global;
     metrics_msg_.is_finished = is_finished;
     metrics_msg_.is_hover_stable = is_hover_stable_;
 
@@ -1018,6 +1088,9 @@ private:
   double target_pos_z_ = 0.0;
   double target_duration_ = 0.0;
   std::string motion_style_ = "normal";
+  std::string trajectory_profile_name_ = "minimum_jerk";
+  ladrc_controller::TrajectoryProfile trajectory_profile_ =
+    ladrc_controller::TrajectoryProfile::MINIMUM_JERK;
   double safety_factor_ = 0.0;
   bool has_command_ = false;
 

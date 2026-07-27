@@ -2,7 +2,9 @@
 
 ## 修改内容
 
-执行层现在会在每架无人机收到新的 `swarm_command` 后计算 Minimum Jerk 三维轨迹指标，并持续发布最近一次任务的指标。
+执行层现在支持 `step`、`linear`、`trapezoidal` 和 `minimum_jerk`
+四种三维轨迹参考，并持续发布最近一次任务的参考值、实飞位置和指标。
+可通过 launch 参数 `trajectory_profile` 选择方法，默认仍为 `minimum_jerk`。
 
 新增 ROS 2 topic：
 
@@ -29,6 +31,7 @@ target_pos
 requested_duration
 trajectory_duration
 motion_style
+trajectory_profile
 safety_factor
 path_length
 max_velocity
@@ -42,7 +45,13 @@ is_finished
 is_hover_stable
 ```
 
-`path_length`、`max_velocity`、`max_acceleration`、`max_jerk`、`integrated_squared_jerk` 基于三维 Minimum Jerk 轨迹整体计算，而不是分别发布三个轴的独立指标。起点和终点速度、加速度仍保持原有 0 边界条件。
+消息同时包含三维 `reference_pos/reference_velocity/reference_acceleration/reference_jerk`
+和 `actual_pos`。`max_velocity_valid/max_acceleration_valid/max_jerk_valid/
+integrated_squared_jerk_valid` 用于区分有限解析指标和分段边界上的数学奇异值。
+
+Minimum Jerk 的 `path_length`、`max_velocity`、`max_acceleration`、`max_jerk`、
+`integrated_squared_jerk` 基于三维轨迹整体计算，而不是分别发布三个轴的独立指标。
+其他 profile 仅在解析值严格有限时设置对应有效性标志。
 
 ## 计算公式
 

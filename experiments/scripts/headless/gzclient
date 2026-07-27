@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# sitl_multiple_run.sh blocks on gzclient. In automated experiments this
+# placeholder keeps the launcher alive without requiring an X server.
+exec tail -f /dev/null

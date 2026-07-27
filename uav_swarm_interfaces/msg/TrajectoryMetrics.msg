@@ -7,6 +7,7 @@ geometry_msgs/Point target_pos
 float32 requested_duration
 float32 trajectory_duration
 string motion_style
+string trajectory_profile
 float32 safety_factor
 
 float32 path_length
@@ -14,10 +15,20 @@ float32 max_velocity
 float32 max_acceleration
 float32 max_jerk
 float32 integrated_squared_jerk
+bool max_velocity_valid
+bool max_acceleration_valid
+bool max_jerk_valid
+bool integrated_squared_jerk_valid
 
 float32 elapsed_time
 float32 arrival_time_error
 float32 final_position_error
+
+geometry_msgs/Point reference_pos
+geometry_msgs/Vector3 reference_velocity
+geometry_msgs/Vector3 reference_acceleration
+geometry_msgs/Vector3 reference_jerk
+geometry_msgs/Point actual_pos
 
 bool is_finished
 bool is_hover_stable
