@@ -3,7 +3,6 @@ from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
-from launch_ros.parameter_descriptions import ParameterValue
 import os
 
 
@@ -25,9 +24,15 @@ def generate_launch_description():
         ),
 
         DeclareLaunchArgument(
-            'enable_iapf_accel_feedforward',
-            default_value='true',
-            description='Whether to publish IAPF acceleration feedforward'
+            'avoidance_mode',
+            default_value='iapf_dual',
+            description='off/classic_position/iapf_position/iapf_dual'
+        ),
+
+        DeclareLaunchArgument(
+            'iapf_escape_mode',
+            default_value='id_order',
+            description='none/fixed_positive_z/id_order'
         ),
 
         Node(
@@ -38,9 +43,8 @@ def generate_launch_description():
             parameters=[
                 LaunchConfiguration('params_file'),
                 {
-                    'enable_iapf_accel_feedforward': ParameterValue(
-                        LaunchConfiguration('enable_iapf_accel_feedforward'),
-                        value_type=bool),
+                    'avoidance_mode': LaunchConfiguration('avoidance_mode'),
+                    'iapf_escape_mode': LaunchConfiguration('iapf_escape_mode'),
                 },
             ],
             output='screen'
