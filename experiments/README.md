@@ -1,140 +1,89 @@
-# 实验评估工具链
+# 实验 7：Semantic-Conditioned LADRC 动态响应
 
-本目录用于论文实验的离线评估、日志整理和绘图。除 `collect_rosbag_topics.sh` 外，脚本尽量不依赖 ROS，可直接读取 JSON 或 CSV 运行。
+## 实验目的
 
-## 目录
+验证自然语言中的 `smooth`、`normal`、`aggressive` 是否通过任务条件化
+LADRC 带宽改变 Gazebo 中的实际物理响应，而不只是改变消息标签。
 
-- `commands/`：LLM 指令模板，字段为 `id/type/command/ros_aux_info`。
-- `scripts/`：实验评估、日志分析和绘图脚本。
-- `logs/`：仿真或 rosbag 原始记录目录。
-- `results/`：固定字段 CSV 结果目录。
-- `figures/`：论文图输出目录。
+本实验比较：
 
-## 常用命令
+- `fixed_gain`：三种风格均固定 `gain_multiplier=1.0`；
+- `task_conditioned`：使用距离、时长和 motion style 共同计算带宽倍率。
 
-```bash
-cd ~/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance
-source ~/learning/LLM_swarm_ws/llm_env/bin/activate
-source ~/learning/LLM_swarm_ws/install/setup.bash
-```
+两种方法均把 LADRC 输出作为 PX4 位置控制的加速度前馈，关闭 IAPF。
 
-## 脚本说明
+## 实验流程
 
-### eval_llm_parser.py
+使用 UAV1 单机冷启动，从约 `[0,3,0]` 飞向 `[6,3,5]`。三条自然语言
+指令只改变风格措辞，不显式给出时长；LFS prompt 统一补全为 3 秒。
 
-批量读取 `experiments/commands/*.json`，调用 `location_allocate.no_location.parse_uav_command`，输出 LLM 解析成功率、延迟和 schema 结果。
+每个正式 trial 均执行：
 
-```bash
-python3 experiments/scripts/eval_llm_parser.py \
-  --input experiments/commands \
-  --output experiments/results/llm_parser_results.csv \
-  --limit 5
-```
+1. 冷启动 Micro XRCE-DDS、PX4 SITL、Gazebo 和控制节点；
+2. 等待 PX4 armed、OFFBOARD 且非 failsafe；
+3. 调用 MiniMax LLM，将自然语言编译为 LFS；
+4. 校验 UAV、中心、阵型、时长和 style 是否符合预注册任务；
+5. 经过编队坐标生成和分配后发布 ROS 指令；
+6. 记录命令后 15 秒的 rosbag，并导出完整 CSV。
 
-输出：`experiments/results/llm_parser_results.csv`。
+固定随机种子 `20260728`，运行
+`2 methods × 3 styles × 5 repeats = 30` 个有效 trial。LLM 输出若偏离
+预注册任务，原尝试应移入 `rejected/` 后补跑；本次没有发生 gate rejection。
 
-### eval_lfs_compiler.py
-
-不调用 LLM，构造 formal LFS、invalid LFS 和 legacy `task_sequences` 样例，调用 `validate_and_compile_lfs`。
+复现命令：
 
 ```bash
-python3 experiments/scripts/eval_lfs_compiler.py \
-  --output experiments/results/lfs_compiler_results.csv
+cd ~/learning/LLM_swarm_ws
+source /opt/ros/humble/setup.bash
+source install/setup.bash
+source llm_env/bin/activate
+
+python src/LLM-UAVswarm-performance/experiments/scripts/run_experiment_07.py \
+  --output-dir \
+  src/LLM-UAVswarm-performance/experiments/results/experiments_07
+
+python src/LLM-UAVswarm-performance/experiments/scripts/analyze_experiment_07.py \
+  src/LLM-UAVswarm-performance/experiments/results/experiments_07
 ```
 
-输出：`experiments/results/lfs_compiler_results.csv`。
+## 实验结果
 
-### eval_assignment_offline.py
+所有数值为 5 次独立冷启动的 `mean ± sample std`。
 
-离线比较 `random`、`nearest_neighbor`、`hungarian_distance`、`safety_aware_hungarian` 分配策略。
-自动生成 `small`、`medium`、`large`、`dense`、`crossing-prone` 五类场景。
+| 方法 | style | gain | peak velocity (m/s) | peak acceleration (m/s²) | peak jerk (m/s³) | tracking RMSE (m) | overshoot (m) |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| fixed | smooth | 1.000 ± 0.000 | 3.668 ± 0.102 | 9.246 ± 0.149 | 136.071 ± 22.481 | 1.253 ± 0.021 | 0.063 ± 0.010 |
+| fixed | normal | 1.000 ± 0.000 | 3.590 ± 0.079 | 9.247 ± 0.881 | 147.319 ± 37.304 | 1.184 ± 0.053 | 0.087 ± 0.020 |
+| fixed | aggressive | 1.000 ± 0.000 | 3.637 ± 0.145 | 9.171 ± 0.270 | 134.640 ± 16.469 | 1.218 ± 0.087 | 0.074 ± 0.021 |
+| conditioned | smooth | 1.048 ± 0.006 | 3.569 ± 0.104 | 10.752 ± 0.943 | 141.355 ± 26.908 | 1.176 ± 0.083 | 0.093 ± 0.009 |
+| conditioned | normal | 1.114 ± 0.005 | 3.731 ± 0.170 | 9.594 ± 0.258 | 133.724 ± 31.490 | 1.232 ± 0.081 | 0.080 ± 0.015 |
+| conditioned | aggressive | 1.302 ± 0.006 | 3.736 ± 0.209 | 9.862 ± 0.386 | 120.429 ± 5.621 | 1.209 ± 0.105 | 0.123 ± 0.096 |
 
-```bash
-python3 experiments/scripts/eval_assignment_offline.py \
-  --trials 50 \
-  --output experiments/results/assignment_results.csv
-```
+30 次 trial 均未在 15 秒观测窗口内连续 1 秒满足
+`position error < 0.3 m` 且 `speed < 0.3 m/s`，因此 settling time 按预注册
+规则保留为 N/A，没有事后放宽阈值。
 
-输出：`experiments/results/assignment_results.csv`。
-固定字段：`trial_id/scenario/num_uav/method/total_path_length/avg_path_length/xy_crossings/proximity_crossings/min_distance/safety_cost/total_cost/compute_time_ms`。
+LLM 共发生 40 次 API 尝试：30 次 schema-valid，10 次因响应尾部存在额外
+JSON 而产生 `JSONDecodeError`，均在既有三次重试范围内恢复。30 个最终
+解析结果全部通过任务 gate。
 
-### eval_trajectory_profiles.py
+## 结果分析
 
-离线生成 `step`、`linear`、`trapezoidal`、`minimum_jerk` 轨迹时序和指标。
+数据支持“motion style 会改变物理响应”这一有限结论，但不支持
+“带宽越高就必然更平滑或更快稳定”：
 
-```bash
-python3 experiments/scripts/eval_trajectory_profiles.py \
-  --output-summary experiments/results/trajectory_profile_results.csv \
-  --output-timeseries experiments/results/trajectory_profile_timeseries.csv
-```
+- aggressive 条件化倍率比 baseline 高约 30.2%，对应 peak velocity
+  增加 2.7%、peak acceleration 增加 7.5%、最大 roll 增加 23.2%、
+  最大 pitch 增加 48.5%，说明语义带宽确实进入了真实控制链路；
+- normal 的 peak velocity 和 peak acceleration 分别增加约 3.9% 和 3.8%；
+- smooth 的 peak velocity 降低约 2.7%、RMSE 降低约 6.1%，但 peak
+  acceleration 增加约 16.3%，并非所有平滑性指标都改善；
+- aggressive 和 smooth 的超调分别增加约 65.8% 和 48.0%；
+- 全部条件均未满足严格 settling 判据，位置曲线显示持续的小幅横向振荡。
 
-输出：`trajectory_profile_results.csv`、`trajectory_profile_timeseries.csv`。
-summary 固定字段包括 `max_velocity/max_acceleration/max_jerk/integrated_squared_jerk/final_error`。
+因此，本实验确认语义条件化增益不是空标签；同时也暴露出 LADRC 加速度
+前馈与 PX4 内部位置环叠加后的振荡问题。后续若要主张“smooth 更平滑”或
+“aggressive 更快收敛”，需要重新整定带宽/前馈结构，而不能由本批数据推出。
 
-### analyze_pairwise_distance.py
-
-读取包含 `timestamp,uav_id,x,y,z` 的 odom CSV，计算所有 UAV 两两距离。
-
-```bash
-python3 experiments/scripts/analyze_pairwise_distance.py \
-  --input experiments/logs/odom.csv \
-  --output-dir experiments/results \
-  --safety-threshold 1.5 \
-  --experiment-id exp001 \
-  --time-bin 0.05
-```
-
-输出：`pairwise_distance_timeseries.csv`、`pairwise_distance_summary.csv`。
-summary 固定字段：`experiment_id/num_uav/min_inter_agent_distance/mean_min_distance/safety_threshold/safety_violation_count/near_miss_duration/closest_pair`。
-默认按 `0.05` 秒时间分箱同步不同 UAV 的 odom；如需恢复精确 timestamp 分组，可设置 `--time-bin 0`。
-
-### eval_iapf.py
-
-汇总不同 IAPF 方法下的机间距离、轨迹指标和任务结果。
-脚本固定输出 `no_iapf`、`iapf_position_only`、`iapf_position_accel`、`safety_assignment_plus_iapf` 四类方法；输入 CSV 可用 `method`、`iapf_method`、`experiment_id` 或 `condition` 字段标识方法。
-
-```bash
-python3 experiments/scripts/eval_iapf.py \
-  --pairwise experiments/results/pairwise_distance_summary.csv \
-  --trajectory experiments/results/trajectory_profile_results.csv \
-  --mission experiments/results/mission_summary.csv \
-  --output experiments/results/iapf_summary.csv
-```
-
-输出：`experiments/results/iapf_summary.csv`。
-
-### eval_semantic_control.py
-
-读取控制适应日志，按 `motion_style` 汇总增益、速度、加速度、稳定时间和跟踪误差。
-
-```bash
-python3 experiments/scripts/eval_semantic_control.py \
-  --input logs/control_adaptation_log.csv \
-  --output experiments/results/semantic_control_summary.csv
-```
-
-输出：`experiments/results/semantic_control_summary.csv`。
-
-### collect_rosbag_topics.sh
-
-统一记录论文实验话题。该脚本依赖 ROS 2。
-记录内容包括 `/uav*/odom`、`/uav*/status`、`/uav*/trajectory_metrics`、`/uav*/control_adaptation`、`/uav*/swarm_command` 和 `/uav*/fmu/out/vehicle_odometry`。
-
-```bash
-bash experiments/scripts/collect_rosbag_topics.sh exp001
-```
-
-默认输出目录：`experiments/logs/rosbags/exp001`。
-
-### plot_all.py
-
-读取 `experiments/results/*.csv`，生成 PNG 和 PDF 图。
-
-```bash
-python3 experiments/scripts/plot_all.py --all
-python3 experiments/scripts/plot_all.py --which assignment
-python3 experiments/scripts/plot_all.py --which trajectory_profiles
-```
-
-输出目录：`experiments/figures/`。
-支持类别：`llm`、`assignment`、`trajectory`、`semantic`、`iapf`；支持单图：`llm_latency`、`llm_success_rate`、`assignment_min_distance`、`assignment_crossings`、`trajectory_profiles`、`semantic_control_summary`、`iapf_min_distance`。
+完整原始数据、汇总表和图位于
+`experiments/results/experiments_07/`。

@@ -342,6 +342,15 @@ def plot_results(
                             [float(row[metric]) for row in trial_rows],
                             color=color, alpha=0.16, linewidth=0.7,
                         )
+                    if metric.startswith("actual_") and by_trial:
+                        reference_metric = metric.replace("actual_", "reference_", 1)
+                        reference_rows = next(iter(by_trial.values()))
+                        axis.plot(
+                            [float(row["elapsed_time_s"]) for row in reference_rows],
+                            [float(row[reference_metric]) for row in reference_rows],
+                            color="black", linestyle="--", linewidth=1.0,
+                            label="reference" if style == "smooth" else None,
+                        )
                     if by_trial:
                         common_end = min(
                             max(float(row["elapsed_time_s"]) for row in trial_rows)
@@ -415,7 +424,15 @@ def plot_results(
             )
             for method in METHODS for style in colors
         ]
-        axis.boxplot(data, tick_labels=labels, showmeans=True)
+        if any(values for values in data):
+            axis.boxplot(data, tick_labels=labels, showmeans=True)
+        else:
+            axis.text(
+                0.5, 0.5,
+                "No trial met the preregistered\n1 s settling criterion",
+                ha="center", va="center", transform=axis.transAxes,
+            )
+            axis.set_xticks([])
         axis.set_ylabel(ylabel)
         axis.tick_params(axis="x", labelrotation=30)
         axis.grid(alpha=0.25)
@@ -450,21 +467,70 @@ def write_markdown_table(path: Path, summary: Sequence[Dict[str, object]]) -> No
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def effect_rows(summary: Sequence[Dict[str, object]]) -> List[Dict[str, object]]:
+    lookup = {
+        (str(row["method"]), str(row["motion_style"])): row
+        for row in summary
+    }
+    output = []
+    for style in ("smooth", "normal", "aggressive"):
+        fixed = lookup[("fixed_gain", style)]
+        conditioned = lookup[("task_conditioned", style)]
+        for metric in SUMMARY_METRICS:
+            fixed_mean = parse_float(fixed[f"mean_{metric}"])
+            conditioned_mean = parse_float(conditioned[f"mean_{metric}"])
+            delta = conditioned_mean - fixed_mean
+            percent = (
+                100.0 * delta / fixed_mean
+                if math.isfinite(fixed_mean) and abs(fixed_mean) > 1e-12
+                else math.nan
+            )
+            output.append({
+                "motion_style": style,
+                "metric": metric,
+                "fixed_mean": fixed_mean,
+                "task_conditioned_mean": conditioned_mean,
+                "absolute_delta": delta,
+                "percent_delta": percent,
+            })
+    return output
+
+
 def llm_reliability(experiment_dir: Path) -> Dict[str, object]:
     formal = list((experiment_dir / "trials").glob("*/llm_parse_result.json"))
     rejected = list((experiment_dir / "rejected").glob("*/llm_parse_result.json"))
-    passed = 0
+    gate_passed = 0
     for path in formal + rejected:
         record = json.loads(path.read_text(encoding="utf-8"))
-        passed += bool(record.get("gate_passed"))
-    attempts = len(formal) + len(rejected)
+        gate_passed += bool(record.get("gate_passed"))
+    parse_logs = (
+        list((experiment_dir / "trials").glob("*/llm_parse_log.csv"))
+        + list((experiment_dir / "rejected").glob("*/llm_parse_log.csv"))
+    )
+    api_rows = [row for path in parse_logs for row in read_csv(path)]
+    api_successes = sum(
+        str(row.get("schema_valid", "")).strip().lower() == "true"
+        for row in api_rows
+    )
+    error_types: Dict[str, int] = defaultdict(int)
+    for row in api_rows:
+        error_type = str(row.get("error_type", "")).strip()
+        if error_type:
+            error_types[error_type] += 1
+    gate_results = len(formal) + len(rejected)
     return {
-        "parse_attempts_with_result": attempts,
-        "gate_passed": passed,
-        "gate_failed": attempts - passed,
+        "api_attempts": len(api_rows),
+        "api_schema_valid_attempts": api_successes,
+        "api_attempt_success_rate": (
+            api_successes / len(api_rows) if api_rows else math.nan
+        ),
+        "trials_with_parse_result": gate_results,
+        "gate_passed": gate_passed,
+        "gate_failed": gate_results - gate_passed,
+        "gate_pass_rate": gate_passed / gate_results if gate_results else math.nan,
+        "error_types": dict(sorted(error_types.items())),
         "formal_trials": len(formal),
         "rejected_attempt_directories": len(list((experiment_dir / "rejected").iterdir())),
-        "gate_pass_rate": passed / attempts if attempts else math.nan,
     }
 
 
@@ -501,6 +567,14 @@ def main() -> int:
     ]
     write_csv(output_dir / "trial_summary.csv", TRIAL_FIELDS, trials)
     write_csv(output_dir / "method_style_summary.csv", summary_fields, summary)
+    write_csv(
+        output_dir / "effect_vs_fixed.csv",
+        [
+            "motion_style", "metric", "fixed_mean", "task_conditioned_mean",
+            "absolute_delta", "percent_delta",
+        ],
+        effect_rows(summary),
+    )
     write_csv(output_dir / "timeseries.csv", TIMESERIES_FIELDS, timeseries)
     write_markdown_table(output_dir / "mean_std_table.md", summary)
     reliability = llm_reliability(experiment_dir)

@@ -1,0 +1,27 @@
+{
+  "status": "valid",
+  "formal_trials": 30,
+  "method_style_cells": {
+    "fixed_gain/aggressive": 5,
+    "fixed_gain/normal": 5,
+    "fixed_gain/smooth": 5,
+    "task_conditioned/aggressive": 5,
+    "task_conditioned/normal": 5,
+    "task_conditioned/smooth": 5
+  },
+  "all_fixed_gains_equal_one": true,
+  "llm_reliability": {
+    "api_attempts": 40,
+    "api_schema_valid_attempts": 30,
+    "api_attempt_success_rate": 0.75,
+    "trials_with_parse_result": 30,
+    "gate_passed": 30,
+    "gate_failed": 0,
+    "gate_pass_rate": 1.0,
+    "error_types": {
+      "JSONDecodeError": 10
+    },
+    "formal_trials": 30,
+    "rejected_attempt_directories": 0
+  }
+}

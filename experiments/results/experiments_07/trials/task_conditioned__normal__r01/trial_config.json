@@ -1,0 +1,23 @@
+{
+  "trial_id": "task_conditioned__normal__r01",
+  "method": "task_conditioned",
+  "motion_style": "normal",
+  "repeat": 1,
+  "uav_id": 1,
+  "target": [
+    6.0,
+    3.0,
+    5.0
+  ],
+  "duration_s": 3.0,
+  "observation_s": 15.0,
+  "semantic_gain_mode": "task_conditioned",
+  "fixed_gain_multiplier": 1.0,
+  "enable_ladrc_accel_feedforward": true,
+  "enable_iapf_accel_feedforward": false,
+  "position_threshold_m": 0.3,
+  "velocity_threshold_mps": 0.3,
+  "settling_dwell_s": 1.0,
+  "cold_start": true,
+  "readiness_gate": "PX4 armed, OFFBOARD, and not failsafe"
+}

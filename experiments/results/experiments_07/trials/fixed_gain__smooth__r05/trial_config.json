@@ -1,0 +1,23 @@
+{
+  "trial_id": "fixed_gain__smooth__r05",
+  "method": "fixed_gain",
+  "motion_style": "smooth",
+  "repeat": 5,
+  "uav_id": 1,
+  "target": [
+    6.0,
+    3.0,
+    5.0
+  ],
+  "duration_s": 3.0,
+  "observation_s": 15.0,
+  "semantic_gain_mode": "fixed",
+  "fixed_gain_multiplier": 1.0,
+  "enable_ladrc_accel_feedforward": true,
+  "enable_iapf_accel_feedforward": false,
+  "position_threshold_m": 0.3,
+  "velocity_threshold_mps": 0.3,
+  "settling_dwell_s": 1.0,
+  "cold_start": true,
+  "readiness_gate": "PX4 armed, OFFBOARD, and not failsafe"
+}

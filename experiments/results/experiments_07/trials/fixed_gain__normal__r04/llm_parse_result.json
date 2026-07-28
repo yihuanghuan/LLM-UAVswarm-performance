@@ -1,0 +1,40 @@
+{
+  "trial_id": "fixed_gain__normal__r04",
+  "method": "fixed_gain",
+  "motion_style": "normal",
+  "repeat": 4,
+  "command": "1号机以标准模式，变换成以[6,3,5]为中心、间距1米的一字长蛇阵。",
+  "parse_elapsed_ms": 12436.42,
+  "compiled_result": {
+    "task_sequences": [
+      {
+        "task_sequence_id": 1,
+        "duration_seconds": 3.0,
+        "uav_id": [
+          1
+        ],
+        "uav_count": 1,
+        "trigger_condition": "direct_execution",
+        "wait_time": null,
+        "iapf_safety_margin_factor": 1.0,
+        "motion_profile": "normal",
+        "constraints": [
+          "minimal_topology_change",
+          "no_trajectory_cross",
+          "keep_safety_distance"
+        ],
+        "global_center": [
+          6.0,
+          3.0,
+          5.0
+        ],
+        "generation_mode": "parametric",
+        "parametric_data": {
+          "formation_type": "Line",
+          "formation_radius": 1.0
+        }
+      }
+    ]
+  },
+  "gate_passed": true
+}
