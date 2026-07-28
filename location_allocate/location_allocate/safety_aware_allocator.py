@@ -1,6 +1,6 @@
 import itertools
 from dataclasses import dataclass
-from typing import Dict, List, Sequence
+from typing import Any, Dict, List, Sequence
 
 import numpy as np
 from scipy.optimize import linear_sum_assignment
@@ -218,6 +218,114 @@ class SafetyAwareTopologyAllocator:
         self.last_metrics = best_metrics
         self.last_iterations = max(0, iterations - 1)
         return allocated, best_metrics
+
+    def allocate_mode_with_metrics(
+        self,
+        initial: Sequence[Sequence[float]],
+        targets: Sequence[Sequence[float]],
+        duration: float = 3.0,
+        mode: str = "safety_aware",
+    ) -> tuple[List[List[float]], AssignmentMetrics]:
+        """Allocate targets with a fixed, distance-only, or safety-aware mode."""
+        if len(initial) != len(targets):
+            raise ValueError("initial and targets must contain the same number of positions")
+        if mode == "safety_aware":
+            return self.allocate_with_metrics(initial, targets, duration)
+        if mode == "fixed":
+            assignment = list(range(len(initial)))
+        elif mode == "distance_hungarian":
+            assignment = self._hungarian_assignment(initial, targets)
+        else:
+            raise ValueError(
+                "assignment_mode must be fixed, distance_hungarian, or safety_aware"
+            )
+        metrics = self.evaluate(initial, targets, assignment, duration)
+        allocated = np.asarray(targets, dtype=float)[
+            np.asarray(assignment, dtype=int)
+        ].tolist()
+        self.last_metrics = metrics
+        self.last_iterations = 0
+        return allocated, metrics
+
+    def allocate_grouped(
+        self,
+        groups: Sequence[Dict[str, Any]],
+        duration: float,
+        mode: str = "safety_aware",
+    ) -> tuple[List[List[List[float]]], AssignmentMetrics]:
+        """Allocate within groups while evaluating safety over every UAV pair."""
+        if not groups:
+            metrics = AssignmentMetrics(0.0, 0.0, 0, 0, 0.0, float("inf"))
+            self.last_metrics = metrics
+            self.last_iterations = 0
+            return [], metrics
+        if duration <= 0.0:
+            raise ValueError("duration must be positive")
+
+        initial: List[List[float]] = []
+        targets: List[List[float]] = []
+        ranges: List[range] = []
+        seen_uav_ids: set[int] = set()
+        cursor = 0
+        for group in groups:
+            group_initial = group.get("initial", [])
+            group_targets = group.get("targets", [])
+            group_ids = [int(value) for value in group.get("uav_ids", [])]
+            if len(group_initial) != len(group_targets) or len(group_ids) != len(group_initial):
+                raise ValueError("each group needs equal uav_ids, initial, and targets lengths")
+            if seen_uav_ids.intersection(group_ids):
+                raise ValueError("uav_ids must not appear in more than one group")
+            seen_uav_ids.update(group_ids)
+            initial.extend(group_initial)
+            targets.extend(group_targets)
+            ranges.append(range(cursor, cursor + len(group_ids)))
+            cursor += len(group_ids)
+
+        if mode == "fixed":
+            assignment = list(range(len(initial)))
+        else:
+            assignment = list(range(len(initial)))
+            for group_range in ranges:
+                group_indices = list(group_range)
+                local_initial = [initial[index] for index in group_indices]
+                local_targets = [targets[index] for index in group_indices]
+                local_assignment = self._hungarian_assignment(
+                    local_initial, local_targets
+                )
+                for local_row, local_target in enumerate(local_assignment):
+                    assignment[group_indices[local_row]] = group_indices[local_target]
+        best_metrics = self.evaluate(initial, targets, assignment, duration)
+
+        iterations = 0
+        if mode == "safety_aware":
+            improved = True
+            while improved:
+                improved = False
+                iterations += 1
+                for group_range in ranges:
+                    for i, j in itertools.combinations(group_range, 2):
+                        candidate = self._swap(assignment, i, j)
+                        candidate_metrics = self.evaluate(
+                            initial, targets, candidate, duration
+                        )
+                        if candidate_metrics.total < best_metrics.total - self.min_improvement:
+                            assignment = candidate
+                            best_metrics = candidate_metrics
+                            improved = True
+        elif mode not in ("fixed", "distance_hungarian"):
+            raise ValueError(
+                "assignment_mode must be fixed, distance_hungarian, or safety_aware"
+            )
+
+        target_np = np.asarray(targets, dtype=float)
+        allocated_flat = target_np[np.asarray(assignment, dtype=int)].tolist()
+        allocated_groups = [
+            allocated_flat[group_range.start:group_range.stop]
+            for group_range in ranges
+        ]
+        self.last_metrics = best_metrics
+        self.last_iterations = max(0, iterations - 1)
+        return allocated_groups, best_metrics
 
     def allocate(
         self,

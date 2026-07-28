@@ -74,6 +74,12 @@ class TopologyAllocator(SafetyAwareTopologyAllocator):
 class UAVFormationNode(Node):
     def __init__(self):
         super().__init__('location_allocate')
+        self.declare_parameter('assignment_mode', 'safety_aware')
+        assignment_mode = self.get_parameter(
+            'assignment_mode').get_parameter_value().string_value
+        if assignment_mode not in ('fixed', 'distance_hungarian', 'safety_aware'):
+            raise ValueError(
+                'assignment_mode must be fixed, distance_hungarian, or safety_aware')
         
         # 状态变量：由 C++ 节点低频发布的 /uav{id}/odom 实时更新（不再使用硬编码初始坐标）
         self.uav_state_map: Dict[int, List[float]] = {}
@@ -271,7 +277,11 @@ class UAVFormationNode(Node):
         allocator = TopologyAllocator()
         # 输入：参与机的当前位置，参与机的目标点
         allocation_duration = float(task.get('duration_seconds', 3.0))
-        allocated_subset = allocator.allocate(current_subset, targets, duration=allocation_duration)
+        assignment_mode = self.get_parameter(
+            'assignment_mode').get_parameter_value().string_value
+        allocated_subset, _ = allocator.allocate_mode_with_metrics(
+            current_subset, targets, duration=allocation_duration,
+            mode=assignment_mode)
         metrics = allocator.metrics_dict()
         self.get_logger().info(
             "   safety-aware topology cost: "
@@ -315,6 +325,51 @@ class UAVFormationNode(Node):
                 wt = task.get('wait_time') or 0.0
                 self.wait_for_hover_and_time(task_uav_ids, wt)
 
+    def execute_grouped_tasks(self, tasks: List[Dict]):
+        """Jointly allocate simultaneous disjoint groups and publish together."""
+        for _ in range(10):
+            rclpy.spin_once(self, timeout_sec=0.05)
+
+        grouped_inputs = []
+        durations = []
+        for task in tasks:
+            uav_ids = [int(uid) for uid in task['uav_id']]
+            initial = [self.uav_state_map[uid].copy() for uid in uav_ids]
+            generator = FormationGenerator(
+                task['global_center'],
+                task['parametric_data']['formation_radius'])
+            targets = generator.generate(
+                task['parametric_data']['formation_type'], len(uav_ids))
+            if not targets:
+                targets = [
+                    all_initial_positions[all_uav_ids.index(uid)].copy()
+                    for uid in uav_ids
+                ]
+            grouped_inputs.append({
+                'uav_ids': uav_ids,
+                'initial': initial,
+                'targets': targets,
+            })
+            durations.append(float(task.get('duration_seconds', 3.0)))
+
+        if max(durations) - min(durations) > 1e-6:
+            raise ValueError(
+                'parallel grouped assignment requires an identical duration')
+        assignment_mode = self.get_parameter(
+            'assignment_mode').get_parameter_value().string_value
+        allocator = TopologyAllocator()
+        allocated_groups, metrics = allocator.allocate_grouped(
+            grouped_inputs, duration=durations[0], mode=assignment_mode)
+        self.get_logger().info(
+            f"joint grouped assignment mode={assignment_mode} "
+            f"d_min={metrics.min_distance:.3f} total={metrics.total:.3f}")
+
+        for task, group_input, allocated in zip(
+                tasks, grouped_inputs, allocated_groups):
+            self.send_goal_positions(group_input['uav_ids'], allocated, task)
+            for uid, position in zip(group_input['uav_ids'], allocated):
+                self.uav_state_map[uid] = position.copy()
+
     def run_mission(self, llm_output: Dict):
         tasks = llm_output.get('task_sequences', [])
         if not tasks:
@@ -337,8 +392,7 @@ class UAVFormationNode(Node):
 
             if len(group) > 1:
                 self.get_logger().info(f">>> 并行执行任务 {i+1}-{j}（UAV 集合不重叠）")
-                for task in group:
-                    self.execute_task(task, skip_wait=True)  # 先全部发送，不等
+                self.execute_grouped_tasks(group)
                 all_ids = list(group_ids)
                 self.get_logger().info(f">>> 等待 {len(all_ids)} 架无人机全部悬停...")
                 self.wait_for_hover_and_time(all_ids, 1.0)
