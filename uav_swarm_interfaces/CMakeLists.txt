@@ -15,6 +15,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/UAVStatus.msg"
   "msg/TrajectoryMetrics.msg"
   "msg/ControlAdaptationLog.msg"
+  "msg/IAPFDebug.msg"
   DEPENDENCIES geometry_msgs std_msgs
 )
 

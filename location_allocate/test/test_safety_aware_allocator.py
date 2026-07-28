@@ -114,3 +114,52 @@ def test_allocate_keeps_result_order_aligned_with_uav_order():
     allocated = allocator.allocate(initial, targets, duration=3.0)
 
     assert allocated == [[0.0, 0.0, 0.0], [4.0, 0.0, 0.0]]
+
+
+def test_assignment_modes_have_distinct_fixed_and_distance_behavior():
+    allocator = SafetyAwareTopologyAllocator()
+    initial = [[0.0, 0.0, 0.0], [4.0, 0.0, 0.0]]
+    targets = [[4.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
+
+    fixed, _ = allocator.allocate_mode_with_metrics(
+        initial, targets, mode="fixed")
+    distance, _ = allocator.allocate_mode_with_metrics(
+        initial, targets, mode="distance_hungarian")
+
+    assert fixed == targets
+    assert distance == initial
+
+
+def test_grouped_allocator_preserves_group_ownership_and_scores_cross_group_pairs():
+    allocator = SafetyAwareTopologyAllocator(d_safe=1.0, beta=20.0, gamma=20.0)
+    groups = [
+        {
+            "uav_ids": [1, 2],
+            "initial": [[-2.0, -0.5, 2.0], [-2.0, 0.5, 2.0]],
+            "targets": [[2.0, 0.5, 2.0], [2.0, -0.5, 2.0]],
+        },
+        {
+            "uav_ids": [3, 4],
+            "initial": [[-0.5, -2.0, 2.0], [0.5, -2.0, 2.0]],
+            "targets": [[0.5, 2.0, 2.0], [-0.5, 2.0, 2.0]],
+        },
+    ]
+
+    allocated, metrics = allocator.allocate_grouped(
+        groups, duration=5.0, mode="safety_aware")
+
+    assert {tuple(point) for point in allocated[0]} == {
+        tuple(point) for point in groups[0]["targets"]}
+    assert {tuple(point) for point in allocated[1]} == {
+        tuple(point) for point in groups[1]["targets"]}
+    assert metrics.min_distance < 1.0
+
+
+def test_grouped_allocator_rejects_duplicate_uav_ids():
+    allocator = SafetyAwareTopologyAllocator()
+    groups = [
+        {"uav_ids": [1], "initial": [[0, 0, 0]], "targets": [[1, 0, 0]]},
+        {"uav_ids": [1], "initial": [[0, 1, 0]], "targets": [[1, 1, 0]]},
+    ]
+    with np.testing.assert_raises(ValueError):
+        allocator.allocate_grouped(groups, duration=3.0)
