@@ -253,6 +253,12 @@ def read_trial_collision(batch_dir: Path, trial: Trial) -> bool:
     return int(float(row["collision_event_count"])) > 0
 
 
+def scenario_uav_count(scenario: str) -> int:
+    configuration = load_yaml(
+        CONFIG_ROOT / "scenarios" / f"{scenario}.yaml")
+    return len(configuration["uav_ids"])
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--batch-id", required=True)
@@ -295,8 +301,7 @@ def main() -> int:
         return 0
 
     supervisor = SimulatorSupervisor(batch_dir) if args.manage_sim else None
-    if supervisor:
-        supervisor.start()
+    active_uav_count = None
     calibrated_path = batch_dir / "calibrated_parameters.json"
     calibrated_overrides = {}
     if calibrated_path.is_file():
@@ -316,6 +321,13 @@ def main() -> int:
             if args.resume and (trial_dir / "trial_summary.csv").is_file():
                 print(f"[{index}/{len(selected)}] skip completed {trial_dir}")
                 continue
+            if supervisor:
+                required_uav_count = scenario_uav_count(trial.scenario)
+                if required_uav_count != active_uav_count:
+                    supervisor.stop()
+                    supervisor.uav_count = required_uav_count
+                    supervisor.start()
+                    active_uav_count = required_uav_count
             for attempt in range(args.max_retries + 1):
                 print(
                     f"[{index}/{len(selected)}] {trial.phase} {trial.scenario} "

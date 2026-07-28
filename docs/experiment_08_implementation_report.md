@@ -11,6 +11,9 @@
   constrained grouped allocation evaluated over all cross-group UAV pairs.
 - Added fixed scenarios, a reproducible ROS runner, batch protocol, analysis,
   statistical aggregation, plots, synthetic tests, and LFS artifact policy.
+- Added typed ROS parameter-service updates for Humble, scenario-sized
+  simulator supervision, and collision-safe three-stage automatic
+  prepositioning with odometry-based convergence checks.
 
 ## Modes
 
@@ -64,10 +67,18 @@ complete-batch, aggregation, plotting, and checksum commands.
   allocator tests passed.
 - Current C++ IAPF core tests: six passed.
 - Current allocator tests: nine passed.
-- Current experiment analysis and aggregation tests: recorded in the final
-  experiment batch metadata.
-- Gazebo smoke and formal batch status: recorded after execution; unavailable
-  or failed runs are never replaced with synthetic data.
+- Current experiment analysis and aggregation tests: 15 passed.
+- Synthetic edge-case validation: passed.
+- Gazebo smoke:
+  - `head_on/M0`: completed; the expected unsafe baseline produced two
+    collision events and triggered the configured simulator-restart rule.
+  - `head_on/M3`: completed in a fresh two-UAV simulator.
+  - `dense_feasible/M3`: completed with eight UAVs, 1.700 m minimum distance,
+    no collision or violation, and 0.252 m final formation error.
+  - `dense_feasible/M5`: completed with eight UAVs, 1.719 m minimum distance,
+    no collision or violation, and 0.253 m final formation error.
+- Formal batch status is recorded after execution; unavailable or failed runs
+  are never replaced with synthetic data.
 
 ## Known limitations
 

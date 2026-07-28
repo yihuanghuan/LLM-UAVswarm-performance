@@ -18,7 +18,9 @@ from typing import Any, Dict, List, Mapping
 import rclpy
 from geometry_msgs.msg import Point
 from px4_msgs.msg import VehicleStatus
+from rcl_interfaces.srv import SetParameters
 from rclpy.node import Node
+from rclpy.parameter import Parameter
 from rclpy.qos import qos_profile_sensor_data
 from rosgraph_msgs.msg import Clock
 from uav_swarm_interfaces.msg import IAPFDebug, UAVStatus, UAVSwarmCommand
@@ -60,9 +62,15 @@ def command_output(command: List[str], cwd: Path | None = None) -> str:
 
 
 def git_metadata(repository: Path) -> Dict[str, Any]:
+    status = ["git", "status", "--porcelain"]
+    if (repository / "experiments" / "results" / "experiments_08").is_dir():
+        status.extend([
+            "--", ".",
+            ":(exclude)experiments/results/experiments_08",
+        ])
     return {
         "commit": command_output(["git", "rev-parse", "HEAD"], repository),
-        "dirty": bool(command_output(["git", "status", "--porcelain"], repository)),
+        "dirty": bool(command_output(status, repository)),
     }
 
 
@@ -77,39 +85,41 @@ def write_csv(path: Path, fields: List[str], rows: List[Mapping[str, Any]]) -> N
 class TrialNode(Node):
     def __init__(self, context: Mapping[str, Any], uav_ids: List[int]):
         super().__init__("experiment_08_runner")
-        self.context = context
+        self.trial_context = context
         self.uav_ids = uav_ids
         self.odom_rows: List[Dict[str, Any]] = []
         self.debug_rows: List[Dict[str, Any]] = []
         self.events: List[Dict[str, Any]] = []
         self.positions: Dict[int, List[float]] = {}
+        self.position_speeds = {uav_id: math.inf for uav_id in uav_ids}
+        self.position_update_times: Dict[int, float] = {}
         self.stable = {uav_id: False for uav_id in uav_ids}
         self.formal_recording = False
         self.px4_failsafe = False
         self.sim_clock: float | None = None
         self.sim_clock_start: float | None = None
         self.wall_clock_start: float | None = None
-        self.publishers = {
+        self.command_publishers = {
             uav_id: self.create_publisher(
                 UAVSwarmCommand, f"/uav{uav_id}/swarm_command", 10)
             for uav_id in uav_ids
         }
-        self.subscriptions = []
+        self.trial_subscriptions = []
         for uav_id in uav_ids:
-            self.subscriptions.append(self.create_subscription(
+            self.trial_subscriptions.append(self.create_subscription(
                 Point, f"/uav{uav_id}/odom",
                 lambda msg, uid=uav_id: self.odom_callback(msg, uid), 20))
-            self.subscriptions.append(self.create_subscription(
+            self.trial_subscriptions.append(self.create_subscription(
                 UAVStatus, f"/uav{uav_id}/status",
                 lambda msg, uid=uav_id: self.status_callback(msg, uid), 20))
-            self.subscriptions.append(self.create_subscription(
+            self.trial_subscriptions.append(self.create_subscription(
                 IAPFDebug, f"/uav{uav_id}/iapf_debug",
                 lambda msg, uid=uav_id: self.debug_callback(msg, uid), 50))
-            self.subscriptions.append(self.create_subscription(
+            self.trial_subscriptions.append(self.create_subscription(
                 VehicleStatus, f"/px4_{uav_id}/fmu/out/vehicle_status",
                 lambda msg, uid=uav_id: self.vehicle_status_callback(msg, uid),
                 qos_profile_sensor_data))
-        self.subscriptions.append(self.create_subscription(
+        self.trial_subscriptions.append(self.create_subscription(
             Clock, "/clock", self.clock_callback, qos_profile_sensor_data))
 
     def timestamp(self) -> float:
@@ -122,7 +132,15 @@ class TrialNode(Node):
 
     def odom_callback(self, msg: Point, uav_id: int) -> None:
         timestamp = self.timestamp()
+        update_time = time.monotonic()
+        if uav_id in self.positions:
+            elapsed = update_time - self.position_update_times[uav_id]
+            if elapsed > 1e-6:
+                self.position_speeds[uav_id] = (
+                    math.dist(self.positions[uav_id], [msg.x, msg.y, msg.z])
+                    / elapsed)
         self.positions[uav_id] = [msg.x, msg.y, msg.z]
+        self.position_update_times[uav_id] = update_time
         self.odom_rows.append({
             "timestamp": timestamp, "uav_id": uav_id,
             "x": msg.x, "y": msg.y, "z": msg.z})
@@ -142,7 +160,7 @@ class TrialNode(Node):
             }
         row: Dict[str, Any] = {
             "timestamp": self.timestamp(),
-            **self.context,
+            **self.trial_context,
             "mission_id": msg.mission_id,
             "uav_id": uav_id,
             "avoidance_mode": msg.avoidance_mode,
@@ -229,7 +247,7 @@ class TrialNode(Node):
                 message.duration = float(duration)
                 message.motion_style = motion_style
                 message.safety_factor = float(safety_factor)
-                self.publishers[uav_id].publish(message)
+                self.command_publishers[uav_id].publish(message)
         self.event("command_sent", detail=f"mission={mission_id}")
 
     def wait_for_stable(self, timeout: float, hold_time: float) -> bool:
@@ -245,21 +263,134 @@ class TrialNode(Node):
                 stable_start = None
         return False
 
+    def wait_for_positions(
+        self, targets: Mapping[int, List[float]], timeout: float,
+        hold_time: float, tolerance: float = 0.3,
+        speed_tolerance: float = 0.3,
+    ) -> bool:
+        end = time.monotonic() + timeout
+        stable_start = None
+        while time.monotonic() < end:
+            rclpy.spin_once(self, timeout_sec=0.1)
+            now = time.monotonic()
+            settled = all(
+                uav_id in self.positions
+                and now - self.position_update_times[uav_id] <= 0.5
+                and math.dist(self.positions[uav_id], target) < tolerance
+                and self.position_speeds[uav_id] < speed_tolerance
+                for uav_id, target in targets.items())
+            if settled:
+                stable_start = stable_start or now
+                if now - stable_start >= hold_time:
+                    return True
+            else:
+                stable_start = None
+        return False
+
+
+def preposition_uavs(
+    node: TrialNode, groups: List[Dict[str, Any]], trial: int,
+    hold_time: float
+) -> bool:
+    """Move to initial states through vertically separated transit lanes."""
+    desired = {
+        uav_id: list(target)
+        for group in groups
+        for uav_id, target in zip(group["uav_ids"], group["initial"])
+    }
+    uav_ids = sorted(desired)
+    maximum_initial_z = max(target[2] for target in desired.values())
+    transit = {
+        uav_id: maximum_initial_z + 1.5 * (index + 1)
+        for index, uav_id in enumerate(uav_ids)
+    }
+    current = {uav_id: list(node.positions[uav_id]) for uav_id in uav_ids}
+
+    phases = [
+        (
+            "vertical_separation",
+            {
+                uav_id: [current[uav_id][0], current[uav_id][1], transit[uav_id]]
+                for uav_id in uav_ids
+            },
+            1.0,
+        ),
+        (
+            "horizontal_transit",
+            {
+                uav_id: [
+                    desired[uav_id][0], desired[uav_id][1], transit[uav_id]]
+                for uav_id in uav_ids
+            },
+            1.5,
+        ),
+        ("final_descent", desired, 1.0),
+    ]
+    for phase_index, (name, targets, nominal_speed) in enumerate(phases):
+        start = {
+            uav_id: list(node.positions.get(uav_id, current[uav_id]))
+            for uav_id in uav_ids
+        }
+        maximum_distance = max(
+            math.dist(start[uav_id], targets[uav_id]) for uav_id in uav_ids)
+        duration = max(5.0, maximum_distance / nominal_speed)
+        node.event("preposition_phase", detail=name)
+        node.send_goals(
+            [{"uav_ids": uav_ids,
+              "targets": [targets[uav_id] for uav_id in uav_ids]}],
+            900000 + trial * 10 + phase_index, duration, "normal", 0.0)
+        if node.wait_for_positions(
+                targets, duration + 10.0, hold_time):
+            continue
+        node.event("preposition_correction", detail=name)
+        correction_targets = {
+            uav_id: [
+                target[axis] + target[axis] - node.positions[uav_id][axis]
+                for axis in range(3)]
+            for uav_id, target in targets.items()
+        }
+        node.send_goals(
+            [{"uav_ids": uav_ids,
+              "targets": [
+                  correction_targets[uav_id] for uav_id in uav_ids]}],
+            910000 + trial * 10 + phase_index, 8.0, "normal", 0.0)
+        if not node.wait_for_positions(targets, 28.0, hold_time):
+            node.event("preposition_failed", detail=name)
+            return False
+    return True
+
 
 def set_controller_parameters(
-    uav_ids: List[int], values: Mapping[str, Any]
+    node: Node, uav_ids: List[int], values: Mapping[str, Any]
 ) -> None:
     for uav_id in uav_ids:
-        node = f"/uav{uav_id}/ladrc_position_controller"
-        for name, value in values.items():
-            rendered = str(value).lower() if isinstance(value, bool) else str(value)
-            result = subprocess.run(
-                ["ros2", "param", "set", node, name, rendered],
-                text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                check=False)
-            if result.returncode != 0 or "Successful" not in result.stdout:
+        remote_node = f"/uav{uav_id}/ladrc_position_controller"
+        client = node.create_client(
+            SetParameters, f"{remote_node}/set_parameters")
+        try:
+            if not client.wait_for_service(timeout_sec=5.0):
                 raise RuntimeError(
-                    f"failed to set {node} {name}: {result.stdout.strip()}")
+                    f"parameter service unavailable for {remote_node}")
+            parameters = [
+                Parameter(name=name, value=value) for name, value in values.items()]
+            request = SetParameters.Request()
+            request.parameters = [
+                parameter.to_parameter_msg() for parameter in parameters]
+            future = client.call_async(request)
+            rclpy.spin_until_future_complete(node, future, timeout_sec=5.0)
+            if not future.done():
+                raise RuntimeError(
+                    f"timed out setting parameters on {remote_node}")
+            failures = [
+                f"{parameter.name}: {result.reason}"
+                for parameter, result in zip(
+                    parameters, future.result().results)
+                if not result.successful]
+            if failures:
+                raise RuntimeError(
+                    f"failed to set {remote_node}: {'; '.join(failures)}")
+        finally:
+            node.destroy_client(client)
 
 
 def start_rosbag(trial_dir: Path, uav_ids: List[int]) -> subprocess.Popen:
@@ -421,20 +552,16 @@ def main() -> int:
         if not node.wait_for_odom(20.0):
             outcome["failure_reason"] = "stale_odometry"
             raise RuntimeError("did not receive odometry from all UAVs")
-        set_controller_parameters(uav_ids, {"avoidance_mode": "off"})
-        preposition_groups = [
-            {**group, "targets": group["initial"]} for group in groups]
-        node.send_goals(
-            preposition_groups, 900000 + args.trial, 5.0,
-            scenario["motion_style"], 0.0)
-        if not node.wait_for_stable(
-                30.0, float(scenario["pre_hold_time"])):
+        set_controller_parameters(node, uav_ids, {"avoidance_mode": "off"})
+        if not preposition_uavs(
+                node, groups, args.trial,
+                float(scenario["pre_hold_time"])):
             outcome["failure_reason"] = "invalid_initialization"
             raise RuntimeError("UAVs did not stabilize at initial positions")
 
         formal_parameters = dict(iapf_parameters)
         formal_parameters["avoidance_mode"] = method["avoidance_mode"]
-        set_controller_parameters(uav_ids, formal_parameters)
+        set_controller_parameters(node, uav_ids, formal_parameters)
         formal_odom_start = len(node.odom_rows)
         formal_debug_start = len(node.debug_rows)
         node.events.clear()
