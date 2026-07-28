@@ -1,0 +1,15 @@
+scenario_name: head_on_calibration
+uav_ids: [1, 2]
+initial_positions:
+  - [-2.5, -0.15, 2.3]
+  - [2.5, 0.15, 2.3]
+target_positions:
+  - [2.5, 0.15, 2.3]
+  - [-2.5, -0.15, 2.3]
+fixed_assignment: true
+duration: 4.5
+pre_hold_time: 1.0
+post_hold_time: 2.0
+timeout: 18.0
+motion_style: normal
+randomization_range: 0.03

@@ -1,0 +1,32 @@
+scenario_name: grouped_reconfiguration
+uav_ids: [1, 2, 3, 4, 5, 6, 7, 8]
+groups:
+  - uav_ids: [1, 2, 3, 4]
+    initial_positions:
+      - [-6.0, -1.5, 3.0]
+      - [-6.0, -0.5, 3.0]
+      - [-6.0, 0.5, 3.0]
+      - [-6.0, 1.5, 3.0]
+    target_positions:
+      - [6.0, 1.5, 3.0]
+      - [6.0, 0.5, 3.0]
+      - [6.0, -0.5, 3.0]
+      - [6.0, -1.5, 3.0]
+  - uav_ids: [5, 6, 7, 8]
+    initial_positions:
+      - [-1.5, -6.0, 3.0]
+      - [-0.5, -6.0, 3.0]
+      - [0.5, -6.0, 3.0]
+      - [1.5, -6.0, 3.0]
+    target_positions:
+      - [1.5, 6.0, 3.0]
+      - [0.5, 6.0, 3.0]
+      - [-0.5, 6.0, 3.0]
+      - [-1.5, 6.0, 3.0]
+fixed_assignment: false
+duration: 10.0
+pre_hold_time: 1.0
+post_hold_time: 2.0
+timeout: 35.0
+motion_style: normal
+randomization_range: 0.05

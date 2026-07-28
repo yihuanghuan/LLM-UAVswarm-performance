@@ -1,0 +1,15 @@
+scenario_name: head_on
+uav_ids: [1, 2]
+initial_positions:
+  - [-3.0, 0.0, 2.5]
+  - [3.0, 0.0, 2.5]
+target_positions:
+  - [3.0, 0.0, 2.5]
+  - [-3.0, 0.0, 2.5]
+fixed_assignment: true
+duration: 5.0
+pre_hold_time: 1.0
+post_hold_time: 2.0
+timeout: 20.0
+motion_style: normal
+randomization_range: 0.05

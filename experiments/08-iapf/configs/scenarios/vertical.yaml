@@ -1,0 +1,15 @@
+scenario_name: vertical
+uav_ids: [1, 2]
+initial_positions:
+  - [0.0, 0.0, 1.5]
+  - [0.0, 0.0, 4.5]
+target_positions:
+  - [0.0, 0.0, 4.5]
+  - [0.0, 0.0, 1.5]
+fixed_assignment: true
+duration: 5.0
+pre_hold_time: 1.0
+post_hold_time: 2.0
+timeout: 20.0
+motion_style: normal
+randomization_range: 0.05

@@ -1,0 +1,22 @@
+scenario_name: dense_feasible
+uav_ids: [1, 2, 3, 4, 5, 6, 7, 8]
+initial_positions:
+  - [6.0, 0.0, 3.0]
+  - [4.24, 4.24, 3.0]
+  - [0.0, 6.0, 3.0]
+  - [-4.24, 4.24, 3.0]
+  - [-6.0, 0.0, 3.0]
+  - [-4.24, -4.24, 3.0]
+  - [0.0, -6.0, 3.0]
+  - [4.24, -4.24, 3.0]
+formation:
+  type: circle
+  center: [0.0, 0.0, 3.0]
+  radius: 2.4
+fixed_assignment: false
+duration: 8.0
+pre_hold_time: 1.0
+post_hold_time: 2.0
+timeout: 30.0
+motion_style: normal
+randomization_range: 0.05

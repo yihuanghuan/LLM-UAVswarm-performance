@@ -1,0 +1,39 @@
+experiment:
+  sample_hz: 20.0
+  control_frequency: 50.0
+  max_odom_gap: 0.25
+  initial_position_tolerance: 0.30
+  final_position_tolerance: 0.30
+  stable_speed: 0.30
+  stable_hold_time: 1.0
+  stall_distance: 0.50
+  stall_speed: 0.15
+  stall_duration: 2.0
+  max_retries: 2
+  seeds: [42, 43, 44, 45, 46, 47, 48, 49, 50, 51]
+  pilot_seeds: [9001, 9002, 9003]
+
+safety:
+  # Iris rotor envelope: 2 * (0.22 m rotor-center offset + 0.128 m radius)
+  d_collision: 0.70
+  d_violation: 1.00
+  r_iapf: 1.50
+  d_assignment: 2.00
+
+iapf:
+  iapf_repulsion_gain: 25.0
+  iapf_escape_mode: id_order
+  iapf_escape_gain: 0.05
+  iapf_distance_epsilon: 0.10
+  iapf_position_gain: 0.05
+  iapf_position_limit: 0.50
+  iapf_accel_gain: 0.30
+  iapf_accel_limit: 2.00
+  neighbor_timeout: 0.20
+
+calibration:
+  seeds: [7001, 7002, 7003]
+  factors:
+    iapf_repulsion_gain: [12.5, 25.0, 50.0]
+    iapf_position_gain: [0.025, 0.05, 0.10]
+    iapf_accel_gain: [0.15, 0.30, 0.60]

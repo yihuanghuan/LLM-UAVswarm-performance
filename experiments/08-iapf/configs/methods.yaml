@@ -1,0 +1,29 @@
+methods:
+  M0:
+    assignment: baseline
+    avoidance_mode: off
+    description: No local avoidance
+  M1:
+    assignment: baseline
+    avoidance_mode: classic_position
+    iapf_escape_mode: none
+    description: Classic radial APF, position only
+  M2:
+    assignment: baseline
+    avoidance_mode: iapf_position
+    iapf_escape_mode: id_order
+    description: IAPF position modulation
+  M3:
+    assignment: baseline
+    avoidance_mode: iapf_dual
+    iapf_escape_mode: id_order
+    description: IAPF position and acceleration
+  M4:
+    assignment: safety_aware
+    avoidance_mode: off
+    description: Safety-aware assignment only
+  M5:
+    assignment: safety_aware
+    avoidance_mode: iapf_dual
+    iapf_escape_mode: id_order
+    description: Safety-aware assignment and dual IAPF
