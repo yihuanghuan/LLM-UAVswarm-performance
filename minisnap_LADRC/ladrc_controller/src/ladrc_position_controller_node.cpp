@@ -577,8 +577,13 @@ private:
         modulated_acceleration.z(),
         0.0,
         publish_acceleration);
+    const Eigen::Vector3d global_offset(
+      this->get_parameter("enu_offset_x").as_double(),
+      this->get_parameter("enu_offset_y").as_double(),
+      this->get_parameter("enu_offset_z").as_double());
     publishIAPFDebug(
-      iapf, nominal_reference, modulated_reference,
+      iapf, nominal_reference + global_offset,
+      modulated_reference + global_offset,
       nominal_acceleration, modulated_acceleration);
 
     // 日志（当 IAPF 激活时附加 "!IAPF!" 标记）
