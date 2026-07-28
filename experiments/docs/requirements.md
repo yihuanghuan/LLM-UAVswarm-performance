@@ -39,3 +39,6 @@ git push -u origin exp/08-iapf
 git switch --detach gazebo-experiment-v1
 ```
 执行时不要修改或覆盖已有实验数据。
+
+## 2.README说明
+在创建的分支中的LLM-UAVswarm-performance/experiments/README.md，覆盖原有的内容，修改成本次实验的说明（实验目的+实验流程+实验结果+结果分析）
