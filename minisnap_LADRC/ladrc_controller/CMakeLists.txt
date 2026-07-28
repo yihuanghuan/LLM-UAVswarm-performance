@@ -24,6 +24,7 @@ add_library(ladrc_lib
   src/ladrc_core.cpp
   src/leso.cpp
   src/lsef.cpp
+  src/iapf_core.cpp
 )
 
 ament_target_dependencies(ladrc_lib
@@ -75,5 +76,11 @@ install(DIRECTORY
   launch/
   DESTINATION share/${PROJECT_NAME}/launch
 )
+
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(test_iapf_core test/test_iapf_core.cpp)
+  target_link_libraries(test_iapf_core ladrc_lib)
+endif()
 
 ament_package()

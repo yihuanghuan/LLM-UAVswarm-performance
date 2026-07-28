@@ -13,7 +13,6 @@ from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
-from launch_ros.parameter_descriptions import ParameterValue
 import os
 
 
@@ -31,9 +30,11 @@ def generate_launch_description():
     def create_uav_nodes(context):
         ids_str = LaunchConfiguration('uav_ids').perform(context)
         ids = [int(x.strip()) for x in ids_str.strip('[]').split(',') if x.strip()]
-        enable_iapf_accel_feedforward = ParameterValue(
-            LaunchConfiguration('enable_iapf_accel_feedforward'),
-            value_type=bool)
+        avoidance_mode = LaunchConfiguration(
+            'avoidance_mode').perform(context).strip()
+        escape_mode = LaunchConfiguration('iapf_escape_mode').perform(context)
+        legacy_value = LaunchConfiguration(
+            'enable_iapf_accel_feedforward').perform(context).strip().lower()
 
         nodes = []
         for uid in ids:
@@ -71,6 +72,20 @@ def generate_launch_description():
                 'px4_target_system': uid + 1,  # sitl_multiple_run.sh: instance N → MAV_SYS_ID=N+1
             }
 
+            experiment_parameters = {
+                'neighbor_uav_ids': ids,
+                'iapf_escape_mode': escape_mode,
+            }
+            if avoidance_mode != 'unset':
+                experiment_parameters['avoidance_mode'] = avoidance_mode
+            if legacy_value in ('true', 'false'):
+                experiment_parameters['enable_iapf_accel_feedforward'] = (
+                    legacy_value == 'true')
+                if avoidance_mode == 'unset':
+                    experiment_parameters['avoidance_mode'] = (
+                        'iapf_dual' if legacy_value == 'true'
+                        else 'iapf_position')
+
             nodes.append(Node(
                 package='ladrc_controller',
                 executable='ladrc_position_controller_node',
@@ -79,10 +94,7 @@ def generate_launch_description():
                 parameters=[
                     config_file,
                     spawn_offset,
-                    {
-                        'neighbor_uav_ids': ids,
-                        'enable_iapf_accel_feedforward': enable_iapf_accel_feedforward,
-                    },
+                    experiment_parameters,
                 ],
                 remappings=remappings,
                 output='screen',
@@ -96,8 +108,16 @@ def generate_launch_description():
             default_value='[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]',
             description='要启动的 UAV ID 列表'),
         DeclareLaunchArgument(
+            'avoidance_mode',
+            default_value='unset',
+            description='unset/off/classic_position/iapf_position/iapf_dual'),
+        DeclareLaunchArgument(
+            'iapf_escape_mode',
+            default_value='id_order',
+            description='none/fixed_positive_z/id_order'),
+        DeclareLaunchArgument(
             'enable_iapf_accel_feedforward',
-            default_value='true',
-            description='是否启用 IAPF 加速度前馈'),
+            default_value='unset',
+            description='弃用兼容参数；unset/true/false'),
         OpaqueFunction(function=create_uav_nodes),
     ])
