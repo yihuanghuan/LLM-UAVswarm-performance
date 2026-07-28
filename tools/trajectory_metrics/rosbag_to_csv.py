@@ -54,7 +54,10 @@ def flatten_value(prefix: str, value: Any, out: Dict[str, Any]) -> None:
             flatten_value(f"{prefix}.{field}" if prefix else field, getattr(value, field), out)
         return
 
-    if isinstance(value, (list, tuple)):
+    if (
+        not isinstance(value, (str, bytes, bytearray, dict))
+        and hasattr(value, "__iter__")
+    ):
         for index, item in enumerate(value):
             flatten_value(f"{prefix}.{index}", item, out)
         return

@@ -1,4 +1,5 @@
 import csv
+import os
 from pathlib import Path
 from typing import Any, Dict
 
@@ -19,7 +20,12 @@ LOG_COLUMNS = [
 
 
 def append_llm_parse_log(row: Dict[str, Any]) -> None:
-    log_path = _repo_root() / "logs" / "llm_parse_log.csv"
+    configured_path = os.getenv("LLM_PARSE_LOG_PATH")
+    log_path = (
+        Path(configured_path).expanduser()
+        if configured_path
+        else _repo_root() / "logs" / "llm_parse_log.csv"
+    )
     log_path.parent.mkdir(parents=True, exist_ok=True)
 
     normalized = {column: row.get(column, "") for column in LOG_COLUMNS}

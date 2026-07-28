@@ -55,6 +55,9 @@ public:
     this->declare_parameter("max_acceleration_x", 3.0);
     this->declare_parameter("max_acceleration_y", 3.0);
     this->declare_parameter("max_acceleration_z", 3.0);
+    this->declare_parameter("enable_ladrc_accel_feedforward", false);
+    this->declare_parameter("semantic_gain_mode", "task_conditioned");
+    this->declare_parameter("fixed_gain_multiplier", 1.0);
 
     // Gazebo 多机 spawn 偏移量（sitl_multiple_run.sh 默认 Y=3*instance）
     this->declare_parameter("enu_offset_x", 0.0);
@@ -521,6 +524,8 @@ private:
     double iapf_accel_limit = this->get_parameter("iapf_accel_limit").as_double();
     bool enable_iapf_accel_feedforward =
         this->get_parameter("enable_iapf_accel_feedforward").as_bool();
+    bool enable_ladrc_accel_feedforward =
+        this->get_parameter("enable_ladrc_accel_feedforward").as_bool();
 
     Eigen::Vector3d iapf_position_offset = iapf_position_gain * iapf;
     Eigen::Vector3d iapf_accel_feedforward = iapf_accel_gain * iapf;
@@ -530,16 +535,24 @@ private:
           iapf_accel_feedforward.normalized() * iapf_accel_limit;
     }
 
+    const double base_ax = enable_ladrc_accel_feedforward ? ax_cmd : ax_ref;
+    const double base_ay = enable_ladrc_accel_feedforward ? ay_cmd : ay_ref;
+    const double base_az = enable_ladrc_accel_feedforward ? az_cmd : az_ref;
+    const Eigen::Vector3d applied_iapf_accel =
+        enable_iapf_accel_feedforward
+            ? iapf_accel_feedforward
+            : Eigen::Vector3d::Zero();
+
     publishTrajectorySetpoint(
         x_ref + iapf_position_offset.x(),
         y_ref + iapf_position_offset.y(),
         z_ref + iapf_position_offset.z(),
         vx_ref, vy_ref, vz_ref,
-        ax_ref + iapf_accel_feedforward.x(),
-        ay_ref + iapf_accel_feedforward.y(),
-        az_ref + iapf_accel_feedforward.z(),
+        base_ax + applied_iapf_accel.x(),
+        base_ay + applied_iapf_accel.y(),
+        base_az + applied_iapf_accel.z(),
         0.0,
-        enable_iapf_accel_feedforward);
+        enable_iapf_accel_feedforward || enable_ladrc_accel_feedforward);
 
     // 日志（当 IAPF 激活时附加 "!IAPF!" 标记）
     RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 1000,
@@ -591,8 +604,24 @@ private:
 
   void applyDynamicGains()
   {
-    gain_multiplier_ = computeSemanticTaskGain(
-        motion_style_, target_distance_, target_duration_);
+    const std::string gain_mode =
+        this->get_parameter("semantic_gain_mode").as_string();
+    if (gain_mode == "fixed")
+    {
+      gain_multiplier_ =
+          this->get_parameter("fixed_gain_multiplier").as_double();
+    }
+    else
+    {
+      if (gain_mode != "task_conditioned")
+      {
+        RCLCPP_WARN(this->get_logger(),
+            "未知 semantic_gain_mode='%s'，按 task_conditioned 处理",
+            gain_mode.c_str());
+      }
+      gain_multiplier_ = computeSemanticTaskGain(
+          motion_style_, target_distance_, target_duration_);
+    }
 
     // 读取配置文件的基值，乘以增益系数后应用到各轴
     auto apply_axis = [this](
@@ -613,9 +642,9 @@ private:
     apply_axis(ladrc_z_, "omega_o_z", "omega_c_z", omega_o_z_, omega_c_z_);
 
     RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
-        "任务条件化带宽: mission=%u style=%s distance=%.2fm duration=%.2fs avg_v=%.2fm/s kappa=%.3f",
-        mission_id_, motion_style_.c_str(), target_distance_, target_duration_,
-        average_speed_, gain_multiplier_);
+        "LADRC带宽: mission=%u mode=%s style=%s distance=%.2fm duration=%.2fs avg_v=%.2fm/s kappa=%.3f",
+        mission_id_, gain_mode.c_str(), motion_style_.c_str(),
+        target_distance_, target_duration_, average_speed_, gain_multiplier_);
   }
 
   // --- [Phase 4] IAPF 斥力计算 ---

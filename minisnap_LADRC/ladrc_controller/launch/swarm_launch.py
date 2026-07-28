@@ -34,6 +34,18 @@ def generate_launch_description():
         enable_iapf_accel_feedforward = ParameterValue(
             LaunchConfiguration('enable_iapf_accel_feedforward'),
             value_type=bool)
+        enable_ladrc_accel_feedforward = ParameterValue(
+            LaunchConfiguration('enable_ladrc_accel_feedforward'),
+            value_type=bool)
+        semantic_gain_mode = ParameterValue(
+            LaunchConfiguration('semantic_gain_mode'),
+            value_type=str)
+        fixed_gain_multiplier = ParameterValue(
+            LaunchConfiguration('fixed_gain_multiplier'),
+            value_type=float)
+        control_adaptation_log_path = ParameterValue(
+            LaunchConfiguration('control_adaptation_log_path'),
+            value_type=str)
 
         nodes = []
         for uid in ids:
@@ -82,6 +94,10 @@ def generate_launch_description():
                     {
                         'neighbor_uav_ids': ids,
                         'enable_iapf_accel_feedforward': enable_iapf_accel_feedforward,
+                        'enable_ladrc_accel_feedforward': enable_ladrc_accel_feedforward,
+                        'semantic_gain_mode': semantic_gain_mode,
+                        'fixed_gain_multiplier': fixed_gain_multiplier,
+                        'control_adaptation_log_path': control_adaptation_log_path,
                     },
                 ],
                 remappings=remappings,
@@ -99,5 +115,21 @@ def generate_launch_description():
             'enable_iapf_accel_feedforward',
             default_value='true',
             description='是否启用 IAPF 加速度前馈'),
+        DeclareLaunchArgument(
+            'enable_ladrc_accel_feedforward',
+            default_value='false',
+            description='是否将 LADRC 输出作为 PX4 加速度前馈'),
+        DeclareLaunchArgument(
+            'semantic_gain_mode',
+            default_value='task_conditioned',
+            description='LADRC 增益模式: fixed 或 task_conditioned'),
+        DeclareLaunchArgument(
+            'fixed_gain_multiplier',
+            default_value='1.0',
+            description='fixed 模式使用的 LADRC 增益倍率'),
+        DeclareLaunchArgument(
+            'control_adaptation_log_path',
+            default_value='logs/control_adaptation_log.csv',
+            description='控制适应 CSV 输出路径'),
         OpaqueFunction(function=create_uav_nodes),
     ])

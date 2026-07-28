@@ -29,6 +29,21 @@ def generate_launch_description():
             default_value='true',
             description='Whether to publish IAPF acceleration feedforward'
         ),
+        DeclareLaunchArgument(
+            'enable_ladrc_accel_feedforward',
+            default_value='false',
+            description='Whether to publish LADRC acceleration feedforward'
+        ),
+        DeclareLaunchArgument(
+            'semantic_gain_mode',
+            default_value='task_conditioned',
+            description='LADRC gain mode: fixed or task_conditioned'
+        ),
+        DeclareLaunchArgument(
+            'fixed_gain_multiplier',
+            default_value='1.0',
+            description='Fixed LADRC gain multiplier'
+        ),
 
         Node(
             package='ladrc_controller',
@@ -41,6 +56,15 @@ def generate_launch_description():
                     'enable_iapf_accel_feedforward': ParameterValue(
                         LaunchConfiguration('enable_iapf_accel_feedforward'),
                         value_type=bool),
+                    'enable_ladrc_accel_feedforward': ParameterValue(
+                        LaunchConfiguration('enable_ladrc_accel_feedforward'),
+                        value_type=bool),
+                    'semantic_gain_mode': ParameterValue(
+                        LaunchConfiguration('semantic_gain_mode'),
+                        value_type=str),
+                    'fixed_gain_multiplier': ParameterValue(
+                        LaunchConfiguration('fixed_gain_multiplier'),
+                        value_type=float),
                 },
             ],
             output='screen'
