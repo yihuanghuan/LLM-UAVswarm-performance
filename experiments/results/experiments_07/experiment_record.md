@@ -7,6 +7,7 @@
 - 基础标签：`gazebo-experiment-v1`
 - 基础提交：`df5c5bc9b7a1af695c41dea5744bcb546b7f0a47`
 - 实现提交：`11b57c5968f0e80956dd671c9a97c4c53f2f533b`
+- 结果数据提交：`57733a8`
 - 执行日期：2026-07-28（Asia/Shanghai）
 - 随机种子：`20260728`
 - 数据位置：`experiments/results/experiments_07`
