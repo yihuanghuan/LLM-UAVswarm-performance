@@ -41,7 +41,9 @@ class LADRCPositionControllerNode : public rclcpp::Node
   struct NeighborState
   {
     Eigen::Vector3d position;
+    Eigen::Vector3d velocity;
     rclcpp::Time receive_time;
+    bool iapf_active{false};
   };
 
 public:
@@ -73,6 +75,10 @@ public:
     // [Phase 4] IAPF 避障参数
     this->declare_parameter("avoidance_mode", "iapf_dual");
     this->declare_parameter("iapf_safe_distance", 1.0);
+    this->declare_parameter("iapf_violation_distance", 1.0);
+    this->declare_parameter("iapf_enter_distance", 1.5);
+    this->declare_parameter("iapf_exit_distance", 1.65);
+    this->declare_parameter("iapf_filter_alpha", 0.20);
     this->declare_parameter("iapf_repulsion_gain", 1.0);
     this->declare_parameter("enable_iapf_accel_feedforward", true);
     this->declare_parameter("iapf_escape_mode", "id_order");
@@ -94,6 +100,12 @@ public:
       parameter_overrides.count("avoidance_mode") > 0;
     const bool legacy_overridden =
       parameter_overrides.count("enable_iapf_accel_feedforward") > 0;
+    const bool safe_distance_overridden =
+      parameter_overrides.count("iapf_safe_distance") > 0;
+    const bool enter_distance_overridden =
+      parameter_overrides.count("iapf_enter_distance") > 0;
+    enter_distance_from_legacy_ =
+      safe_distance_overridden && !enter_distance_overridden;
     avoidance_mode_from_legacy_ = legacy_overridden && !avoidance_overridden;
     if (legacy_overridden && avoidance_overridden)
     {
@@ -107,6 +119,19 @@ public:
       RCLCPP_WARN(
         this->get_logger(),
         "enable_iapf_accel_feedforward 已弃用；请改用 avoidance_mode");
+    }
+    if (safe_distance_overridden && enter_distance_overridden)
+    {
+      RCLCPP_WARN(
+        this->get_logger(),
+        "iapf_safe_distance 与 iapf_enter_distance 同时设置；"
+        "优先使用 iapf_enter_distance");
+    }
+    else if (enter_distance_from_legacy_)
+    {
+      RCLCPP_WARN(
+        this->get_logger(),
+        "iapf_safe_distance 已弃用；请改用 iapf_enter_distance");
     }
     (void)currentAvoidanceMode();
     (void)ladrc_controller::parseEscapeMode(
@@ -151,12 +176,20 @@ public:
 
       auto callback = [this, neighbor_id](const px4_msgs::msg::VehicleOdometry::SharedPtr msg) {
         // 存入邻居位置 map：全局 ENU（本地 + spawn 偏移 Y=3*id）
+        const auto previous = neighbor_states_.find(neighbor_id);
+        const bool was_active =
+          previous != neighbor_states_.end() && previous->second.iapf_active;
         neighbor_states_[neighbor_id] = NeighborState{
           Eigen::Vector3d(
             msg->position[1],
             msg->position[0] + 3.0 * neighbor_id,
             -msg->position[2]),
-          this->now()};
+          Eigen::Vector3d(
+            msg->velocity[1],
+            msg->velocity[0],
+            -msg->velocity[2]),
+          this->now(),
+          was_active};
       };
 
       auto sub = this->create_subscription<px4_msgs::msg::VehicleOdometry>(
@@ -304,6 +337,7 @@ private:
           "收到新任务指令 (UAV%d)，目标/参数已变更，覆盖旧任务", msg->uav_id);
     }
 
+    resetIAPFState();
     mission_id_ = msg->mission_id;
     uav_id_ = msg->uav_id;
     target_duration_ = msg->duration;
@@ -675,12 +709,33 @@ private:
       this->get_parameter("avoidance_mode").as_string());
   }
 
+  double currentEnterDistance() const
+  {
+    return this->get_parameter(
+      enter_distance_from_legacy_
+      ? "iapf_safe_distance"
+      : "iapf_enter_distance").as_double();
+  }
+
+  void resetIAPFState()
+  {
+    filtered_iapf_position_offset_.setZero();
+    filtered_iapf_acceleration_offset_.setZero();
+    for (auto & item : neighbor_states_)
+    {
+      item.second.iapf_active = false;
+    }
+  }
+
   ladrc_controller::IAPFResult computeAvoidance(
       double x_meas, double y_meas, double z_meas)
   {
     ladrc_controller::IAPFParameters parameters;
-    parameters.safe_distance =
-      this->get_parameter("iapf_safe_distance").as_double();
+    parameters.violation_distance =
+      this->get_parameter("iapf_violation_distance").as_double();
+    parameters.enter_distance = currentEnterDistance();
+    parameters.exit_distance =
+      this->get_parameter("iapf_exit_distance").as_double();
     parameters.repulsion_gain =
       this->get_parameter("iapf_repulsion_gain").as_double();
     parameters.distance_epsilon =
@@ -710,25 +765,70 @@ private:
       if (state_iterator == neighbor_states_.end())
       {
         neighbors.push_back({
-          neighbor_id, Eigen::Vector3d::Zero(), false});
+          neighbor_id, Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero(),
+          false, false});
         continue;
       }
       const auto & state = state_iterator->second;
       neighbors.push_back({
         neighbor_id,
         state.position,
-        (now - state.receive_time).seconds() <= timeout});
+        state.velocity,
+        (now - state.receive_time).seconds() <= timeout,
+        state.iapf_active});
     }
     double my_off_x = this->get_parameter("enu_offset_x").as_double();
     double my_off_y = this->get_parameter("enu_offset_y").as_double();
     double my_off_z = this->get_parameter("enu_offset_z").as_double();
     Eigen::Vector3d pos_own(x_meas + my_off_x, y_meas + my_off_y, z_meas + my_off_z);
+    const Eigen::Vector3d velocity_own(
+      current_odom_.velocity[1],
+      current_odom_.velocity[0],
+      -current_odom_.velocity[2]);
 
-    const auto result = ladrc_controller::computeIAPF(
-      pos_own, self_uav_id_, neighbors, currentAvoidanceMode(),
+    auto result = ladrc_controller::computeIAPF(
+      pos_own, velocity_own, self_uav_id_, neighbors, currentAvoidanceMode(),
       ladrc_controller::parseEscapeMode(
         this->get_parameter("iapf_escape_mode").as_string()),
       parameters, safety_factor_);
+
+    for (auto & item : neighbor_states_)
+    {
+      item.second.iapf_active =
+        std::find(
+          result.active_neighbor_ids.begin(),
+          result.active_neighbor_ids.end(),
+          item.first) != result.active_neighbor_ids.end();
+    }
+    const double alpha =
+      this->get_parameter("iapf_filter_alpha").as_double();
+    if (currentAvoidanceMode() == ladrc_controller::AvoidanceMode::OFF)
+    {
+      resetIAPFState();
+      result.position_offset.setZero();
+      result.acceleration_offset.setZero();
+      result.active = false;
+    }
+    else
+    {
+      filtered_iapf_position_offset_ = ladrc_controller::smoothOffset(
+        result.position_offset, filtered_iapf_position_offset_, alpha);
+      filtered_iapf_acceleration_offset_ = ladrc_controller::smoothOffset(
+        result.acceleration_offset, filtered_iapf_acceleration_offset_, alpha);
+      if (filtered_iapf_position_offset_.norm() < 1e-5)
+      {
+        filtered_iapf_position_offset_.setZero();
+      }
+      if (filtered_iapf_acceleration_offset_.norm() < 1e-5)
+      {
+        filtered_iapf_acceleration_offset_.setZero();
+      }
+      result.position_offset = filtered_iapf_position_offset_;
+      result.acceleration_offset = filtered_iapf_acceleration_offset_;
+      result.active = result.active ||
+        !result.position_offset.isZero(1e-9) ||
+        !result.acceleration_offset.isZero(1e-9);
+    }
     if (result.active)
     {
       RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 500,
@@ -775,7 +875,12 @@ private:
     msg.nearest_neighbor_id = result.nearest_neighbor_id;
     msg.nearest_neighbor_distance =
       static_cast<float>(result.nearest_neighbor_distance);
+    msg.nearest_neighbor_closing_speed =
+      static_cast<float>(result.nearest_neighbor_closing_speed);
     msg.iapf_active = result.active;
+    msg.hysteresis_active = result.hysteresis_active;
+    msg.active_neighbor_count =
+      static_cast<uint16_t>(result.active_neighbor_ids.size());
     setVector3(msg.raw_repulsion, result.raw_repulsion);
     setVector3(msg.position_offset, result.position_offset);
     setVector3(msg.acceleration_offset, result.acceleration_offset);
@@ -1209,6 +1314,9 @@ private:
 
   // [Phase 4] IAPF 邻居状态
   bool avoidance_mode_from_legacy_ = false;
+  bool enter_distance_from_legacy_ = false;
+  Eigen::Vector3d filtered_iapf_position_offset_{Eigen::Vector3d::Zero()};
+  Eigen::Vector3d filtered_iapf_acceleration_offset_{Eigen::Vector3d::Zero()};
   std::vector<uint8_t> configured_neighbor_ids_;
   std::unordered_map<uint8_t, NeighborState> neighbor_states_;
   std::vector<rclcpp::Subscription<px4_msgs::msg::VehicleOdometry>::SharedPtr> neighbor_subs_;

@@ -37,7 +37,7 @@
 - **自然语言控制**：支持单一/复合/并行编队指令，如"1到5号机组成圆形，6到8号机组成直线"
 - **匈牙利防交叉分配**：全局最优目标分配，避免飞行轨迹交叉
 - **LADRC 自抗扰控制**：基于带宽参数化的线性自抗扰控制器，支持 smooth/normal/aggressive 动态增益调节
-- **IAPF 分布式避障**：改进的人工势场法，位置+加速度双通道斥力，Z 轴侧向力防止局部极小值死锁
+- **IAPF 分布式避障**：基于相对速度、滞回和平滑的双通道斥力，使用确定性成对垂直逃逸方向缓解局部极小值
 - **多机命名空间隔离**：自动话题重映射，兼容 PX4 多实例 Gazebo 仿真
 - **闭环状态反馈**：基于真实悬停检测推进任务序列
 - **5-10 机规模验证**：Gazebo Classic 实时仿真，RTF ≥ 0.95
@@ -258,8 +258,11 @@ max_acceleration_x: 5.0  # m/s²
 max_acceleration_z: 8.0
 
 # IAPF 避障
-iapf_safe_distance: 2.0   # 安全距离 (m)
-iapf_repulsion_gain: 20.0 # 斥力增益
+iapf_violation_distance: 1.0 # 碰撞风险阈值 (m)
+iapf_enter_distance: 1.5     # 进入避障阈值 (m)
+iapf_exit_distance: 1.65     # 退出避障阈值 (m)
+iapf_filter_alpha: 0.2       # 偏移低通滤波系数
+iapf_repulsion_gain: 20.0    # 斥力增益
 ```
 
 ## 数据协议
