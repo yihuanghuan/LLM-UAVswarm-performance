@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import csv
 import json
 import os
 import signal
@@ -12,7 +11,7 @@ import subprocess
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, Iterable, List
+from typing import Dict, List
 
 from experiment_common import CONFIG_ROOT, RESULTS_ROOT, load_yaml
 
@@ -25,6 +24,7 @@ WORKSPACE_ROOT = REPO_ROOT.parents[1]
 @dataclass(frozen=True)
 class Trial:
     phase: str
+    family: str
     scenario: str
     method: str
     trial: int
@@ -34,73 +34,54 @@ class Trial:
     escape_mode: str | None = None
 
 
-def base_trials(
-    phase: str, scenarios: Iterable[str], seeds: List[int]
-) -> List[Trial]:
-    return [
-        Trial(phase, scenario, method, index, seed)
-        for scenario in scenarios
-        for method in [f"M{value}" for value in range(6)]
-        for index, seed in enumerate(seeds, start=1)
-    ]
+def protocol_arms() -> List[tuple[str, str, str]]:
+    arms: List[tuple[str, str, str]] = []
+    arms.extend(
+        ("nonintrusive", scenario, method)
+        for scenario in ["safe_wide_line_to_circle", "safe_parallel_groups"]
+        for method in ["IAPF_OFF", "IAPF_ON"])
+    arms.extend(
+        ("fallback", scenario, method)
+        for scenario in [
+            "staggered_crossing_delay", "group_crossing_hold",
+            "dense_local_bias"]
+        for method in ["IAPF_OFF", "IAPF_ON"])
+    arms.extend(
+        ("complement", scenario, method)
+        for scenario in ["assignment_crossing_4", "assignment_dense_8"]
+        for method in ["DIST_OFF", "DIST_ON", "SAFE_OFF", "SAFE_ON"])
+    arms.extend(
+        ("stress", scenario, method)
+        for scenario in [
+            "head_on", "vertical", "grouped_reconfiguration",
+            "dense_infeasible"]
+        for method in ["STRESS_OFF", "STRESS_ON"])
+    arms.append(("ablation", "staggered_crossing_delay", "ABL_POSITION"))
+    if len(arms) != 27:
+        raise AssertionError(f"expected 27 protocol arms, got {len(arms)}")
+    return arms
 
 
-def protocol_trials() -> List[Trial]:
+def protocol_trials(include_pilot: bool = True) -> List[Trial]:
     defaults = load_yaml(CONFIG_ROOT / "experiment_defaults.yaml")
     formal_seeds = [int(value) for value in defaults["experiment"]["seeds"]]
     pilot_seeds = [int(value) for value in defaults["experiment"]["pilot_seeds"]]
-    calibration_seeds = [int(value) for value in defaults["calibration"]["seeds"]]
     trials: List[Trial] = []
-
-    nominal = {
-        "iapf_repulsion_gain": 25.0,
-        "iapf_position_gain": 0.05,
-        "iapf_accel_gain": 0.30,
-    }
-    calibration_conditions = [("cal_nominal", {})]
-    for parameter, values in defaults["calibration"]["factors"].items():
-        for value in values:
-            if float(value) == nominal[parameter]:
-                continue
-            suffix = "low" if float(value) < nominal[parameter] else "high"
-            calibration_conditions.append(
-                (f"cal_{parameter}_{suffix}", {parameter: float(value)}))
-    for scenario in ["head_on_calibration", "dense_calibration"]:
-        for label, overrides in calibration_conditions:
-            for index, seed in enumerate(calibration_seeds, start=1):
+    arms = protocol_arms()
+    if include_pilot:
+        for family, scenario, method in arms:
+            for index, seed in enumerate(pilot_seeds, start=1):
                 trials.append(Trial(
-                    "calibration", scenario, "M3", index, seed,
-                    label, overrides))
-
-    trials.extend(base_trials(
-        "pilot",
-        ["head_on", "dense_feasible", "dense_infeasible", "vertical",
-         "grouped_reconfiguration"],
-        pilot_seeds))
-    trials.extend(base_trials(
-        "main",
-        ["head_on", "dense_feasible", "vertical", "grouped_reconfiguration"],
-        formal_seeds))
-    trials.extend(base_trials("stress", ["dense_infeasible"], formal_seeds))
-
-    for index, seed in enumerate(formal_seeds, start=1):
-        trials.append(Trial(
-            "ablation", "vertical", "M3", index, seed,
-            "M3_escape_fixed_positive_z", {},
-            "fixed_positive_z"))
-
-    sensitivity = [
-        ("M3_krep_low", {"iapf_repulsion_gain": 12.5}),
-        ("M3_krep_high", {"iapf_repulsion_gain": 50.0}),
-        ("M3_accel_zero", {"iapf_accel_gain": 0.0}),
-        ("M3_accel_high", {"iapf_accel_gain": 0.60}),
-    ]
-    for scenario in ["head_on", "dense_feasible"]:
-        for label, overrides in sensitivity:
-            for index, seed in enumerate(formal_seeds, start=1):
-                trials.append(Trial(
-                    "sensitivity", scenario, "M3", index, seed,
-                    label, overrides))
+                    "pilot", family, scenario, method, index, seed))
+    for family, scenario, method in arms:
+        seeds = formal_seeds[:5] if family == "stress" else formal_seeds
+        for index, seed in enumerate(seeds, start=1):
+            trials.append(Trial(
+                family, family, scenario, method, index, seed))
+    formal_count = sum(trial.phase != "pilot" for trial in trials)
+    if formal_count != int(defaults["protocol"]["formal_trial_count"]):
+        raise AssertionError(
+            f"expected 230 formal trials, got {formal_count}")
     return trials
 
 
@@ -172,6 +153,7 @@ class SimulatorSupervisor:
 
 def trial_command(
     trial: Trial, batch_id: str, dry_run: bool,
+    results_root: Path,
     calibrated_overrides: Dict[str, float] | None = None,
 ) -> List[str]:
     command = [
@@ -179,6 +161,8 @@ def trial_command(
         "--scenario", trial.scenario, "--method", trial.method,
         "--trial", str(trial.trial), "--seed", str(trial.seed),
         "--batch-id", batch_id, "--phase", trial.phase,
+        "--family", trial.family,
+        "--results-root", str(results_root),
     ]
     if trial.condition_label:
         command.extend(["--condition-label", trial.condition_label])
@@ -186,59 +170,11 @@ def trial_command(
         command.extend(["--escape-mode", trial.escape_mode])
     effective_overrides = dict(calibrated_overrides or {})
     effective_overrides.update(trial.overrides)
-    if trial.phase == "calibration":
-        effective_overrides = dict(trial.overrides)
     for name, value in effective_overrides.items():
         command.extend(["--parameter-override", f"{name}={value}"])
     if dry_run:
         command.append("--dry-run")
     return command
-
-
-def select_calibration(batch_dir: Path, manifest: List[dict]) -> Dict[str, float]:
-    candidates: Dict[str, List[dict]] = {}
-    override_map: Dict[str, Dict[str, float]] = {}
-    for entry in manifest:
-        if entry["phase"] != "calibration":
-            continue
-        label = entry["condition"]
-        override_map[label] = {
-            name: float(value) for name, value in entry["overrides"].items()}
-        summary = (
-            batch_dir / "raw" / entry["scenario"] / label
-            / f"trial_{entry['trial']:02d}_seed_{entry['seed']}"
-            / "trial_summary.csv")
-        if not summary.is_file():
-            continue
-        with summary.open(newline="", encoding="utf-8") as handle:
-            candidates.setdefault(label, []).append(next(csv.DictReader(handle)))
-    if not candidates:
-        return {}
-
-    def score(item: tuple[str, List[dict]]) -> tuple:
-        _, rows = item
-        success = sum(row["mission_success"].lower() == "true" for row in rows)
-        collisions = sum(int(float(row["collision_event_count"])) for row in rows)
-        violations = sum(int(float(row["violation_event_count"])) for row in rows)
-        risk = sum(float(row["risk_integral"]) for row in rows)
-        deviation = sum(float(row["mean_trajectory_deviation"]) for row in rows)
-        control = sum(float(row["integrated_squared_acceleration"]) for row in rows)
-        return (-success, collisions, violations, risk, deviation, control, item[0])
-
-    selected_label, rows = min(candidates.items(), key=score)
-    selected = override_map[selected_label]
-    result = {
-        "selected_condition": selected_label,
-        "selected_overrides": selected,
-        "candidate_count": len(candidates),
-        "trial_count": sum(len(value) for value in candidates.values()),
-        "selection_rule": (
-            "mission success, collision events, violation events, risk integral, "
-            "trajectory deviation, control burden"),
-    }
-    (batch_dir / "calibrated_parameters.json").write_text(
-        json.dumps(result, indent=2), encoding="utf-8")
-    return selected
 
 
 def read_trial_collision(batch_dir: Path, trial: Trial) -> bool:
@@ -264,8 +200,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch-id", required=True)
     parser.add_argument(
         "--phase", action="append",
-        choices=["calibration", "pilot", "main", "stress", "ablation",
-                 "sensitivity", "all"],
+        choices=["pilot", "formal", "nonintrusive", "fallback", "complement",
+                 "stress", "ablation", "all"],
         default=[])
     parser.add_argument("--manage-sim", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
@@ -279,12 +215,22 @@ def main() -> int:
     phases = set(args.phase or ["all"])
     selected = protocol_trials()
     if "all" not in phases:
-        selected = [trial for trial in selected if trial.phase in phases]
-    batch_dir = RESULTS_ROOT / args.batch_id
+        selected = [
+            trial for trial in selected
+            if trial.phase in phases
+            or ("formal" in phases and trial.phase != "pilot")]
+    has_pilot = any(trial.phase == "pilot" for trial in selected)
+    has_formal = any(trial.phase != "pilot" for trial in selected)
+    result_partition = (
+        "combined" if has_pilot and has_formal
+        else ("pilot" if has_pilot else "formal"))
+    results_root = RESULTS_ROOT / result_partition
+    batch_dir = results_root / args.batch_id
     batch_dir.mkdir(parents=True, exist_ok=True)
     manifest = [
         {
-            "index": index, "phase": trial.phase, "scenario": trial.scenario,
+            "index": index, "phase": trial.phase, "family": trial.family,
+            "scenario": trial.scenario,
             "method": trial.method, "condition": trial.condition_label or trial.method,
             "trial": trial.trial, "seed": trial.seed,
             "overrides": trial.overrides, "escape_mode": trial.escape_mode,
@@ -297,23 +243,14 @@ def main() -> int:
     if args.dry_run:
         for trial in selected:
             subprocess.run(
-                trial_command(trial, args.batch_id, True), check=True)
+                trial_command(
+                    trial, args.batch_id, True, results_root), check=True)
         return 0
 
     supervisor = SimulatorSupervisor(batch_dir) if args.manage_sim else None
     active_uav_count = None
-    calibrated_path = batch_dir / "calibrated_parameters.json"
-    calibrated_overrides = {}
-    if calibrated_path.is_file():
-        calibrated_overrides = json.loads(
-            calibrated_path.read_text(encoding="utf-8")).get(
-                "selected_overrides", {})
-    calibration_selected = bool(calibrated_overrides)
     try:
         for index, trial in enumerate(selected, start=1):
-            if trial.phase != "calibration" and not calibration_selected:
-                calibrated_overrides = select_calibration(batch_dir, manifest)
-                calibration_selected = True
             label = trial.condition_label or trial.method
             trial_dir = (
                 batch_dir / "raw" / trial.scenario / label
@@ -334,7 +271,7 @@ def main() -> int:
                     f"{label} trial={trial.trial} attempt={attempt}")
                 result = subprocess.run(
                     trial_command(
-                        trial, args.batch_id, False, calibrated_overrides),
+                        trial, args.batch_id, False, results_root),
                     check=False)
                 if result.returncode == 0:
                     break
@@ -351,8 +288,6 @@ def main() -> int:
                 time.sleep(2)
             if supervisor and read_trial_collision(batch_dir, trial):
                 supervisor.start()
-        if any(trial.phase == "calibration" for trial in selected):
-            select_calibration(batch_dir, manifest)
     finally:
         if supervisor:
             supervisor.stop()

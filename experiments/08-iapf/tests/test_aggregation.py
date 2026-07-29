@@ -6,7 +6,6 @@ import pandas as pd
 from aggregate_trials import (
     METRICS,
     bootstrap_ci,
-    holm_adjust,
     statistical_tests,
     wilson_interval,
 )
@@ -19,32 +18,28 @@ def test_bootstrap_is_deterministic_and_finite():
     assert all(math.isfinite(value) for value in first)
 
 
-def test_holm_adjustment_is_monotonic_in_sorted_order():
-    adjusted = holm_adjust([0.01, 0.04, 0.03])
-    assert adjusted[0] <= adjusted[2] <= adjusted[1]
-    assert all(0.0 <= value <= 1.0 for value in adjusted)
-
-
 def test_wilson_interval_contains_observed_rate():
     low, high = wilson_interval(8, 10)
     assert low < 0.8 < high
 
 
-def test_statistical_tests_report_all_nan_method_as_no_valid_pairs():
+def test_statistical_tests_use_only_planned_paired_comparison():
     rows = []
     for seed in (42, 43):
-        for method_index in range(6):
+        for method in ("IAPF_OFF", "IAPF_ON"):
             row = {
-                "phase": "main",
-                "scenario": "head_on",
-                "method": f"M{method_index}",
+                "phase": "fallback",
+                "family": "fallback",
+                "scenario": "staggered_crossing_delay",
+                "method": method,
                 "seed": seed,
+                "mission_success": method == "IAPF_ON",
             }
             row.update({
-                metric: float(seed + method_index)
+                metric: float(seed + (method == "IAPF_ON"))
                 for metric in METRICS
             })
-            if method_index == 1:
+            if method == "IAPF_ON":
                 row["recovery_time"] = math.nan
             rows.append(row)
 
@@ -53,9 +48,11 @@ def test_statistical_tests_report_all_nan_method_as_no_valid_pairs():
         row for row in tests
         if row["metric"] == "recovery_time"
         and row["test"] == "wilcoxon"
-        and row["method_a"] == "M0"
-        and row["method_b"] == "M1"
+        and row["method_a"] == "IAPF_OFF"
+        and row["method_b"] == "IAPF_ON"
     )
     assert missing_pair["n_total"] == 2
     assert missing_pair["n_valid"] == 0
     assert math.isnan(missing_pair["p_value"])
+    mcnemar = next(row for row in tests if row["test"] == "mcnemar_exact")
+    assert mcnemar["fallback_rescue_rate"] == 1.0

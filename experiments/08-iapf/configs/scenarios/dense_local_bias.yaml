@@ -1,0 +1,26 @@
+scenario_name: dense_local_bias
+uav_ids: [1, 2, 3, 4, 5, 6]
+initial_positions:
+  - [5.0, 0.0, 3.0]
+  - [2.5, 4.33, 3.0]
+  - [-2.5, 4.33, 3.0]
+  - [-5.0, 0.0, 3.0]
+  - [-2.5, -4.33, 3.0]
+  - [2.5, -4.33, 3.0]
+formation:
+  type: circle
+  center: [0.0, 0.0, 3.0]
+  radius: 2.4
+fixed_assignment: false
+duration: 8.0
+pre_hold_time: 1.0
+post_hold_time: 2.0
+timeout: 30.0
+motion_style: normal
+randomization_range: 0.03
+disturbance:
+  type: reference_bias
+  uav_id: 3
+  start_time: 2.0
+  duration: 1.0
+  offset: [0.4, 0.0, 0.0]

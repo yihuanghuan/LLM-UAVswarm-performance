@@ -1,0 +1,24 @@
+scenario_name: safe_parallel_groups
+uav_ids: [1, 2, 3, 4]
+groups:
+  - uav_ids: [1, 2]
+    initial_positions:
+      - [-5.0, -3.0, 2.8]
+      - [-5.0, -1.0, 2.8]
+    target_positions:
+      - [5.0, -3.0, 2.8]
+      - [5.0, -1.0, 2.8]
+  - uav_ids: [3, 4]
+    initial_positions:
+      - [-5.0, 1.0, 2.8]
+      - [-5.0, 3.0, 2.8]
+    target_positions:
+      - [5.0, 1.0, 2.8]
+      - [5.0, 3.0, 2.8]
+fixed_assignment: false
+duration: 8.0
+pre_hold_time: 1.0
+post_hold_time: 2.0
+timeout: 30.0
+motion_style: normal
+randomization_range: 0.03

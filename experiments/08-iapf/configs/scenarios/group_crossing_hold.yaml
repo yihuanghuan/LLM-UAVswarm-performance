@@ -1,0 +1,29 @@
+scenario_name: group_crossing_hold
+uav_ids: [1, 2, 3, 4]
+groups:
+  - uav_ids: [1, 2]
+    initial_positions:
+      - [-5.0, -1.0, 3.0]
+      - [-5.0, 1.0, 3.0]
+    target_positions:
+      - [5.0, -1.0, 3.0]
+      - [5.0, 1.0, 3.0]
+  - uav_ids: [3, 4]
+    initial_positions:
+      - [-1.0, -1.0, 3.0]
+      - [1.0, -1.0, 3.0]
+    target_positions:
+      - [-1.0, 10.0, 3.0]
+      - [1.0, 10.0, 3.0]
+fixed_assignment: false
+duration: 8.0
+pre_hold_time: 1.0
+post_hold_time: 2.0
+timeout: 30.0
+motion_style: normal
+randomization_range: 0.03
+disturbance:
+  type: temporary_hold
+  uav_id: 3
+  trigger_time: 0.7
+  duration: 1.2

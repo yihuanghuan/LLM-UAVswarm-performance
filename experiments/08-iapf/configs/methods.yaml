@@ -1,4 +1,51 @@
 methods:
+  IAPF_OFF:
+    assignment: safety_aware
+    avoidance_mode: "off"
+    description: Final assignment with local fallback disabled
+  IAPF_ON:
+    assignment: safety_aware
+    avoidance_mode: iapf_dual
+    description: Final assignment with dual-channel local fallback
+  DIST_OFF:
+    assignment: distance_hungarian
+    avoidance_mode: "off"
+    description: Distance assignment without local fallback
+  DIST_ON:
+    assignment: distance_hungarian
+    avoidance_mode: iapf_dual
+    description: Distance assignment with dual-channel local fallback
+  SAFE_OFF:
+    assignment: safety_aware
+    avoidance_mode: "off"
+    description: Safety-aware assignment without local fallback
+  SAFE_ON:
+    assignment: safety_aware
+    avoidance_mode: iapf_dual
+    description: Safety-aware assignment with dual-channel local fallback
+  STRESS_OFF:
+    assignment: baseline
+    avoidance_mode: "off"
+    description: Legacy stress boundary without local fallback
+  STRESS_ON:
+    assignment: baseline
+    avoidance_mode: iapf_dual
+    description: Legacy stress boundary with dual-channel local fallback
+  ABL_OFF:
+    assignment: safety_aware
+    avoidance_mode: "off"
+    description: Two-agent fallback ablation without avoidance
+  ABL_POSITION:
+    assignment: safety_aware
+    avoidance_mode: iapf_position
+    description: Two-agent fallback ablation with position modulation
+  ABL_DUAL:
+    assignment: safety_aware
+    avoidance_mode: iapf_dual
+    description: Two-agent fallback ablation with dual modulation
+
+  # Legacy v1 methods are retained for reading and reproducing the original
+  # batch, but are not part of the v2 main protocol.
   M0:
     assignment: baseline
     avoidance_mode: "off"

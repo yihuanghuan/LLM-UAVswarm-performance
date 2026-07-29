@@ -20,7 +20,7 @@ REPO_ROOT = EXPERIMENT_ROOT.parents[1]
 CONFIG_ROOT = EXPERIMENT_ROOT / "configs"
 RESULTS_ROOT = Path(os.environ.get(
     "EXPERIMENT_08_RESULTS_ROOT",
-    REPO_ROOT / "experiments" / "results" / "experiments_08"))
+    REPO_ROOT / "experiments" / "results" / "experiments_08" / "v2_patch"))
 
 
 def load_yaml(path: Path) -> Dict[str, Any]:
@@ -105,9 +105,14 @@ def perturb_groups(
 def assignment_mode(
     scenario: Mapping[str, Any], method: Mapping[str, Any]
 ) -> str:
-    if method["assignment"] == "safety_aware":
-        return "safety_aware"
-    return "fixed" if scenario.get("fixed_assignment", False) else "distance_hungarian"
+    # A fixed-identity scenario must remain fixed regardless of the method
+    # label.  This prevents assignment from silently removing the conflict.
+    if scenario.get("fixed_assignment", False):
+        return "fixed"
+    requested = method["assignment"]
+    if requested in ("safety_aware", "distance_hungarian", "fixed"):
+        return requested
+    return "distance_hungarian"
 
 
 def allocate_targets(

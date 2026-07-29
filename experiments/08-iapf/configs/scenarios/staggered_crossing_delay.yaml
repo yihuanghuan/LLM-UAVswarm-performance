@@ -1,0 +1,19 @@
+scenario_name: staggered_crossing_delay
+uav_ids: [1, 2]
+initial_positions:
+  - [-4.0, 0.0, 2.6]
+  - [0.0, -1.33, 2.6]
+target_positions:
+  - [4.0, 0.0, 2.6]
+  - [0.0, 4.0, 2.6]
+fixed_assignment: true
+duration: 6.0
+pre_hold_time: 1.0
+post_hold_time: 2.0
+timeout: 25.0
+motion_style: normal
+randomization_range: 0.02
+disturbance:
+  type: command_delay
+  uav_id: 2
+  delay_sec: 1.0

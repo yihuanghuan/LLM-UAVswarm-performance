@@ -39,9 +39,12 @@ from experiment_common import (
 
 ODOM_FIELDS = ["timestamp", "uav_id", "x", "y", "z"]
 DEBUG_FIELDS = [
-    "timestamp", "experiment_id", "scenario", "method", "trial", "seed", "phase",
+    "timestamp", "experiment_id", "scenario", "method", "trial", "seed",
+    "phase", "family",
     "mission_id", "uav_id", "avoidance_mode", "has_nearest_neighbor",
-    "nearest_neighbor_id", "nearest_neighbor_distance", "iapf_active",
+    "nearest_neighbor_id", "nearest_neighbor_distance",
+    "nearest_neighbor_closing_speed", "iapf_active", "hysteresis_active",
+    "active_neighbor_count",
     "raw_repulsion_x", "raw_repulsion_y", "raw_repulsion_z",
     "position_offset_x", "position_offset_y", "position_offset_z",
     "acceleration_offset_x", "acceleration_offset_y", "acceleration_offset_z",
@@ -167,7 +170,11 @@ class TrialNode(Node):
             "has_nearest_neighbor": msg.has_nearest_neighbor,
             "nearest_neighbor_id": msg.nearest_neighbor_id,
             "nearest_neighbor_distance": msg.nearest_neighbor_distance,
+            "nearest_neighbor_closing_speed":
+                msg.nearest_neighbor_closing_speed,
             "iapf_active": msg.iapf_active,
+            "hysteresis_active": msg.hysteresis_active,
+            "active_neighbor_count": msg.active_neighbor_count,
             "position_saturated": msg.position_saturated,
             "acceleration_saturated": msg.acceleration_saturated,
             "valid_neighbor_count": msg.valid_neighbor_count,
@@ -232,7 +239,9 @@ class TrialNode(Node):
         self, groups: List[Dict[str, Any]], mission_id: int, duration: float,
         motion_style: str, safety_factor: float
     ) -> None:
-        for uav_id in self.uav_ids:
+        commanded_ids = {
+            uav_id for group in groups for uav_id in group["uav_ids"]}
+        for uav_id in commanded_ids:
             self.stable[uav_id] = False
         for group in groups:
             for uav_id, target in zip(group["uav_ids"], group["targets"]):
@@ -248,19 +257,72 @@ class TrialNode(Node):
                 message.motion_style = motion_style
                 message.safety_factor = float(safety_factor)
                 self.command_publishers[uav_id].publish(message)
-        self.event("command_sent", detail=f"mission={mission_id}")
+        self.event(
+            "command_sent",
+            detail=f"mission={mission_id},uavs={sorted(commanded_ids)}")
 
-    def wait_for_stable(self, timeout: float, hold_time: float) -> bool:
+    def wait_for_stable(
+        self, timeout: float, hold_time: float,
+        disturbance: Mapping[str, Any] | None = None,
+    ) -> bool:
         end = time.monotonic() + timeout
+        start = time.monotonic()
         stable_start = None
+        disturbance_started = False
+        disturbance_finished = False
         while time.monotonic() < end:
             rclpy.spin_once(self, timeout_sec=0.1)
+            elapsed = time.monotonic() - start
+            if disturbance and disturbance.get("type") in (
+                    "temporary_hold", "reference_bias"):
+                trigger = float(disturbance.get(
+                    "trigger_time", disturbance.get("start_time", 0.0)))
+                finish = trigger + float(disturbance["duration"])
+                uav_id = int(disturbance["uav_id"])
+                if elapsed >= trigger and not disturbance_started:
+                    values: Dict[str, Any]
+                    if disturbance["type"] == "temporary_hold":
+                        values = {"experiment_reference_hold": True}
+                    else:
+                        offset = disturbance["offset"]
+                        values = {
+                            "experiment_reference_bias_x": float(offset[0]),
+                            "experiment_reference_bias_y": float(offset[1]),
+                            "experiment_reference_bias_z": float(offset[2]),
+                        }
+                    set_controller_parameters(self, [uav_id], values)
+                    self.event(
+                        "disturbance_started", uav_id,
+                        json.dumps(dict(disturbance), sort_keys=True))
+                    disturbance_started = True
+                if elapsed >= finish and disturbance_started and not disturbance_finished:
+                    reset = (
+                        {"experiment_reference_hold": False}
+                        if disturbance["type"] == "temporary_hold"
+                        else {
+                            "experiment_reference_bias_x": 0.0,
+                            "experiment_reference_bias_y": 0.0,
+                            "experiment_reference_bias_z": 0.0,
+                        })
+                    set_controller_parameters(self, [uav_id], reset)
+                    self.event("disturbance_finished", uav_id)
+                    disturbance_finished = True
             if all(self.stable.values()):
                 stable_start = stable_start or time.monotonic()
                 if time.monotonic() - stable_start >= hold_time:
                     return True
             else:
                 stable_start = None
+        if disturbance_started and not disturbance_finished:
+            reset = (
+                {"experiment_reference_hold": False}
+                if disturbance["type"] == "temporary_hold"
+                else {
+                    "experiment_reference_bias_x": 0.0,
+                    "experiment_reference_bias_y": 0.0,
+                    "experiment_reference_bias_z": 0.0,
+                })
+            set_controller_parameters(self, [int(disturbance["uav_id"])], reset)
         return False
 
     def wait_for_positions(
@@ -393,6 +455,24 @@ def set_controller_parameters(
             node.destroy_client(client)
 
 
+def select_group_uavs(
+    groups: List[Dict[str, Any]], selected_ids: set[int]
+) -> List[Dict[str, Any]]:
+    selected: List[Dict[str, Any]] = []
+    for group in groups:
+        rows = [
+            (uav_id, target)
+            for uav_id, target in zip(group["uav_ids"], group["targets"])
+            if uav_id in selected_ids
+        ]
+        if rows:
+            selected.append({
+                "uav_ids": [row[0] for row in rows],
+                "targets": [row[1] for row in rows],
+            })
+    return selected
+
+
 def start_rosbag(trial_dir: Path, uav_ids: List[int]) -> subprocess.Popen:
     topics = []
     for uav_id in uav_ids:
@@ -438,7 +518,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--trial", type=int, required=True)
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--batch-id", required=True)
+    parser.add_argument("--results-root", type=Path)
     parser.add_argument("--phase", default="unspecified")
+    parser.add_argument("--family", default="unspecified")
     parser.add_argument("--parameter-override", action="append", default=[])
     parser.add_argument("--escape-mode")
     parser.add_argument("--condition-label")
@@ -476,8 +558,9 @@ def main() -> int:
     uav_ids = [uav_id for group in groups for uav_id in group["uav_ids"]]
     identifier = experiment_id(
         args.batch_id, args.scenario, result_method, args.trial, args.seed)
+    results_root = args.results_root or RESULTS_ROOT
     trial_dir = (
-        RESULTS_ROOT / args.batch_id / "raw" / args.scenario / result_method
+        results_root / args.batch_id / "raw" / args.scenario / result_method
         / f"trial_{args.trial:02d}_seed_{args.seed}")
     if trial_dir.exists() and any(trial_dir.iterdir()):
         raise FileExistsError(f"refusing to overwrite {trial_dir}")
@@ -485,7 +568,7 @@ def main() -> int:
     context = {
         "experiment_id": identifier, "scenario": args.scenario,
         "method": result_method, "trial": args.trial, "seed": args.seed,
-        "phase": args.phase,
+        "phase": args.phase, "family": args.family,
     }
     assignment_rows = []
     for group_index, group in enumerate(groups):
@@ -531,6 +614,7 @@ def main() -> int:
         "ros_distribution": os.environ.get("ROS_DISTRO", "unknown"),
         "platform": platform.platform(),
         "assignment_metrics": allocation_metrics,
+        "disturbance": scenario.get("disturbance"),
         "outcome": {},
     }
     (trial_dir / "run_metadata.json").write_text(
@@ -561,6 +645,12 @@ def main() -> int:
 
         formal_parameters = dict(iapf_parameters)
         formal_parameters["avoidance_mode"] = method["avoidance_mode"]
+        formal_parameters.update({
+            "experiment_reference_hold": False,
+            "experiment_reference_bias_x": 0.0,
+            "experiment_reference_bias_y": 0.0,
+            "experiment_reference_bias_z": 0.0,
+        })
         set_controller_parameters(node, uav_ids, formal_parameters)
         formal_odom_start = len(node.odom_rows)
         formal_debug_start = len(node.debug_rows)
@@ -569,12 +659,30 @@ def main() -> int:
             bag_process = start_rosbag(trial_dir, uav_ids)
         node.begin_formal_recording()
         mission_id = int(identifier[-8:], 16) & 0xFFFFFFFF
-        node.send_goals(
-            groups, mission_id, float(scenario["duration"]),
-            scenario["motion_style"], 1.0)
+        disturbance = scenario.get("disturbance")
+        if disturbance and disturbance.get("type") == "command_delay":
+            delayed_id = int(disturbance["uav_id"])
+            immediate = select_group_uavs(groups, set(uav_ids) - {delayed_id})
+            delayed = select_group_uavs(groups, {delayed_id})
+            node.send_goals(
+                immediate, mission_id, float(scenario["duration"]),
+                scenario["motion_style"], 1.0)
+            node.event(
+                "disturbance_started", delayed_id,
+                json.dumps(dict(disturbance), sort_keys=True))
+            node.spin_for(float(disturbance["delay_sec"]))
+            node.send_goals(
+                delayed, mission_id, float(scenario["duration"]),
+                scenario["motion_style"], 1.0)
+            node.event("disturbance_finished", delayed_id)
+        else:
+            node.send_goals(
+                groups, mission_id, float(scenario["duration"]),
+                scenario["motion_style"], 1.0)
         stable = node.wait_for_stable(
             float(scenario["timeout"]),
-            float(defaults["experiment"]["stable_hold_time"]))
+            float(defaults["experiment"]["stable_hold_time"]),
+            disturbance)
         outcome["hover_stable"] = stable
         outcome["timed_out"] = not stable
         outcome["px4_failsafe"] = node.px4_failsafe

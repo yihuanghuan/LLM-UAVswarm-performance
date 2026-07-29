@@ -89,6 +89,12 @@ public:
     this->declare_parameter("iapf_accel_gain", 0.3);
     this->declare_parameter("iapf_accel_limit", 2.0);
     this->declare_parameter("neighbor_timeout", 0.20);
+    // Experiment-only disturbance hooks; inert unless the experiment runner
+    // changes them dynamically.
+    this->declare_parameter("experiment_reference_hold", false);
+    this->declare_parameter("experiment_reference_bias_x", 0.0);
+    this->declare_parameter("experiment_reference_bias_y", 0.0);
+    this->declare_parameter("experiment_reference_bias_z", 0.0);
     this->declare_parameter("neighbor_uav_ids", std::vector<int64_t>{});
     this->declare_parameter(
         "control_adaptation_log_path",
@@ -538,6 +544,34 @@ private:
     double ax_ref = ref_x.acceleration;
     double ay_ref = ref_y.acceleration;
     double az_ref = ref_z.acceleration;
+    const Eigen::Vector3d nominal_reference(x_ref, y_ref, z_ref);
+    const Eigen::Vector3d nominal_velocity(vx_ref, vy_ref, vz_ref);
+    const Eigen::Vector3d nominal_acceleration(ax_ref, ay_ref, az_ref);
+
+    const bool reference_hold =
+      this->get_parameter("experiment_reference_hold").as_bool();
+    if (reference_hold && !experiment_hold_active_)
+    {
+      experiment_hold_reference_ = nominal_reference;
+      experiment_hold_active_ = true;
+    }
+    else if (!reference_hold)
+    {
+      experiment_hold_active_ = false;
+    }
+    Eigen::Vector3d disturbed_reference = experiment_hold_active_
+      ? experiment_hold_reference_
+      : nominal_reference;
+    Eigen::Vector3d disturbed_velocity = experiment_hold_active_
+      ? Eigen::Vector3d::Zero()
+      : nominal_velocity;
+    Eigen::Vector3d disturbed_acceleration = experiment_hold_active_
+      ? Eigen::Vector3d::Zero()
+      : nominal_acceleration;
+    disturbed_reference += Eigen::Vector3d(
+      this->get_parameter("experiment_reference_bias_x").as_double(),
+      this->get_parameter("experiment_reference_bias_y").as_double(),
+      this->get_parameter("experiment_reference_bias_z").as_double());
 
     updateControlAdaptationRuntimeMetrics(
         elapsed, x_ref, y_ref, z_ref, x_meas, y_meas, z_meas);
@@ -582,12 +616,15 @@ private:
     }
 
     // 3. LADRC 观测器静默运行（状态估计，供监控）
-    double ax_cmd = ladrc_x_->update(x_ref, vx_ref, ax_ref, x_meas);
-    double ay_cmd = ladrc_y_->update(y_ref, vy_ref, ay_ref, y_meas);
-    double az_cmd = ladrc_z_->update(z_ref, vz_ref, az_ref, z_meas);
-
-    const Eigen::Vector3d nominal_reference(x_ref, y_ref, z_ref);
-    const Eigen::Vector3d nominal_acceleration(ax_ref, ay_ref, az_ref);
+    double ax_cmd = ladrc_x_->update(
+      disturbed_reference.x(), disturbed_velocity.x(),
+      disturbed_acceleration.x(), x_meas);
+    double ay_cmd = ladrc_y_->update(
+      disturbed_reference.y(), disturbed_velocity.y(),
+      disturbed_acceleration.y(), y_meas);
+    double az_cmd = ladrc_z_->update(
+      disturbed_reference.z(), disturbed_velocity.z(),
+      disturbed_acceleration.z(), z_meas);
     const auto iapf = computeAvoidance(x_meas, y_meas, z_meas);
 
     // 4. 发布 UAVStatus
@@ -595,9 +632,9 @@ private:
 
     // 5. 发布轨迹设定点：位置+加速度 + IAPF 斥力
     const Eigen::Vector3d modulated_reference =
-      nominal_reference + iapf.position_offset;
+      disturbed_reference + iapf.position_offset;
     const Eigen::Vector3d modulated_acceleration =
-      nominal_acceleration + iapf.acceleration_offset;
+      disturbed_acceleration + iapf.acceleration_offset;
     const bool publish_acceleration =
       currentAvoidanceMode() == ladrc_controller::AvoidanceMode::IAPF_DUAL;
 
@@ -605,7 +642,7 @@ private:
         modulated_reference.x(),
         modulated_reference.y(),
         modulated_reference.z(),
-        vx_ref, vy_ref, vz_ref,
+        disturbed_velocity.x(), disturbed_velocity.y(), disturbed_velocity.z(),
         modulated_acceleration.x(),
         modulated_acceleration.y(),
         modulated_acceleration.z(),
@@ -1317,6 +1354,8 @@ private:
   bool enter_distance_from_legacy_ = false;
   Eigen::Vector3d filtered_iapf_position_offset_{Eigen::Vector3d::Zero()};
   Eigen::Vector3d filtered_iapf_acceleration_offset_{Eigen::Vector3d::Zero()};
+  bool experiment_hold_active_ = false;
+  Eigen::Vector3d experiment_hold_reference_{Eigen::Vector3d::Zero()};
   std::vector<uint8_t> configured_neighbor_ids_;
   std::unordered_map<uint8_t, NeighborState> neighbor_states_;
   std::vector<rclcpp::Subscription<px4_msgs::msg::VehicleOdometry>::SharedPtr> neighbor_subs_;

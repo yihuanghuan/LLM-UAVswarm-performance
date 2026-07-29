@@ -157,7 +157,11 @@ def pair_metrics(
     return results, distances
 
 
-def debug_metrics(rows: Sequence[Mapping[str, object]]) -> Dict[str, float | int]:
+def debug_metrics(
+    rows: Sequence[Mapping[str, object]],
+    r_iapf: float = 1.5,
+    d_violation: float = 1.0,
+) -> Dict[str, float | int]:
     if not rows:
         return {
             "iapf_activation_time": 0.0,
@@ -168,6 +172,9 @@ def debug_metrics(rows: Sequence[Mapping[str, object]]) -> Dict[str, float | int
             "acceleration_saturation_ratio": 0.0,
             "peak_acceleration_setpoint": 0.0,
             "integrated_squared_acceleration": 0.0,
+            "activation_event_count": 0,
+            "unnecessary_intervention_rate": 0.0,
+            "intervention_latency": math.nan,
         }
     by_time: Dict[float, List[Mapping[str, object]]] = {}
     raw_norms: List[float] = []
@@ -201,6 +208,40 @@ def debug_metrics(rows: Sequence[Mapping[str, object]]) -> Dict[str, float | int
     accel_series = np.asarray([
         max(acceleration_norms[timestamp]) for timestamp in accel_time
     ])
+    activation_events = 0
+    unnecessary_events = 0
+    latencies: List[float] = []
+    by_uav: Dict[int, List[Mapping[str, object]]] = {}
+    for row in rows:
+        by_uav.setdefault(int(row["uav_id"]), []).append(row)
+    for uav_rows in by_uav.values():
+        ordered = sorted(uav_rows, key=lambda row: float(row["timestamp"]))
+        was_active = False
+        conflict_start: float | None = None
+        latency_recorded = False
+        for row in ordered:
+            timestamp = float(row["timestamp"])
+            distance = float(row.get("nearest_neighbor_distance", -1.0))
+            closing = float(row.get("nearest_neighbor_closing_speed", 0.0))
+            active_now = str(row["iapf_active"]).lower() in ("1", "true")
+            conflict = 0.0 <= distance < r_iapf and closing > 0.0
+            if conflict and conflict_start is None:
+                conflict_start = timestamp
+                latency_recorded = False
+            elif not conflict and not active_now:
+                conflict_start = None
+                latency_recorded = False
+            if active_now and not was_active:
+                activation_events += 1
+                if (
+                    distance < 0.0 or distance >= r_iapf or
+                    (distance > d_violation and closing <= 0.0)
+                ):
+                    unnecessary_events += 1
+                if conflict_start is not None and not latency_recorded:
+                    latencies.append(max(0.0, timestamp - conflict_start))
+                    latency_recorded = True
+            was_active = active_now
     return {
         "iapf_activation_time": activation_time,
         "iapf_activation_ratio": (
@@ -215,6 +256,12 @@ def debug_metrics(rows: Sequence[Mapping[str, object]]) -> Dict[str, float | int
         "integrated_squared_acceleration": (
             float(np.trapz(accel_series ** 2, accel_time))
             if len(accel_time) > 1 else 0.0),
+        "activation_event_count": activation_events,
+        "unnecessary_intervention_rate": (
+            unnecessary_events / activation_events
+            if activation_events else 0.0),
+        "intervention_latency": (
+            float(np.median(latencies)) if latencies else math.nan),
     }
 
 
@@ -305,6 +352,7 @@ def outcome_metrics(
             start = end
 
     recovery = 0.0
+    completion_time = math.nan
     active_times = [
         float(row["timestamp"]) for row in debug_rows
         if str(row["iapf_active"]).lower() in ("1", "true")]
@@ -322,7 +370,21 @@ def outcome_metrics(
                         stable_by_uav[int(row["uav_id"])] = timestamp
             if set(stable_by_uav) >= set(positions):
                 recovery = max(stable_by_uav.values()) - last_active
+    event_path = trial_dir / "mission_events.csv"
+    if event_path.is_file():
+        events = read_csv(event_path, {"timestamp", "event", "uav_id"})
+        command_times = [
+            float(row["timestamp"]) for row in events
+            if row["event"] == "command_sent"]
+        stable_by_uav = {}
+        for row in events:
+            if row["event"] == "hover_stable":
+                stable_by_uav[int(row["uav_id"])] = float(row["timestamp"])
+        if command_times and set(stable_by_uav) >= set(positions):
+            completion_time = (
+                max(stable_by_uav.values()) - min(command_times))
     return {
+        "completion_time": completion_time,
         "recovery_time": recovery,
         "stall_event_count": stall_events,
         "safe_completion_ratio": (
@@ -359,6 +421,7 @@ def analyze_trial(trial_dir: Path) -> tuple[List[PairMetrics], Dict[str, object]
         "experiment_id": metadata["experiment_id"],
         "batch_id": metadata["batch_id"],
         "phase": metadata.get("phase", "unspecified"),
+        "family": metadata.get("family", metadata.get("phase", "unspecified")),
         "scenario": metadata["scenario"],
         "method": metadata["method"],
         "trial": metadata["trial"],
@@ -376,7 +439,9 @@ def analyze_trial(trial_dir: Path) -> tuple[List[PairMetrics], Dict[str, object]
             pair.risk_exposure_time for pair in pairs),
         "risk_integral": sum(pair.risk_integral for pair in pairs),
     }
-    summary.update(debug_metrics(debug_rows))
+    summary.update(debug_metrics(
+        debug_rows, float(thresholds["r_iapf"]),
+        float(thresholds["d_violation"])))
     summary.update(trajectory_metrics(timeline, positions, debug_rows))
     summary.update(outcome_metrics(
         trial_dir, timeline, positions, debug_rows,
