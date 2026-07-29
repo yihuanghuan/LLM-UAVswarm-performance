@@ -41,3 +41,27 @@
 | Table | 不同表示方式的可执行率 |
 | Bar chart | missing field / invalid field 错误比例 |
 | Flow figure | Natural Language → LFS → Compiler → Goals |
+
+---
+
+## 需先改进的部分
+
+`eval_lfs_compiler.py` 当前仅覆盖：
+- Schema 合法/非法测试
+- 语义合法/非法测试
+- 标准 LFS 编译
+- Legacy 格式兼容
+
+仅用于验证工程实现正确性，**不足以支撑文档要求的消融对比**：
+- Direct waypoint
+- Task JSON without schema
+- LFS with schema
+- LFS + semantic validator
+
+可选方案：
+- 新增脚本 `eval_lfs_ablation.py`
+- 或扩展实验1，增加 `--representation-mode` 参数切换表征形式
+
+> 结论：现有脚本偏向单元测试，并非论文所需完整消融实验框架。
+
+需要我把这段整理成正式的**实验待改进条目（可直接粘贴进论文工作展望 / 实验计划）**吗？
