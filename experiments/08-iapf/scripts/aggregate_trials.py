@@ -116,7 +116,13 @@ def statistical_tests(data: pd.DataFrame) -> List[Dict[str, object]]:
             pivot = scenario_data.pivot_table(
                 index="seed", columns="method", values=metric, aggfunc="first")
             methods = [f"M{value}" for value in range(6)]
-            complete = pivot.reindex(columns=methods).dropna()
+            # pivot_table drops a method column when every value for that
+            # method is NaN (recovery_time legitimately has this property in
+            # some scenario/method combinations).  Keep the fixed M0--M5
+            # schema so the absence is reported as n_valid=0 rather than
+            # raising while constructing pairwise tests.
+            pivot = pivot.reindex(columns=methods)
+            complete = pivot.dropna()
             friedman_stat = math.nan
             friedman_p = math.nan
             if len(complete) >= 2:
