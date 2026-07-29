@@ -5,7 +5,10 @@ string avoidance_mode
 bool has_nearest_neighbor
 uint8 nearest_neighbor_id
 float32 nearest_neighbor_distance
+float32 nearest_neighbor_closing_speed
 bool iapf_active
+bool hysteresis_active
+uint16 active_neighbor_count
 geometry_msgs/Vector3 raw_repulsion
 geometry_msgs/Vector3 position_offset
 geometry_msgs/Vector3 acceleration_offset

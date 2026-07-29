@@ -29,7 +29,10 @@
 
     # IAPF 避障参数 (Phase 5)
     avoidance_mode: "iapf_dual"
-    iapf_safe_distance: 1.5
+    iapf_violation_distance: 1.0
+    iapf_enter_distance: 1.5
+    iapf_exit_distance: 1.65
+    iapf_filter_alpha: 0.20
     iapf_repulsion_gain: 25.0
     iapf_escape_mode: "id_order"
     iapf_escape_gain: 0.05
