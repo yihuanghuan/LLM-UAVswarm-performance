@@ -205,6 +205,8 @@ def parse_args() -> argparse.Namespace:
                  "stress", "ablation", "all"],
         default=[])
     parser.add_argument("--manage-sim", action="store_true")
+    parser.add_argument("--scenario", action="append", default=[])
+    parser.add_argument("--method", action="append", default=[])
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--max-retries", type=int, default=2)
@@ -220,6 +222,14 @@ def main() -> int:
             trial for trial in selected
             if trial.phase in phases
             or ("formal" in phases and trial.phase != "pilot")]
+    if args.scenario:
+        selected = [
+            trial for trial in selected if trial.scenario in args.scenario]
+    if args.method:
+        selected = [
+            trial for trial in selected if trial.method in args.method]
+    if not selected:
+        raise ValueError("trial filters selected no protocol arms")
     has_pilot = any(trial.phase == "pilot" for trial in selected)
     has_formal = any(trial.phase != "pilot" for trial in selected)
     result_partition = (
