@@ -1,0 +1,42 @@
+experiment:
+  sample_hz: 20.0
+  control_frequency: 50.0
+  max_odom_gap: 0.25
+  initial_position_tolerance: 0.30
+  final_position_tolerance: 0.30
+  stable_speed: 0.30
+  stable_hold_time: 1.0
+  stall_distance: 0.50
+  stall_speed: 0.15
+  stall_duration: 2.0
+  max_retries: 2
+  seeds: [4201, 4202, 4203, 4204, 4205, 4206, 4207, 4208, 4209, 4210, 4211, 4212, 4213, 4214, 4215]
+  pilot_seeds: [9001]
+  representative_seed: 4201
+
+safety:
+  d_collision: 0.70
+  d_violation: 1.00
+  r_iapf: 1.50
+  d_assignment: 2.00
+
+iapf:
+  iapf_violation_distance: 1.00
+  iapf_enter_distance: 1.50
+  iapf_exit_distance: 1.65
+  iapf_filter_alpha: 0.20
+  iapf_repulsion_gain: 25.0
+  iapf_escape_mode: id_order
+  iapf_escape_gain: 0.50
+  iapf_distance_epsilon: 0.10
+  iapf_position_gain: 0.05
+  iapf_position_limit: 0.50
+  iapf_accel_gain: 0.30
+  iapf_accel_limit: 2.00
+  neighbor_timeout: 0.20
+
+protocol:
+  pilot_trial_count: 16
+  formal_trial_count: 240
+  representative_rosbag_count: 16
+

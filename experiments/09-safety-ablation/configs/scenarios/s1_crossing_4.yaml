@@ -1,0 +1,19 @@
+scenario_name: s1_crossing_4
+uav_ids: [1, 2, 3, 4]
+initial_positions:
+  - [0.31, -3.31, 3.0]
+  - [3.02, 2.10, 3.0]
+  - [4.63, 4.51, 3.0]
+  - [-2.85, 1.95, 3.0]
+target_positions:
+  - [-1.61, -1.21, 3.0]
+  - [-2.09, -5.99, 3.0]
+  - [-4.68, -3.06, 3.0]
+  - [2.44, 1.40, 3.0]
+duration: 8.0
+pre_hold_time: 1.0
+post_hold_time: 2.0
+timeout: 30.0
+motion_style: normal
+randomization_range: 0.04
+

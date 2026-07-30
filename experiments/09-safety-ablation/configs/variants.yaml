@@ -1,0 +1,22 @@
+variants:
+  B0:
+    assignment: distance_hungarian
+    avoidance_mode: "off"
+    assignment_factor: 0
+    avoidance_factor: 0
+  P:
+    assignment: safety_aware
+    avoidance_mode: "off"
+    assignment_factor: 1
+    avoidance_factor: 0
+  E:
+    assignment: distance_hungarian
+    avoidance_mode: iapf_dual
+    assignment_factor: 0
+    avoidance_factor: 1
+  Full:
+    assignment: safety_aware
+    avoidance_mode: iapf_dual
+    assignment_factor: 1
+    avoidance_factor: 1
+
