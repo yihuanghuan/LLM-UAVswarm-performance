@@ -8,10 +8,10 @@ from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
-import matplotlib.animation as animation
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
+import matplotlib.animation as animation  # noqa: E402
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
 
 
 VARIANTS = ["B0", "P", "E", "Full"]
@@ -69,10 +69,31 @@ def render(batch_dir: Path, scenario: str, output: Path) -> None:
                 changed.extend([lines[uid], points[uid]])
         return changed
 
-    movie = animation.FuncAnimation(
-        fig, update, frames=frame_count, interval=50, blit=True)
     output.parent.mkdir(parents=True, exist_ok=True)
-    movie.save(output, writer="ffmpeg", fps=20, dpi=120)
+    if animation.writers.is_available("ffmpeg"):
+        movie = animation.FuncAnimation(
+            fig, update, frames=frame_count, interval=50, blit=True)
+        movie.save(output, writer="ffmpeg", fps=20, dpi=120)
+    else:
+        # OpenCV provides a deterministic MP4 fallback on minimal experiment
+        # hosts where the ffmpeg executable is not installed.
+        import cv2
+
+        fig.set_dpi(120)
+        fig.canvas.draw()
+        width, height = fig.canvas.get_width_height()
+        writer = cv2.VideoWriter(
+            str(output), cv2.VideoWriter_fourcc(*"mp4v"), 20, (width, height))
+        if not writer.isOpened():
+            raise RuntimeError(f"unable to open MP4 writer for {output}")
+        try:
+            for index in range(frame_count):
+                update(index)
+                fig.canvas.draw()
+                rgb = np.asarray(fig.canvas.buffer_rgba())[:, :, :3]
+                writer.write(cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
+        finally:
+            writer.release()
     plt.close(fig)
 
 

@@ -10,11 +10,11 @@ from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
 
-from analysis_core import resample_odometry
+from analysis_core import resample_odometry  # noqa: E402
 
 
 VARIANTS = ["B0", "P", "E", "Full"]
@@ -133,7 +133,11 @@ def trajectory_plot(batch_dir: Path, directory: Path) -> None:
                 projection="3d")
             frame = pd.read_csv(trial_dir(batch_dir, scenario, variant) / "odom.csv")
             for uav_id, group in frame.groupby("uav_id"):
-                axis.plot(group["x"], group["y"], group["z"], label=f"UAV{uav_id}")
+                axis.plot(
+                    group["x"].to_numpy(),
+                    group["y"].to_numpy(),
+                    group["z"].to_numpy(),
+                    label=f"UAV{uav_id}")
             axis.set_title(f"{scenario} / {variant}")
             axis.set_xlabel("x")
             axis.set_ylabel("y")
