@@ -1,0 +1,98 @@
+{
+  "experiment_id": "s1_crossing_8-E-t01-0a452cb40a",
+  "scenario": "s1_crossing_8",
+  "method": "E",
+  "trial": 1,
+  "seed": 9001,
+  "phase": "pilot",
+  "family": "s1",
+  "batch_id": "exp09-pilot-20260730",
+  "git": {
+    "commit": "86a3bae4aba35125a5c42061f1ce3ba6a6abc509",
+    "dirty": false
+  },
+  "px4": {
+    "commit": "30e763b6780061d70a14894e3e8b06e6a656f9b8",
+    "dirty": true
+  },
+  "date_time": "2026-07-30T18:15:03+0800",
+  "uav_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "duration": 8.0,
+  "motion_style": "normal",
+  "assignment_mode": "distance_hungarian",
+  "avoidance_mode": "iapf_dual",
+  "base_method": "E",
+  "iapf_parameters": {
+    "iapf_violation_distance": 1.0,
+    "iapf_enter_distance": 1.5,
+    "iapf_exit_distance": 1.65,
+    "iapf_filter_alpha": 0.2,
+    "iapf_repulsion_gain": 25.0,
+    "iapf_escape_mode": "id_order",
+    "iapf_escape_gain": 0.5,
+    "iapf_distance_epsilon": 0.1,
+    "iapf_position_gain": 0.05,
+    "iapf_position_limit": 0.5,
+    "iapf_accel_gain": 0.3,
+    "iapf_accel_limit": 2.0,
+    "neighbor_timeout": 0.2
+  },
+  "safety_thresholds": {
+    "d_collision": 0.7,
+    "d_violation": 1.0,
+    "r_iapf": 1.5,
+    "d_assignment": 2.0
+  },
+  "analysis": {
+    "sample_hz": 20.0,
+    "max_odom_gap": 0.25,
+    "final_position_tolerance": 0.3,
+    "stall_distance": 0.5,
+    "stall_speed": 0.15,
+    "stall_duration": 2.0
+  },
+  "control_frequency": 50.0,
+  "simulator_version": [
+    "Gazebo multi-robot simulator, version 11.10.2"
+  ],
+  "ros_distribution": "humble",
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.35",
+  "assignment_metrics": {
+    "total": 36.98916427877159,
+    "distance": 26.22760040609489,
+    "xy_crossings": 0,
+    "proximity_crossings": 1,
+    "safety": 0.7615638726766939,
+    "min_distance": 1.3120874978158652,
+    "iterations": 0
+  },
+  "assignment_compute_time_ms": 4.340869003499392,
+  "paired_input_digest": "928092eb386f85c08a19483e5639a7a175031c657e8cd0f9ffdc60b12b961bfc",
+  "lfs": {
+    "path": "experiments/09-safety-ablation/configs/lfs/s1_crossing_8.json",
+    "sha256": "1d1cb3691cedd77a3145d2f59d4bf19a11af24b012655267a7405ad64cb1b8fa"
+  },
+  "disturbance": null,
+  "outcome": {
+    "hover_stable": true,
+    "timed_out": false,
+    "px4_failsafe": false,
+    "node_crash": false,
+    "failure_reason": "none"
+  },
+  "rtf_summary": {
+    "sim_seconds": 11.799999999999983,
+    "wall_seconds": 11.89076062300228,
+    "rtf": 0.9923671305915684
+  },
+  "analysis_git_commit": "9a1b9ee8caa143e99d3b60125619ed860019e63b"
+}

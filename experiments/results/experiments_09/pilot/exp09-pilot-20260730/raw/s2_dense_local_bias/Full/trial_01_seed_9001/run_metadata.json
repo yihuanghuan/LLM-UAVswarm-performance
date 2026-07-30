@@ -1,0 +1,106 @@
+{
+  "experiment_id": "s2_dense_local_bias-Full-t01-cbc5bfd8f1",
+  "scenario": "s2_dense_local_bias",
+  "method": "Full",
+  "trial": 1,
+  "seed": 9001,
+  "phase": "pilot",
+  "family": "s2",
+  "batch_id": "exp09-pilot-20260730",
+  "git": {
+    "commit": "86a3bae4aba35125a5c42061f1ce3ba6a6abc509",
+    "dirty": true
+  },
+  "px4": {
+    "commit": "30e763b6780061d70a14894e3e8b06e6a656f9b8",
+    "dirty": true
+  },
+  "date_time": "2026-07-30T18:23:03+0800",
+  "uav_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "duration": 8.0,
+  "motion_style": "normal",
+  "assignment_mode": "safety_aware",
+  "avoidance_mode": "iapf_dual",
+  "base_method": "Full",
+  "iapf_parameters": {
+    "iapf_violation_distance": 1.0,
+    "iapf_enter_distance": 1.5,
+    "iapf_exit_distance": 1.65,
+    "iapf_filter_alpha": 0.2,
+    "iapf_repulsion_gain": 25.0,
+    "iapf_escape_mode": "id_order",
+    "iapf_escape_gain": 0.5,
+    "iapf_distance_epsilon": 0.1,
+    "iapf_position_gain": 0.05,
+    "iapf_position_limit": 0.5,
+    "iapf_accel_gain": 0.3,
+    "iapf_accel_limit": 2.0,
+    "neighbor_timeout": 0.2
+  },
+  "safety_thresholds": {
+    "d_collision": 0.7,
+    "d_violation": 1.0,
+    "r_iapf": 1.5,
+    "d_assignment": 2.0
+  },
+  "analysis": {
+    "sample_hz": 20.0,
+    "max_odom_gap": 0.25,
+    "final_position_tolerance": 0.3,
+    "stall_distance": 0.5,
+    "stall_speed": 0.15,
+    "stall_duration": 2.0
+  },
+  "control_frequency": 50.0,
+  "simulator_version": [
+    "Gazebo multi-robot simulator, version 11.10.2"
+  ],
+  "ros_distribution": "humble",
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.35",
+  "assignment_metrics": {
+    "total": 15.57782653553697,
+    "distance": 15.57782653553697,
+    "xy_crossings": 0,
+    "proximity_crossings": 0,
+    "safety": 0.0,
+    "min_distance": 2.399999999999999,
+    "iterations": 0
+  },
+  "assignment_compute_time_ms": 17.946481999388197,
+  "paired_input_digest": "32ecd96f254ce28bb91f2e01654a5cd3d1ee912600196b9318e52b98ea206123",
+  "lfs": {
+    "path": "experiments/09-safety-ablation/configs/lfs/s2_dense_local_bias.json",
+    "sha256": "ffc23da02851658e50ca02cc12983ace758a76d285e532714e2b251d32a81986"
+  },
+  "disturbance": {
+    "type": "reference_bias",
+    "uav_id": 3,
+    "start_time": 5.0,
+    "duration": 3.0,
+    "offset": [
+      1.5,
+      0.0,
+      0.0
+    ]
+  },
+  "outcome": {
+    "hover_stable": true,
+    "timed_out": false,
+    "px4_failsafe": false,
+    "node_crash": false,
+    "failure_reason": "none"
+  },
+  "rtf_summary": {
+    "sim_seconds": 13.400000000000006,
+    "wall_seconds": 13.515429854000104,
+    "rtf": 0.9914594019393371
+  },
+  "analysis_git_commit": "9a1b9ee8caa143e99d3b60125619ed860019e63b"
+}
