@@ -284,8 +284,11 @@ def main() -> int:
                 if trial_dir.exists():
                     failed_dir = trial_dir.with_name(
                         f"{trial_dir.name}_failed_attempt_{attempt}")
-                    if failed_dir.exists():
-                        raise FileExistsError(failed_dir)
+                    suffix = attempt
+                    while failed_dir.exists():
+                        suffix += 1
+                        failed_dir = trial_dir.with_name(
+                            f"{trial_dir.name}_failed_attempt_{suffix}")
                     trial_dir.rename(failed_dir)
                 if attempt >= args.max_retries:
                     raise RuntimeError(f"trial failed after retries: {trial}")
