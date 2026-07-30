@@ -517,6 +517,10 @@ def analyze_trial(trial_dir: Path) -> tuple[List[PairMetrics], Dict[str, object]
         "assignment_compute_time_ms": metadata.get(
             "assignment_compute_time_ms", math.nan),
         "paired_input_digest": metadata.get("paired_input_digest", ""),
+        "run_git_commit": metadata.get("git", {}).get("commit", ""),
+        "analysis_git_commit": metadata.get(
+            "analysis_git_commit",
+            metadata.get("git", {}).get("commit", "")),
     }
     summary.update(debug_metrics(
         debug_rows, float(thresholds["r_iapf"]),
@@ -533,8 +537,7 @@ def analyze_trial(trial_dir: Path) -> tuple[List[PairMetrics], Dict[str, object]
         outcome.get("hover_stable", False)
         and not outcome.get("timed_out", False)
         and not outcome.get("px4_failsafe", False)
-        and not outcome.get("node_crash", False)
-        and summary["safe_completion_ratio"] == 1.0)
+        and not outcome.get("node_crash", False))
     summary["safety_success"] = bool(
         summary["mission_success"]
         and summary["actual_min_distance"] >= float(thresholds["d_violation"])

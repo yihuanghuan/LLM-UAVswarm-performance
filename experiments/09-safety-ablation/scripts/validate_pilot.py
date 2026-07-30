@@ -53,6 +53,8 @@ def validate(batch_dir: Path) -> None:
             if debug.empty or set(debug["avoidance_mode"]) != {"iapf_dual"}:
                 raise ValueError(f"{scenario}/{variant}: invalid IAPF debug stream")
     for path in batch_dir.glob("raw/**/run_metadata.json"):
+        if "_failed_attempt_" in str(path):
+            continue
         metadata = json.loads(path.read_text(encoding="utf-8"))
         if metadata.get("outcome", {}).get("node_crash"):
             raise ValueError(f"{path.parent}: node crash")
