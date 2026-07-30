@@ -22,7 +22,7 @@ cd ~/learning/LLM_swarm_ws
 source /opt/ros/humble/setup.bash
 source install/setup.bash
 cd src/LLM-UAVswarm-performance
-export PYTHONPATH="$PWD/location_allocate:$PWD/experiments/08-iapf/scripts"
+export PYTHONPATH="$PWD/location_allocate:$PWD/experiments/08-iapf/scripts:${PYTHONPATH:-}"
 
 python3 -m pytest -q experiments/08-iapf/tests
 
