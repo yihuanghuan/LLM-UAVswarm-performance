@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# sitl_multiple_run.sh waits on gzclient and cleans PX4/Gazebo when it exits.
+# Keep that lifecycle contract without starting an unstable GUI in headless runs.
+trap 'exit 0' INT TERM
+while true; do
+  sleep 3600 &
+  wait $!
+done

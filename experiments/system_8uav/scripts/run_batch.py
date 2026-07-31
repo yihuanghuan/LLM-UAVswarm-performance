@@ -49,6 +49,57 @@ class SimulatorSupervisor:
         self.config = config
         self.processes: List[tuple[subprocess.Popen, object]] = []
 
+    @staticmethod
+    def _stack_processes_present():
+        checks = [
+            ["pgrep", "-x", "MicroXRCEAgent"],
+            ["pgrep", "-x", "gzserver"],
+            ["pgrep", "-x", "px4"],
+            ["pgrep", "-f", "[l]adrc_position_controller_node"],
+            ["pgrep", "-f", "[r]os2 launch ladrc_controller swarm_launch.py"],
+        ]
+        return any(
+            subprocess.run(
+                command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                check=False).returncode == 0
+            for command in checks)
+
+    @classmethod
+    def cleanup_stale_stack(cls):
+        """Stop only processes belonging to the managed 8-UAV stack."""
+        patterns = [
+            (["pkill", "-INT", "-x"], "px4"),
+            (["pkill", "-INT", "-x"], "gzclient"),
+            (["pkill", "-INT", "-x"], "gzserver"),
+            (["pkill", "-INT", "-x"], "MicroXRCEAgent"),
+            (["pkill", "-INT", "-f"], "[l]adrc_position_controller_node"),
+            (["pkill", "-INT", "-f"],
+             "[r]os2 launch ladrc_controller swarm_launch.py"),
+        ]
+        for prefix, pattern in patterns:
+            subprocess.run(
+                [*prefix, pattern], stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL, check=False)
+        deadline = time.monotonic() + 15
+        while cls._stack_processes_present() and time.monotonic() < deadline:
+            time.sleep(0.25)
+        if cls._stack_processes_present():
+            for prefix, pattern in patterns:
+                force = [value.replace("-INT", "-TERM") for value in prefix]
+                subprocess.run(
+                    [*force, pattern], stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL, check=False)
+            time.sleep(2)
+        if cls._stack_processes_present():
+            raise RuntimeError("managed stack processes survived cleanup")
+
+    @staticmethod
+    def _px4_count():
+        result = subprocess.run(
+            ["pgrep", "-x", "px4"], text=True, stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL, check=False)
+        return len(result.stdout.splitlines()) if result.returncode == 0 else 0
+
     def start_process(self, name: str, command: str, cwd=None):
         self.log_dir.mkdir(parents=True, exist_ok=True)
         handle = (self.log_dir / f"{name}.log").open("a", encoding="utf-8")
@@ -60,18 +111,33 @@ class SimulatorSupervisor:
 
     def start(self):
         self.stop()
+        self.cleanup_stale_stack()
         experiment = self.config["experiment"]
         ids = ",".join(str(value) for value in experiment["uav_ids"])
         self.start_process("micro_xrce_agent", "MicroXRCEAgent udp4 -p 8888")
+        time.sleep(1)
+        headless_bin = SCRIPT_DIR / "headless_bin"
         self.start_process(
             "px4_gazebo",
-            "export PATH=/usr/bin:/bin:/usr/local/bin:$PATH && "
+            f"export PATH={headless_bin}:/usr/bin:/bin:/usr/local/bin:$PATH && "
             "source Tools/simulation/gazebo-classic/setup_gazebo.bash "
             "$(pwd) $(pwd)/build/px4_sitl_default && "
             f"./Tools/simulation/gazebo-classic/sitl_multiple_run.sh "
             f"-m iris -n {len(experiment['uav_ids'])}",
             self.px4_root)
-        time.sleep(18)
+        deadline = time.monotonic() + float(
+            experiment["stack_start_timeout"])
+        while time.monotonic() < deadline:
+            if self._px4_count() == len(experiment["uav_ids"]):
+                break
+            if self.processes[-1][0].poll() is not None:
+                raise RuntimeError("PX4/Gazebo launcher exited during startup")
+            time.sleep(0.5)
+        else:
+            raise RuntimeError(
+                f"PX4 startup count {self._px4_count()}/"
+                f"{len(experiment['uav_ids'])}")
+        time.sleep(5)
         self.start_process(
             "controllers",
             "source /opt/ros/humble/setup.bash && "
@@ -84,18 +150,17 @@ class SimulatorSupervisor:
             f"hover_position_exit_tolerance:={experiment['stable_position_exit']} "
             f"hover_velocity_exit_tolerance:={experiment['stable_speed_exit']} "
             f"hover_stable_hold_time:={experiment['stable_hold_time']}")
-        time.sleep(18)
+        time.sleep(8)
         failed = [p.pid for p, _ in self.processes if p.poll() is not None]
         if failed:
             raise RuntimeError(f"simulator startup process exited: {failed}")
 
     def stop(self):
         for process, _ in reversed(self.processes):
-            if process.poll() is None:
-                try:
-                    os.killpg(process.pid, signal.SIGINT)
-                except ProcessLookupError:
-                    pass
+            try:
+                os.killpg(process.pid, signal.SIGINT)
+            except ProcessLookupError:
+                pass
         deadline = time.monotonic() + 15
         for process, handle in reversed(self.processes):
             try:
@@ -110,7 +175,9 @@ class SimulatorSupervisor:
                         continue
             handle.close()
         self.processes.clear()
-        time.sleep(3)
+        self.cleanup_stale_stack()
+        time.sleep(float(
+            self.config["experiment"].get("stack_cooldown_seconds", 5.0)))
 
 
 def parse_args():

@@ -135,6 +135,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--results-root")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--no-rosbag", action="store_true")
+    parser.add_argument("--readiness-only", action="store_true")
     return parser.parse_args()
 
 
@@ -820,6 +821,10 @@ def main() -> int:
                 "timestamp": utc_now(),
             })
             raise RuntimeError("UAVs did not reach armed Offboard stable readiness")
+        manifest["readiness_success"] = True
+        if args.readiness_only:
+            failure_reason = ""
+            return 0
         if not args.no_rosbag:
             bag_process = start_rosbag(trial_dir, uav_ids)
 
