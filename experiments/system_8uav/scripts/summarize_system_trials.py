@@ -536,7 +536,8 @@ def analyze_trial(trial_dir: Path, config: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def format_mean_std(values: Iterable[Any]) -> str:
-    return f"{mean(values):.3f} ± {stddev(values):.3f}"
+    samples = finite(values)
+    return f"{mean(samples):.3f} ± {stddev(samples):.3f}"
 
 
 def main() -> int:
@@ -581,22 +582,24 @@ def main() -> int:
         if not rows:
             continue
         success = sum(bool_value(row["overall_success"]) for row in rows)
+        successful_rows = [
+            row for row in rows if bool_value(row["overall_success"])]
         table.append({
             "task_type": task_type, "trials": len(rows),
             "success_count": success,
             "success_fraction": f"{success}/{len(rows)}",
             "completion_time_mean_std": format_mean_std(
-                row["completion_time"] for row in rows),
+                row["completion_time"] for row in successful_rows),
             "tracking_rmse_mean_std": format_mean_std(
-                row["tracking_rmse"] for row in rows),
+                row["tracking_rmse"] for row in successful_rows),
             "minimum_distance_mean_std": format_mean_std(
-                row["min_distance"] for row in rows),
+                row["min_distance"] for row in successful_rows),
             "arrival_spread_mean_std": format_mean_std(
-                row["arrival_spread"] for row in rows),
+                row["arrival_spread"] for row in successful_rows),
             "iapf_active_duration_mean_std": format_mean_std(
-                row["iapf_active_duration"] for row in rows),
+                row["iapf_active_duration"] for row in successful_rows),
             "mean_rtf_mean_std": format_mean_std(
-                row["mean_rtf"] for row in rows),
+                row["mean_rtf"] for row in successful_rows),
         })
     write_csv(summaries / "paper_task_table.csv", table, TABLE_FIELDS)
     manifest_root = batch_root / "manifests"

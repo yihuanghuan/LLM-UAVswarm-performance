@@ -35,7 +35,9 @@ def save(fig: plt.Figure, root: Path, name: str) -> None:
     plt.close(fig)
 
 
-def representative_trial(batch_root: Path, task: str) -> Path:
+def representative_trial(
+    batch_root: Path, task: str, prefer_max_field: str | None = None,
+) -> Path:
     summary = read_csv(batch_root / "summaries" / "system_trial_summary.csv")
     candidates = [row for row in summary if row["task_type"] == task]
     if not candidates:
@@ -43,7 +45,10 @@ def representative_trial(batch_root: Path, task: str) -> Path:
     successful = [
         row for row in candidates
         if row["overall_success"].strip().lower() in {"true", "1"}]
-    row = (successful or candidates)[0]
+    eligible = successful or candidates
+    row = (
+        max(eligible, key=lambda item: number(item, prefer_max_field))
+        if prefer_max_field else eligible[0])
     path = batch_root / "raw" / task / f"trial_{int(row['trial_id']):02d}"
     if not path.is_dir():
         raise FileNotFoundError(f"representative trial is missing: {path}")
@@ -102,10 +107,11 @@ def dense_safety(trial_dir: Path, figures: Path, config: dict) -> None:
     distances = distance_series(odom)
     if not distances or not iapf:
         raise ValueError("dense task lacks distance or IAPF data")
-    bins: Dict[float, int] = defaultdict(int)
+    bins: Dict[float, set[int]] = defaultdict(set)
     for row in iapf:
         if str(row["iapf_active"]).lower() in {"true", "1"}:
-            bins[round(number(row, "timestamp"), 1)] += 1
+            bins[round(number(row, "timestamp"), 1)].add(
+                int(number(row, "uav_id")))
     fig, axes = plt.subplots(2, 1, figsize=(9, 6), sharex=True)
     axes[0].plot(
         [row[0] for row in distances], [row[1] for row in distances],
@@ -119,7 +125,8 @@ def dense_safety(trial_dir: Path, figures: Path, config: dict) -> None:
     axes[0].set_ylabel("Minimum distance (m)")
     axes[0].legend()
     axes[0].grid(alpha=0.25)
-    axes[1].step(sorted(bins), [bins[key] for key in sorted(bins)], where="post")
+    axes[1].step(
+        sorted(bins), [len(bins[key]) for key in sorted(bins)], where="post")
     axes[1].set_ylabel("Active UAV count")
     axes[1].set_xlabel("Trial time (s)")
     axes[1].set_ylim(-0.2, 8.5)
@@ -136,13 +143,14 @@ def boxplot(
     for task in TASK_NAMES:
         samples = [
             number(row, field) for row in rows if row["task_type"] == task
+            and row["overall_success"].strip().lower() in {"true", "1"}
             and math.isfinite(number(row, field))]
         if not samples:
             raise ValueError(f"no finite {field} samples for {task}")
         values.append(samples)
         labels.append(task.replace("task_", "").split("_")[0].upper())
     fig, axis = plt.subplots(figsize=(8, 4.8))
-    axis.boxplot(values, labels=labels, showmeans=True)
+    axis.boxplot(values, tick_labels=labels, showmeans=True)
     axis.set_xlabel("Task")
     axis.set_ylabel(ylabel)
     axis.set_title(ylabel + " by task")
@@ -162,7 +170,9 @@ def main() -> int:
     mixed_timeline(
         representative_trial(batch_root, "task_e_mixed"), figures)
     dense_safety(
-        representative_trial(batch_root, "task_d_dense"), figures, config)
+        representative_trial(
+            batch_root, "task_d_dense", "iapf_active_duration"),
+        figures, config)
     rows = read_csv(batch_root / "summaries" / "system_trial_summary.csv")
     boxplot(rows, "completion_time", "Completion time (s)", figures,
             "completion_time_boxplot")

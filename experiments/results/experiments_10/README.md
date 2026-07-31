@@ -10,3 +10,6 @@
 
 rosbag、运行日志和生成图片不提交到 Git；manifest、配置快照、CSV 与报告可提交。runner 拒绝覆盖任何非空 trial 目录。
 
+本次正式批次为 `exp10-formal-20260731`。实验结论、失败分类、数据完整性
+检查和复现命令见
+`exp10-formal-20260731/summaries/completion_report.md`。

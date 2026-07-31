@@ -8,6 +8,7 @@ from summarize_system_trials import (
     activation_metrics,
     distance_series,
     event_count,
+    format_mean_std,
     mask_duration,
     tracking_metrics,
 )
@@ -19,6 +20,12 @@ def test_event_count_and_duration_count_contiguous_events():
     mask = [False, True, True, False, True]
     assert event_count(mask) == 2
     assert mask_duration(times, mask) == pytest.approx(0.2)
+
+
+def test_format_mean_std_materializes_generator():
+    assert format_mean_std(
+        value for value in [1.0, 2.0, float("nan")]
+    ) == "1.500 ± 0.707"
 
 
 def test_tracking_error_uses_modulated_reference():

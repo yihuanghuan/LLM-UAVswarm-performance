@@ -1,0 +1,43 @@
+{
+  "experiment_id": "experiments_10",
+  "batch_id": "exp10-formal-20260731",
+  "task_type": "task_a_simple",
+  "trial_id": 4,
+  "phase": "formal",
+  "command_text": "无人机1到8号机以[0,13.5,5]为中心，在10秒内组成半径4米的圆形编队，使用normal模式，避障系数为1.0。",
+  "llm_model": "MiniMax-M2.7-highspeed",
+  "assignment_mode": "safety_aware",
+  "avoidance_mode": "iapf_dual",
+  "iapf_escape_mode": "id_order",
+  "iapf_parameters": {
+    "iapf_violation_distance": 1.0,
+    "iapf_enter_distance": 1.5,
+    "iapf_exit_distance": 1.65,
+    "iapf_filter_alpha": 0.2,
+    "iapf_repulsion_gain": 25.0,
+    "iapf_escape_mode": "id_order",
+    "iapf_escape_gain": 0.05,
+    "iapf_distance_epsilon": 0.1,
+    "iapf_position_gain": 0.05,
+    "iapf_position_limit": 0.5,
+    "iapf_accel_gain": 0.3,
+    "iapf_accel_limit": 2.0,
+    "neighbor_timeout": 0.2
+  },
+  "motion_styles": [
+    "normal"
+  ],
+  "start_time": "2026-07-31T05:34:43.835368+00:00",
+  "end_time": "2026-07-31T05:35:08.938014+00:00",
+  "timeout": 40.0,
+  "semantic_success": true,
+  "execution_success": true,
+  "safety_success": true,
+  "overall_success": true,
+  "failure_reason": "",
+  "rosbag_path": "/home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments/results/experiments_10/exp10-formal-20260731/raw/task_a_simple/trial_04/rosbag2",
+  "config_checksum": "b9d8375a4ab2450da890f834f26c0b2218da8ecacab6e528b9bb3193bddaccdf",
+  "collision_source": "distance_proxy",
+  "rtf_source": "clock_wall_ratio",
+  "analysis_complete": true
+}

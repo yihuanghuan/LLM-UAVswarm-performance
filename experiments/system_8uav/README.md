@@ -92,4 +92,8 @@ python3 experiments/system_8uav/scripts/plot_system_results.py \
 - `resource_summary.csv`
 - `paper_task_table.csv`
 
+论文表和箱线图中的连续性能指标仅统计 `overall_success` trial；成功次数的
+分母始终是全部正式 trial，因此失败不会被隐藏，也不会用 0 秒完成时间污染
+性能均值。
+
 控制误差采用 actual position 对 modulated reference；避障偏移采用 modulated reference 对 nominal Minimum Jerk reference。安全判定使用 `0.70 m` collision、`1.00 m` violation、`1.50/1.65 m` IAPF enter/exit；实际最小距离低于 `1.00 m` 即判失败。经 8 机 pilot 固定悬停完成阈值为位置/速度均 `<0.40` 并连续保持 `1 s`；控制器默认值仍为 `0.30`，仅实验 launch 覆盖。mean RTF 低于 `0.95` 或有效控制频率低于 `45 Hz` 时记录 `gazebo_realtime_failure`。

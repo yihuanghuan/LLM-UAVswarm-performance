@@ -246,7 +246,9 @@ def write_json(path: Path, payload: Any) -> None:
 def write_csv(path: Path, rows: Iterable[Dict[str, Any]], fields: Sequence[str]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(fields), extrasaction="ignore")
+        writer = csv.DictWriter(
+            handle, fieldnames=list(fields), extrasaction="ignore",
+            lineterminator="\n")
         writer.writeheader()
         for row in rows:
             writer.writerow({field: row.get(field, "") for field in fields})
