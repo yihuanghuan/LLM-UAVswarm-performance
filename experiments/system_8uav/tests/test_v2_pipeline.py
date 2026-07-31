@@ -1,7 +1,7 @@
 import json
 
 from location_allocate.no_location import purify_json_content
-from run_batch import assign_attempt_ids, initial_schedule
+from run_batch import assign_attempt_ids, initial_schedule, minimax_quota_exhausted
 from summarize_v2 import timing_rows
 from system_common import load_yaml, write_csv
 
@@ -72,3 +72,20 @@ def test_replacement_ids_are_never_reused():
          "replacement_for": "attempt_0001"},
     ])
     assert len({row["attempt_id"] for row in rows}) == 2
+
+
+def test_minimax_quota_detection_uses_preserved_metrics(tmp_path):
+    metrics = {
+        "error_type": "RateLimitError",
+        "error_message": (
+            "Error code: 429 - 已达到 Token Plan 用量上限 (2056)"),
+    }
+    (tmp_path / "llm_metrics.json").write_text(
+        json.dumps(metrics), encoding="utf-8")
+    assert minimax_quota_exhausted(
+        {"exception": "compiled LFS does not match"}, tmp_path)
+
+
+def test_minimax_quota_detection_rejects_unrelated_parse_failure(tmp_path):
+    assert not minimax_quota_exhausted(
+        {"exception": "RuntimeError: invalid JSON response"}, tmp_path)

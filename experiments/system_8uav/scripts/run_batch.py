@@ -219,6 +219,27 @@ def assign_attempt_ids(rows, start=1):
     return rows
 
 
+def minimax_quota_exhausted(manifest: Dict[str, Any], trial_dir: Path) -> bool:
+    """Recognize MiniMax Token Plan exhaustion without hiding trial evidence."""
+    evidence = [str(manifest.get("exception", ""))]
+    metrics_path = trial_dir / "llm_metrics.json"
+    if metrics_path.exists():
+        try:
+            metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+            evidence.extend([
+                str(metrics.get("error_type", "")),
+                str(metrics.get("error_message", "")),
+            ])
+        except (OSError, json.JSONDecodeError):
+            pass
+    text = " ".join(evidence).lower()
+    return (
+        "token plan" in text
+        and any(marker in text for marker in (
+            "429", "2056", "rate_limit", "ratelimiterror"))
+    )
+
+
 def trial_command(row, args, config_path, results_root):
     command = [
         sys.executable, str(SCRIPT_DIR / "run_trial.py"),
@@ -295,32 +316,46 @@ def main():
         for row in orphaned:
             destination = raw_root / row["task_type"] / row["attempt_id"]
             destination.mkdir(parents=True, exist_ok=True)
-            write_json(destination / "manifest.json", {
-                "experiment_id": config["experiment"]["experiment_id"],
-                "batch_id": args.batch_id, "task_type": row["task_type"],
-                "attempt_id": row["attempt_id"], "trial_id": None,
-                "target_execution_index": row["target_execution_index"],
-                "replacement_for": row.get("replacement_for", ""),
-                "phase": args.phase, "entered_execution": False,
-                "semantic_success": False, "execution_success": False,
-                "safety_success": False, "overall_success": False,
-                "failure_reason": "interrupted_startup",
-                "start_time": utc_now(), "end_time": utc_now(),
-                "config_checksum": config_checksum(),
-            })
+            manifest_path = destination / "manifest.json"
+            recovered = (
+                json.loads(manifest_path.read_text(encoding="utf-8"))
+                if manifest_path.exists() else {})
+            if not recovered.get("end_time"):
+                recovered = {
+                    "experiment_id": config["experiment"]["experiment_id"],
+                    "batch_id": args.batch_id, "task_type": row["task_type"],
+                    "attempt_id": row["attempt_id"], "trial_id": None,
+                    "target_execution_index": row["target_execution_index"],
+                    "replacement_for": row.get("replacement_for", ""),
+                    "phase": args.phase, "entered_execution": False,
+                    "semantic_success": False, "execution_success": False,
+                    "safety_success": False, "overall_success": False,
+                    "failure_reason": "interrupted_startup",
+                    "start_time": utc_now(), "end_time": utc_now(),
+                    "config_checksum": config_checksum(),
+                }
+                write_json(manifest_path, recovered)
+            entered = bool(recovered.get("entered_execution"))
+            reason = recovered.get("failure_reason", "interrupted_startup")
             outcomes.append({
-                **row, "returncode": 130, "entered_execution": False,
-                "status": "failed", "failure_reason": "interrupted_startup",
+                **row, "returncode": 0 if not reason else 2,
+                "entered_execution": entered,
+                "status": "completed" if not reason else "failed",
+                "failure_reason": reason,
                 "path": str(destination),
             })
-            replacement = assign_attempt_ids([{
-                "task_type": row["task_type"],
-                "target_execution_index": row["target_execution_index"],
-                "replacement_for": row["attempt_id"],
-                "randomization_seed": int(
-                    config["experiment"]["block_randomization_seed"]),
-            }], len(schedule) + 1)[0]
-            schedule.append(replacement)
+            already_replaced = any(
+                candidate.get("replacement_for") == row["attempt_id"]
+                for candidate in schedule)
+            if not entered and not already_replaced:
+                replacement = assign_attempt_ids([{
+                    "task_type": row["task_type"],
+                    "target_execution_index": row["target_execution_index"],
+                    "replacement_for": row["attempt_id"],
+                    "randomization_seed": int(
+                        config["experiment"]["block_randomization_seed"]),
+                }], len(schedule) + 1)[0]
+                schedule.append(replacement)
             plan["schedule"] = schedule
         if orphaned:
             write_json(plan_path, plan)
@@ -409,6 +444,15 @@ def main():
             plan["schedule"] = schedule
             write_json(plan_path, plan)
         write_json(outcomes_path, outcomes)
+        if (
+            not entered
+            and manifest.get("failure_reason") == "llm_parse_failure"
+            and minimax_quota_exhausted(manifest, destination)
+        ):
+            print(
+                "batch paused: MiniMax Token Plan quota exhausted; "
+                "resume after quota is restored", flush=True)
+            return 4
 
     counts = {
         task: sum(

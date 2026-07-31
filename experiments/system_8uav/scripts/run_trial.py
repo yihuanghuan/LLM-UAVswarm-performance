@@ -838,17 +838,21 @@ def main() -> int:
             time.monotonic() - parse_started) * 1000.0
         write_json(trial_dir / "llm_metrics.json", parse_metrics)
         write_json(trial_dir / "compiled_lfs.json", lfs)
+        if not parse_metrics["parsing_success"]:
+            manifest["semantic_success"] = False
+            failure_reason = "llm_parse_failure"
+            raise RuntimeError(
+                parse_metrics.get("error_message")
+                or lfs.get("error_msg")
+                or "LLM parsing failed")
         semantic_ok, semantic_error = verify_llm_intent(task, lfs)
         if parse_metrics.get("attempts"):
             parse_metrics["attempts"][-1]["semantic_valid"] = semantic_ok
             write_json(trial_dir / "llm_metrics.json", parse_metrics)
-        manifest["semantic_success"] = bool(
-            parse_metrics["parsing_success"] and semantic_ok)
+        manifest["semantic_success"] = bool(semantic_ok)
         if not manifest["semantic_success"]:
-            failure_reason = (
-                "llm_parse_failure" if not parse_metrics["parsing_success"]
-                else "schema_failure")
-            raise RuntimeError(semantic_error or parse_metrics["error_message"])
+            failure_reason = "schema_failure"
+            raise RuntimeError(semantic_error)
 
         execution_ok, execution_reason = execute_mission(node, task, lfs, config)
         manifest["entered_execution"] = node.entered_execution
