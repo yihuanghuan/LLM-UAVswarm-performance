@@ -207,6 +207,8 @@ def import_ros():
     from geometry_msgs.msg import Point
     from px4_msgs.msg import VehicleOdometry, VehicleStatus
     from rclpy.node import Node
+    from rclpy.qos import qos_profile_sensor_data
+    from rosgraph_msgs.msg import Clock
     from uav_swarm_interfaces.msg import (
         ControlAdaptationLog,
         IAPFDebug,
@@ -221,6 +223,8 @@ def import_ros():
         "ControlAdaptationLog": ControlAdaptationLog,
         "IAPFDebug": IAPFDebug, "TrajectoryMetrics": TrajectoryMetrics,
         "UAVStatus": UAVStatus, "UAVSwarmCommand": UAVSwarmCommand,
+        "sensor_qos": qos_profile_sensor_data,
+        "Clock": Clock,
     }
 
 
@@ -248,15 +252,18 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
             self.command_ack: set[tuple[int, int]] = set()
             self.arrival_times: Dict[tuple[int, int], float] = {}
             self.latest_rtf = math.nan
+            self.latest_sim_time = math.nan
+            self.clock_origin: tuple[float, float] | None = None
+            self.saw_performance_metrics = False
             self.system_sampler = SystemSampler()
-            self.publishers = {
+            self.command_publishers = {
                 uid: self.create_publisher(
                     ros["UAVSwarmCommand"], f"/uav{uid}/swarm_command", 10)
                 for uid in uav_ids
             }
-            self.subscriptions = []
+            self.trial_subscriptions = []
             for uid in uav_ids:
-                self.subscriptions.extend([
+                self.trial_subscriptions.extend([
                     self.create_subscription(
                         ros["Point"], f"/uav{uid}/odom",
                         lambda msg, value=uid: self.odom_callback(msg, value), 20),
@@ -278,16 +285,20 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
                     self.create_subscription(
                         ros["VehicleOdometry"],
                         f"/px4_{uid}/fmu/out/vehicle_odometry",
-                        lambda msg, value=uid: self.px4_odom_callback(msg, value), 20),
+                        lambda msg, value=uid: self.px4_odom_callback(msg, value),
+                        ros["sensor_qos"]),
                     self.create_subscription(
                         ros["VehicleStatus"],
                         f"/px4_{uid}/fmu/out/vehicle_status",
                         lambda msg, value=uid: self.vehicle_status_callback(msg, value),
-                        20),
+                        ros["sensor_qos"]),
                 ])
-            self.subscriptions.append(self.create_subscription(
+            self.trial_subscriptions.append(self.create_subscription(
                 ros["PerformanceMetrics"], "/gazebo/performance_metrics",
                 self.performance_callback, 20))
+            self.trial_subscriptions.append(self.create_subscription(
+                ros["Clock"], "/clock", self.clock_callback,
+                ros["sensor_qos"]))
             self.resource_timer = self.create_timer(0.2, self.resource_callback)
 
         def stamp(self) -> float:
@@ -409,9 +420,27 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
 
         def performance_callback(self, msg) -> None:
             self.latest_rtf = float(msg.real_time_factor)
+            self.saw_performance_metrics = True
+
+        def clock_callback(self, msg) -> None:
+            self.latest_sim_time = (
+                float(msg.clock.sec) + float(msg.clock.nanosec) * 1e-9)
 
         def resource_callback(self) -> None:
             cpu, memory_used, memory_percent = self.system_sampler.sample()
+            wall_time = time.monotonic()
+            if (
+                not self.saw_performance_metrics
+                and math.isfinite(self.latest_sim_time)
+            ):
+                if self.clock_origin is None:
+                    self.clock_origin = wall_time, self.latest_sim_time
+                else:
+                    origin_wall, origin_sim = self.clock_origin
+                    wall_delta = wall_time - origin_wall
+                    sim_delta = self.latest_sim_time - origin_sim
+                    if wall_delta > 0.0 and sim_delta >= 0.0:
+                        self.latest_rtf = sim_delta / wall_delta
             self.resource_rows.append({
                 "timestamp": self.stamp(),
                 "cpu_percent": cpu,
@@ -446,12 +475,17 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
                 for uid in ids
             )
 
-        def wait_ready(self, ids: Sequence[int], timeout: float, hold: float) -> bool:
+        def wait_ready(
+            self, ids: Sequence[int], timeout: float, hold: float,
+            speed_tolerance: float,
+        ) -> bool:
             deadline = time.monotonic() + timeout
             stable_since = None
             while time.monotonic() < deadline:
                 ros["rclpy"].spin_once(self, timeout_sec=0.1)
-                speeds_ok = all(self.velocities.get(uid, math.inf) < 0.3 for uid in ids)
+                speeds_ok = all(
+                    self.velocities.get(uid, math.inf) < speed_tolerance
+                    for uid in ids)
                 if self.ready(ids) and speeds_ok:
                     stable_since = stable_since or time.monotonic()
                     if time.monotonic() - stable_since >= hold:
@@ -475,12 +509,13 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
             msg.safety_factor = float(safety_factor)
             self.hover_status[uid] = False
             self.current_mission[uid] = mission_id
-            self.publishers[uid].publish(msg)
+            self.command_publishers[uid].publish(msg)
             return time.monotonic()
 
         def wait_stage(
             self, mission_by_uid: Dict[int, int], targets: Dict[int, Sequence[float]],
-            timeout: float, hold: float,
+            timeout: float, hold: float, position_tolerance: float,
+            velocity_tolerance: float,
         ) -> tuple[bool, str]:
             deadline = time.monotonic() + timeout
             while time.monotonic() < deadline:
@@ -493,13 +528,14 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
                     while time.monotonic() < hold_deadline:
                         ros["rclpy"].spin_once(self, timeout_sec=0.1)
                         if any(
-                            self.velocities.get(uid, math.inf) >= 0.3
+                            self.velocities.get(uid, math.inf)
+                            >= velocity_tolerance
                             for uid in mission_by_uid
                         ):
                             break
                         if any(
                             math.dist(self.positions.get(uid, [math.inf] * 3), targets[uid])
-                            >= 0.3 for uid in mission_by_uid
+                            >= position_tolerance for uid in mission_by_uid
                         ):
                             break
                     else:
@@ -513,34 +549,6 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
             return False, "stage_timeout"
 
     return TrialNode()
-
-
-def configure_controllers(uav_ids: Sequence[int], config: Dict[str, Any]) -> None:
-    values = {
-        "avoidance_mode": config["experiment"]["avoidance_mode"],
-        **config["iapf"],
-    }
-    for uid in uav_ids:
-        command = (
-            f"ros2 param set /uav{uid}/ladrc_position_controller "
-            f"avoidance_mode {values['avoidance_mode']}")
-        result = subprocess.run(
-            ["bash", "-lc", command], text=True, stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT, check=False)
-        if result.returncode:
-            raise RuntimeError(
-                f"failed to configure UAV{uid} avoidance_mode: {result.stdout}")
-        for key, value in values.items():
-            if key == "avoidance_mode":
-                continue
-            result = subprocess.run(
-                ["ros2", "param", "set",
-                 f"/uav{uid}/ladrc_position_controller", key, str(value)],
-                text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                check=False)
-            if result.returncode:
-                raise RuntimeError(
-                    f"failed to configure UAV{uid} {key}: {result.stdout}")
 
 
 def execute_mission(
@@ -622,7 +630,9 @@ def execute_mission(
         timeout += float(config["experiment"]["stage_timeout_margin"])
         success, reason = node.wait_stage(
             mission_by_uid, targets_by_uid, timeout,
-            float(config["experiment"]["stable_hold_time"]))
+            float(config["experiment"]["stable_hold_time"]),
+            float(config["experiment"]["final_position_tolerance"]),
+            float(config["experiment"]["stable_speed"]))
         node.add_event(
             "stage_end", stage_id=stage_id,
             mission_ids=sorted(set(mission_by_uid.values())),
@@ -709,6 +719,7 @@ def main() -> int:
         "rosbag_path": "" if args.no_rosbag else str(trial_dir / "rosbag2"),
         "config_checksum": config_checksum(),
         "collision_source": "distance_proxy",
+        "rtf_source": "performance_metrics_or_clock",
     }
     write_json(trial_dir / "manifest.json", manifest)
 
@@ -721,11 +732,11 @@ def main() -> int:
         wait_for_topics(uav_ids, float(experiment["readiness_timeout"]))
         if not node.wait_ready(
             uav_ids, float(experiment["readiness_timeout"]),
-            float(experiment["stable_hold_time"])
+            float(experiment["stable_hold_time"]),
+            float(experiment["stable_speed"]),
         ):
             failure_reason = "readiness_timeout"
             raise RuntimeError("UAVs did not reach armed Offboard stable readiness")
-        configure_controllers(uav_ids, config)
         if not args.no_rosbag:
             bag_process = start_rosbag(trial_dir, uav_ids)
 
@@ -761,6 +772,9 @@ def main() -> int:
         stop_process(bag_process)
         node.spin_for(0.2)
         write_raw_csvs(node, trial_dir)
+        manifest["rtf_source"] = (
+            "gazebo_performance_metrics"
+            if node.saw_performance_metrics else "clock_wall_ratio")
         manifest["end_time"] = utc_now()
         manifest["failure_reason"] = failure_reason
         write_json(trial_dir / "manifest.json", manifest)

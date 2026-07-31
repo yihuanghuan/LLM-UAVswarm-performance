@@ -65,6 +65,8 @@ public:
     this->declare_parameter("max_acceleration_x", 3.0);
     this->declare_parameter("max_acceleration_y", 3.0);
     this->declare_parameter("max_acceleration_z", 3.0);
+    this->declare_parameter("hover_position_tolerance", 0.3);
+    this->declare_parameter("hover_velocity_tolerance", 0.3);
 
     // Gazebo 多机 spawn 偏移量（sitl_multiple_run.sh 默认 Y=3*instance）
     this->declare_parameter("enu_offset_x", 0.0);
@@ -555,7 +557,11 @@ private:
           current_odom_.velocity[1] * current_odom_.velocity[1] +
           current_odom_.velocity[2] * current_odom_.velocity[2]);
 
-      if (pos_err < 0.3 && vel_mag < 0.3)
+      const double position_tolerance =
+        this->get_parameter("hover_position_tolerance").as_double();
+      const double velocity_tolerance =
+        this->get_parameter("hover_velocity_tolerance").as_double();
+      if (pos_err < position_tolerance && vel_mag < velocity_tolerance)
       {
         if (!is_hover_stable_)
         {

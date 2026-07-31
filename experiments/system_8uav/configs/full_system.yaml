@@ -11,6 +11,8 @@ experiment:
   block_randomization_seed: 1010
   readiness_timeout: 75.0
   stable_hold_time: 1.0
+  final_position_tolerance: 0.40
+  stable_speed: 0.40
   stage_timeout_margin: 30.0
   post_roll_seconds: 4.0
   sample_hz: 20.0
@@ -44,4 +46,3 @@ iapf:
 paths:
   results_root: experiments/results/experiments_10
   px4_root: /home/yihuang/PX4-Autopilot
-

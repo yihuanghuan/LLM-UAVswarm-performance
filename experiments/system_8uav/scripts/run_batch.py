@@ -42,10 +42,18 @@ class Trial:
 class SimulatorSupervisor:
     """Own one complete simulator process tree for exactly one trial."""
 
-    def __init__(self, log_dir: Path, px4_root: Path, uav_count: int = 8):
+    def __init__(
+        self, log_dir: Path, px4_root: Path, uav_count: int = 8,
+        avoidance_mode: str = "iapf_dual", escape_mode: str = "id_order",
+        position_tolerance: float = 0.3, velocity_tolerance: float = 0.3,
+    ):
         self.log_dir = log_dir
         self.px4_root = px4_root
         self.uav_count = uav_count
+        self.avoidance_mode = avoidance_mode
+        self.escape_mode = escape_mode
+        self.position_tolerance = position_tolerance
+        self.velocity_tolerance = velocity_tolerance
         self.processes: List[tuple[subprocess.Popen, object]] = []
 
     def start_process(
@@ -65,6 +73,7 @@ class SimulatorSupervisor:
             "micro_xrce_agent", "MicroXRCEAgent udp4 -p 8888")
         self.start_process(
             "px4_gazebo",
+            "export PATH=/usr/bin:/bin:/usr/local/bin:$PATH && "
             "source Tools/simulation/gazebo-classic/setup_gazebo.bash "
             "$(pwd) $(pwd)/build/px4_sitl_default && "
             f"./Tools/simulation/gazebo-classic/sitl_multiple_run.sh "
@@ -76,7 +85,11 @@ class SimulatorSupervisor:
             "controllers",
             "source /opt/ros/humble/setup.bash && "
             f"source {WORKSPACE_ROOT}/install/setup.bash && "
-            f"ros2 launch ladrc_controller swarm_launch.py uav_ids:=[{ids}]")
+            f"ros2 launch ladrc_controller swarm_launch.py uav_ids:=[{ids}] "
+            f"avoidance_mode:={self.avoidance_mode} "
+            f"iapf_escape_mode:={self.escape_mode} "
+            f"hover_position_tolerance:={self.position_tolerance} "
+            f"hover_velocity_tolerance:={self.velocity_tolerance}")
         time.sleep(18)
         failed = [
             process.pid for process, _ in self.processes
@@ -225,7 +238,13 @@ def main() -> int:
                 supervisor = SimulatorSupervisor(
                     batch_root / "runtime_logs"
                     / f"{trial.task}_trial_{trial.trial:02d}",
-                    px4_root)
+                    px4_root,
+                    avoidance_mode=config["experiment"]["avoidance_mode"],
+                    escape_mode=config["experiment"]["iapf_escape_mode"],
+                    position_tolerance=float(
+                        config["experiment"]["final_position_tolerance"]),
+                    velocity_tolerance=float(
+                        config["experiment"]["stable_speed"]))
                 supervisor.start()
             result = subprocess.run(
                 run_trial_command(

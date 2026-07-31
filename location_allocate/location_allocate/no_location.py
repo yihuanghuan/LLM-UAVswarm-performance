@@ -337,6 +337,8 @@ def parse_uav_command_with_metrics(user_command: str, ros_aux_info: str = ""):
                 "retry_count": attempt,
                 "prompt_tokens": _usage_tokens(response, "prompt_tokens"),
                 "completion_tokens": _usage_tokens(response, "completion_tokens"),
+                "error_type": "",
+                "error_message": "",
             })
 
             _log_parse_attempt(

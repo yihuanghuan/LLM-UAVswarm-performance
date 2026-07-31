@@ -33,6 +33,10 @@ def generate_launch_description():
         avoidance_mode = LaunchConfiguration(
             'avoidance_mode').perform(context).strip()
         escape_mode = LaunchConfiguration('iapf_escape_mode').perform(context)
+        position_tolerance = float(LaunchConfiguration(
+            'hover_position_tolerance').perform(context))
+        velocity_tolerance = float(LaunchConfiguration(
+            'hover_velocity_tolerance').perform(context))
         legacy_value = LaunchConfiguration(
             'enable_iapf_accel_feedforward').perform(context).strip().lower()
 
@@ -75,6 +79,8 @@ def generate_launch_description():
             experiment_parameters = {
                 'neighbor_uav_ids': ids,
                 'iapf_escape_mode': escape_mode,
+                'hover_position_tolerance': position_tolerance,
+                'hover_velocity_tolerance': velocity_tolerance,
             }
             if avoidance_mode != 'unset':
                 experiment_parameters['avoidance_mode'] = avoidance_mode
@@ -119,5 +125,13 @@ def generate_launch_description():
             'enable_iapf_accel_feedforward',
             default_value='unset',
             description='弃用兼容参数；unset/true/false'),
+        DeclareLaunchArgument(
+            'hover_position_tolerance',
+            default_value='0.3',
+            description='悬停稳定位置误差阈值 (m)'),
+        DeclareLaunchArgument(
+            'hover_velocity_tolerance',
+            default_value='0.3',
+            description='悬停稳定速度阈值 (m/s)'),
         OpaqueFunction(function=create_uav_nodes),
     ])
