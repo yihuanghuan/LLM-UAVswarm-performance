@@ -47,10 +47,18 @@ pilot 共 16 次，覆盖 4 个配置与 4 个 variant，并在正式运行前�
 - 代表视频：4 个 MP4，均可解码
 - 启动阶段自动重试：10
 - 正式任务失败：1（`s1_crossing_8/Full/seed 4214`，`timeout`）
-- 碰撞事件：0
+- 距离阈值碰撞事件（`collision_threshold_event_count`）：24 次，分布在
+  24 个试次中；定义为两机距离连续低于 `d_collision=0.70 m` 的区间
+- Gazebo 物理接触（`physical_contact_count`）：未独立采集，不能由
+  `collision_count` 推断，也不报告为 0
 
 10 次重试均发生在正式记录前的预定位或参数设置阶段。失败启动被保存为
 `*_failed_attempt_0`，不计入 240 个正式样本，也没有覆盖成功结果。
+
+24 次距离阈值碰撞事件的分布为：S1/4 B0 3 次（均值 0.200/试次）、
+S2 B0 11 次（0.733/试次）、S2 P 10 次（0.667/试次）；其他
+scenario/variant 均为 0。这里的事件是分析阈值事件，不等同于 Gazebo
+contact sensor 或物理碰撞记录。
 
 ## 主结果
 
@@ -82,13 +90,16 @@ sign-flip 因子效应，并在预注册比较族内进行 Holm correction。完
 
 ## 假设结论
 
-### H1：部分支持
+### H1：部分支持，XY crossing 方向与预期相反
 
-在 4 机 crossing 配置中，P 相对 B0 将名义 XY crossing 的配对中位数降低
-1 次，并将 predicted minimum distance 提高 2.166 m，二者
-`p_holm=0.000366`。在 8 机配置中，名义 crossing 计数不变，但预测最小距离
-提高 0.535 m，`p_holm=0.000366`。因此 safety-aware assignment 明显提高
-预测间距，但 crossing count 的改善依赖具体拓扑。
+`planned_comparisons.csv` 中的配对差值定义为
+`variant_b - variant_a`，因此 B0 对 P 的比较列表示 `P - B0`。在 4 机
+crossing 配置中，P 的名义 XY crossing 配对中位数**增加 1 次**，而
+nominal proximity crossing 减少 1 次；predicted minimum distance 提高
+2.166 m，三项均 `p_holm=0.000366`。在 8 机配置中，两项 crossing 计数
+均不变，但预测最小距离提高 0.535 m，`p_holm=0.000366`。因此 H1 仅得到
+部分支持：safety-aware assignment 提高了预测间距，并在 S1/4 减少
+proximity crossing，但 XY crossing 的变化方向与假设相反。
 
 ### H2：部分支持
 
