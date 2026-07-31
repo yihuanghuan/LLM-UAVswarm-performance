@@ -36,13 +36,12 @@ def test_dense_terminal_spacing_exceeds_iapf_exit_distance():
     assert adjacent_spacing > config["safety"]["iapf_exit_distance"]
 
 
-def test_formal_schedule_is_five_complete_reproducible_blocks():
+def test_formal_schedule_is_ten_complete_reproducible_blocks():
     config = load_yaml()
     first = trial_schedule(config, "formal")
     second = trial_schedule(config, "formal")
     assert first == second
-    assert len(first) == 25
-    for trial_id in range(1, 6):
+    assert len(first) == 50
+    for trial_id in range(1, 11):
         block = [trial.task for trial in first if trial.trial == trial_id]
         assert sorted(block) == sorted(TASK_NAMES)
-

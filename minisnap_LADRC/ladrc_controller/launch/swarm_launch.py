@@ -33,10 +33,16 @@ def generate_launch_description():
         avoidance_mode = LaunchConfiguration(
             'avoidance_mode').perform(context).strip()
         escape_mode = LaunchConfiguration('iapf_escape_mode').perform(context)
-        position_tolerance = float(LaunchConfiguration(
-            'hover_position_tolerance').perform(context))
-        velocity_tolerance = float(LaunchConfiguration(
-            'hover_velocity_tolerance').perform(context))
+        position_enter = float(LaunchConfiguration(
+            'hover_position_enter_tolerance').perform(context))
+        velocity_enter = float(LaunchConfiguration(
+            'hover_velocity_enter_tolerance').perform(context))
+        position_exit = float(LaunchConfiguration(
+            'hover_position_exit_tolerance').perform(context))
+        velocity_exit = float(LaunchConfiguration(
+            'hover_velocity_exit_tolerance').perform(context))
+        stable_hold = float(LaunchConfiguration(
+            'hover_stable_hold_time').perform(context))
         legacy_value = LaunchConfiguration(
             'enable_iapf_accel_feedforward').perform(context).strip().lower()
 
@@ -79,8 +85,11 @@ def generate_launch_description():
             experiment_parameters = {
                 'neighbor_uav_ids': ids,
                 'iapf_escape_mode': escape_mode,
-                'hover_position_tolerance': position_tolerance,
-                'hover_velocity_tolerance': velocity_tolerance,
+                'hover_position_enter_tolerance': position_enter,
+                'hover_velocity_enter_tolerance': velocity_enter,
+                'hover_position_exit_tolerance': position_exit,
+                'hover_velocity_exit_tolerance': velocity_exit,
+                'hover_stable_hold_time': stable_hold,
             }
             if avoidance_mode != 'unset':
                 experiment_parameters['avoidance_mode'] = avoidance_mode
@@ -126,12 +135,24 @@ def generate_launch_description():
             default_value='unset',
             description='弃用兼容参数；unset/true/false'),
         DeclareLaunchArgument(
-            'hover_position_tolerance',
-            default_value='0.3',
-            description='悬停稳定位置误差阈值 (m)'),
+            'hover_position_enter_tolerance',
+            default_value='0.35',
+            description='稳定候选位置进入阈值 (m)'),
         DeclareLaunchArgument(
-            'hover_velocity_tolerance',
-            default_value='0.3',
-            description='悬停稳定速度阈值 (m/s)'),
+            'hover_velocity_enter_tolerance',
+            default_value='0.30',
+            description='稳定候选速度进入阈值 (m/s)'),
+        DeclareLaunchArgument(
+            'hover_position_exit_tolerance',
+            default_value='0.45',
+            description='稳定候选位置退出阈值 (m)'),
+        DeclareLaunchArgument(
+            'hover_velocity_exit_tolerance',
+            default_value='0.40',
+            description='稳定候选速度退出阈值 (m/s)'),
+        DeclareLaunchArgument(
+            'hover_stable_hold_time',
+            default_value='1.0',
+            description='稳定候选连续保持时间 (s)'),
         OpaqueFunction(function=create_uav_nodes),
     ])

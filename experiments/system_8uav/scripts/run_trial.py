@@ -30,7 +30,10 @@ from system_common import (
 
 
 ODOM_FIELDS = ["timestamp", "uav_id", "x", "y", "z", "speed"]
-STATUS_FIELDS = ["timestamp", "uav_id", "mission_id", "is_hover_stable"]
+STATUS_FIELDS = [
+    "timestamp", "uav_id", "mission_id", "is_hover_stable",
+    "stability_state", "position_error", "speed",
+]
 TRAJECTORY_FIELDS = [
     "timestamp", "uav_id", "mission_id", "start_x", "start_y", "start_z",
     "target_x", "target_y", "target_z", "requested_duration",
@@ -74,6 +77,7 @@ EVENT_FIELDS = [
     "failure_reason", "duration_s", "assignment_compute_time_ms",
     "planned_xy_crossings", "planned_proximity_crossings",
     "planned_min_distance", "local_swap_iterations", "dispatch_skew_ms",
+    "mission_id", "uav_id", "position_error", "speed",
 ]
 
 
@@ -122,6 +126,9 @@ def parse_args() -> argparse.Namespace:
         "task_a_simple", "task_b_sequential", "task_c_grouped",
         "task_d_dense", "task_e_mixed"])
     parser.add_argument("--trial", type=int, required=True)
+    parser.add_argument("--attempt-id", required=True)
+    parser.add_argument("--target-execution-index", type=int, required=True)
+    parser.add_argument("--replacement-for", default="")
     parser.add_argument("--batch-id", required=True)
     parser.add_argument("--phase", choices=["pilot", "formal"], default="formal")
     parser.add_argument("--config", default=str(CONFIG_PATH))
@@ -251,6 +258,11 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
             self.current_mission = {uid: 0 for uid in uav_ids}
             self.command_ack: set[tuple[int, int]] = set()
             self.arrival_times: Dict[tuple[int, int], float] = {}
+            self.last_stability: Dict[tuple[int, int], int] = {}
+            self.reference_started: set[tuple[int, int]] = set()
+            self.reference_finished: set[tuple[int, int]] = set()
+            self.entered_execution = False
+            self.active_stage_id = 0
             self.latest_rtf = math.nan
             self.latest_sim_time = math.nan
             self.clock_origin: tuple[float, float] | None = None
@@ -320,20 +332,51 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
             self.vehicle_status[uid] = msg
 
         def status_callback(self, msg, uid: int) -> None:
-            mission_id = self.current_mission.get(uid, 0)
+            mission_id = int(msg.mission_id)
             stable = bool(msg.is_hover_stable)
-            self.hover_status[uid] = stable
-            if stable:
+            state = int(msg.stability_state)
+            key = (mission_id, uid)
+            if mission_id == self.current_mission.get(uid, 0):
+                self.hover_status[uid] = stable
+            if stable and state == 2:
                 self.arrival_times.setdefault((mission_id, uid), self.stamp())
+            previous = self.last_stability.get(key)
+            if previous != state:
+                names = {
+                    0: "stable_candidate_exit" if previous == 1 else "stable_unstable",
+                    1: "stable_candidate_enter",
+                    2: "stable_confirmed",
+                }
+                self.add_event(
+                    names.get(state, "stable_unknown"),
+                    mission_id=mission_id, uav_id=uid,
+                    uav_ids=[uid], mission_ids=[mission_id],
+                    position_error=float(msg.position_error),
+                    speed=float(msg.speed))
+                self.last_stability[key] = state
             self.status_rows.append({
                 "timestamp": self.stamp(), "uav_id": uid,
                 "mission_id": mission_id, "is_hover_stable": stable,
+                "stability_state": state,
+                "position_error": msg.position_error, "speed": msg.speed,
             })
 
         def trajectory_callback(self, msg, uid: int) -> None:
+            mission_id = int(msg.mission_id)
+            key = (mission_id, uid)
+            if key not in self.reference_started:
+                self.reference_started.add(key)
+                self.add_event(
+                    "reference_start", mission_id=mission_id, uav_id=uid,
+                    mission_ids=[mission_id], uav_ids=[uid])
+            if bool(msg.is_finished) and key not in self.reference_finished:
+                self.reference_finished.add(key)
+                self.add_event(
+                    "reference_finish", mission_id=mission_id, uav_id=uid,
+                    mission_ids=[mission_id], uav_ids=[uid])
             self.trajectory_rows.append({
                 "timestamp": self.stamp(), "uav_id": uid,
-                "mission_id": self.current_mission.get(uid, 0),
+                "mission_id": mission_id,
                 "start_x": msg.start_pos.x, "start_y": msg.start_pos.y,
                 "start_z": msg.start_pos.z, "target_x": msg.target_pos.x,
                 "target_y": msg.target_pos.y, "target_z": msg.target_pos.z,
@@ -451,7 +494,10 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
 
         def add_event(self, event: str, **kwargs: Any) -> None:
             row = {field: "" for field in EVENT_FIELDS}
-            row.update({"timestamp": self.stamp(), "event": event})
+            row.update({
+                "timestamp": self.stamp(), "event": event,
+                "stage_id": self.active_stage_id,
+            })
             row.update(kwargs)
             for field in ("mission_ids", "uav_ids"):
                 if isinstance(row.get(field), (list, tuple, set)):
@@ -474,6 +520,28 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
                 and not bool(self.vehicle_status[uid].failsafe)
                 for uid in ids
             )
+
+        def readiness_diagnostics(self, ids: Sequence[int]) -> List[Dict[str, Any]]:
+            now = time.monotonic()
+            rows = []
+            for uid in ids:
+                vehicle = self.vehicle_status.get(uid)
+                rows.append({
+                    "uav_id": uid,
+                    "has_odom": uid in self.positions,
+                    "odom_fresh": (
+                        uid in self.positions
+                        and now - self.last_odom_time.get(uid, 0.0) < 0.5),
+                    "has_vehicle_status": vehicle is not None,
+                    "armed": bool(
+                        vehicle is not None and int(vehicle.arming_state) == 2),
+                    "offboard": bool(
+                        vehicle is not None and int(vehicle.nav_state) == 14),
+                    "failsafe": bool(
+                        vehicle is not None and bool(vehicle.failsafe)),
+                    "speed": self.velocities.get(uid, math.nan),
+                })
+            return rows
 
         def wait_ready(
             self, ids: Sequence[int], timeout: float, hold: float,
@@ -510,6 +578,10 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
             self.hover_status[uid] = False
             self.current_mission[uid] = mission_id
             self.command_publishers[uid].publish(msg)
+            self.entered_execution = True
+            self.add_event(
+                "command_dispatch", mission_id=mission_id, uav_id=uid,
+                mission_ids=[mission_id], uav_ids=[uid])
             return time.monotonic()
 
         def wait_stage(
@@ -523,23 +595,12 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
                 if all(
                     (mission, uid) in self.command_ack
                     for uid, mission in mission_by_uid.items()
-                ) and all(self.hover_status.get(uid, False) for uid in mission_by_uid):
-                    hold_deadline = time.monotonic() + hold
-                    while time.monotonic() < hold_deadline:
-                        ros["rclpy"].spin_once(self, timeout_sec=0.1)
-                        if any(
-                            self.velocities.get(uid, math.inf)
-                            >= velocity_tolerance
-                            for uid in mission_by_uid
-                        ):
-                            break
-                        if any(
-                            math.dist(self.positions.get(uid, [math.inf] * 3), targets[uid])
-                            >= position_tolerance for uid in mission_by_uid
-                        ):
-                            break
-                    else:
-                        return True, ""
+                ) and all(
+                    self.current_mission.get(uid) == mission
+                    and self.hover_status.get(uid, False)
+                    for uid, mission in mission_by_uid.items()
+                ):
+                    return True, ""
             missing = [
                 uid for uid, mission in mission_by_uid.items()
                 if (mission, uid) not in self.command_ack
@@ -562,6 +623,7 @@ def execute_mission(
         group_tasks = lfs_tasks[cursor:cursor + len(logical_group)]
         cursor += len(logical_group)
         stage_id = logical_group[0].stage_id
+        node.active_stage_id = stage_id
         started = time.monotonic()
         node.add_event(
             "stage_start", stage_id=stage_id,
@@ -631,8 +693,8 @@ def execute_mission(
         success, reason = node.wait_stage(
             mission_by_uid, targets_by_uid, timeout,
             float(config["experiment"]["stable_hold_time"]),
-            float(config["experiment"]["final_position_tolerance"]),
-            float(config["experiment"]["stable_speed"]))
+            float(config["experiment"]["stable_position_enter"]),
+            float(config["experiment"]["stable_speed_enter"]))
         node.add_event(
             "stage_end", stage_id=stage_id,
             mission_ids=sorted(set(mission_by_uid.values())),
@@ -670,6 +732,9 @@ def main() -> int:
     plan = {
         "task_type": task.task_type,
         "trial_id": args.trial,
+        "attempt_id": args.attempt_id,
+        "target_execution_index": args.target_execution_index,
+        "replacement_for": args.replacement_for,
         "phase": args.phase,
         "command_text": task.command_text,
         "stage_groups": [
@@ -686,7 +751,7 @@ def main() -> int:
     phase_root = results_root / args.batch_id
     if args.phase == "pilot":
         phase_root = phase_root / "pilot"
-    trial_dir = phase_root / "raw" / args.task / f"trial_{args.trial:02d}"
+    trial_dir = phase_root / "raw" / args.task / args.attempt_id
     if trial_dir.exists() and any(trial_dir.iterdir()):
         raise FileExistsError(f"refusing to overwrite existing trial: {trial_dir}")
     trial_dir.mkdir(parents=True, exist_ok=True)
@@ -697,6 +762,10 @@ def main() -> int:
         "batch_id": args.batch_id,
         "task_type": args.task,
         "trial_id": args.trial,
+        "attempt_id": args.attempt_id,
+        "target_execution_index": args.target_execution_index,
+        "replacement_for": args.replacement_for,
+        "entered_execution": False,
         "phase": args.phase,
         "command_text": task.command_text,
         "llm_model": experiment["llm_model"],
@@ -729,13 +798,27 @@ def main() -> int:
     bag_process = None
     failure_reason = "unknown"
     try:
-        wait_for_topics(uav_ids, float(experiment["readiness_timeout"]))
+        try:
+            wait_for_topics(uav_ids, float(experiment["readiness_timeout"]))
+        except Exception:
+            failure_reason = "readiness_timeout"
+            write_json(trial_dir / "readiness_failure.json", {
+                "condition": "required_topics",
+                "uavs": node.readiness_diagnostics(uav_ids),
+                "timestamp": utc_now(),
+            })
+            raise
         if not node.wait_ready(
             uav_ids, float(experiment["readiness_timeout"]),
             float(experiment["stable_hold_time"]),
-            float(experiment["stable_speed"]),
+            float(experiment["readiness_speed_tolerance"]),
         ):
             failure_reason = "readiness_timeout"
+            write_json(trial_dir / "readiness_failure.json", {
+                "condition": "armed_offboard_odom_speed_hold",
+                "uavs": node.readiness_diagnostics(uav_ids),
+                "timestamp": utc_now(),
+            })
             raise RuntimeError("UAVs did not reach armed Offboard stable readiness")
         if not args.no_rosbag:
             bag_process = start_rosbag(trial_dir, uav_ids)
@@ -744,12 +827,16 @@ def main() -> int:
         parse_started = time.monotonic()
         lfs, parse_metrics = parse_uav_command_with_metrics(
             task.command_text,
-            "当前可用无人机编号: [1,2,3,4,5,6,7,8]，总数: 8")
+            "当前可用无人机编号: [1,2,3,4,5,6,7,8]，总数: 8",
+            config.get("llm", {}))
         parse_metrics["end_to_end_parse_elapsed_ms"] = (
             time.monotonic() - parse_started) * 1000.0
         write_json(trial_dir / "llm_metrics.json", parse_metrics)
         write_json(trial_dir / "compiled_lfs.json", lfs)
         semantic_ok, semantic_error = verify_llm_intent(task, lfs)
+        if parse_metrics.get("attempts"):
+            parse_metrics["attempts"][-1]["semantic_valid"] = semantic_ok
+            write_json(trial_dir / "llm_metrics.json", parse_metrics)
         manifest["semantic_success"] = bool(
             parse_metrics["parsing_success"] and semantic_ok)
         if not manifest["semantic_success"]:
@@ -759,6 +846,7 @@ def main() -> int:
             raise RuntimeError(semantic_error or parse_metrics["error_message"])
 
         execution_ok, execution_reason = execute_mission(node, task, lfs, config)
+        manifest["entered_execution"] = node.entered_execution
         manifest["execution_success"] = execution_ok
         if not execution_ok:
             failure_reason = execution_reason
@@ -776,6 +864,7 @@ def main() -> int:
             "gazebo_performance_metrics"
             if node.saw_performance_metrics else "clock_wall_ratio")
         manifest["end_time"] = utc_now()
+        manifest["entered_execution"] = node.entered_execution
         manifest["failure_reason"] = failure_reason
         write_json(trial_dir / "manifest.json", manifest)
         node.destroy_node()

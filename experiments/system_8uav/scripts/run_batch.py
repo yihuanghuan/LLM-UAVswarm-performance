@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run pilot or block-randomized formal experiment 10 trials."""
+"""Run managed experiment-10 attempts until every task has its execution quota."""
 
 from __future__ import annotations
 
@@ -14,20 +14,12 @@ import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import Any, Dict, List
 
 from system_common import (
-    CONFIG_PATH,
-    REPO_ROOT,
-    TASK_NAMES,
-    WORKSPACE_ROOT,
-    config_checksum,
-    load_task,
-    load_yaml,
-    utc_now,
-    write_json,
+    CONFIG_PATH, REPO_ROOT, TASK_NAMES, WORKSPACE_ROOT, config_checksum,
+    load_task, load_yaml, utc_now, write_json,
 )
-
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 
@@ -39,26 +31,25 @@ class Trial:
     phase: str
 
 
-class SimulatorSupervisor:
-    """Own one complete simulator process tree for exactly one trial."""
+def trial_schedule(config: dict, phase: str):
+    """Compatibility view of the deterministic target schedule."""
+    rows = initial_schedule(config, phase, TASK_NAMES)
+    return [
+        Trial(row["task_type"], row["target_execution_index"], phase)
+        for row in rows
+    ]
 
-    def __init__(
-        self, log_dir: Path, px4_root: Path, uav_count: int = 8,
-        avoidance_mode: str = "iapf_dual", escape_mode: str = "id_order",
-        position_tolerance: float = 0.3, velocity_tolerance: float = 0.3,
-    ):
+
+class SimulatorSupervisor:
+    """Own one complete simulator process tree for exactly one attempt."""
+
+    def __init__(self, log_dir: Path, px4_root: Path, config: dict):
         self.log_dir = log_dir
         self.px4_root = px4_root
-        self.uav_count = uav_count
-        self.avoidance_mode = avoidance_mode
-        self.escape_mode = escape_mode
-        self.position_tolerance = position_tolerance
-        self.velocity_tolerance = velocity_tolerance
+        self.config = config
         self.processes: List[tuple[subprocess.Popen, object]] = []
 
-    def start_process(
-        self, name: str, command: str, cwd: Path | None = None
-    ) -> subprocess.Popen:
+    def start_process(self, name: str, command: str, cwd=None):
         self.log_dir.mkdir(parents=True, exist_ok=True)
         handle = (self.log_dir / f"{name}.log").open("a", encoding="utf-8")
         process = subprocess.Popen(
@@ -67,38 +58,38 @@ class SimulatorSupervisor:
         self.processes.append((process, handle))
         return process
 
-    def start(self) -> None:
+    def start(self):
         self.stop()
-        self.start_process(
-            "micro_xrce_agent", "MicroXRCEAgent udp4 -p 8888")
+        experiment = self.config["experiment"]
+        ids = ",".join(str(value) for value in experiment["uav_ids"])
+        self.start_process("micro_xrce_agent", "MicroXRCEAgent udp4 -p 8888")
         self.start_process(
             "px4_gazebo",
             "export PATH=/usr/bin:/bin:/usr/local/bin:$PATH && "
             "source Tools/simulation/gazebo-classic/setup_gazebo.bash "
             "$(pwd) $(pwd)/build/px4_sitl_default && "
             f"./Tools/simulation/gazebo-classic/sitl_multiple_run.sh "
-            f"-m iris -n {self.uav_count}",
+            f"-m iris -n {len(experiment['uav_ids'])}",
             self.px4_root)
         time.sleep(18)
-        ids = ",".join(str(value) for value in range(1, self.uav_count + 1))
         self.start_process(
             "controllers",
             "source /opt/ros/humble/setup.bash && "
             f"source {WORKSPACE_ROOT}/install/setup.bash && "
             f"ros2 launch ladrc_controller swarm_launch.py uav_ids:=[{ids}] "
-            f"avoidance_mode:={self.avoidance_mode} "
-            f"iapf_escape_mode:={self.escape_mode} "
-            f"hover_position_tolerance:={self.position_tolerance} "
-            f"hover_velocity_tolerance:={self.velocity_tolerance}")
+            f"avoidance_mode:={experiment['avoidance_mode']} "
+            f"iapf_escape_mode:={experiment['iapf_escape_mode']} "
+            f"hover_position_enter_tolerance:={experiment['stable_position_enter']} "
+            f"hover_velocity_enter_tolerance:={experiment['stable_speed_enter']} "
+            f"hover_position_exit_tolerance:={experiment['stable_position_exit']} "
+            f"hover_velocity_exit_tolerance:={experiment['stable_speed_exit']} "
+            f"hover_stable_hold_time:={experiment['stable_hold_time']}")
         time.sleep(18)
-        failed = [
-            process.pid for process, _ in self.processes
-            if process.poll() is not None
-        ]
+        failed = [p.pid for p, _ in self.processes if p.poll() is not None]
         if failed:
             raise RuntimeError(f"simulator startup process exited: {failed}")
 
-    def stop(self) -> None:
+    def stop(self):
         for process, _ in reversed(self.processes):
             if process.poll() is None:
                 try:
@@ -110,23 +101,19 @@ class SimulatorSupervisor:
             try:
                 process.wait(timeout=max(0.0, deadline - time.monotonic()))
             except subprocess.TimeoutExpired:
-                try:
-                    os.killpg(process.pid, signal.SIGTERM)
-                except ProcessLookupError:
-                    pass
-                try:
-                    process.wait(timeout=5)
-                except subprocess.TimeoutExpired:
+                for sig in (signal.SIGTERM, signal.SIGKILL):
                     try:
-                        os.killpg(process.pid, signal.SIGKILL)
-                    except ProcessLookupError:
-                        pass
+                        os.killpg(process.pid, sig)
+                        process.wait(timeout=5)
+                        break
+                    except (ProcessLookupError, subprocess.TimeoutExpired):
+                        continue
             handle.close()
         self.processes.clear()
         time.sleep(3)
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--batch-id", required=True)
     parser.add_argument("--phase", choices=["pilot", "formal"], required=True)
@@ -136,169 +123,233 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--task", action="append", choices=TASK_NAMES)
     parser.add_argument("--no-rosbag", action="store_true")
+    parser.add_argument("--max-attempts", type=int, default=0)
     return parser.parse_args()
 
 
-def trial_schedule(config: dict, phase: str) -> List[Trial]:
-    if phase == "pilot":
-        return [Trial(task, 1, phase) for task in TASK_NAMES]
-    count = int(config["experiment"]["trial_count"])
-    randomizer = random.Random(
-        int(config["experiment"]["block_randomization_seed"]))
-    trials: List[Trial] = []
-    for trial_id in range(1, count + 1):
-        block = list(TASK_NAMES)
-        randomizer.shuffle(block)
-        trials.extend(Trial(task, trial_id, phase) for task in block)
-    return trials
+def initial_schedule(config: dict, phase: str, selected_tasks) -> List[Dict[str, Any]]:
+    count = 1 if phase == "pilot" else int(config["experiment"]["trial_count"])
+    rng = random.Random(int(config["experiment"]["block_randomization_seed"]))
+    rows = []
+    for target_index in range(1, count + 1):
+        block = list(selected_tasks)
+        rng.shuffle(block)
+        for task in block:
+            rows.append({
+                "task_type": task,
+                "target_execution_index": target_index,
+                "replacement_for": "",
+                "randomization_seed": int(
+                    config["experiment"]["block_randomization_seed"]),
+            })
+    return rows
 
 
-def trial_dir(results_root: Path, batch_id: str, trial: Trial) -> Path:
-    root = results_root / batch_id
-    if trial.phase == "pilot":
-        root = root / "pilot"
-    return root / "raw" / trial.task / f"trial_{trial.trial:02d}"
+def assign_attempt_ids(rows, start=1):
+    for number, row in enumerate(rows, start=start):
+        row["attempt_id"] = f"attempt_{number:04d}"
+        row["run_order"] = number
+    return rows
 
 
-def run_trial_command(
-    trial: Trial, batch_id: str, config_path: Path,
-    results_root: Path, dry_run: bool, no_rosbag: bool,
-) -> List[str]:
+def trial_command(row, args, config_path, results_root):
     command = [
         sys.executable, str(SCRIPT_DIR / "run_trial.py"),
-        "--task", trial.task, "--trial", str(trial.trial),
-        "--batch-id", batch_id, "--phase", trial.phase,
+        "--task", row["task_type"],
+        "--trial", str(row["target_execution_index"]),
+        "--attempt-id", row["attempt_id"],
+        "--target-execution-index", str(row["target_execution_index"]),
+        "--replacement-for", row.get("replacement_for", ""),
+        "--batch-id", args.batch_id, "--phase", args.phase,
         "--config", str(config_path), "--results-root", str(results_root),
     ]
-    if dry_run:
+    if args.dry_run:
         command.append("--dry-run")
-    if no_rosbag:
+    if args.no_rosbag:
         command.append("--no-rosbag")
     return command
 
 
-def main() -> int:
+def main():
     args = parse_args()
     config_path = Path(args.config).resolve()
     config = load_yaml(config_path)
-    results_root = (
-        REPO_ROOT / config["paths"]["results_root"]).resolve()
-    selected = trial_schedule(config, args.phase)
-    if args.task:
-        allowed = set(args.task)
-        selected = [trial for trial in selected if trial.task in allowed]
+    results_root = (REPO_ROOT / config["paths"]["results_root"]).resolve()
     batch_root = results_root / args.batch_id
     batch_root.mkdir(parents=True, exist_ok=True)
-    configuration_root = batch_root / "configuration"
-    configuration_root.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(config_path, configuration_root / "full_system.yaml")
-    for command_path in sorted((SCRIPT_DIR.parent / "commands").glob("*.json")):
-        shutil.copy2(command_path, configuration_root / command_path.name)
-    metadata = {
-        "batch_id": args.batch_id,
-        "phase": args.phase,
-        "created_at": utc_now(),
-        "manage_sim": args.manage_sim,
-        "dry_run": args.dry_run,
-        "config_checksum": config_checksum(),
-        "schedule": [trial.__dict__ for trial in selected],
-    }
-    write_json(batch_root / f"{args.phase}_batch_plan.json", metadata)
+    config_root = batch_root / "configuration"
+    config_root.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(config_path, config_root / "full_system.yaml")
+    for path in sorted((SCRIPT_DIR.parent / "commands").glob("*.json")):
+        shutil.copy2(path, config_root / path.name)
+
+    tasks = [task for task in TASK_NAMES if not args.task or task in args.task]
+    plan_path = batch_root / f"{args.phase}_batch_plan.json"
+    outcomes_path = batch_root / f"{args.phase}_batch_outcomes.json"
+    if plan_path.exists():
+        if not args.resume:
+            raise FileExistsError(f"batch plan already exists: {plan_path}")
+        plan = json.loads(plan_path.read_text(encoding="utf-8"))
+        schedule = plan["schedule"]
+        outcomes = (
+            json.loads(outcomes_path.read_text(encoding="utf-8"))
+            if outcomes_path.exists() else [])
+    else:
+        schedule = assign_attempt_ids(initial_schedule(config, args.phase, tasks))
+        outcomes = []
+        plan = {
+            "batch_id": args.batch_id, "phase": args.phase,
+            "created_at": utc_now(), "manage_sim": args.manage_sim,
+            "dry_run": args.dry_run, "config_checksum": config_checksum(),
+            "randomization_seed": int(
+                config["experiment"]["block_randomization_seed"]),
+            "schedule": schedule,
+        }
+        write_json(plan_path, plan)
+
     if args.dry_run:
-        for trial in selected:
+        for row in schedule:
             result = subprocess.run(
-                run_trial_command(
-                    trial, args.batch_id, config_path, results_root, True,
-                    args.no_rosbag),
+                trial_command(row, args, config_path, results_root),
                 cwd=REPO_ROOT, check=False)
             if result.returncode:
                 return result.returncode
-        print(json.dumps(metadata, indent=2, ensure_ascii=False))
+        print(json.dumps(plan, indent=2, ensure_ascii=False))
         return 0
 
-    px4_root = Path(
-        os.environ.get("PX4_AUTOPILOT_DIR", config["paths"]["px4_root"]))
-    outcomes = []
-    for index, trial in enumerate(selected, start=1):
-        destination = trial_dir(results_root, args.batch_id, trial)
-        if destination.exists() and any(destination.iterdir()):
-            if args.resume:
-                outcomes.append({
-                    **trial.__dict__, "status": "skipped_existing",
-                    "path": str(destination)})
-                continue
-            raise FileExistsError(f"trial already exists: {destination}")
-        print(
-            f"[{index}/{len(selected)}] {trial.phase} "
-            f"{trial.task} trial {trial.trial}", flush=True)
+    raw_root = batch_root / ("pilot/raw" if args.phase == "pilot" else "raw")
+    completed_ids = {row["attempt_id"] for row in outcomes}
+    if args.resume:
+        orphaned = [
+            row for row in schedule
+            if row["attempt_id"] not in completed_ids
+            and (batch_root / "runtime_logs" / row["attempt_id"]).exists()
+        ]
+        for row in orphaned:
+            destination = raw_root / row["task_type"] / row["attempt_id"]
+            destination.mkdir(parents=True, exist_ok=True)
+            write_json(destination / "manifest.json", {
+                "experiment_id": config["experiment"]["experiment_id"],
+                "batch_id": args.batch_id, "task_type": row["task_type"],
+                "attempt_id": row["attempt_id"], "trial_id": None,
+                "target_execution_index": row["target_execution_index"],
+                "replacement_for": row.get("replacement_for", ""),
+                "phase": args.phase, "entered_execution": False,
+                "semantic_success": False, "execution_success": False,
+                "safety_success": False, "overall_success": False,
+                "failure_reason": "interrupted_startup",
+                "start_time": utc_now(), "end_time": utc_now(),
+                "config_checksum": config_checksum(),
+            })
+            outcomes.append({
+                **row, "returncode": 130, "entered_execution": False,
+                "status": "failed", "failure_reason": "interrupted_startup",
+                "path": str(destination),
+            })
+            replacement = assign_attempt_ids([{
+                "task_type": row["task_type"],
+                "target_execution_index": row["target_execution_index"],
+                "replacement_for": row["attempt_id"],
+                "randomization_seed": int(
+                    config["experiment"]["block_randomization_seed"]),
+            }], len(schedule) + 1)[0]
+            schedule.append(replacement)
+            plan["schedule"] = schedule
+        if orphaned:
+            write_json(plan_path, plan)
+            write_json(outcomes_path, outcomes)
+    completed_ids = {row["attempt_id"] for row in outcomes}
+    queue = [row for row in schedule if row["attempt_id"] not in completed_ids]
+    for outcome in outcomes:
+        actual = raw_root / outcome["task_type"] / outcome["attempt_id"]
+        outcome["path"] = str(actual)
+        manifest_path = actual / "manifest.json"
+        if manifest_path.exists():
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            outcome["entered_execution"] = bool(
+                manifest.get("entered_execution"))
+            outcome["failure_reason"] = manifest.get("failure_reason", "")
+    if outcomes:
+        write_json(outcomes_path, outcomes)
+    px4_root = Path(os.environ.get(
+        "PX4_AUTOPILOT_DIR", config["paths"]["px4_root"]))
+    while queue:
+        row = queue.pop(0)
+        if args.max_attempts and len(outcomes) >= args.max_attempts:
+            raise RuntimeError("max_attempts reached before execution quota")
+        attempt_id = row["attempt_id"]
+        task = row["task_type"]
+        destination = raw_root / task / attempt_id
+        print(f"[{len(outcomes) + 1}] {attempt_id} {task} "
+              f"target={row['target_execution_index']}", flush=True)
         supervisor = None
         startup_error = ""
         try:
             if args.manage_sim:
                 supervisor = SimulatorSupervisor(
-                    batch_root / "runtime_logs"
-                    / f"{trial.task}_trial_{trial.trial:02d}",
-                    px4_root,
-                    avoidance_mode=config["experiment"]["avoidance_mode"],
-                    escape_mode=config["experiment"]["iapf_escape_mode"],
-                    position_tolerance=float(
-                        config["experiment"]["final_position_tolerance"]),
-                    velocity_tolerance=float(
-                        config["experiment"]["stable_speed"]))
+                    batch_root / "runtime_logs" / attempt_id, px4_root, config)
                 supervisor.start()
             result = subprocess.run(
-                run_trial_command(
-                    trial, args.batch_id, config_path, results_root, False,
-                    args.no_rosbag),
+                trial_command(row, args, config_path, results_root),
                 cwd=REPO_ROOT, check=False)
             returncode = result.returncode
         except Exception as exc:
-            startup_error = f"{type(exc).__name__}: {exc}"
             returncode = 3
+            startup_error = f"{type(exc).__name__}: {exc}"
             destination.mkdir(parents=True, exist_ok=True)
-            task_definition = load_task(trial.task)
+            task_definition = load_task(task)
             write_json(destination / "manifest.json", {
                 "experiment_id": config["experiment"]["experiment_id"],
-                "batch_id": args.batch_id,
-                "task_type": trial.task,
-                "trial_id": trial.trial,
-                "phase": trial.phase,
-                "command_text": task_definition.command_text,
+                "batch_id": args.batch_id, "task_type": task,
+                "attempt_id": attempt_id, "trial_id": None,
+                "target_execution_index": row["target_execution_index"],
+                "replacement_for": row.get("replacement_for", ""),
+                "phase": args.phase, "command_text": task_definition.command_text,
                 "llm_model": config["experiment"]["llm_model"],
-                "assignment_mode": config["experiment"]["assignment_mode"],
-                "avoidance_mode": config["experiment"]["avoidance_mode"],
-                "iapf_escape_mode": config["experiment"]["iapf_escape_mode"],
-                "iapf_parameters": config["iapf"],
-                "motion_styles": [
-                    stage.motion_style for stage in task_definition.stages],
-                "start_time": utc_now(),
-                "end_time": utc_now(),
-                "timeout": 0,
-                "semantic_success": False,
-                "execution_success": False,
-                "safety_success": False,
+                "entered_execution": False, "semantic_success": False,
+                "execution_success": False, "safety_success": False,
                 "overall_success": False,
                 "failure_reason": "simulator_startup_failure",
-                "rosbag_path": "",
-                "exception": startup_error,
-                "config_checksum": config_checksum(),
-            })
-            write_json(destination / "startup_failure.json", {
-                "task_type": trial.task, "trial_id": trial.trial,
-                "phase": trial.phase, "failure_reason": "simulator_startup_failure",
-                "exception": startup_error, "timestamp": utc_now(),
+                "exception": startup_error, "start_time": utc_now(),
+                "end_time": utc_now(), "config_checksum": config_checksum(),
             })
         finally:
             if supervisor:
                 supervisor.stop()
-        outcomes.append({
-            **trial.__dict__, "returncode": returncode,
+
+        manifest_path = destination / "manifest.json"
+        manifest = (
+            json.loads(manifest_path.read_text(encoding="utf-8"))
+            if manifest_path.exists() else {})
+        entered = bool(manifest.get("entered_execution"))
+        outcome = {
+            **row, "returncode": returncode, "entered_execution": entered,
             "status": "completed" if returncode == 0 else "failed",
-            "startup_error": startup_error, "path": str(destination),
-        })
-        write_json(batch_root / f"{args.phase}_batch_outcomes.json", outcomes)
-    failures = sum(row["status"] == "failed" for row in outcomes)
-    print(f"batch complete: {len(outcomes)} trials, {failures} failed")
+            "failure_reason": manifest.get("failure_reason", startup_error),
+            "path": str(destination),
+        }
+        outcomes.append(outcome)
+        if not entered:
+            replacement = assign_attempt_ids([{
+                "task_type": task,
+                "target_execution_index": row["target_execution_index"],
+                "replacement_for": attempt_id,
+                "randomization_seed": int(
+                    config["experiment"]["block_randomization_seed"]),
+            }], len(schedule) + 1)[0]
+            schedule.append(replacement)
+            queue.append(replacement)
+            plan["schedule"] = schedule
+            write_json(plan_path, plan)
+        write_json(outcomes_path, outcomes)
+
+    counts = {
+        task: sum(
+            row["task_type"] == task and row["entered_execution"]
+            for row in outcomes)
+        for task in tasks
+    }
+    print(f"batch complete: attempts={len(outcomes)}, execution_counts={counts}")
     return 0
 
 

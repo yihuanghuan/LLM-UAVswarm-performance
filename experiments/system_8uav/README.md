@@ -97,3 +97,22 @@ python3 experiments/system_8uav/scripts/plot_system_results.py \
 性能均值。
 
 控制误差采用 actual position 对 modulated reference；避障偏移采用 modulated reference 对 nominal Minimum Jerk reference。安全判定使用 `0.70 m` collision、`1.00 m` violation、`1.50/1.65 m` IAPF enter/exit；实际最小距离低于 `1.00 m` 即判失败。经 8 机 pilot 固定悬停完成阈值为位置/速度均 `<0.40` 并连续保持 `1 s`；控制器默认值仍为 `0.30`，仅实验 launch 覆盖。mean RTF 低于 `0.95` 或有效控制频率低于 `45 Hz` 时记录 `gazebo_realtime_failure`。
+
+## v2 attempt-controlled 批次
+
+```bash
+python3 experiments/system_8uav/scripts/run_batch.py \
+  --batch-id exp10-formal-v2-20260731 --phase formal --manage-sim
+
+python3 experiments/system_8uav/scripts/summarize_v2.py \
+  --batch-id exp10-formal-v2-20260731
+
+python3 experiments/system_8uav/scripts/plot_v2.py \
+  experiments/results/experiments_10/exp10-formal-v2-20260731
+```
+
+中断恢复时对相同命令增加 `--resume`。每次启动使用不可复用的 attempt ID；
+readiness/LLM 失败保留并生成 replacement，进入执行阶段后的失败 trial
+仍计入每类 10 个执行样本。v2 mission 稳定状态使用 0.35/0.30 进入、
+0.45/0.40 退出和连续 1 秒 hold；启动 readiness 的独立速度阈值为
+0.40 m/s。

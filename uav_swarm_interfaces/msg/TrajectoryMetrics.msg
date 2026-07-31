@@ -1,6 +1,7 @@
 std_msgs/Header header
 
 uint8 uav_id
+uint32 mission_id
 geometry_msgs/Point start_pos
 geometry_msgs/Point target_pos
 

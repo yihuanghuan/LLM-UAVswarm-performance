@@ -199,9 +199,36 @@ ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
 
 # ====================== 工具函数 ======================
 def purify_json_content(raw_content: str) -> str:
-    raw_content = re.sub(r"```json|```", "", raw_content).strip()
-    match = re.search(r"\{.*\}", raw_content, re.DOTALL)
-    return match.group(0) if match else raw_content
+    """Apply only syntax-wrapper repair; never rewrite LFS fields or values."""
+    cleaned = raw_content.lstrip("\ufeff").strip()
+    repaired = cleaned != raw_content
+    fenced = re.fullmatch(
+        r"```(?:json)?\s*(.*?)\s*```", cleaned, re.DOTALL | re.IGNORECASE)
+    if fenced:
+        cleaned = fenced.group(1).strip()
+        repaired = True
+    if not cleaned.startswith("{") or not cleaned.endswith("}"):
+        starts = [match.start() for match in re.finditer(r"\{", cleaned)]
+        candidates = []
+        decoder = json.JSONDecoder()
+        for start in starts:
+            try:
+                _, length = decoder.raw_decode(cleaned[start:])
+                candidate = cleaned[start:start + length]
+                if candidate.strip().startswith("{"):
+                    candidates.append(candidate)
+            except json.JSONDecodeError:
+                continue
+        if candidates:
+            # The outer LFS object is the unique longest decodable object;
+            # shorter candidates are its nested task objects.
+            longest = max(map(len, candidates))
+            outer = [candidate for candidate in candidates
+                     if len(candidate) == longest]
+            if len(outer) == 1:
+                cleaned = outer[0]
+                repaired = True
+    return cleaned, repaired
 
 
 def classify_command_type(llm_output: dict) -> str:
@@ -244,7 +271,9 @@ def _log_parse_attempt(command_id: str, raw_command: str, retry_count: int, **kw
 
 
 # ====================== 核心解析函数（新格式） ======================
-def parse_uav_command_with_metrics(user_command: str, ros_aux_info: str = ""):
+def parse_uav_command_with_metrics(
+    user_command: str, ros_aux_info: str = "", inference_config=None
+):
     """
     Parse one command and return ``(compiled_lfs, structured_metrics)``.
 
@@ -265,6 +294,8 @@ def parse_uav_command_with_metrics(user_command: str, ros_aux_info: str = ""):
         "completion_tokens": 0,
         "error_type": "",
         "error_message": "",
+        "repair_applied": False,
+        "attempts": [],
     }
 
     if not API_KEY:
@@ -297,7 +328,16 @@ def parse_uav_command_with_metrics(user_command: str, ros_aux_info: str = ""):
         http_client=httpx.Client(trust_env=False),
     )
 
-    max_retries = 3
+    inference = {
+        "temperature": 0.0, "top_p": 0.01, "max_tokens": 4000,
+        "max_attempts": 3, "request_timeout_seconds": 60,
+        "total_timeout_seconds": 190, "retry_delay_seconds": 2,
+        "response_format": "json_object", "seed_supported": False,
+    }
+    inference.update(inference_config or {})
+    max_retries = int(inference["max_attempts"])
+    parse_deadline = time.monotonic() + float(
+        inference["total_timeout_seconds"])
 
     for attempt in range(max_retries):
         response = None
@@ -307,20 +347,23 @@ def parse_uav_command_with_metrics(user_command: str, ros_aux_info: str = ""):
         field_accuracy = 0.0
         try:
             print(f"第{attempt + 1}次调用API解析指令...")
+            remaining = parse_deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError("total_parse_timeout")
             response = client.chat.completions.create(
                 model=MODEL_NAME,
                 messages=[{"role": "user", "content": full_prompt}],
-                temperature=0,
-                top_p=0.01,
-                max_tokens=4000,
+                temperature=float(inference["temperature"]),
+                top_p=float(inference["top_p"]),
+                max_tokens=int(inference["max_tokens"]),
                 response_format={"type": "json_object"},
-                timeout=60
+                timeout=min(float(inference["request_timeout_seconds"]), remaining)
             )
             latency_ms = int((time.time() - start_time) * 1000)
             metrics["parsing_latency_ms"] += latency_ms
 
             raw_result = response.choices[0].message.content
-            pure_json_str = purify_json_content(raw_result)
+            pure_json_str, repair_applied = purify_json_content(raw_result)
             cfr_result = json.loads(pure_json_str)
             valid_json = True
             field_accuracy = estimate_field_accuracy(cfr_result)
@@ -339,6 +382,17 @@ def parse_uav_command_with_metrics(user_command: str, ros_aux_info: str = ""):
                 "completion_tokens": _usage_tokens(response, "completion_tokens"),
                 "error_type": "",
                 "error_message": "",
+                "repair_applied": repair_applied,
+            })
+            metrics["attempts"].append({
+                "attempt_index": attempt + 1,
+                "raw_response": raw_result,
+                "latency_ms": latency_ms,
+                "valid_json": True,
+                "schema_valid": True,
+                "semantic_valid": None,
+                "repair_applied": repair_applied,
+                "error_type": "",
             })
 
             _log_parse_attempt(
@@ -371,6 +425,19 @@ def parse_uav_command_with_metrics(user_command: str, ros_aux_info: str = ""):
                 "error_type": type(e).__name__,
                 "error_message": str(e),
             })
+            raw_result = (
+                response.choices[0].message.content
+                if response is not None and response.choices else "")
+            metrics["attempts"].append({
+                "attempt_index": attempt + 1,
+                "raw_response": raw_result,
+                "latency_ms": latency_ms,
+                "valid_json": valid_json,
+                "schema_valid": schema_valid,
+                "semantic_valid": False,
+                "repair_applied": False,
+                "error_type": type(e).__name__,
+            })
             _log_parse_attempt(
                 command_id,
                 user_command,
@@ -391,7 +458,11 @@ def parse_uav_command_with_metrics(user_command: str, ros_aux_info: str = ""):
                     "error_msg": f"解析失败（重试{max_retries}次）：{str(e)}"
                 }
                 return result, metrics
-            time.sleep(2)
+            delay = min(
+                float(inference["retry_delay_seconds"]),
+                max(0.0, parse_deadline - time.monotonic()))
+            if delay:
+                time.sleep(delay)
 
 
 def parse_uav_command(user_command: str, ros_aux_info: str = ""):

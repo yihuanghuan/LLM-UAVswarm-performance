@@ -21,6 +21,7 @@
 #include <fstream>
 #include <iomanip>
 #include <limits>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <Eigen/Dense>
@@ -65,8 +66,11 @@ public:
     this->declare_parameter("max_acceleration_x", 3.0);
     this->declare_parameter("max_acceleration_y", 3.0);
     this->declare_parameter("max_acceleration_z", 3.0);
-    this->declare_parameter("hover_position_tolerance", 0.3);
-    this->declare_parameter("hover_velocity_tolerance", 0.3);
+    this->declare_parameter("hover_position_enter_tolerance", 0.35);
+    this->declare_parameter("hover_velocity_enter_tolerance", 0.30);
+    this->declare_parameter("hover_position_exit_tolerance", 0.45);
+    this->declare_parameter("hover_velocity_exit_tolerance", 0.40);
+    this->declare_parameter("hover_stable_hold_time", 1.0);
 
     // Gazebo 多机 spawn 偏移量（sitl_multiple_run.sh 默认 Y=3*instance）
     this->declare_parameter("enu_offset_x", 0.0);
@@ -388,6 +392,10 @@ private:
 
     // 重置悬停状态
     is_hover_stable_ = false;
+    stability_state_ = 0;
+    stable_candidate_since_.reset();
+    latest_position_error_ = std::numeric_limits<double>::infinity();
+    latest_speed_ = std::numeric_limits<double>::infinity();
     arrival_time_recorded_ = false;
     arrival_time_error_ = std::numeric_limits<double>::quiet_NaN();
     resetControlAdaptationRuntimeMetrics();
@@ -557,26 +565,48 @@ private:
           current_odom_.velocity[1] * current_odom_.velocity[1] +
           current_odom_.velocity[2] * current_odom_.velocity[2]);
 
-      const double position_tolerance =
-        this->get_parameter("hover_position_tolerance").as_double();
-      const double velocity_tolerance =
-        this->get_parameter("hover_velocity_tolerance").as_double();
-      if (pos_err < position_tolerance && vel_mag < velocity_tolerance)
+      latest_position_error_ = pos_err;
+      latest_speed_ = vel_mag;
+      const double position_enter =
+        this->get_parameter("hover_position_enter_tolerance").as_double();
+      const double velocity_enter =
+        this->get_parameter("hover_velocity_enter_tolerance").as_double();
+      const double position_exit =
+        this->get_parameter("hover_position_exit_tolerance").as_double();
+      const double velocity_exit =
+        this->get_parameter("hover_velocity_exit_tolerance").as_double();
+      const double hold_time =
+        this->get_parameter("hover_stable_hold_time").as_double();
+      const bool should_exit =
+        pos_err > position_exit || vel_mag > velocity_exit;
+      const bool should_enter =
+        pos_err < position_enter && vel_mag < velocity_enter;
+      if (should_exit)
       {
-        if (!is_hover_stable_)
+        stability_state_ = 0;
+        is_hover_stable_ = false;
+        stable_candidate_since_.reset();
+      }
+      else if (stability_state_ == 0 && should_enter)
+      {
+        stability_state_ = 1;
+        stable_candidate_since_ = this->now();
+      }
+      else if (stability_state_ == 1 && stable_candidate_since_.has_value() &&
+               (this->now() - stable_candidate_since_.value()).seconds() >= hold_time)
+      {
+        stability_state_ = 2;
+        is_hover_stable_ = true;
+        if (!arrival_time_recorded_)
         {
-          is_hover_stable_ = true;
-          if (!arrival_time_recorded_)
-          {
-            arrival_time_error_ = elapsed - target_duration_;
-            arrival_time_recorded_ = true;
-          }
-          settling_time_ = elapsed;
-          writeControlAdaptationCsvRow();
-          RCLCPP_INFO(this->get_logger(),
-              "悬停稳定! pos_err=%.2fm, vel=%.2fm/s → is_hover_stable=true",
-              pos_err, vel_mag);
+          arrival_time_error_ = elapsed - target_duration_;
+          arrival_time_recorded_ = true;
         }
+        settling_time_ = elapsed;
+        writeControlAdaptationCsvRow();
+        RCLCPP_INFO(this->get_logger(),
+            "悬停稳定确认! pos_err=%.2fm, vel=%.2fm/s → is_hover_stable=true",
+            pos_err, vel_mag);
       }
     }
 
@@ -906,7 +936,12 @@ private:
   {
     uav_swarm_interfaces::msg::UAVStatus msg;
     msg.uav_id = uav_id_;
+    msg.mission_id = mission_id_;
     msg.is_hover_stable = is_hover_stable_;
+    msg.stability_state = stability_state_;
+    msg.position_error = static_cast<float>(latest_position_error_);
+    msg.speed = static_cast<float>(latest_speed_);
+    msg.header.stamp = this->now();
     status_pub_->publish(msg);
   }
 
@@ -956,6 +991,7 @@ private:
         static_cast<float>(distance);
     metrics_msg_.is_finished = false;
     metrics_msg_.is_hover_stable = false;
+    metrics_msg_.mission_id = mission_id_;
     has_trajectory_metrics_ = true;
 
     RCLCPP_INFO(this->get_logger(),
@@ -1314,6 +1350,10 @@ private:
 
   // [Phase 3 预置] 悬停状态（Phase 1 默认为 false，Phase 3 完整实现）
   bool is_hover_stable_ = false;
+  uint8_t stability_state_ = 0;
+  std::optional<rclcpp::Time> stable_candidate_since_;
+  double latest_position_error_ = std::numeric_limits<double>::infinity();
+  double latest_speed_ = std::numeric_limits<double>::infinity();
 
   // Odom 发布计数器 (~10Hz throttle)
   int odom_pub_counter_ = 0;
