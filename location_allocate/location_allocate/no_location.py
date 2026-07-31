@@ -244,8 +244,28 @@ def _log_parse_attempt(command_id: str, raw_command: str, retry_count: int, **kw
 
 
 # ====================== 核心解析函数（新格式） ======================
-def parse_uav_command(user_command: str, ros_aux_info: str = ""):
+def parse_uav_command_with_metrics(user_command: str, ros_aux_info: str = ""):
+    """
+    Parse one command and return ``(compiled_lfs, structured_metrics)``.
+
+    This keeps experiment code independent from terminal logs while the
+    legacy :func:`parse_uav_command` wrapper remains source-compatible.
+    """
     command_id = uuid.uuid4().hex[:12]
+    metrics = {
+        "command_id": command_id,
+        "llm_model": MODEL_NAME,
+        "parsing_success": False,
+        "valid_json": False,
+        "schema_valid": False,
+        "retry_count": 0,
+        "parsing_latency_ms": 0,
+        "lfs_compilation_latency_ms": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "error_type": "",
+        "error_message": "",
+    }
 
     if not API_KEY:
         _log_parse_attempt(
@@ -254,11 +274,14 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
             0,
             error_type="missing_api_key",
         )
-        return {
+        result = {
             "task_sequences": [],
             "error_code": 4,
             "error_msg": "缺少 LLM API Key，请设置 LLM_API_KEY 或 MINIMAX_API_KEY 环境变量"
         }
+        metrics["error_type"] = "missing_api_key"
+        metrics["error_message"] = result["error_msg"]
+        return result, metrics
 
     full_prompt = (
             SYSTEM_PROMPT + "\n"
@@ -269,9 +292,9 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
     )
 
     client = OpenAI(
-    api_key=API_KEY, 
-    base_url=BASE_URL,
-    http_client=httpx.Client(trust_env=False)
+        api_key=API_KEY,
+        base_url=BASE_URL,
+        http_client=httpx.Client(trust_env=False),
     )
 
     max_retries = 3
@@ -294,6 +317,7 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
                 timeout=60
             )
             latency_ms = int((time.time() - start_time) * 1000)
+            metrics["parsing_latency_ms"] += latency_ms
 
             raw_result = response.choices[0].message.content
             pure_json_str = purify_json_content(raw_result)
@@ -301,8 +325,19 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
             valid_json = True
             field_accuracy = estimate_field_accuracy(cfr_result)
             available_uav_ids = parse_available_uav_ids(ros_aux_info)
+            compile_start = time.perf_counter()
             cfr_result = validate_and_compile_lfs(cfr_result, available_uav_ids)
+            metrics["lfs_compilation_latency_ms"] = (
+                time.perf_counter() - compile_start) * 1000.0
             schema_valid = True
+            metrics.update({
+                "parsing_success": True,
+                "valid_json": True,
+                "schema_valid": True,
+                "retry_count": attempt,
+                "prompt_tokens": _usage_tokens(response, "prompt_tokens"),
+                "completion_tokens": _usage_tokens(response, "completion_tokens"),
+            })
 
             _log_parse_attempt(
                 command_id,
@@ -317,10 +352,23 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
                 field_accuracy=field_accuracy,
             )
             print(" 解析结果校验通过！")
-            return cfr_result
+            return cfr_result, metrics
 
         except Exception as e:
             latency_ms = int((time.time() - start_time) * 1000)
+            if response is None:
+                metrics["parsing_latency_ms"] += latency_ms
+            metrics.update({
+                "valid_json": valid_json,
+                "schema_valid": schema_valid,
+                "retry_count": attempt,
+                "prompt_tokens": _usage_tokens(response, "prompt_tokens") if response else 0,
+                "completion_tokens": (
+                    _usage_tokens(response, "completion_tokens")
+                    if response else 0),
+                "error_type": type(e).__name__,
+                "error_message": str(e),
+            })
             _log_parse_attempt(
                 command_id,
                 user_command,
@@ -335,12 +383,19 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
             )
             print(f" 第{attempt + 1}次解析失败：{str(e)}")
             if attempt == max_retries - 1:
-                return {
+                result = {
                     "task_sequences": [],
                     "error_code": 4,
                     "error_msg": f"解析失败（重试{max_retries}次）：{str(e)}"
                 }
+                return result, metrics
             time.sleep(2)
+
+
+def parse_uav_command(user_command: str, ros_aux_info: str = ""):
+    """Backward-compatible parser returning only the compiled LFS."""
+    result, _ = parse_uav_command_with_metrics(user_command, ros_aux_info)
+    return result
 
 
 # ====================== 测试 ======================

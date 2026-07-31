@@ -138,3 +138,10 @@ python3 experiments/scripts/plot_all.py --which trajectory_profiles
 
 输出目录：`experiments/figures/`。
 支持类别：`llm`、`assignment`、`trajectory`、`semantic`、`iapf`；支持单图：`llm_latency`、`llm_success_rate`、`assignment_min_distance`、`assignment_crossings`、`trajectory_profiles`、`semantic_control_summary`、`iapf_min_distance`。
+
+## 实验 10：8 机系统级受控评估
+
+实验 10 的固定任务、runner、资源监控、系统级分析和绘图工具位于
+`experiments/system_8uav/`。它支持人工启动外部仿真，也支持每个 trial
+完整重启仿真栈的自动模式。完整环境准备、dry run、pilot、25 次正式
+trial、汇总和绘图命令见 `experiments/system_8uav/README.md`。
