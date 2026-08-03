@@ -309,6 +309,9 @@ def parse_args():
     parser.add_argument("--batch-id", required=True)
     parser.add_argument("--config", default=str(CONFIG_PATH))
     parser.add_argument("--results-root")
+    parser.add_argument(
+        "--execution-commit", default="unknown",
+        help="Git commit used to execute the frozen formal batch")
     return parser.parse_args()
 
 
@@ -393,12 +396,13 @@ def main():
         stages = [
             row for row in stage_rows if row["attempt_id"] == attempt["attempt_id"]]
         valid = [row for row in stages if row["valid"]]
+        wall_times = finite(row["stage_wall_time"] for row in stages)
         mission_rows.append({
             "batch_id": args.batch_id, "task_type": attempt["task_type"],
             "attempt_id": attempt["attempt_id"], "trial_id": attempt["trial_id"],
             "stage_count": len(stages),
-            "mission_wall_time": sum(number(row["stage_wall_time"], 0) for row in valid),
-            "stage_wall_time": sum(number(row["stage_wall_time"], 0) for row in valid),
+            "mission_wall_time": sum(wall_times),
+            "stage_wall_time": sum(wall_times),
             **{
                 metric: sum(number(row[metric], 0) for row in valid)
                 for metric in (
@@ -439,14 +443,69 @@ def main():
     write_csv(summaries / "paper_task_table.csv", statistics, STAT_FIELDS)
     report = [
         f"# Experiment 10 v2 completion report: {args.batch_id}", "",
+        "## Reproduction record", "",
+        "- branch: `exp/10-system-8uav`",
+        f"- execution code commit: `{args.execution_commit}`",
+        f"- frozen configuration: `{batch / 'configuration' / 'full_system.yaml'}`",
+        f"- data location: `{batch}`",
+        "- run command: `source /opt/ros/humble/setup.bash && "
+        "source /home/yihuang/learning/LLM_swarm_ws/install/setup.bash && "
+        "/home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python -u "
+        "experiments/system_8uav/scripts/run_batch.py "
+        f"--batch-id {args.batch_id} --phase formal --manage-sim`",
+        "- completed successfully: yes", "",
+        "## Attempt accounting", "",
         f"- attempts: {len(attempt_rows)}",
         f"- execution-entry trials: {len(mission_rows)}", "",
     ]
     for task in TASK_NAMES:
         attempts = [row for row in attempt_rows if row["task_type"] == task]
         entered = sum(bool_value(row["entered_execution"]) for row in attempts)
-        report.append(f"- {task}: {entered} execution trials / {len(attempts)} attempts")
+        succeeded = sum(bool_value(row["overall_success"]) for row in attempts)
+        timeouts = sum(row["failure_reason"] == "stage_timeout" for row in attempts)
+        report.append(
+            f"- {task}: {entered} execution trials / {len(attempts)} attempts; "
+            f"{succeeded} successful, {timeouts} stage timeouts")
+    readiness_failures = sum(
+        not bool_value(row["readiness_success"]) for row in readiness_rows)
+    invalid_stages = [row for row in stage_rows if not bool_value(row["valid"])]
+    invalid_arrivals = [row for row in arrival_rows if not bool_value(row["valid"])]
+    negative_times = sum(
+        number(row.get(metric), 0) < 0
+        for row in stage_rows
+        for metric in (
+            "planning_time", "dispatch_time", "reference_execution_time",
+            "trajectory_finish_spread", "stabilization_delay",
+            "stable_hold_time", "stable_arrival_spread", "stage_wall_time")
+    ) + sum(
+        number(row.get(metric), 0) < 0
+        for row in arrival_rows
+        for metric in ("stable_hold_time", "settling_time")
+    )
+    config_checksums = {
+        json.loads((Path(row["path"]) / "manifest.json").read_text(
+            encoding="utf-8")).get("config_checksum", "")
+        for row in attempt_rows
+    }
+    prompts_per_task = {
+        task: len({
+            json.loads((Path(row["path"]) / "manifest.json").read_text(
+                encoding="utf-8")).get("command_text", "")
+            for row in attempt_rows if row["task_type"] == task
+        })
+        for task in TASK_NAMES
+    }
     report.extend([
+        "", "## Validation", "",
+        f"- readiness failures: {readiness_failures}",
+        f"- valid stage rows: {len(stage_rows) - len(invalid_stages)} / {len(stage_rows)}",
+        f"- valid UAV arrival rows: {len(arrival_rows) - len(invalid_arrivals)} / {len(arrival_rows)}",
+        f"- negative completion or arrival times: {negative_times}",
+        f"- distinct configuration checksums: {len(config_checksums)}",
+        "- distinct prompts per task: " + ", ".join(
+            f"{task}={count}" for task, count in prompts_per_task.items()),
+        "- the configured model does not support a fixed seed; model output may remain stochastic.",
+        "- invalid rows remain in the CSV files with explicit reasons; they are not imputed.",
         "", "Outliers are flagged with the frozen 1.5×IQR rule and are not removed.",
         "The legacy and v2 batches are not pooled because parser and stability semantics differ.",
     ])
