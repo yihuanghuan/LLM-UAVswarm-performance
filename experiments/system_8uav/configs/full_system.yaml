@@ -12,6 +12,8 @@ experiment:
   readiness_timeout: 75.0
   readiness_speed_tolerance: 0.40
   stack_start_timeout: 120.0
+  px4_startup_mode: gated_concurrent
+  px4_spawn_gap_seconds: 0.0
   xrce_per_uav_start_timeout: 30
   stack_cooldown_seconds: 5.0
   stable_hold_time: 1.0

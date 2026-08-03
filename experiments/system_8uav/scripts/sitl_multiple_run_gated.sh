@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Experiment-10 launcher derived from PX4's gazebo-classic
-# sitl_multiple_run.sh. It serializes XRCE time synchronization so eight PX4
-# clients do not compete for the Agent during the 500-sample convergence gate.
+# Experiment-10 gated launcher derived from PX4's gazebo-classic
+# sitl_multiple_run.sh. It supports serialized or short-staggered startup so
+# eight PX4 clients do not hit the 500-sample convergence gate simultaneously.
 
 function cleanup() {
 	pkill -x px4
@@ -26,6 +26,32 @@ function wait_for_xrce() {
 
 	echo "ERROR: XRCE client $instance did not converge in ${xrce_start_timeout}s"
 	echo "$status"
+	return 1
+}
+
+function wait_for_all_xrce() {
+	local count=$1
+	local deadline=$((SECONDS + xrce_start_timeout))
+	local missing=()
+	local instance status
+
+	while (( SECONDS < deadline )); do
+		missing=()
+		for ((instance = 1; instance <= count; instance++)); do
+			status=$("$build_path/bin/px4-uxrce_dds_client" \
+				--instance "$instance" status 2>&1) || true
+			if [[ "$status" != *"timesync converged: true"* ]]; then
+				missing+=("$instance")
+			fi
+		done
+		if (( ${#missing[@]} == 0 )); then
+			echo "All $count XRCE clients time sync converged"
+			return 0
+		fi
+		sleep 0.25
+	done
+
+	echo "ERROR: XRCE clients did not converge: ${missing[*]}"
 	return 1
 }
 
@@ -72,15 +98,14 @@ function spawn_model() {
 		-x "$X" -y "$Y" -z 0.83
 
 	popd &>/dev/null || return 1
-	wait_for_xrce "$N"
 }
 
 if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
-	echo "Usage: $0 [-n <num_vehicles>] [-m <vehicle_model>] [-w <world>] [-s <script>] [-x <xrce_timeout>]"
+	echo "Usage: $0 [-n <num_vehicles>] [-m <vehicle_model>] [-w <world>] [-s <script>] [-x <xrce_timeout>] [-g <spawn_gap>]"
 	exit 1
 fi
 
-while getopts n:m:w:s:t:l:x: option; do
+while getopts n:m:w:s:t:l:x:g: option; do
 	case "${option}" in
 		n) NUM_VEHICLES=${OPTARG};;
 		m) VEHICLE_MODEL=${OPTARG};;
@@ -89,6 +114,7 @@ while getopts n:m:w:s:t:l:x: option; do
 		t) TARGET=${OPTARG};;
 		l) LABEL=_${OPTARG};;
 		x) XRCE_START_TIMEOUT=${OPTARG};;
+		g) PX4_SPAWN_GAP=${OPTARG};;
 		*) exit 2;;
 	esac
 done
@@ -98,6 +124,7 @@ world=${WORLD:=empty}
 target=${TARGET:=px4_sitl_default}
 vehicle_model=${VEHICLE_MODEL:="iris"}
 xrce_start_timeout=${XRCE_START_TIMEOUT:=30}
+px4_spawn_gap=${PX4_SPAWN_GAP:=-1}
 export PX4_SIM_MODEL=gazebo-classic_${vehicle_model}
 
 if [ -z "$PX4_AUTOPILOT_DIR" ]; then
@@ -138,6 +165,11 @@ if [ -z "${SCRIPT}" ]; then
 	while [ "$n" -lt "$num_vehicles" ]; do
 		spawn_model "$vehicle_model" "$((n + 1))" || exit 1
 		n=$((n + 1))
+		if [[ "$px4_spawn_gap" == "-1" ]]; then
+			wait_for_xrce "$n" || exit 1
+		elif [ "$n" -lt "$num_vehicles" ]; then
+			sleep "$px4_spawn_gap"
+		fi
 	done
 else
 	IFS=',' read -r -a target_specs <<< "$SCRIPT"
@@ -160,8 +192,17 @@ else
 				"$target_x" "$target_y" || exit 1
 			m=$((m + 1))
 			n=$((n + 1))
+			if [[ "$px4_spawn_gap" == "-1" ]]; then
+				wait_for_xrce "$n" || exit 1
+			else
+				sleep "$px4_spawn_gap"
+			fi
 		done
 	done
+fi
+
+if [[ "$px4_spawn_gap" != "-1" ]]; then
+	wait_for_all_xrce "$n" || exit 1
 fi
 
 echo "Starting gazebo client"

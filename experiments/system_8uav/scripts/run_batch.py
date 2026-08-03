@@ -123,14 +123,32 @@ class SimulatorSupervisor:
         self.start_process("micro_xrce_agent", "MicroXRCEAgent udp4 -p 8888")
         time.sleep(1)
         headless_bin = SCRIPT_DIR / "headless_bin"
-        launcher = SCRIPT_DIR / "sitl_multiple_run_sequential.sh"
-        xrce_timeout = int(experiment["xrce_per_uav_start_timeout"])
+        startup_mode = experiment.get("px4_startup_mode", "sequential")
+        if startup_mode == "sequential":
+            launcher = SCRIPT_DIR / "sitl_multiple_run_gated.sh"
+            xrce_timeout = int(experiment["xrce_per_uav_start_timeout"])
+            launch_command = (
+                f"{shlex.quote(str(launcher))} -m iris "
+                f"-n {len(experiment['uav_ids'])} -x {xrce_timeout}")
+        elif startup_mode == "gated_concurrent":
+            launcher = SCRIPT_DIR / "sitl_multiple_run_gated.sh"
+            xrce_timeout = int(experiment["xrce_per_uav_start_timeout"])
+            spawn_gap = float(experiment["px4_spawn_gap_seconds"])
+            launch_command = (
+                f"{shlex.quote(str(launcher))} -m iris "
+                f"-n {len(experiment['uav_ids'])} -x {xrce_timeout} "
+                f"-g {spawn_gap}")
+        elif startup_mode == "concurrent":
+            launch_command = (
+                "./Tools/simulation/gazebo-classic/sitl_multiple_run.sh "
+                f"-m iris -n {len(experiment['uav_ids'])}")
+        else:
+            raise ValueError(f"unsupported px4_startup_mode: {startup_mode}")
         self.start_process(
             "px4_gazebo",
             f"export PATH={headless_bin}:/usr/bin:/bin:/usr/local/bin:$PATH && "
             f"export PX4_AUTOPILOT_DIR={shlex.quote(str(self.px4_root))} && "
-            f"{shlex.quote(str(launcher))} -m iris "
-            f"-n {len(experiment['uav_ids'])} -x {xrce_timeout}",
+            f"{launch_command}",
             self.px4_root)
         deadline = time.monotonic() + float(
             experiment["stack_start_timeout"])
