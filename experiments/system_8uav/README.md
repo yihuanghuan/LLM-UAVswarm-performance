@@ -121,3 +121,42 @@ readiness/LLM 失败保留并生成 replacement，进入执行阶段后的失败
 仍计入每类 10 个执行样本。v2 mission 稳定状态使用 0.35/0.30 进入、
 0.45/0.40 退出和连续 1 秒 hold；启动 readiness 的独立速度阈值为
 0.40 m/s。
+
+## v3 稳定性与阶段诊断
+
+v3 将稳定候选位置阈值改为 `<=0.40 m`，退出阈值为 `>0.50 m`；速度
+阈值保持 `<=0.30 m/s` 进入、`>0.40 m/s` 退出。每个新 mission 都会
+重置 candidate/confirmed，阶段等待依次区分 command ack、reference finish
+和 stabilization。
+
+execution-only replay 使用 `frozen_lfs/` 中经过语义校验的 Task B/E LFS，
+不会调用 LLM：
+
+```bash
+python3 experiments/system_8uav/scripts/run_batch.py \
+  --batch-id exp10-pilot-v3-replay-20260803 \
+  --phase pilot --task task_b_sequential --task task_e_mixed \
+  --trials-per-task 5 --input-mode replay --manage-sim
+```
+
+端到端正式批次仍使用 LLM：
+
+```bash
+python3 experiments/system_8uav/scripts/run_batch.py \
+  --batch-id exp10-formal-v3-20260803 \
+  --phase formal --trials-per-task 10 --input-mode llm --manage-sim
+```
+
+v3 汇总仅将 `execution_success=true` 且所有 stage/UAV 时间完整的 trial 纳入
+论文连续指标；其他 attempt 仍保留在成功率和 timeout 诊断中，缺失值写为
+`NaN`：
+
+```bash
+python3 experiments/system_8uav/scripts/summarize_v3.py \
+  --batch-id exp10-formal-v3-20260803
+python3 experiments/system_8uav/scripts/plot_v3.py \
+  experiments/results/experiments_10/exp10-formal-v3-20260803
+
+python3 experiments/system_8uav/scripts/reanalyze_v2_v3.py \
+  --batch-id exp10-formal-v2-gated-20260803
+```

@@ -11,6 +11,7 @@
 #include <uav_swarm_interfaces/msg/iapf_debug.hpp>
 #include <geometry_msgs/msg/point.hpp>
 #include "ladrc_controller/ladrc_core.hpp"
+#include "ladrc_controller/hover_stability.hpp"
 #include "ladrc_controller/iapf_core.hpp"
 #include "ladrc_controller/minimum_jerk_trajectory.hpp"
 #include <cmath>
@@ -66,9 +67,9 @@ public:
     this->declare_parameter("max_acceleration_x", 3.0);
     this->declare_parameter("max_acceleration_y", 3.0);
     this->declare_parameter("max_acceleration_z", 3.0);
-    this->declare_parameter("hover_position_enter_tolerance", 0.35);
+    this->declare_parameter("hover_position_enter_tolerance", 0.40);
     this->declare_parameter("hover_velocity_enter_tolerance", 0.30);
-    this->declare_parameter("hover_position_exit_tolerance", 0.45);
+    this->declare_parameter("hover_position_exit_tolerance", 0.50);
     this->declare_parameter("hover_velocity_exit_tolerance", 0.40);
     this->declare_parameter("hover_stable_hold_time", 1.0);
 
@@ -577,26 +578,18 @@ private:
         this->get_parameter("hover_velocity_exit_tolerance").as_double();
       const double hold_time =
         this->get_parameter("hover_stable_hold_time").as_double();
-      const bool should_exit =
-        pos_err > position_exit || vel_mag > velocity_exit;
-      const bool should_enter =
-        pos_err < position_enter && vel_mag < velocity_enter;
-      if (should_exit)
+      ladrc_controller::HoverStabilityState stability{
+        stability_state_, stable_candidate_since_};
+      ladrc_controller::updateHoverStability(
+        stability, pos_err, vel_mag, this->now().seconds(),
+        {position_enter, velocity_enter, position_exit, velocity_exit, hold_time});
+      const bool newly_confirmed =
+        stability_state_ != 2 && stability.state == 2;
+      stability_state_ = stability.state;
+      stable_candidate_since_ = stability.candidate_since;
+      is_hover_stable_ = stability.confirmed();
+      if (newly_confirmed)
       {
-        stability_state_ = 0;
-        is_hover_stable_ = false;
-        stable_candidate_since_.reset();
-      }
-      else if (stability_state_ == 0 && should_enter)
-      {
-        stability_state_ = 1;
-        stable_candidate_since_ = this->now();
-      }
-      else if (stability_state_ == 1 && stable_candidate_since_.has_value() &&
-               (this->now() - stable_candidate_since_.value()).seconds() >= hold_time)
-      {
-        stability_state_ = 2;
-        is_hover_stable_ = true;
         if (!arrival_time_recorded_)
         {
           arrival_time_error_ = elapsed - target_duration_;
@@ -1351,7 +1344,7 @@ private:
   // [Phase 3 预置] 悬停状态（Phase 1 默认为 false，Phase 3 完整实现）
   bool is_hover_stable_ = false;
   uint8_t stability_state_ = 0;
-  std::optional<rclcpp::Time> stable_candidate_since_;
+  std::optional<double> stable_candidate_since_;
   double latest_position_error_ = std::numeric_limits<double>::infinity();
   double latest_speed_ = std::numeric_limits<double>::infinity();
 

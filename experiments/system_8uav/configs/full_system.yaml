@@ -17,11 +17,14 @@ experiment:
   xrce_per_uav_start_timeout: 30
   stack_cooldown_seconds: 5.0
   stable_hold_time: 1.0
-  stable_position_enter: 0.35
+  stable_position_enter: 0.40
   stable_speed_enter: 0.30
-  stable_position_exit: 0.45
+  stable_position_exit: 0.50
   stable_speed_exit: 0.40
-  stage_timeout_margin: 30.0
+  dispatch_timeout: 5.0
+  reference_finish_timeout_margin: 5.0
+  stabilization_timeout: 30.0
+  stage_data_max_age: 0.5
   post_roll_seconds: 4.0
   sample_hz: 20.0
 
@@ -61,7 +64,7 @@ llm:
   total_timeout_seconds: 190
   retry_delay_seconds: 2
   seed_supported: false
-  parser_version: exp10-v2
+  parser_version: exp10-v3
 
 paths:
   results_root: experiments/results/experiments_10

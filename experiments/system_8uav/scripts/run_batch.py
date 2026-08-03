@@ -208,7 +208,8 @@ class SimulatorSupervisor:
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--batch-id", required=True)
-    parser.add_argument("--phase", choices=["pilot", "formal"], required=True)
+    parser.add_argument(
+        "--phase", choices=["pilot", "formal", "diagnostic"], required=True)
     parser.add_argument("--config", default=str(CONFIG_PATH))
     parser.add_argument("--manage-sim", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
@@ -216,11 +217,22 @@ def parse_args():
     parser.add_argument("--task", action="append", choices=TASK_NAMES)
     parser.add_argument("--no-rosbag", action="store_true")
     parser.add_argument("--max-attempts", type=int, default=0)
+    parser.add_argument("--trials-per-task", type=int, default=0)
+    parser.add_argument("--input-mode", choices=["llm", "replay"], default="llm")
+    parser.add_argument(
+        "--replay-lfs-root",
+        default=str(SCRIPT_DIR.parent / "frozen_lfs"))
     return parser.parse_args()
 
 
-def initial_schedule(config: dict, phase: str, selected_tasks) -> List[Dict[str, Any]]:
-    count = 1 if phase == "pilot" else int(config["experiment"]["trial_count"])
+def initial_schedule(
+    config: dict, phase: str, selected_tasks, trials_per_task: int = 0,
+) -> List[Dict[str, Any]]:
+    default_count = 1 if phase == "pilot" else int(
+        config["experiment"]["trial_count"])
+    count = trials_per_task or default_count
+    if count <= 0:
+        raise ValueError("trials_per_task must be positive")
     rng = random.Random(int(config["experiment"]["block_randomization_seed"]))
     rows = []
     for target_index in range(1, count + 1):
@@ -275,6 +287,8 @@ def trial_command(row, args, config_path, results_root):
         "--replacement-for", row.get("replacement_for", ""),
         "--batch-id", args.batch_id, "--phase", args.phase,
         "--config", str(config_path), "--results-root", str(results_root),
+        "--input-mode", args.input_mode,
+        "--replay-lfs-root", str(Path(args.replay_lfs_root).resolve()),
     ]
     if args.dry_run:
         command.append("--dry-run")
@@ -287,6 +301,7 @@ def main():
     args = parse_args()
     config_path = Path(args.config).resolve()
     config = load_yaml(config_path)
+    tasks = [task for task in TASK_NAMES if not args.task or task in args.task]
     results_root = (REPO_ROOT / config["paths"]["results_root"]).resolve()
     batch_root = results_root / args.batch_id
     batch_root.mkdir(parents=True, exist_ok=True)
@@ -295,23 +310,41 @@ def main():
     shutil.copy2(config_path, config_root / "full_system.yaml")
     for path in sorted((SCRIPT_DIR.parent / "commands").glob("*.json")):
         shutil.copy2(path, config_root / path.name)
+    if args.input_mode == "replay":
+        replay_config = config_root / "frozen_lfs"
+        replay_config.mkdir(parents=True, exist_ok=True)
+        for task in tasks:
+            path = Path(args.replay_lfs_root).resolve() / f"{task}.json"
+            if not path.is_file():
+                raise FileNotFoundError(
+                    f"frozen replay LFS does not exist for {task}: {path}")
+            shutil.copy2(path, replay_config / path.name)
 
-    tasks = [task for task in TASK_NAMES if not args.task or task in args.task]
     plan_path = batch_root / f"{args.phase}_batch_plan.json"
     outcomes_path = batch_root / f"{args.phase}_batch_outcomes.json"
     if plan_path.exists():
         if not args.resume:
             raise FileExistsError(f"batch plan already exists: {plan_path}")
         plan = json.loads(plan_path.read_text(encoding="utf-8"))
+        if plan.get("input_mode", "llm") != args.input_mode:
+            raise ValueError("resume input_mode does not match frozen batch plan")
+        requested_count = args.trials_per_task or plan.get("trials_per_task")
+        if requested_count != plan.get("trials_per_task"):
+            raise ValueError("resume trials_per_task does not match frozen batch plan")
         schedule = plan["schedule"]
         outcomes = (
             json.loads(outcomes_path.read_text(encoding="utf-8"))
             if outcomes_path.exists() else [])
     else:
-        schedule = assign_attempt_ids(initial_schedule(config, args.phase, tasks))
+        schedule = assign_attempt_ids(initial_schedule(
+            config, args.phase, tasks, args.trials_per_task))
         outcomes = []
         plan = {
             "batch_id": args.batch_id, "phase": args.phase,
+            "input_mode": args.input_mode,
+            "trials_per_task": args.trials_per_task or (
+                1 if args.phase == "pilot" else int(
+                    config["experiment"]["trial_count"])),
             "created_at": utc_now(), "manage_sim": args.manage_sim,
             "dry_run": args.dry_run, "config_checksum": config_checksum(),
             "randomization_seed": int(
@@ -353,6 +386,7 @@ def main():
                     "target_execution_index": row["target_execution_index"],
                     "replacement_for": row.get("replacement_for", ""),
                     "phase": args.phase, "entered_execution": False,
+                    "input_mode": args.input_mode,
                     "semantic_success": False, "execution_success": False,
                     "safety_success": False, "overall_success": False,
                     "failure_reason": "interrupted_startup",
@@ -432,6 +466,7 @@ def main():
                 "target_execution_index": row["target_execution_index"],
                 "replacement_for": row.get("replacement_for", ""),
                 "phase": args.phase, "command_text": task_definition.command_text,
+                "input_mode": args.input_mode,
                 "llm_model": config["experiment"]["llm_model"],
                 "entered_execution": False, "semantic_success": False,
                 "execution_success": False, "safety_success": False,

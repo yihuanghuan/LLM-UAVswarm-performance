@@ -81,6 +81,7 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   ament_add_gtest(test_iapf_core test/test_iapf_core.cpp)
   target_link_libraries(test_iapf_core ladrc_lib)
+  ament_add_gtest(test_hover_stability test/test_hover_stability.cpp)
 endif()
 
 ament_package()

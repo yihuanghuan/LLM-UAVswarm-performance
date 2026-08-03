@@ -136,7 +136,7 @@ def generate_launch_description():
             description='弃用兼容参数；unset/true/false'),
         DeclareLaunchArgument(
             'hover_position_enter_tolerance',
-            default_value='0.35',
+            default_value='0.40',
             description='稳定候选位置进入阈值 (m)'),
         DeclareLaunchArgument(
             'hover_velocity_enter_tolerance',
@@ -144,7 +144,7 @@ def generate_launch_description():
             description='稳定候选速度进入阈值 (m/s)'),
         DeclareLaunchArgument(
             'hover_position_exit_tolerance',
-            default_value='0.45',
+            default_value='0.50',
             description='稳定候选位置退出阈值 (m)'),
         DeclareLaunchArgument(
             'hover_velocity_exit_tolerance',
