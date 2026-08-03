@@ -43,6 +43,18 @@ def generate_launch_description():
             'hover_velocity_exit_tolerance').perform(context))
         stable_hold = float(LaunchConfiguration(
             'hover_stable_hold_time').perform(context))
+        velocity_filter_tau = float(LaunchConfiguration(
+            'hover_velocity_filter_tau').perform(context))
+        startup_settle_time = float(LaunchConfiguration(
+            'startup_settle_time').perform(context))
+        startup_speed_tolerance = float(LaunchConfiguration(
+            'startup_speed_tolerance').perform(context))
+        startup_odom_timeout = float(LaunchConfiguration(
+            'startup_odom_timeout').perform(context))
+        startup_status_timeout = float(LaunchConfiguration(
+            'startup_status_timeout').perform(context))
+        startup_takeoff_altitude = float(LaunchConfiguration(
+            'startup_takeoff_altitude').perform(context))
         legacy_value = LaunchConfiguration(
             'enable_iapf_accel_feedforward').perform(context).strip().lower()
 
@@ -57,6 +69,7 @@ def generate_launch_description():
             # 使用绝对路径 (命名空间展开后的路径) 作为 from，确保 remap 正确匹配
             remappings = [
                 (f'/uav{uid}/fmu/out/vehicle_odometry', px4_topic(px4_ns, 'fmu/out/vehicle_odometry')),
+                (f'/uav{uid}/fmu/out/vehicle_status', px4_topic(px4_ns, 'fmu/out/vehicle_status')),
                 (f'/uav{uid}/fmu/in/offboard_control_mode', px4_topic(px4_ns, 'fmu/in/offboard_control_mode')),
                 (f'/uav{uid}/fmu/in/trajectory_setpoint', px4_topic(px4_ns, 'fmu/in/trajectory_setpoint')),
                 (f'/uav{uid}/fmu/in/vehicle_command', px4_topic(px4_ns, 'fmu/in/vehicle_command')),
@@ -90,6 +103,12 @@ def generate_launch_description():
                 'hover_position_exit_tolerance': position_exit,
                 'hover_velocity_exit_tolerance': velocity_exit,
                 'hover_stable_hold_time': stable_hold,
+                'hover_velocity_filter_tau': velocity_filter_tau,
+                'startup_settle_time': startup_settle_time,
+                'startup_speed_tolerance': startup_speed_tolerance,
+                'startup_odom_timeout': startup_odom_timeout,
+                'startup_status_timeout': startup_status_timeout,
+                'startup_takeoff_altitude': startup_takeoff_altitude,
             }
             if avoidance_mode != 'unset':
                 experiment_parameters['avoidance_mode'] = avoidance_mode
@@ -154,5 +173,29 @@ def generate_launch_description():
             'hover_stable_hold_time',
             default_value='1.0',
             description='稳定候选连续保持时间 (s)'),
+        DeclareLaunchArgument(
+            'hover_velocity_filter_tau',
+            default_value='0.5',
+            description='位置差分速度低通时间常数 (s)'),
+        DeclareLaunchArgument(
+            'startup_settle_time',
+            default_value='10.0',
+            description='odom/status 就绪后的连续地面稳定时间 (s)'),
+        DeclareLaunchArgument(
+            'startup_speed_tolerance',
+            default_value='0.15',
+            description='启动地面稳定的位置差分速度阈值 (m/s)'),
+        DeclareLaunchArgument(
+            'startup_odom_timeout',
+            default_value='0.5',
+            description='高频 odom 新鲜度超时 (s)'),
+        DeclareLaunchArgument(
+            'startup_status_timeout',
+            default_value='2.0',
+            description='低频 vehicle_status 新鲜度超时 (s)'),
+        DeclareLaunchArgument(
+            'startup_takeoff_altitude',
+            default_value='1.5',
+            description='进入任务就绪态前的垂直起飞高度 (m)'),
         OpaqueFunction(function=create_uav_nodes),
     ])

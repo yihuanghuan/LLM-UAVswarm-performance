@@ -31,10 +31,12 @@ from system_common import (
 )
 
 
-ODOM_FIELDS = ["timestamp", "uav_id", "x", "y", "z", "speed"]
+ODOM_FIELDS = [
+    "timestamp", "uav_id", "x", "y", "z", "speed", "raw_ekf_speed",
+]
 STATUS_FIELDS = [
-    "timestamp", "uav_id", "mission_id", "is_hover_stable",
-    "stability_state", "position_error", "speed",
+    "timestamp", "uav_id", "mission_id", "system_ready", "is_hover_stable",
+    "stability_state", "position_error", "speed", "raw_ekf_speed",
 ]
 TRAJECTORY_FIELDS = [
     "timestamp", "uav_id", "mission_id", "start_x", "start_y", "start_z",
@@ -252,7 +254,9 @@ def import_ros():
     }
 
 
-def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
+def build_trial_node(
+    ros: Dict[str, Any], uav_ids: Sequence[int], velocity_filter_tau: float = 0.5,
+):
     Node = ros["Node"]
 
     class TrialNode(Node):
@@ -269,6 +273,11 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
             self.events: List[Dict[str, Any]] = []
             self.positions: Dict[int, List[float]] = {}
             self.velocities: Dict[int, float] = {}
+            self.raw_ekf_velocities: Dict[int, float] = {}
+            self.velocity_vectors = {
+                uid: [0.0, 0.0, 0.0] for uid in uav_ids}
+            self.velocity_filter_state: Dict[int, tuple[float, List[float]]] = {}
+            self.velocity_filter_valid: set[int] = set()
             self.last_odom_time: Dict[int, float] = {}
             self.vehicle_status: Dict[int, Any] = {}
             self.hover_status = {uid: False for uid in uav_ids}
@@ -343,15 +352,41 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
 
         def odom_callback(self, msg, uid: int) -> None:
             now = self.stamp()
-            self.positions[uid] = [float(msg.x), float(msg.y), float(msg.z)]
+            position = [float(msg.x), float(msg.y), float(msg.z)]
+            previous = self.velocity_filter_state.get(uid)
+            if previous is not None:
+                previous_time, previous_position = previous
+                dt = now - previous_time
+                if 1e-4 < dt <= 0.5:
+                    raw = [
+                        (value - old) / dt
+                        for value, old in zip(position, previous_position)
+                    ]
+                    alpha = 1.0 - math.exp(
+                        -dt / max(float(velocity_filter_tau), 1e-3))
+                    filtered = self.velocity_vectors[uid]
+                    self.velocity_vectors[uid] = [
+                        value + alpha * (sample - value)
+                        for value, sample in zip(filtered, raw)
+                    ]
+                    self.velocities[uid] = math.sqrt(sum(
+                        value * value for value in self.velocity_vectors[uid]))
+                    self.velocity_filter_valid.add(uid)
+                else:
+                    self.velocity_vectors[uid] = [0.0, 0.0, 0.0]
+                    self.velocity_filter_valid.discard(uid)
+            self.velocity_filter_state[uid] = now, position
+            self.positions[uid] = position
             self.last_odom_time[uid] = time.monotonic()
             self.odom_rows.append({
                 "timestamp": now, "uav_id": uid, "x": msg.x, "y": msg.y,
                 "z": msg.z, "speed": self.velocities.get(uid, math.nan),
+                "raw_ekf_speed": self.raw_ekf_velocities.get(uid, math.nan),
             })
 
         def px4_odom_callback(self, msg, uid: int) -> None:
-            self.velocities[uid] = math.sqrt(sum(float(v) ** 2 for v in msg.velocity))
+            self.raw_ekf_velocities[uid] = math.sqrt(
+                sum(float(v) ** 2 for v in msg.velocity))
 
         def vehicle_status_callback(self, msg, uid: int) -> None:
             self.vehicle_status[uid] = msg
@@ -367,9 +402,11 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
                 self.hover_status[uid] = stable
                 self.latest_status[uid] = {
                     "mission_id": mission_id,
+                    "system_ready": bool(msg.system_ready),
                     "stability_state": state,
                     "position_error": float(msg.position_error),
                     "speed": float(msg.speed),
+                    "raw_ekf_speed": float(msg.raw_ekf_speed),
                 }
             previous = self.last_stability.get(key)
             if previous != state and mission_id == self.current_mission.get(uid, 0):
@@ -398,9 +435,11 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
                 self.last_stability[key] = state
             self.status_rows.append({
                 "timestamp": now, "uav_id": uid,
-                "mission_id": mission_id, "is_hover_stable": stable,
+                "mission_id": mission_id, "system_ready": msg.system_ready,
+                "is_hover_stable": stable,
                 "stability_state": state,
                 "position_error": msg.position_error, "speed": msg.speed,
+                "raw_ekf_speed": msg.raw_ekf_speed,
             })
 
         def trajectory_callback(self, msg, uid: int) -> None:
@@ -572,6 +611,7 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
                 and int(self.vehicle_status[uid].arming_state) == 2
                 and int(self.vehicle_status[uid].nav_state) == 14
                 and not bool(self.vehicle_status[uid].failsafe)
+                and bool(self.latest_status.get(uid, {}).get("system_ready"))
                 for uid in ids
             )
 
@@ -593,22 +633,31 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
                         vehicle is not None and int(vehicle.nav_state) == 14),
                     "failsafe": bool(
                         vehicle is not None and bool(vehicle.failsafe)),
+                    "system_ready": bool(
+                        self.latest_status.get(uid, {}).get("system_ready")),
                     "speed": self.velocities.get(uid, math.nan),
+                    "raw_ekf_speed": self.raw_ekf_velocities.get(uid, math.nan),
+                    "altitude": self.positions.get(
+                        uid, [math.nan, math.nan, math.nan])[2],
                 })
             return rows
 
         def wait_ready(
             self, ids: Sequence[int], timeout: float, hold: float,
-            speed_tolerance: float,
+            speed_tolerance: float, minimum_altitude: float,
         ) -> bool:
             deadline = time.monotonic() + timeout
             stable_since = None
             while time.monotonic() < deadline:
                 ros["rclpy"].spin_once(self, timeout_sec=0.1)
                 speeds_ok = all(
-                    self.velocities.get(uid, math.inf) < speed_tolerance
+                    uid in self.velocity_filter_valid
+                    and self.velocities.get(uid, math.inf) < speed_tolerance
                     for uid in ids)
-                if self.ready(ids) and speeds_ok:
+                altitude_ok = all(
+                    self.positions.get(uid, [0.0, 0.0, -math.inf])[2]
+                    >= minimum_altitude for uid in ids)
+                if self.ready(ids) and speeds_ok and altitude_ok:
                     stable_since = stable_since or time.monotonic()
                     if time.monotonic() - stable_since >= hold:
                         return True
@@ -740,6 +789,7 @@ def build_trial_node(ros: Dict[str, Any], uav_ids: Sequence[int]):
                     "stability_state": status.get("stability_state"),
                     "position_error": status.get("position_error"),
                     "speed": status.get("speed"),
+                    "raw_ekf_speed": status.get("raw_ekf_speed"),
                     "odom_age": odom_age, "status_age": status_age,
                     "iapf_active": iapf.get("iapf_active"),
                     "nearest_neighbor_distance": iapf.get(
@@ -952,7 +1002,8 @@ def main() -> int:
 
     ros = import_ros()
     ros["rclpy"].init()
-    node = build_trial_node(ros, uav_ids)
+    node = build_trial_node(
+        ros, uav_ids, float(experiment["hover_velocity_filter_tau"]))
     bag_process = None
     failure_reason = "unknown"
     try:
@@ -970,6 +1021,7 @@ def main() -> int:
             uav_ids, float(experiment["readiness_timeout"]),
             float(experiment["stable_hold_time"]),
             float(experiment["readiness_speed_tolerance"]),
+            float(experiment["readiness_min_altitude"]),
         ):
             failure_reason = "readiness_timeout"
             write_json(trial_dir / "readiness_failure.json", {

@@ -112,6 +112,51 @@ class SimulatorSupervisor:
             stderr=subprocess.DEVNULL, check=False)
         return len(result.stdout.splitlines()) if result.returncode == 0 else 0
 
+    def apply_px4_parameters(self):
+        """Apply and verify experiment-owned parameters on every PX4 instance."""
+        parameters = self.config["experiment"].get("px4_parameters", {})
+        if not parameters:
+            return
+
+        px4_param = (
+            self.px4_root / "build" / "px4_sitl_default" / "bin" /
+            "px4-param")
+        if not px4_param.is_file():
+            raise RuntimeError(f"PX4 parameter client not found: {px4_param}")
+
+        log_path = self.log_dir / "px4_parameters.log"
+        with log_path.open("a", encoding="utf-8") as handle:
+            for instance in self.config["experiment"]["uav_ids"]:
+                for name, value in parameters.items():
+                    command = [
+                        str(px4_param), "--instance", str(instance),
+                        "set", str(name), str(value),
+                    ]
+                    result = subprocess.run(
+                        command, text=True, stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT, check=False)
+                    handle.write(
+                        f"instance={instance} {' '.join(command[3:])}\n"
+                        f"{result.stdout}")
+                    if result.returncode != 0:
+                        raise RuntimeError(
+                            f"failed to set PX4 instance {instance} "
+                            f"parameter {name}={value}: "
+                            f"{result.stdout.strip()}")
+
+                    verify = subprocess.run(
+                        [str(px4_param), "--instance", str(instance),
+                         "show", str(name)],
+                        text=True, stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT, check=False)
+                    handle.write(verify.stdout)
+                    if (verify.returncode != 0 or
+                            str(value) not in verify.stdout):
+                        raise RuntimeError(
+                            f"failed to verify PX4 instance {instance} "
+                            f"parameter {name}={value}: "
+                            f"{verify.stdout.strip()}")
+
     def start_process(self, name: str, command: str, cwd=None):
         self.log_dir.mkdir(parents=True, exist_ok=True)
         handle = (self.log_dir / f"{name}.log").open("a", encoding="utf-8")
@@ -168,6 +213,7 @@ class SimulatorSupervisor:
             raise RuntimeError(
                 f"PX4 startup count {self._px4_count()}/"
                 f"{len(experiment['uav_ids'])}")
+        self.apply_px4_parameters()
         time.sleep(5)
         self.start_process(
             "controllers",
@@ -180,7 +226,13 @@ class SimulatorSupervisor:
             f"hover_velocity_enter_tolerance:={experiment['stable_speed_enter']} "
             f"hover_position_exit_tolerance:={experiment['stable_position_exit']} "
             f"hover_velocity_exit_tolerance:={experiment['stable_speed_exit']} "
-            f"hover_stable_hold_time:={experiment['stable_hold_time']}")
+            f"hover_stable_hold_time:={experiment['stable_hold_time']} "
+            f"hover_velocity_filter_tau:={experiment['hover_velocity_filter_tau']} "
+            f"startup_settle_time:={experiment['startup_settle_time']} "
+            f"startup_speed_tolerance:={experiment['startup_speed_tolerance']} "
+            f"startup_odom_timeout:={experiment['startup_odom_timeout']} "
+            f"startup_status_timeout:={experiment['startup_status_timeout']} "
+            f"startup_takeoff_altitude:={experiment['startup_takeoff_altitude']}")
         time.sleep(8)
         failed = [p.pid for p, _ in self.processes if p.poll() is not None]
         if failed:

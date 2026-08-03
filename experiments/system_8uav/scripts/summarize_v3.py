@@ -173,7 +173,17 @@ def main() -> int:
                 (row["failure_reason"] for row in stages if row["failure_reason"]),
                 original_reason)
             attempt["failure_reason"] = classified
-            analyzed.append(analyze_trial(trial_dir, config))
+            analysis = analyze_trial(trial_dir, config)
+            analyzed.append(analysis)
+            # analyze_trial computes safety/realtime results and updates the
+            # manifest. Keep the attempt table in sync with that final verdict
+            # instead of retaining run_trial's pre-analysis placeholders.
+            analyzed_manifest = analysis["manifest"]
+            for field in (
+                    "execution_success", "safety_success", "overall_success"):
+                attempt[field] = analyzed_manifest.get(field, attempt[field])
+            attempt["failure_reason"] = str(
+                analyzed_manifest.get("failure_reason") or classified)
 
     mission_rows = []
     for attempt in [row for row in attempt_rows if truth(row["entered_execution"])]:

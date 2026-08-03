@@ -136,8 +136,11 @@ ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1,2,3,4,5] enable_iapf_ac
 source ~/learning/LLM_swarm_ws/llm_env/bin/activate
 unset ALL_PROXY all_proxy
 source ~/learning/LLM_swarm_ws/install/setup.bash
-python3 -m location_allocate.location_allocate
+python3 -m location_allocate.location_allocate --ros-args -p uav_ids:="[1,2,3,4,5]"
 ```
+
+`uav_ids` 必须与终端 2、3 实际启动的机群一致。省略该参数时，调度器会从
+`/uavN/status` 和 `/uavN/odom` 自动发现活动无人机，不再默认假设存在 10 架。
 
 ## 指令示例
 

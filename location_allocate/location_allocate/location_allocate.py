@@ -1,4 +1,5 @@
 import math
+import re
 import time
 from typing import List, Dict
 import json
@@ -6,6 +7,7 @@ import json
 # -------------------------- ROS2 依赖导入 --------------------------
 import rclpy
 from rclpy.node import Node
+from rclpy.parameter import Parameter
 from uav_swarm_interfaces.msg import UAVSwarmCommand, UAVStatus
 from geometry_msgs.msg import Point
 # -------------------------------------------------------------------
@@ -14,13 +16,15 @@ from .safety_aware_allocator import SafetyAwareTopologyAllocator
 
 # ====================== 硬编码：无人机初始坐标 + ID (全局地图) ======================
 # 注意：这里是全局数据库，存储所有无人机的状态
-all_uav_ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-all_initial_positions = [
+DEFAULT_UAV_IDS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+DEFAULT_INITIAL_POSITIONS = [
     [1.4, 0.0, 1.5], [-0.7, 1.2, 1.5], [-0.7, -1.2, 1.5],
     [1.4, 0.0, 3.0], [-0.7, 1.2, 3.0], [-0.7, -1.2, 3.0],
     [-0.7, 1.2, 4.0], [-0.7, -1.2, 4.0], [1.4, 0.0, 1.0],
     [-0.7, 1.2, 1.0]
 ]
+DEFAULT_INITIAL_POSITION_BY_ID = dict(zip(
+    DEFAULT_UAV_IDS, DEFAULT_INITIAL_POSITIONS))
 
 # ====================== 1. 坐标生成层  ======================
 class FormationGenerator:
@@ -75,6 +79,13 @@ class UAVFormationNode(Node):
     def __init__(self):
         super().__init__('location_allocate')
         self.declare_parameter('assignment_mode', 'safety_aware')
+        configured_uav_ids = self.declare_parameter(
+            'uav_ids', Parameter.Type.INTEGER_ARRAY).value
+        self.active_uav_ids = self._resolve_active_uav_ids(configured_uav_ids)
+        self.initial_position_by_id = {
+            uid: DEFAULT_INITIAL_POSITION_BY_ID.get(uid, [0.0, 0.0, 0.0]).copy()
+            for uid in self.active_uav_ids
+        }
         assignment_mode = self.get_parameter(
             'assignment_mode').get_parameter_value().string_value
         if assignment_mode not in ('fixed', 'distance_hungarian', 'safety_aware'):
@@ -83,22 +94,24 @@ class UAVFormationNode(Node):
         
         # 状态变量：由 C++ 节点低频发布的 /uav{id}/odom 实时更新（不再使用硬编码初始坐标）
         self.uav_state_map: Dict[int, List[float]] = {}
-        for uid in all_uav_ids:
+        for uid in self.active_uav_ids:
             self.uav_state_map[uid] = [0.0, 0.0, 0.0]
 
         # -------------------------- 发布者管理 --------------------------
         self.publisher = {}
-        for uid in all_uav_ids:
+        for uid in self.active_uav_ids:
             topic_name = f'/uav{uid}/swarm_command'
             self.publisher[uid] = self.create_publisher(UAVSwarmCommand, topic_name, 10)
             self.get_logger().info(f"创建发布者: {topic_name}")
 
         # -------------------------- 订阅者管理 (odom 位置 + status 状态) --------------------------
         self.uav_hover_status: Dict[int, bool] = {}
+        self.current_mission_id: Dict[int, int] = {}
         self.status_sub = {}
         self.odom_sub = {}
-        for uid in all_uav_ids:
+        for uid in self.active_uav_ids:
             self.uav_hover_status[uid] = False
+            self.current_mission_id[uid] = 0
             # 订阅悬停状态
             topic_name = f'/uav{uid}/status'
             self.status_sub[uid] = self.create_subscription(
@@ -110,6 +123,42 @@ class UAVFormationNode(Node):
                 Point, topic_name,
                 lambda msg, uid=uid: self._odom_callback(msg, uid), 10)
             self.get_logger().info(f"创建订阅者: /uav{uid}/status, /uav{uid}/odom")
+
+        self.get_logger().info(
+            f"当前活动无人机: {self.active_uav_ids}，总数: {len(self.active_uav_ids)}")
+
+    def _resolve_active_uav_ids(self, configured_uav_ids) -> List[int]:
+        """Resolve the exact active fleet from a parameter or ROS graph."""
+        if configured_uav_ids is not None:
+            ids = [int(uid) for uid in configured_uav_ids]
+            if not ids or len(ids) != len(set(ids)) or any(uid <= 0 for uid in ids):
+                raise ValueError('uav_ids must be a non-empty list of unique positive IDs')
+            return ids
+
+        self.get_logger().info(
+            "未显式设置 uav_ids；在 ROS 图中自动发现 /uavN/status 与 /uavN/odom")
+        deadline = time.monotonic() + 5.0
+        while time.monotonic() < deadline:
+            topics = {name for name, _ in self.get_topic_names_and_types()}
+            status_ids = {
+                int(match.group(1)) for name in topics
+                if (match := re.fullmatch(r'/uav(\d+)/status', name))
+            }
+            odom_ids = {
+                int(match.group(1)) for name in topics
+                if (match := re.fullmatch(r'/uav(\d+)/odom', name))
+            }
+            ids = sorted(status_ids & odom_ids)
+            if ids:
+                return ids
+            rclpy.spin_once(self, timeout_sec=0.1)
+        raise RuntimeError(
+            '未发现活动无人机；请先启动控制节点，或使用 '
+            '--ros-args -p uav_ids:="[1,2,...]" 显式指定')
+
+    def ros_aux_info(self) -> str:
+        ids = ','.join(str(uid) for uid in self.active_uav_ids)
+        return f"当前可用无人机编号: [{ids}]，总数: {len(self.active_uav_ids)}"
 
     def _publish_single_goal(self, mission_id: int, uav_id: int, position: List[float],
                              duration: float, motion_style: str, safety_factor: float):
@@ -134,6 +183,8 @@ class UAVFormationNode(Node):
 
     def _status_callback(self, msg: UAVStatus, uid: int):
         """接收 C++ 执行层反馈的悬停状态"""
+        if int(msg.mission_id) != self.current_mission_id.get(uid, 0):
+            return
         if msg.is_hover_stable and not self.uav_hover_status.get(uid, False):
             self.get_logger().info(f"   >>> UAV{uid} 到达目标并悬停稳定!")
         self.uav_hover_status[uid] = msg.is_hover_stable
@@ -163,6 +214,7 @@ class UAVFormationNode(Node):
         # 先重置悬停状态，再发命令
         for uid in task_uav_ids:
             self.uav_hover_status[uid] = False
+            self.current_mission_id[uid] = mission_id
 
         for uid, pos in zip(task_uav_ids, allocated_positions):
             self._publish_single_goal(mission_id, uid, pos, duration, motion_style, safety_factor)
@@ -266,8 +318,7 @@ class UAVFormationNode(Node):
             # Free模式：找到这些无人机的初始点
             targets = []
             for uid in task_uav_ids:
-                idx = all_uav_ids.index(uid)
-                targets.append(all_initial_positions[idx].copy())
+                targets.append(self.initial_position_by_id[uid].copy())
         else:
             self.get_logger().info(f"编队类型: {f_type} | 中心: {center} | 半径: {radius}")
 
@@ -342,7 +393,7 @@ class UAVFormationNode(Node):
                 task['parametric_data']['formation_type'], len(uav_ids))
             if not targets:
                 targets = [
-                    all_initial_positions[all_uav_ids.index(uid)].copy()
+                    self.initial_position_by_id[uid].copy()
                     for uid in uav_ids
                 ]
             grouped_inputs.append({
@@ -411,10 +462,8 @@ class UAVFormationNode(Node):
 # ====================== 主入口 (终端输入循环) ======================
 def main():
     rclpy.init()
-    
-    # 硬编码可用无人机数量和id
-    test_ros = "当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10"
     node = UAVFormationNode()
+    ros_aux_info = node.ros_aux_info()
     
     try:
         # 主循环：持续等待输入
@@ -432,7 +481,7 @@ def main():
             
             # 调用LLM解析
             print("正在调用 LLM 解析指令...")
-            llm_result = parse_uav_command(user_command, test_ros)#test_ros只是用来让LLM判断一共有多少架UAV可以用
+            llm_result = parse_uav_command(user_command, ros_aux_info)
             
             # 打印解析结果（保持原有格式）
             print("\n" + "=" * 50)

@@ -82,6 +82,9 @@ if(BUILD_TESTING)
   ament_add_gtest(test_iapf_core test/test_iapf_core.cpp)
   target_link_libraries(test_iapf_core ladrc_lib)
   ament_add_gtest(test_hover_stability test/test_hover_stability.cpp)
+  ament_add_gtest(
+    test_position_velocity_filter test/test_position_velocity_filter.cpp)
+  target_link_libraries(test_position_velocity_filter Eigen3::Eigen)
 endif()
 
 ament_package()

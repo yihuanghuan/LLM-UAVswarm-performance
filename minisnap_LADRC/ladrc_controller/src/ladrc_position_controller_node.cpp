@@ -4,6 +4,7 @@
 #include <px4_msgs/msg/trajectory_setpoint.hpp>
 #include <px4_msgs/msg/vehicle_command.hpp>
 #include <px4_msgs/msg/vehicle_control_mode.hpp>
+#include <px4_msgs/msg/vehicle_status.hpp>
 #include <uav_swarm_interfaces/msg/uav_swarm_command.hpp>
 #include <uav_swarm_interfaces/msg/uav_status.hpp>
 #include <uav_swarm_interfaces/msg/trajectory_metrics.hpp>
@@ -14,6 +15,7 @@
 #include "ladrc_controller/hover_stability.hpp"
 #include "ladrc_controller/iapf_core.hpp"
 #include "ladrc_controller/minimum_jerk_trajectory.hpp"
+#include "ladrc_controller/position_velocity_filter.hpp"
 #include <cmath>
 #include <chrono>
 #include <atomic>
@@ -35,6 +37,7 @@ enum class FlightState
   INIT,
   ARMING,
   SETTING_OFFBOARD,
+  TAKING_OFF,
   RUNNING_TRAJECTORY
 };
 
@@ -72,6 +75,15 @@ public:
     this->declare_parameter("hover_position_exit_tolerance", 0.50);
     this->declare_parameter("hover_velocity_exit_tolerance", 0.40);
     this->declare_parameter("hover_stable_hold_time", 1.0);
+    this->declare_parameter("hover_velocity_filter_tau", 0.5);
+    this->declare_parameter("startup_settle_time", 10.0);
+    this->declare_parameter("startup_speed_tolerance", 0.15);
+    this->declare_parameter("startup_odom_timeout", 0.5);
+    this->declare_parameter("startup_status_timeout", 2.0);
+    this->declare_parameter("startup_command_retry_interval", 1.0);
+    this->declare_parameter("startup_takeoff_altitude", 1.5);
+    this->declare_parameter("startup_takeoff_position_tolerance", 0.25);
+    this->declare_parameter("startup_takeoff_hold_time", 0.5);
 
     // Gazebo 多机 spawn 偏移量（sitl_multiple_run.sh 默认 Y=3*instance）
     this->declare_parameter("enu_offset_x", 0.0);
@@ -160,6 +172,12 @@ public:
         "fmu/out/vehicle_odometry",
         rclcpp::SensorDataQoS(),
         std::bind(&LADRCPositionControllerNode::odomCallback, this, std::placeholders::_1));
+
+    vehicle_status_sub_ = this->create_subscription<px4_msgs::msg::VehicleStatus>(
+        "fmu/out/vehicle_status", rclcpp::SensorDataQoS(),
+        std::bind(
+          &LADRCPositionControllerNode::vehicleStatusCallback, this,
+          std::placeholders::_1));
 
     // 从命名空间提取自身 UAV ID（例如 /uav3 → 3）
     std::string ns = this->get_namespace();
@@ -252,7 +270,8 @@ public:
 
     // 初始化状态
     flight_state_ = FlightState::INIT;
-    offboard_setpoint_counter_ = 0;
+    position_velocity_filter_.setTimeConstant(
+      this->get_parameter("hover_velocity_filter_tau").as_double());
 
     RCLCPP_INFO(this->get_logger(), "LADRC 集群执行节点已初始化 (命名空间: %s), ENU偏移=[%.1f, %.1f, %.1f]",
         this->get_namespace(),
@@ -397,6 +416,7 @@ private:
     stable_candidate_since_.reset();
     latest_position_error_ = std::numeric_limits<double>::infinity();
     latest_speed_ = std::numeric_limits<double>::infinity();
+    latest_raw_ekf_speed_ = std::numeric_limits<double>::infinity();
     arrival_time_recorded_ = false;
     arrival_time_error_ = std::numeric_limits<double>::quiet_NaN();
     resetControlAdaptationRuntimeMetrics();
@@ -415,6 +435,19 @@ private:
     RCLCPP_INFO_ONCE(this->get_logger(), "已接收到 vehicle_odometry 消息");
     current_odom_ = *msg;
     has_odom_ = true;
+    last_odom_receive_time_ = this->now().seconds();
+    const Eigen::Vector3d position_enu(
+      msg->position[1], msg->position[0], -msg->position[2]);
+    position_velocity_filter_.update(
+      static_cast<double>(msg->timestamp_sample) * 1e-6,
+      msg->reset_counter, position_enu);
+  }
+
+  void vehicleStatusCallback(const px4_msgs::msg::VehicleStatus::SharedPtr msg)
+  {
+    current_vehicle_status_ = *msg;
+    has_vehicle_status_ = true;
+    last_vehicle_status_receive_time_ = this->now().seconds();
   }
 
   // --- 状态机逻辑 ---
@@ -435,41 +468,199 @@ private:
     vehicle_command_pub_->publish(msg);
   }
 
+  bool odomFresh() const
+  {
+    return has_odom_ &&
+      this->now().seconds() - last_odom_receive_time_ <=
+      this->get_parameter("startup_odom_timeout").as_double();
+  }
+
+  bool vehicleStatusFresh() const
+  {
+    return has_vehicle_status_ &&
+      this->now().seconds() - last_vehicle_status_receive_time_ <=
+      this->get_parameter("startup_status_timeout").as_double();
+  }
+
+  bool vehicleArmed() const
+  {
+    return vehicleStatusFresh() &&
+      current_vehicle_status_.arming_state ==
+      px4_msgs::msg::VehicleStatus::ARMING_STATE_ARMED;
+  }
+
+  bool vehicleOffboard() const
+  {
+    return vehicleStatusFresh() &&
+      current_vehicle_status_.nav_state ==
+      px4_msgs::msg::VehicleStatus::NAVIGATION_STATE_OFFBOARD;
+  }
+
+  bool requestDue() const
+  {
+    return !last_vehicle_command_time_.has_value() ||
+      this->now().seconds() - last_vehicle_command_time_.value() >=
+      this->get_parameter("startup_command_retry_interval").as_double();
+  }
+
+  void resetStartupState(const char * reason)
+  {
+    if (flight_state_.load() != FlightState::INIT)
+    {
+      RCLCPP_WARN(this->get_logger(),
+        "PX4 就绪状态丢失（%s），重新执行启动门控", reason);
+    }
+    flight_state_ = FlightState::INIT;
+    startup_ready_since_.reset();
+    takeoff_stable_since_.reset();
+    last_vehicle_command_time_.reset();
+    hover_hold_set_ = false;
+    has_command_ = false;
+    is_hover_stable_ = false;
+    stability_state_ = 0;
+    stable_candidate_since_.reset();
+  }
+
   void stateMachine()
   {
+    const double now = this->now().seconds();
     switch (flight_state_.load())
     {
     case FlightState::INIT:
-      if (++offboard_setpoint_counter_ * 100 > 10000)
+    {
+      const bool estimator_stationary =
+        position_velocity_filter_.valid() &&
+        position_velocity_filter_.speed() <=
+        this->get_parameter("startup_speed_tolerance").as_double();
+      const bool healthy = odomFresh() && vehicleStatusFresh() &&
+        !current_vehicle_status_.failsafe && estimator_stationary;
+      if (!healthy)
       {
-        RCLCPP_INFO(this->get_logger(), "系统稳定，开始解锁 (Arming)...");
-        publishVehicleCommand(px4_msgs::msg::VehicleCommand::VEHICLE_CMD_COMPONENT_ARM_DISARM, 1.0);
-        flight_state_ = FlightState::ARMING;
-        offboard_setpoint_counter_ = 0;
+        startup_ready_since_.reset();
+        return;
       }
+      if (!startup_ready_since_.has_value())
+      {
+        startup_ready_since_ = now;
+        RCLCPP_INFO(this->get_logger(),
+          "PX4 odom/status 已就绪，开始 %.1fs 地面稳定计时",
+          this->get_parameter("startup_settle_time").as_double());
+      }
+      if (now - startup_ready_since_.value() <
+          this->get_parameter("startup_settle_time").as_double())
+      {
+        return;
+      }
+      RCLCPP_INFO(this->get_logger(), "地面稳定门控通过，发送解锁请求...");
+      publishVehicleCommand(
+        px4_msgs::msg::VehicleCommand::VEHICLE_CMD_COMPONENT_ARM_DISARM, 1.0);
+      last_vehicle_command_time_ = now;
+      flight_state_ = FlightState::ARMING;
       break;
+    }
 
     case FlightState::ARMING:
-      if (++offboard_setpoint_counter_ * 100 > 2000)
+      if (vehicleArmed())
       {
-        RCLCPP_INFO(this->get_logger(), "解锁成功。切换到 Offboard 模式...");
-        publishVehicleCommand(px4_msgs::msg::VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1.0, 6.0);
+        RCLCPP_INFO(this->get_logger(), "VehicleStatus 已确认解锁，申请 Offboard...");
+        publishVehicleCommand(
+          px4_msgs::msg::VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1.0, 6.0);
+        last_vehicle_command_time_ = now;
         flight_state_ = FlightState::SETTING_OFFBOARD;
-        offboard_setpoint_counter_ = 0;
+      }
+      else if (requestDue())
+      {
+        publishVehicleCommand(
+          px4_msgs::msg::VehicleCommand::VEHICLE_CMD_COMPONENT_ARM_DISARM, 1.0);
+        last_vehicle_command_time_ = now;
       }
       break;
 
     case FlightState::SETTING_OFFBOARD:
-      if (++offboard_setpoint_counter_ * 100 > 1000)
+      if (!vehicleArmed())
       {
-        RCLCPP_INFO(this->get_logger(), "Offboard 模式已激活。LADRC 控制器接管。");
-        flight_state_ = FlightState::RUNNING_TRAJECTORY;
-        command_timer_->cancel();
+        RCLCPP_WARN(this->get_logger(), "等待 Offboard 时检测到未解锁，返回解锁阶段");
+        flight_state_ = FlightState::ARMING;
+        last_vehicle_command_time_.reset();
+      }
+      else if (vehicleOffboard())
+      {
+        RCLCPP_INFO(this->get_logger(),
+          "VehicleStatus 已确认 Armed + Offboard，开始垂直起飞至 %.1fm",
+          this->get_parameter("startup_takeoff_altitude").as_double());
+        hover_hold_x_ = current_odom_.position[1];
+        hover_hold_y_ = current_odom_.position[0];
+        hover_hold_z_ = this->get_parameter(
+          "startup_takeoff_altitude").as_double();
+        hover_hold_set_ = true;
+        takeoff_stable_since_.reset();
+        flight_state_ = FlightState::TAKING_OFF;
+      }
+      else if (requestDue())
+      {
+        publishVehicleCommand(
+          px4_msgs::msg::VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1.0, 6.0);
+        last_vehicle_command_time_ = now;
       }
       break;
 
+    case FlightState::TAKING_OFF:
+    {
+      if (!odomFresh() || !vehicleStatusFresh() ||
+          current_vehicle_status_.failsafe ||
+          !vehicleArmed() || !vehicleOffboard())
+      {
+        resetStartupState("takeoff readiness lost");
+        break;
+      }
+      const double x_meas = current_odom_.position[1];
+      const double y_meas = current_odom_.position[0];
+      const double z_meas = -current_odom_.position[2];
+      const double position_error = std::sqrt(
+        std::pow(hover_hold_x_ - x_meas, 2) +
+        std::pow(hover_hold_y_ - y_meas, 2) +
+        std::pow(hover_hold_z_ - z_meas, 2));
+      const bool stable = position_velocity_filter_.valid() &&
+        position_error <= this->get_parameter(
+          "startup_takeoff_position_tolerance").as_double() &&
+        position_velocity_filter_.speed() <= this->get_parameter(
+          "startup_speed_tolerance").as_double();
+      if (!stable)
+      {
+        takeoff_stable_since_.reset();
+        break;
+      }
+      if (!takeoff_stable_since_.has_value())
+      {
+        takeoff_stable_since_ = now;
+      }
+      if (now - takeoff_stable_since_.value() >=
+          this->get_parameter("startup_takeoff_hold_time").as_double())
+      {
+        RCLCPP_INFO(this->get_logger(),
+          "垂直起飞并稳定完成，控制器进入任务就绪态");
+        flight_state_ = FlightState::RUNNING_TRAJECTORY;
+      }
+      break;
+    }
+
     case FlightState::RUNNING_TRAJECTORY:
-      command_timer_->cancel();
+      if (!odomFresh())
+      {
+        resetStartupState("odom stale");
+      }
+      else if (!vehicleStatusFresh())
+      {
+        resetStartupState("vehicle_status stale");
+      }
+      else if (current_vehicle_status_.failsafe)
+      {
+        resetStartupState("failsafe");
+      }
+      else if (!vehicleArmed() || !vehicleOffboard())
+      {
+        resetStartupState("not armed/offboard");
+      }
       break;
     }
   }
@@ -479,16 +670,11 @@ private:
     // 持续发布 offboard 模式
     publishOffboardControlMode();
 
-    // 状态机未完成或未收到里程计：不发 setpoint，等待
-    if (flight_state_.load() != FlightState::RUNNING_TRAJECTORY || !has_odom_)
+    // 无新鲜里程计时不发布位置 setpoint，避免沿用上一 PX4 会话的数据。
+    if (!odomFresh())
     {
-      if (flight_state_.load() != FlightState::RUNNING_TRAJECTORY) {
-           RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
-             "等待状态机进入 RUNNING_TRAJECTORY... (当前: %d)", (int)flight_state_.load());
-      } else {
-           RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
-             "等待 vehicle_odometry 消息...");
-      }
+      RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
+        "等待新鲜 vehicle_odometry 消息...");
       return;
     }
 
@@ -508,6 +694,23 @@ private:
       odom_pub_->publish(odom_msg);
     }
 
+    // 启动门控期间持续发送当前位置 setpoint，满足 PX4 Offboard 预流要求。
+    if (flight_state_.load() != FlightState::RUNNING_TRAJECTORY)
+    {
+      if (!hover_hold_set_)
+      {
+        hover_hold_x_ = x_meas;
+        hover_hold_y_ = y_meas;
+        hover_hold_z_ = z_meas;
+        hover_hold_set_ = true;
+      }
+      publishTrajectorySetpoint(
+        hover_hold_x_, hover_hold_y_, hover_hold_z_,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+      publishUAVStatus();
+      return;
+    }
+
     // 若无命令，发布首次测量位置作为固定悬停保持 setpoint
     if (!has_command_)
     {
@@ -525,6 +728,7 @@ private:
       // 悬停保持时也定期输出位置（10s 节流）
       RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 10000,
           "UAV%d 悬停保持 Pos[%.2f,%.2f,%.2f]", self_uav_id_, x_meas, y_meas, z_meas);
+      publishUAVStatus();
       return;
     }
     hover_hold_set_ = false;  // 收到命令，清除悬停保持
@@ -561,13 +765,17 @@ private:
           (x_ref - x_meas) * (x_ref - x_meas) +
           (y_ref - y_meas) * (y_ref - y_meas) +
           (z_ref - z_meas) * (z_ref - z_meas));
-      double vel_mag = std::sqrt(
+      const double raw_ekf_speed = std::sqrt(
           current_odom_.velocity[0] * current_odom_.velocity[0] +
           current_odom_.velocity[1] * current_odom_.velocity[1] +
           current_odom_.velocity[2] * current_odom_.velocity[2]);
+      const double vel_mag = position_velocity_filter_.valid()
+        ? position_velocity_filter_.speed()
+        : std::numeric_limits<double>::infinity();
 
       latest_position_error_ = pos_err;
       latest_speed_ = vel_mag;
+      latest_raw_ekf_speed_ = raw_ekf_speed;
       const double position_enter =
         this->get_parameter("hover_position_enter_tolerance").as_double();
       const double velocity_enter =
@@ -598,8 +806,9 @@ private:
         settling_time_ = elapsed;
         writeControlAdaptationCsvRow();
         RCLCPP_INFO(this->get_logger(),
-            "悬停稳定确认! pos_err=%.2fm, vel=%.2fm/s → is_hover_stable=true",
-            pos_err, vel_mag);
+            "悬停稳定确认! pos_err=%.2fm, pos_vel=%.2fm/s, "
+            "raw_ekf_vel=%.2fm/s → is_hover_stable=true",
+            pos_err, vel_mag, raw_ekf_speed);
       }
     }
 
@@ -930,10 +1139,13 @@ private:
     uav_swarm_interfaces::msg::UAVStatus msg;
     msg.uav_id = uav_id_;
     msg.mission_id = mission_id_;
+    msg.system_ready =
+      flight_state_.load() == FlightState::RUNNING_TRAJECTORY;
     msg.is_hover_stable = is_hover_stable_;
     msg.stability_state = stability_state_;
     msg.position_error = static_cast<float>(latest_position_error_);
     msg.speed = static_cast<float>(latest_speed_);
+    msg.raw_ekf_speed = static_cast<float>(latest_raw_ekf_speed_);
     msg.header.stamp = this->now();
     status_pub_->publish(msg);
   }
@@ -1268,6 +1480,7 @@ private:
   // [Phase 1] Swarm 命令订阅 & 状态发布
   rclcpp::Subscription<uav_swarm_interfaces::msg::UAVSwarmCommand>::SharedPtr swarm_command_sub_;
   rclcpp::Subscription<px4_msgs::msg::VehicleOdometry>::SharedPtr odom_sub_;
+  rclcpp::Subscription<px4_msgs::msg::VehicleStatus>::SharedPtr vehicle_status_sub_;
   rclcpp::Publisher<uav_swarm_interfaces::msg::UAVStatus>::SharedPtr status_pub_;
   rclcpp::Publisher<geometry_msgs::msg::Point>::SharedPtr odom_pub_;
   rclcpp::Publisher<uav_swarm_interfaces::msg::TrajectoryMetrics>::SharedPtr
@@ -1339,7 +1552,12 @@ private:
 
   // Odom 数据
   px4_msgs::msg::VehicleOdometry current_odom_;
+  px4_msgs::msg::VehicleStatus current_vehicle_status_;
   bool has_odom_ = false;
+  bool has_vehicle_status_ = false;
+  double last_odom_receive_time_{0.0};
+  double last_vehicle_status_receive_time_{0.0};
+  ladrc_controller::PositionVelocityFilter position_velocity_filter_{0.5};
 
   // [Phase 3 预置] 悬停状态（Phase 1 默认为 false，Phase 3 完整实现）
   bool is_hover_stable_ = false;
@@ -1347,6 +1565,7 @@ private:
   std::optional<double> stable_candidate_since_;
   double latest_position_error_ = std::numeric_limits<double>::infinity();
   double latest_speed_ = std::numeric_limits<double>::infinity();
+  double latest_raw_ekf_speed_ = std::numeric_limits<double>::infinity();
 
   // Odom 发布计数器 (~10Hz throttle)
   int odom_pub_counter_ = 0;
@@ -1362,7 +1581,9 @@ private:
 
   // 状态机
   std::atomic<FlightState> flight_state_;
-  std::atomic<uint64_t> offboard_setpoint_counter_;
+  std::optional<double> startup_ready_since_;
+  std::optional<double> last_vehicle_command_time_;
+  std::optional<double> takeoff_stable_since_;
 
   double dt_;
 };
