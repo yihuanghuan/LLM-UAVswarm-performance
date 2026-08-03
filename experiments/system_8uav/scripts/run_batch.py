@@ -41,6 +41,12 @@ def trial_schedule(config: dict, phase: str):
     ]
 
 
+def archive_manifest(batch_root: Path, attempt_id: str, manifest: dict) -> None:
+    """Copy the small attempt manifest outside ignored raw data."""
+    if manifest:
+        write_json(batch_root / "manifests" / f"{attempt_id}.json", manifest)
+
+
 class SimulatorSupervisor:
     """Own one complete simulator process tree for exactly one attempt."""
 
@@ -427,6 +433,7 @@ def main():
         manifest_path = actual / "manifest.json"
         if manifest_path.exists():
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            archive_manifest(batch_root, outcome["attempt_id"], manifest)
             outcome["entered_execution"] = bool(
                 manifest.get("entered_execution"))
             outcome["failure_reason"] = manifest.get("failure_reason", "")
@@ -483,6 +490,7 @@ def main():
         manifest = (
             json.loads(manifest_path.read_text(encoding="utf-8"))
             if manifest_path.exists() else {})
+        archive_manifest(batch_root, attempt_id, manifest)
         entered = bool(manifest.get("entered_execution"))
         outcome = {
             **row, "returncode": returncode, "entered_execution": entered,

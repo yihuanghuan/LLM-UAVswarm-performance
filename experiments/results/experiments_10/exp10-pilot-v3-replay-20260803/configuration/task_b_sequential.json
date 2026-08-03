@@ -1,0 +1,26 @@
+{
+  "task_type": "task_b_sequential",
+  "command_text": "无人机1到8号机首先以[0,13.5,5]为中心，在10秒内组成间距3米的直线编队，使用smooth模式；全部无人机稳定悬停后，再以同一中心在8秒内组成半径4米的圆形编队，使用aggressive模式，避障系数均为1.0。",
+  "stages": [
+    {
+      "stage_id": 1,
+      "parallel_group": "stage_1",
+      "uav_ids": [1, 2, 3, 4, 5, 6, 7, 8],
+      "formation_type": "Line",
+      "center": [0.0, 13.5, 5.0],
+      "radius": 3.0,
+      "duration": 10.0,
+      "motion_style": "smooth"
+    },
+    {
+      "stage_id": 2,
+      "parallel_group": "stage_2",
+      "uav_ids": [1, 2, 3, 4, 5, 6, 7, 8],
+      "formation_type": "Circle",
+      "center": [0.0, 13.5, 5.0],
+      "radius": 4.0,
+      "duration": 8.0,
+      "motion_style": "aggressive"
+    }
+  ]
+}

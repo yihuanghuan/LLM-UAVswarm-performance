@@ -1,0 +1,16 @@
+{
+  "task_type": "task_d_dense",
+  "command_text": "无人机1到8号机以[0,13.5,5]为中心，在10秒内聚拢成半径2.2米的密集圆形编队，使用normal模式，避障系数为1.0。",
+  "stages": [
+    {
+      "stage_id": 1,
+      "parallel_group": "stage_1",
+      "uav_ids": [1, 2, 3, 4, 5, 6, 7, 8],
+      "formation_type": "Circle",
+      "center": [0.0, 13.5, 5.0],
+      "radius": 2.2,
+      "duration": 10.0,
+      "motion_style": "normal"
+    }
+  ]
+}
