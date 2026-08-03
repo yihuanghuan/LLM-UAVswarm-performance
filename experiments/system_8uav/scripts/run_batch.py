@@ -8,6 +8,7 @@ import json
 import os
 import random
 import signal
+import shlex
 import shutil
 import subprocess
 import sys
@@ -57,6 +58,8 @@ class SimulatorSupervisor:
             ["pgrep", "-x", "px4"],
             ["pgrep", "-f", "[l]adrc_position_controller_node"],
             ["pgrep", "-f", "[r]os2 launch ladrc_controller swarm_launch.py"],
+            ["pgrep", "-f", "[s]itl_multiple_run(_sequential)?[.]sh"],
+            ["pgrep", "-f", "[h]eadless_bin/gzclient"],
         ]
         return any(
             subprocess.run(
@@ -75,6 +78,9 @@ class SimulatorSupervisor:
             (["pkill", "-INT", "-f"], "[l]adrc_position_controller_node"),
             (["pkill", "-INT", "-f"],
              "[r]os2 launch ladrc_controller swarm_launch.py"),
+            (["pkill", "-INT", "-f"],
+             "[s]itl_multiple_run(_sequential)?[.]sh"),
+            (["pkill", "-INT", "-f"], "[h]eadless_bin/gzclient"),
         ]
         for prefix, pattern in patterns:
             subprocess.run(
@@ -117,13 +123,14 @@ class SimulatorSupervisor:
         self.start_process("micro_xrce_agent", "MicroXRCEAgent udp4 -p 8888")
         time.sleep(1)
         headless_bin = SCRIPT_DIR / "headless_bin"
+        launcher = SCRIPT_DIR / "sitl_multiple_run_sequential.sh"
+        xrce_timeout = int(experiment["xrce_per_uav_start_timeout"])
         self.start_process(
             "px4_gazebo",
             f"export PATH={headless_bin}:/usr/bin:/bin:/usr/local/bin:$PATH && "
-            "source Tools/simulation/gazebo-classic/setup_gazebo.bash "
-            "$(pwd) $(pwd)/build/px4_sitl_default && "
-            f"./Tools/simulation/gazebo-classic/sitl_multiple_run.sh "
-            f"-m iris -n {len(experiment['uav_ids'])}",
+            f"export PX4_AUTOPILOT_DIR={shlex.quote(str(self.px4_root))} && "
+            f"{shlex.quote(str(launcher))} -m iris "
+            f"-n {len(experiment['uav_ids'])} -x {xrce_timeout}",
             self.px4_root)
         deadline = time.monotonic() + float(
             experiment["stack_start_timeout"])

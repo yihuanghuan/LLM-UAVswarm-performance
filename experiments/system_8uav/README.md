@@ -54,6 +54,11 @@ python3 experiments/system_8uav/scripts/run_batch.py \
 
 自动模式为每个 trial 独立启动并关闭 MicroXRCEAgent、8 机 PX4/Gazebo 和控制器：
 
+8 个 PX4 实例使用实验专用 launcher 依次启动。每一架必须在
+`xrce_per_uav_start_timeout` 内报告 XRCE time sync converged，才会启动下一架，
+避免并发执行 500-sample 时间同步时因 Agent RTT 过高而永久卡在实体创建中；
+超时仍按 `simulator_startup_failure` 保留，不会静默重试或隐藏 attempt。
+
 ```bash
 python3 experiments/system_8uav/scripts/run_batch.py \
   --batch-id exp10-YYYYMMDD --phase pilot --manage-sim
