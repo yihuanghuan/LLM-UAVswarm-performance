@@ -1,0 +1,82 @@
+experiment:
+  experiment_id: experiments_10
+  uav_ids: [1, 2, 3, 4, 5, 6, 7, 8]
+  llm_model: MiniMax-M2.7-highspeed
+  assignment_mode: safety_aware
+  avoidance_mode: iapf_dual
+  iapf_escape_mode: id_order
+  safety_factor: 1.0
+  control_frequency: 50.0
+  trial_count: 10
+  block_randomization_seed: 1010
+  readiness_timeout: 75.0
+  readiness_speed_tolerance: 0.40
+  startup_settle_time: 10.0
+  startup_speed_tolerance: 0.15
+  startup_odom_timeout: 0.50
+  startup_status_timeout: 2.00
+  startup_takeoff_altitude: 1.50
+  readiness_min_altitude: 1.00
+  hover_velocity_filter_tau: 0.50
+  # PX4 vertical position P gain: reduces the steady altitude displacement
+  # needed to reject the Gazebo GPS vertical-velocity bias. PX4 range: 0.1-1.5.
+  px4_parameters:
+    MPC_Z_P: 1.5
+  stack_start_timeout: 120.0
+  px4_startup_mode: gated_concurrent
+  px4_spawn_gap_seconds: 0.0
+  xrce_per_uav_start_timeout: 30
+  stack_cooldown_seconds: 5.0
+  stable_hold_time: 1.0
+  stable_position_enter: 0.40
+  stable_speed_enter: 0.30
+  stable_position_exit: 0.50
+  stable_speed_exit: 0.40
+  dispatch_timeout: 5.0
+  reference_finish_timeout_margin: 5.0
+  stabilization_timeout: 30.0
+  stage_data_max_age: 0.5
+  post_roll_seconds: 4.0
+  sample_hz: 20.0
+
+safety:
+  collision_distance: 0.70
+  violation_distance: 1.00
+  iapf_enter_distance: 1.50
+  iapf_exit_distance: 1.65
+  strict_minimum_distance: true
+
+realtime:
+  minimum_mean_rtf: 0.95
+  minimum_effective_control_frequency: 45.0
+
+iapf:
+  iapf_violation_distance: 1.00
+  iapf_enter_distance: 1.50
+  iapf_exit_distance: 1.65
+  iapf_filter_alpha: 0.20
+  iapf_repulsion_gain: 25.0
+  iapf_escape_mode: id_order
+  iapf_escape_gain: 0.05
+  iapf_distance_epsilon: 0.10
+  iapf_position_gain: 0.05
+  iapf_position_limit: 0.50
+  iapf_accel_gain: 0.30
+  iapf_accel_limit: 2.00
+  neighbor_timeout: 0.20
+
+llm:
+  temperature: 0.0
+  top_p: 0.01
+  max_tokens: 4000
+  response_format: json_object
+  max_attempts: 3
+  request_timeout_seconds: 60
+  total_timeout_seconds: 190
+  retry_delay_seconds: 2
+  seed_supported: false
+  parser_version: exp10-v3
+
+paths:
+  results_root: experiments/results/experiments_10
+  px4_root: /home/yihuang/PX4-Autopilot

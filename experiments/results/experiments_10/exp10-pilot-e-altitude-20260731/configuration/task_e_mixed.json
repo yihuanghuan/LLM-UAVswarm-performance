@@ -1,0 +1,56 @@
+{
+  "task_type": "task_e_mixed",
+  "command_text": "执行三阶段组合任务。第一阶段，无人机1到4号机以[-5,8,5]为中心组成半径2.5米的圆形编队，同时无人机5到8号机以[5,19,5]为中心组成半径2.5米的圆形编队，两组均用10秒。全部稳定后进入第二阶段，两组使用上下错层航路并行交换区域：1到4号机移动到[5,19,7]，5到8号机移动到[-5,8,3]，仍组成半径2.5米圆形且均用10秒。全部稳定后进入第三阶段，1到8号机以[0,13.5,5]为中心在10秒内合并为半径4米的圆形编队。所有阶段使用normal模式和1.0避障系数。",
+  "stages": [
+    {
+      "stage_id": 1,
+      "parallel_group": "stage_1",
+      "uav_ids": [1, 2, 3, 4],
+      "formation_type": "Circle",
+      "center": [-5.0, 8.0, 5.0],
+      "radius": 2.5,
+      "duration": 10.0,
+      "motion_style": "normal"
+    },
+    {
+      "stage_id": 1,
+      "parallel_group": "stage_1",
+      "uav_ids": [5, 6, 7, 8],
+      "formation_type": "Circle",
+      "center": [5.0, 19.0, 7.0],
+      "radius": 2.5,
+      "duration": 10.0,
+      "motion_style": "normal"
+    },
+    {
+      "stage_id": 2,
+      "parallel_group": "stage_2",
+      "uav_ids": [1, 2, 3, 4],
+      "formation_type": "Circle",
+      "center": [5.0, 19.0, 5.0],
+      "radius": 2.5,
+      "duration": 10.0,
+      "motion_style": "normal"
+    },
+    {
+      "stage_id": 2,
+      "parallel_group": "stage_2",
+      "uav_ids": [5, 6, 7, 8],
+      "formation_type": "Circle",
+      "center": [-5.0, 8.0, 3.0],
+      "radius": 2.5,
+      "duration": 10.0,
+      "motion_style": "normal"
+    },
+    {
+      "stage_id": 3,
+      "parallel_group": "stage_3",
+      "uav_ids": [1, 2, 3, 4, 5, 6, 7, 8],
+      "formation_type": "Circle",
+      "center": [0.0, 13.5, 5.0],
+      "radius": 4.0,
+      "duration": 10.0,
+      "motion_style": "normal"
+    }
+  ]
+}

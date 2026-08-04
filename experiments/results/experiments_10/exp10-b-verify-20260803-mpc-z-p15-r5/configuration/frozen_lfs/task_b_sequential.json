@@ -1,0 +1,32 @@
+{
+  "task_sequences": [
+    {
+      "task_sequence_id": 1,
+      "duration_seconds": 10.0,
+      "uav_id": [1, 2, 3, 4, 5, 6, 7, 8],
+      "uav_count": 8,
+      "trigger_condition": "hover_and_wait",
+      "wait_time": null,
+      "iapf_safety_margin_factor": 1.0,
+      "motion_profile": "smooth",
+      "constraints": ["minimal_topology_change", "no_trajectory_cross", "keep_safety_distance"],
+      "global_center": [0.0, 13.5, 5.0],
+      "generation_mode": "parametric",
+      "parametric_data": {"formation_type": "Line", "formation_radius": 3.0}
+    },
+    {
+      "task_sequence_id": 2,
+      "duration_seconds": 8.0,
+      "uav_id": [1, 2, 3, 4, 5, 6, 7, 8],
+      "uav_count": 8,
+      "trigger_condition": "direct_execution",
+      "wait_time": null,
+      "iapf_safety_margin_factor": 1.0,
+      "motion_profile": "aggressive",
+      "constraints": ["minimal_topology_change", "no_trajectory_cross", "keep_safety_distance"],
+      "global_center": [0.0, 13.5, 5.0],
+      "generation_mode": "parametric",
+      "parametric_data": {"formation_type": "Circle", "formation_radius": 4.0}
+    }
+  ]
+}

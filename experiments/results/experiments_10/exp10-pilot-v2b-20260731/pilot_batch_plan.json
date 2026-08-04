@@ -1,0 +1,59 @@
+{
+  "batch_id": "exp10-pilot-v2b-20260731",
+  "phase": "pilot",
+  "created_at": "2026-07-31T08:53:52.437480+00:00",
+  "manage_sim": true,
+  "dry_run": false,
+  "config_checksum": "a7a05a52e07995b50a882ed4e54553af41c2f6dc6b984cffb2b41ecea07fa532",
+  "randomization_seed": 1010,
+  "schedule": [
+    {
+      "task_type": "task_d_dense",
+      "target_execution_index": 1,
+      "replacement_for": "",
+      "randomization_seed": 1010,
+      "attempt_id": "attempt_0001",
+      "run_order": 1
+    },
+    {
+      "task_type": "task_a_simple",
+      "target_execution_index": 1,
+      "replacement_for": "",
+      "randomization_seed": 1010,
+      "attempt_id": "attempt_0002",
+      "run_order": 2
+    },
+    {
+      "task_type": "task_c_grouped",
+      "target_execution_index": 1,
+      "replacement_for": "",
+      "randomization_seed": 1010,
+      "attempt_id": "attempt_0003",
+      "run_order": 3
+    },
+    {
+      "task_type": "task_b_sequential",
+      "target_execution_index": 1,
+      "replacement_for": "",
+      "randomization_seed": 1010,
+      "attempt_id": "attempt_0004",
+      "run_order": 4
+    },
+    {
+      "task_type": "task_e_mixed",
+      "target_execution_index": 1,
+      "replacement_for": "",
+      "randomization_seed": 1010,
+      "attempt_id": "attempt_0005",
+      "run_order": 5
+    },
+    {
+      "task_type": "task_e_mixed",
+      "target_execution_index": 1,
+      "replacement_for": "attempt_0005",
+      "randomization_seed": 1010,
+      "attempt_id": "attempt_0006",
+      "run_order": 6
+    }
+  ]
+}

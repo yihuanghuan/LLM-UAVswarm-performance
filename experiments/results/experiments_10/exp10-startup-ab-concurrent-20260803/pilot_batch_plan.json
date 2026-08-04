@@ -1,0 +1,35 @@
+{
+  "batch_id": "exp10-startup-ab-concurrent-20260803",
+  "phase": "pilot",
+  "created_at": "2026-08-03T03:52:26.491542+00:00",
+  "manage_sim": true,
+  "dry_run": false,
+  "config_checksum": "e0d8464c1e9a91146e8ee176d2fec195adb46bfb80237dda687e8271407d3ec4",
+  "randomization_seed": 1010,
+  "schedule": [
+    {
+      "task_type": "task_c_grouped",
+      "target_execution_index": 1,
+      "replacement_for": "",
+      "randomization_seed": 1010,
+      "attempt_id": "attempt_0001",
+      "run_order": 1
+    },
+    {
+      "task_type": "task_a_simple",
+      "target_execution_index": 1,
+      "replacement_for": "",
+      "randomization_seed": 1010,
+      "attempt_id": "attempt_0002",
+      "run_order": 2
+    },
+    {
+      "task_type": "task_d_dense",
+      "target_execution_index": 1,
+      "replacement_for": "",
+      "randomization_seed": 1010,
+      "attempt_id": "attempt_0003",
+      "run_order": 3
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+experiment:
+  experiment_id: experiments_10
+  uav_ids: [1, 2, 3, 4, 5, 6, 7, 8]
+  llm_model: MiniMax-M2.7-highspeed
+  assignment_mode: safety_aware
+  avoidance_mode: iapf_dual
+  iapf_escape_mode: id_order
+  safety_factor: 1.0
+  control_frequency: 50.0
+  trial_count: 10
+  block_randomization_seed: 1010
+  readiness_timeout: 75.0
+  stable_hold_time: 1.0
+  stable_position_enter: 0.35
+  stable_speed_enter: 0.30
+  stable_position_exit: 0.45
+  stable_speed_exit: 0.40
+  stage_timeout_margin: 30.0
+  post_roll_seconds: 4.0
+  sample_hz: 20.0
+
+safety:
+  collision_distance: 0.70
+  violation_distance: 1.00
+  iapf_enter_distance: 1.50
+  iapf_exit_distance: 1.65
+  strict_minimum_distance: true
+
+realtime:
+  minimum_mean_rtf: 0.95
+  minimum_effective_control_frequency: 45.0
+
+iapf:
+  iapf_violation_distance: 1.00
+  iapf_enter_distance: 1.50
+  iapf_exit_distance: 1.65
+  iapf_filter_alpha: 0.20
+  iapf_repulsion_gain: 25.0
+  iapf_escape_mode: id_order
+  iapf_escape_gain: 0.05
+  iapf_distance_epsilon: 0.10
+  iapf_position_gain: 0.05
+  iapf_position_limit: 0.50
+  iapf_accel_gain: 0.30
+  iapf_accel_limit: 2.00
+  neighbor_timeout: 0.20
+
+llm:
+  temperature: 0.0
+  top_p: 0.01
+  max_tokens: 4000
+  response_format: json_object
+  max_attempts: 3
+  request_timeout_seconds: 60
+  total_timeout_seconds: 190
+  retry_delay_seconds: 2
+  seed_supported: false
+  parser_version: exp10-v2
+
+paths:
+  results_root: experiments/results/experiments_10
+  px4_root: /home/yihuang/PX4-Autopilot
