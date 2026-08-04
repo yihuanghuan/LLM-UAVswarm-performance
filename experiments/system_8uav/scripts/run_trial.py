@@ -153,7 +153,7 @@ def parse_args() -> argparse.Namespace:
         help="git commit of the code that runs this attempt (auto-detected)")
     parser.add_argument(
         "--execution-commit-dirty",
-        action="store_true", default=revision["dirty"],
+        action="store_true", default=False,
         help="mark the executing working tree as dirty")
     return parser.parse_args()
 
