@@ -19,7 +19,7 @@ from typing import Any, Dict, List
 
 from system_common import (
     CONFIG_PATH, REPO_ROOT, TASK_NAMES, WORKSPACE_ROOT, config_checksum,
-    load_task, load_yaml, utc_now, write_json,
+    git_revision, load_task, load_yaml, utc_now, write_json,
 )
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -276,6 +276,10 @@ def parse_args():
     parser.add_argument("--no-rosbag", action="store_true")
     parser.add_argument("--max-attempts", type=int, default=0)
     parser.add_argument("--trials-per-task", type=int, default=0)
+    parser.add_argument(
+        "--allow-dirty",
+        action="store_true",
+        help="run a formal batch even when the working tree is dirty")
     parser.add_argument("--input-mode", choices=["llm", "replay"], default="llm")
     parser.add_argument(
         "--replay-lfs-root",
@@ -335,7 +339,7 @@ def minimax_quota_exhausted(manifest: Dict[str, Any], trial_dir: Path) -> bool:
     )
 
 
-def trial_command(row, args, config_path, results_root):
+def trial_command(row, args, config_path, results_root, revision=None):
     command = [
         sys.executable, str(SCRIPT_DIR / "run_trial.py"),
         "--task", row["task_type"],
@@ -352,6 +356,10 @@ def trial_command(row, args, config_path, results_root):
         command.append("--dry-run")
     if args.no_rosbag:
         command.append("--no-rosbag")
+    if revision:
+        command.extend(["--execution-commit", revision["commit"]])
+        if revision["dirty"]:
+            command.append("--execution-commit-dirty")
     return command
 
 
@@ -359,6 +367,18 @@ def main():
     args = parse_args()
     config_path = Path(args.config).resolve()
     config = load_yaml(config_path)
+    revision = git_revision(REPO_ROOT)
+    if revision["dirty"]:
+        print(
+            f"WARNING: working tree is dirty "
+            f"(branch={revision['branch']} HEAD={revision['commit_short']})",
+            file=sys.stderr)
+        if args.phase == "formal" and not args.dry_run and not args.allow_dirty:
+            print(
+                "refusing to run a formal batch on a dirty working tree\n"
+                "commit or stash changes, or re-run with --allow-dirty",
+                file=sys.stderr)
+            return 2
     tasks = [task for task in TASK_NAMES if not args.task or task in args.task]
     results_root = (REPO_ROOT / config["paths"]["results_root"]).resolve()
     batch_root = results_root / args.batch_id
@@ -407,6 +427,10 @@ def main():
             "dry_run": args.dry_run, "config_checksum": config_checksum(),
             "randomization_seed": int(
                 config["experiment"]["block_randomization_seed"]),
+            "branch": revision["branch"],
+            "execution_commit": revision["commit"],
+            "execution_commit_short": revision["commit_short"],
+            "execution_commit_dirty": revision["dirty"],
             "schedule": schedule,
         }
         write_json(plan_path, plan)
@@ -414,7 +438,7 @@ def main():
     if args.dry_run:
         for row in schedule:
             result = subprocess.run(
-                trial_command(row, args, config_path, results_root),
+                trial_command(row, args, config_path, results_root, revision),
                 cwd=REPO_ROOT, check=False)
             if result.returncode:
                 return result.returncode
@@ -432,7 +456,7 @@ def main():
         for row in orphaned:
             destination = raw_root / row["task_type"] / row["attempt_id"]
             destination.mkdir(parents=True, exist_ok=True)
-            manifest_path = destination / "manifest.json"
+            manifest_path = destination / "runtime_manifest.json"
             recovered = (
                 json.loads(manifest_path.read_text(encoding="utf-8"))
                 if manifest_path.exists() else {})
@@ -450,8 +474,10 @@ def main():
                     "failure_reason": "interrupted_startup",
                     "start_time": utc_now(), "end_time": utc_now(),
                     "config_checksum": config_checksum(),
+                    "execution_commit": revision["commit"],
+                    "execution_commit_dirty": revision["dirty"],
                 }
-                write_json(manifest_path, recovered)
+                write_json(destination / "runtime_manifest.json", recovered)
             entered = bool(recovered.get("entered_execution"))
             reason = recovered.get("failure_reason", "interrupted_startup")
             outcomes.append({
@@ -475,6 +501,9 @@ def main():
                 schedule.append(replacement)
             plan["schedule"] = schedule
         if orphaned:
+            plan["resume_execution_commit"] = revision["commit"]
+            plan["resume_execution_commit_short"] = revision["commit_short"]
+            plan["resume_execution_commit_dirty"] = revision["dirty"]
             write_json(plan_path, plan)
             write_json(outcomes_path, outcomes)
     completed_ids = {row["attempt_id"] for row in outcomes}
@@ -482,7 +511,7 @@ def main():
     for outcome in outcomes:
         actual = raw_root / outcome["task_type"] / outcome["attempt_id"]
         outcome["path"] = str(actual)
-        manifest_path = actual / "manifest.json"
+        manifest_path = actual / "runtime_manifest.json"
         if manifest_path.exists():
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             archive_manifest(batch_root, outcome["attempt_id"], manifest)
@@ -510,7 +539,7 @@ def main():
                     batch_root / "runtime_logs" / attempt_id, px4_root, config)
                 supervisor.start()
             result = subprocess.run(
-                trial_command(row, args, config_path, results_root),
+                trial_command(row, args, config_path, results_root, revision),
                 cwd=REPO_ROOT, check=False)
             returncode = result.returncode
         except Exception as exc:
@@ -518,7 +547,7 @@ def main():
             startup_error = f"{type(exc).__name__}: {exc}"
             destination.mkdir(parents=True, exist_ok=True)
             task_definition = load_task(task)
-            write_json(destination / "manifest.json", {
+            write_json(destination / "runtime_manifest.json", {
                 "experiment_id": config["experiment"]["experiment_id"],
                 "batch_id": args.batch_id, "task_type": task,
                 "attempt_id": attempt_id, "trial_id": None,
@@ -533,12 +562,14 @@ def main():
                 "failure_reason": "simulator_startup_failure",
                 "exception": startup_error, "start_time": utc_now(),
                 "end_time": utc_now(), "config_checksum": config_checksum(),
+                "execution_commit": revision["commit"],
+                "execution_commit_dirty": revision["dirty"],
             })
         finally:
             if supervisor:
                 supervisor.stop()
 
-        manifest_path = destination / "manifest.json"
+        manifest_path = destination / "runtime_manifest.json"
         manifest = (
             json.loads(manifest_path.read_text(encoding="utf-8"))
             if manifest_path.exists() else {})

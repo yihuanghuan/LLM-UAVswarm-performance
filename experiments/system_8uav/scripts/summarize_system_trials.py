@@ -22,6 +22,7 @@ from system_common import (
     quantile,
     read_csv,
     stddev,
+    utc_now,
     write_csv,
     write_json,
 )
@@ -359,8 +360,10 @@ def common(manifest: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def analyze_trial(trial_dir: Path, config: Dict[str, Any]) -> Dict[str, Any]:
-    manifest_path = trial_dir / "manifest.json"
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    runtime_path = trial_dir / "runtime_manifest.json"
+    if not runtime_path.is_file():
+        runtime_path = trial_dir / "manifest.json"  # backward compat
+    manifest = json.loads(runtime_path.read_text(encoding="utf-8"))
     odom = safe_csv(trial_dir / "odom.csv")
     status = safe_csv(trial_dir / "status.csv")
     trajectory = safe_csv(trial_dir / "trajectory_metrics.csv")
@@ -525,8 +528,12 @@ def analyze_trial(trial_dir: Path, config: Dict[str, Any]) -> Dict[str, Any]:
         "overall_success": overall,
         "failure_reason": failure_reason,
         "analysis_complete": True,
+        "manifest_stage": "analyzed",
+        "verdicts_pending": False,
+        "analyzed_by": "summarize_system_trials.analyze_trial",
+        "analysis_timestamp": utc_now(),
     })
-    write_json(manifest_path, manifest)
+    write_json(trial_dir / "manifest.json", manifest)
     write_json(trial_dir / "trial_summary.json", summary)
     return {
         "trial": summary, "stages": stages, "arrivals": arrivals,

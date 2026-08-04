@@ -27,6 +27,7 @@ def main() -> int:
         "--batch-id", args.batch_id, "--config", str(Path(args.config).resolve()),
         "--output-dir", str(output), "--legacy-v2",
         "--execution-commit", args.execution_commit,
+        "--no-archive",
     ], check=True)
     subprocess.run([
         sys.executable, str(script_root / "plot_v3.py"), str(batch),

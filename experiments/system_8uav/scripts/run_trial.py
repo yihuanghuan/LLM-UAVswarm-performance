@@ -21,6 +21,7 @@ from system_common import (
     REPO_ROOT,
     TaskDefinition,
     config_checksum,
+    git_revision,
     load_task,
     load_yaml,
     stage_groups,
@@ -145,6 +146,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--readiness-only", action="store_true")
     parser.add_argument("--input-mode", choices=["llm", "replay"], default="llm")
     parser.add_argument("--replay-lfs-root", default=str(FROZEN_LFS_ROOT))
+    revision = git_revision(REPO_ROOT)
+    parser.add_argument(
+        "--execution-commit",
+        default=revision["commit"],
+        help="git commit of the code that runs this attempt (auto-detected)")
+    parser.add_argument(
+        "--execution-commit-dirty",
+        action="store_true", default=revision["dirty"],
+        help="mark the executing working tree as dirty")
     return parser.parse_args()
 
 
@@ -990,15 +1000,17 @@ def main() -> int:
             for group in stage_groups(task)),
         "semantic_success": False,
         "execution_success": False,
-        "safety_success": False,
-        "overall_success": False,
         "failure_reason": "unknown",
         "rosbag_path": "" if args.no_rosbag else str(trial_dir / "rosbag2"),
         "config_checksum": config_checksum(),
         "collision_source": "distance_proxy",
         "rtf_source": "performance_metrics_or_clock",
+        "manifest_stage": "runtime",
+        "verdicts_pending": True,
+        "execution_commit": args.execution_commit,
+        "execution_commit_dirty": bool(args.execution_commit_dirty),
     }
-    write_json(trial_dir / "manifest.json", manifest)
+    write_json(trial_dir / "runtime_manifest.json", manifest)
 
     ros = import_ros()
     ros["rclpy"].init()
@@ -1102,7 +1114,7 @@ def main() -> int:
         manifest["end_time"] = utc_now()
         manifest["entered_execution"] = node.entered_execution
         manifest["failure_reason"] = failure_reason
-        write_json(trial_dir / "manifest.json", manifest)
+        write_json(trial_dir / "runtime_manifest.json", manifest)
         node.destroy_node()
         ros["rclpy"].shutdown()
 

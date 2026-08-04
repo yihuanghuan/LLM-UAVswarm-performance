@@ -329,8 +329,10 @@ def main():
     stage_rows, arrival_rows, analyzed = [], [], []
     for outcome in outcomes:
         trial_dir = Path(outcome["path"])
-        manifest = json.loads(
-            (trial_dir / "manifest.json").read_text(encoding="utf-8"))
+        manifest_path = trial_dir / "manifest.json"
+        if not manifest_path.is_file():
+            manifest_path = trial_dir / "runtime_manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         entered = bool(manifest.get("entered_execution"))
         attempt_rows.append({
             **{key: manifest.get(key, outcome.get(key, "")) for key in ATTEMPT_FIELDS},

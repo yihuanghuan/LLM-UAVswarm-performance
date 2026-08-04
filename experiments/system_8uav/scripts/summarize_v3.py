@@ -14,7 +14,8 @@ from summarize_system_trials import (
 )
 from summarize_v2 import OUTLIER_FIELDS, STAT_FIELDS, outliers, stats
 from system_common import (
-    CONFIG_PATH, REPO_ROOT, TASK_NAMES, finite, load_yaml, write_csv,
+    CONFIG_PATH, REPO_ROOT, TASK_NAMES, finite, git_revision, load_yaml,
+    render_execution_commit, utc_now, write_csv, write_json,
 )
 
 
@@ -80,7 +81,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--results-root")
     parser.add_argument("--output-dir")
     parser.add_argument("--legacy-v2", action="store_true")
-    parser.add_argument("--execution-commit", default="unknown")
+    parser.add_argument("--execution-commit", default=None,
+                        help="git commit label; auto-detected from batch plan if omitted")
+    parser.add_argument(
+        "--no-archive",
+        action="store_true",
+        help="do not refresh the batch manifests/ archive (read-only reanalysis)")
     return parser.parse_args()
 
 
@@ -101,13 +107,32 @@ def main() -> int:
         REPO_ROOT / config["paths"]["results_root"]).resolve()
     batch = root / args.batch_id
     outcomes = json.loads(find_outcomes(batch).read_text(encoding="utf-8"))
+    plan_path = batch / "formal_batch_plan.json"
+    if not plan_path.is_file():
+        plan_path = batch / "pilot_batch_plan.json"
+    plan = (json.loads(plan_path.read_text(encoding="utf-8"))
+            if plan_path.is_file() else {})
+    if args.execution_commit:
+        execution_commit = args.execution_commit
+    elif plan.get("execution_commit_short"):
+        execution_commit = render_execution_commit({
+            "commit_short": plan["execution_commit_short"],
+            "dirty": bool(plan.get("execution_commit_dirty")),
+        })
+    else:
+        revision = git_revision(REPO_ROOT)
+        execution_commit = render_execution_commit(revision)
+    branch = plan.get("branch", "")
     summaries = Path(args.output_dir).resolve() if args.output_dir else batch / "summaries"
 
     attempt_rows, readiness_rows, semantic_rows = [], [], []
     stage_rows, arrival_rows, timeout_rows, analyzed = [], [], [], []
     for outcome in outcomes:
         trial_dir = Path(outcome["path"])
-        manifest = json.loads((trial_dir / "manifest.json").read_text(encoding="utf-8"))
+        manifest_path = trial_dir / "manifest.json"
+        if not manifest_path.is_file():
+            manifest_path = trial_dir / "runtime_manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         entered = bool(manifest.get("entered_execution"))
         original_reason = str(manifest.get("failure_reason") or "")
         attempt = {
@@ -184,6 +209,16 @@ def main() -> int:
                 attempt[field] = analyzed_manifest.get(field, attempt[field])
             attempt["failure_reason"] = str(
                 analyzed_manifest.get("failure_reason") or classified)
+
+    if not args.no_archive:
+        manifest_root = batch / "manifests"
+        manifest_root.mkdir(parents=True, exist_ok=True)
+        for attempt in attempt_rows:
+            source = Path(attempt["path"]) / "manifest.json"
+            if not source.is_file():
+                continue
+            destination = manifest_root / f"{attempt['attempt_id']}.json"
+            destination.write_bytes(source.read_bytes())
 
     mission_rows = []
     for attempt in [row for row in attempt_rows if truth(row["entered_execution"])]:
@@ -277,7 +312,16 @@ def main() -> int:
 
     report = [
         f"# Experiment 10 v3 completion report: {args.batch_id}", "",
-        f"- execution code commit: `{args.execution_commit}`",
+        "## Reproduction record", "",
+        f"- branch: `{branch}`",
+        f"- execution code commit: `{execution_commit}`",
+        f"- frozen configuration: `{batch / 'configuration' / 'full_system.yaml'}`",
+        f"- data location: `{batch}`",
+        f"- config checksum: `{plan.get('config_checksum', '')}`",
+        f"- created at: `{plan.get('created_at', '')}`",
+        f"- input mode: `{plan.get('input_mode', 'llm')}`",
+        f"- completed successfully: {'yes' if not args.no_archive else 'reanalysis (read-only)'}",
+        "", "## Attempt accounting", "",
         f"- attempts: {len(attempt_rows)}",
         f"- execution-entry trials: {len(mission_rows)}",
         "- main-analysis trials: "
@@ -306,6 +350,18 @@ def main() -> int:
     (summaries / "completion_report.md").write_text(
         "\n".join(report) + "\n", encoding="utf-8")
     print(f"generated v3 summaries for {len(attempt_rows)} attempts in {summaries}")
+
+    try:
+        from verify_batch import verify_batch
+        violations = verify_batch(batch, summaries)
+    except ImportError:
+        violations = []
+        print("verify_batch not available; skipping consistency check",
+              file=sys.stderr)
+    if violations:
+        for violation in violations:
+            print(f"consistency violation: {violation}", file=sys.stderr)
+        return 1
     return 0
 
 

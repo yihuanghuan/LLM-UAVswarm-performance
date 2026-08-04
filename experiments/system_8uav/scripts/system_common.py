@@ -8,6 +8,7 @@ import hashlib
 import json
 import math
 import statistics
+import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -224,6 +225,44 @@ def config_checksum(paths: Sequence[Path] | None = None) -> str:
         digest.update(path.name.encode("utf-8"))
         digest.update(path.read_bytes())
     return digest.hexdigest()
+
+
+def git_revision(root: Path = REPO_ROOT) -> Dict[str, Any]:
+    """Describe the git revision of the repository containing *root*.
+
+    Returns branch, full commit SHA, short SHA, and a dirty flag (any
+    output from ``git status --porcelain``, including untracked files).
+    Falls back to ``"unknown"`` when *root* is not inside a repository.
+    """
+
+    def _run(*args: str) -> str:
+        try:
+            result = subprocess.run(
+                ["git", "-C", str(root), *args], text=True,
+                stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                check=False)
+        except FileNotFoundError:
+            return ""
+        return result.stdout.strip() if result.returncode == 0 else ""
+
+    branch = _run("rev-parse", "--abbrev-ref", "HEAD")
+    sha = _run("rev-parse", "HEAD")
+    porcelain = _run("status", "--porcelain")
+    return {
+        "branch": branch or "unknown",
+        "commit": sha or "unknown",
+        "commit_short": sha[:10] if sha else "unknown",
+        "dirty": bool(porcelain),
+    }
+
+
+def render_execution_commit(revision: Dict[str, Any]) -> str:
+    """Format a revision dict as a completion-report commit label.
+
+    Example: ``"89dd3d89c2a5-dirty"`` for a dirty tree.
+    """
+    short = revision.get("commit_short") or revision.get("commit", "unknown")
+    return f"{short}-dirty" if revision.get("dirty") else short
 
 
 def write_json(path: Path, payload: Any) -> None:
