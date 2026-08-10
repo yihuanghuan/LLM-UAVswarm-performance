@@ -12,7 +12,11 @@ from uav_swarm_interfaces.msg import UAVExecutionCommand, UAVStatus, UAVSwarmCom
 from .no_location import parse_uav_command
 from .safety_aware_allocator import SafetyAwareTopologyAllocator
 from .execution_command_builder import build_execution_command
-from .late_resolution import LateResolutionPolicy, resolve_execution_task
+from .late_resolution import (
+    LateResolutionPolicy,
+    resolve_execution_parallel,
+    resolve_execution_task,
+)
 from .state_snapshot import FreshStateSnapshotManager
 
 # ====================== 硬编码：无人机初始坐标 + ID (全局地图) ======================
@@ -195,6 +199,45 @@ class UAVFormationNode(Node):
                 group_id, now.to_msg())
             self.execution_publisher[uid].publish(command)
         return resolved
+
+    def resolve_and_publish_candidate_parallel(
+        self,
+        tasks: List[Dict],
+        policy: LateResolutionPolicy,
+        mission_id: int,
+        group_id: int,
+        completion_mode: str,
+        group_d_plan: float,
+    ):
+        """Resolve and publish one Candidate parallel group from one snapshot."""
+        if self.snapshot_manager is None:
+            raise RuntimeError(
+                'Candidate state freshness parameters are not configured'
+            )
+        participant_ids = [uid for task in tasks for uid in task['U']]
+        now = self.get_clock().now()
+        snapshot = self.snapshot_manager.snapshot(
+            participant_ids, now.nanoseconds / 1e9
+        )
+        resolved_group = resolve_execution_parallel(
+            tasks,
+            snapshot,
+            policy,
+            completion_mode,
+            group_d_plan,
+        )
+        for resolved in resolved_group.tasks:
+            for index, uid in enumerate(resolved.executable_lfs.uav_ids):
+                command = build_execution_command(
+                    resolved,
+                    index,
+                    mission_id,
+                    resolved.trace.task_id,
+                    group_id,
+                    now.to_msg(),
+                )
+                self.execution_publisher[uid].publish(command)
+        return resolved_group
 
     def send_goal_positions(
         self,
