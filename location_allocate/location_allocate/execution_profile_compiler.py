@@ -2,7 +2,7 @@
 
 import math
 from dataclasses import dataclass
-from typing import Mapping, Sequence, Tuple
+from typing import Mapping, Optional, Sequence, Tuple
 
 from .lfs_types import ExecutableLFS, ExecutionProfile, Vector3
 
@@ -18,10 +18,11 @@ class ExecutionProfilePolicy:
     base_omega_c: Vector3
     base_omega_o: Vector3
     style_gains: Mapping[str, float]
-    task_reference_speed: float
-    task_gain_intercept: float
-    task_gain_slope: float
-    task_gain_range: Tuple[float, float]
+    task_adaptation_type: str
+    task_reference_speed: Optional[float]
+    task_gain_intercept: Optional[float]
+    task_gain_slope: Optional[float]
+    task_gain_range: Optional[Tuple[float, float]]
     total_gain_range: Tuple[float, float]
     velocity_limit: float
     acceleration_limit: float
@@ -33,10 +34,6 @@ class ExecutionProfilePolicy:
             *self.base_omega_c,
             *self.base_omega_o,
             *self.style_gains.values(),
-            self.task_reference_speed,
-            self.task_gain_intercept,
-            self.task_gain_slope,
-            *self.task_gain_range,
             *self.total_gain_range,
             self.velocity_limit,
             self.acceleration_limit,
@@ -44,8 +41,24 @@ class ExecutionProfilePolicy:
         )
         if not all(math.isfinite(value) and value > 0.0 for value in numeric):
             raise ProfileCompileError("profile policy values must be finite and positive")
-        if self.task_gain_range[0] > self.task_gain_range[1]:
-            raise ProfileCompileError("invalid task_gain_range")
+        if self.task_adaptation_type == "identity":
+            pass
+        elif self.task_adaptation_type == "linear_speed":
+            linear = (
+                self.task_reference_speed,
+                self.task_gain_intercept,
+                self.task_gain_slope,
+            )
+            if any(value is None or not math.isfinite(value) for value in linear):
+                raise ProfileCompileError("linear task adaptation is incomplete")
+            if self.task_reference_speed <= 0.0 or self.task_gain_intercept <= 0.0:
+                raise ProfileCompileError("linear task adaptation is invalid")
+            if self.task_gain_slope < 0.0 or self.task_gain_range is None:
+                raise ProfileCompileError("linear task gain bounds are invalid")
+            if self.task_gain_range[0] > self.task_gain_range[1]:
+                raise ProfileCompileError("invalid task_gain_range")
+        else:
+            raise ProfileCompileError("unsupported task_adaptation_type")
         if self.total_gain_range[0] > self.total_gain_range[1]:
             raise ProfileCompileError("invalid total_gain_range")
 
@@ -94,10 +107,13 @@ def compile_execution_profiles(
     for start, target in zip(initial, assigned_targets):
         distance = math.dist(start, target)
         average_speed = distance / executable.duration
-        raw_task_gain = policy.task_gain_intercept + policy.task_gain_slope * (
-            average_speed / policy.task_reference_speed
-        )
-        task_gain = _clamp(raw_task_gain, policy.task_gain_range)
+        if policy.task_adaptation_type == "identity":
+            task_gain = 1.0
+        else:
+            raw_task_gain = policy.task_gain_intercept + policy.task_gain_slope * (
+                average_speed / policy.task_reference_speed
+            )
+            task_gain = _clamp(raw_task_gain, policy.task_gain_range)
         total_gain = _clamp(style_gain * task_gain, policy.total_gain_range)
         profiles.append(
             ExecutionProfile(

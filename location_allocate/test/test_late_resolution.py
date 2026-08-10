@@ -80,6 +80,7 @@ def policy(safety_resolver=None, tolerance=0.0):
             base_omega_c=(3.0, 3.0, 3.5),
             base_omega_o=(10.0, 10.0, 15.0),
             style_gains={"normal": 1.0},
+            task_adaptation_type="linear_speed",
             task_reference_speed=2.0,
             task_gain_intercept=0.8,
             task_gain_slope=0.2,

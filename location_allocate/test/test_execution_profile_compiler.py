@@ -16,6 +16,7 @@ def policy():
         base_omega_c=(3.0, 3.0, 3.5),
         base_omega_o=(10.0, 10.0, 15.0),
         style_gains={"smooth": 0.8, "normal": 1.0, "aggressive": 1.2},
+        task_adaptation_type="linear_speed",
         task_reference_speed=2.0,
         task_gain_intercept=0.8,
         task_gain_slope=0.2,
@@ -73,6 +74,31 @@ def test_profile_policy_has_no_hidden_default_values():
         field.default is dataclasses.MISSING
         for field in dataclasses.fields(ExecutionProfilePolicy)
     )
+
+
+def test_identity_task_adaptation_never_invents_semantic_gain():
+    identity = dataclasses.replace(
+        policy(),
+        style_gains={"smooth": 1.0, "normal": 1.0, "aggressive": 1.0},
+        task_adaptation_type="identity",
+        task_reference_speed=None,
+        task_gain_intercept=None,
+        task_gain_slope=None,
+        task_gain_range=None,
+        total_gain_range=(1.0, 1.0),
+    )
+
+    profiles = compile_execution_profiles(
+        executable(style="aggressive"),
+        [[0, 0, 0], [0, 1, 0]],
+        [[1, 0, 0], [10, 1, 0]],
+        identity,
+        safety(),
+    )
+
+    assert {item.style_gain for item in profiles} == {1.0}
+    assert {item.task_gain for item in profiles} == {1.0}
+    assert {item.omega_c for item in profiles} == {(3.0, 3.0, 3.5)}
 
 
 def test_profile_rejects_non_finite_or_inconsistent_values():

@@ -1,0 +1,80 @@
+policy_status: migration
+configuration_id: migration-main-v1
+
+state_snapshot:
+  state_timeout: 0.5
+  snapshot_skew: 0.15
+  fresh_state_wait_timeout: 2.0
+  allow_receive_time_fallback: false
+  require_velocity: true
+
+geometry:
+  workspace_bounds:
+    lower: [-15.0, -10.0, 0.5]
+    upper: [15.0, 35.0, 15.0]
+  nominal_spacing: 2.0
+  qualitative_multipliers: {compact: 0.8, normal: 1.0, spacious: 1.25}
+
+safety:
+  d_hard: 1.0
+  d_plan_base: 1.0
+  d_plan_margin: 1.0
+  iapf_enter_base: 1.0
+  iapf_enter_margin: 0.5
+  iapf_exit_base: 1.0
+  iapf_exit_margin: 0.65
+  repulsion_scale: 1.0
+  s_min: 1.0
+  s_max: 2.0
+
+timing:
+  policy_type: minimum_jerk
+  velocity_limit: 5.0
+  acceleration_limit: 5.0
+  jerk_limit: 10.0
+  minimum_duration: 0.5
+  auto_style_factors: {smooth: 1.0, normal: 1.0, aggressive: 1.0}
+  planning_distance_bound_type: max_pairwise
+  final_recheck_tolerance: 0.0
+
+allocator:
+  sample_hz: 20.0
+  alpha: 1.0
+  beta_xy: 10.0
+  beta_proximity: 10.0
+  gamma: 1.0
+  epsilon: 0.001
+  minimum_improvement: 0.000001
+  parallel_d_plan_aggregation: max
+
+execution_profile:
+  task_adaptation_type: identity
+  baseline_omega_c: [3.0, 3.0, 3.5]
+  baseline_omega_o: [10.0, 10.0, 15.0]
+  style_gains: {smooth: 1.0, normal: 1.0, aggressive: 1.0}
+  velocity_limit: 5.0
+  acceleration_limit: 5.0
+  jerk_limit: 10.0
+
+controller_hard_clamps:
+  smoothing_alpha: 1.0
+  omega_c_min: [3.0, 3.0, 3.5]
+  omega_c_max: [3.0, 3.0, 3.5]
+  omega_o_min: [10.0, 10.0, 15.0]
+  omega_o_max: [10.0, 10.0, 15.0]
+  velocity_max: 5.0
+  acceleration_max: 5.0
+  jerk_max: 10.0
+  iapf_enter_min: 1.5
+  iapf_enter_max: 2.0
+  iapf_exit_max: 2.3
+  iapf_repulsion_max: 1.0
+
+provenance:
+  d_hard: ladrc_controller/config/ladrc_params.yaml:iapf_violation_distance
+  d_plan_s1: location_allocate/safety_aware_allocator.py:d_safe
+  iapf_soft: ladrc_controller/config/ladrc_params.yaml:iapf_enter_distance,iapf_exit_distance
+  ladrc_baseline: ladrc_controller/config/ladrc_params.yaml:omega_c_*,omega_o_*
+  dynamics: ladrc_controller/config/ladrc_params.yaml:max_velocity,max_acceleration_x/y
+  allocator: location_allocate/safety_aware_allocator.py:constructor_defaults
+  migration_decisions: user-confirmed-not-paper-frozen
