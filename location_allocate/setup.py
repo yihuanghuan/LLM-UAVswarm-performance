@@ -14,6 +14,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/schemas', ['../schemas/lfs_schema.json']),
+        ('share/' + package_name + '/config', ['config/lfs_policy.template.yaml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
     ],
     install_requires=[

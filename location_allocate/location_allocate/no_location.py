@@ -33,7 +33,9 @@ import httpx
 
 from .llm_parse_logger import append_llm_parse_log
 from .lfs_validator import (
+    early_validate_candidate_mission,
     estimate_field_accuracy,
+    is_candidate_mission,
     parse_available_uav_ids,
     validate_and_compile_lfs,
 )
@@ -205,6 +207,11 @@ def purify_json_content(raw_content: str) -> str:
 
 
 def classify_command_type(llm_output: dict) -> str:
+    if is_candidate_mission(llm_output):
+        nodes = llm_output["mission"].get("nodes", [])
+        if any(node.get("type") == "parallel" for node in nodes):
+            return "candidate_parallel"
+        return "candidate_sequential" if len(nodes) > 1 else "candidate_simple"
     tasks = llm_output.get("task_sequences", [])
     if not tasks:
         return "invalid"
@@ -300,8 +307,13 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
             cfr_result = json.loads(pure_json_str)
             valid_json = True
             field_accuracy = estimate_field_accuracy(cfr_result)
-            available_uav_ids = parse_available_uav_ids(ros_aux_info)
-            cfr_result = validate_and_compile_lfs(cfr_result, available_uav_ids)
+            if is_candidate_mission(cfr_result):
+                cfr_result = early_validate_candidate_mission(cfr_result)
+            else:
+                available_uav_ids = parse_available_uav_ids(ros_aux_info)
+                cfr_result = validate_and_compile_lfs(
+                    cfr_result, available_uav_ids
+                )
             schema_valid = True
 
             _log_parse_attempt(

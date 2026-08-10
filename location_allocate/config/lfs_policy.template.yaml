@@ -1,0 +1,91 @@
+# Candidate LFS policy structure. Every null is provisional/TBD and must be
+# explicitly resolved before the new runtime path is enabled. This file is not
+# a ROS parameter file and does not change legacy main behavior.
+policy_status: provisional
+configuration_id: null
+
+state_snapshot:
+  state_timeout: null
+  snapshot_skew: null
+  fresh_state_wait_timeout: null
+
+geometry:
+  workspace_bounds:
+    lower: [null, null, null]
+    upper: [null, null, null]
+  nominal_spacing: null
+  qualitative_multipliers:
+    compact: null
+    normal: null
+    spacious: null
+
+safety:
+  d_hard: null
+  d_plan_mapping:
+    type: null
+    base: null
+    parameters: null
+  iapf_soft_mapping:
+    type: null
+    enter_base: null
+    exit_base: null
+    repulsion_parameters: null
+
+timing:
+  policy_type: null
+  velocity_limit: null
+  acceleration_limit: null
+  jerk_limit: null
+  minimum_duration: null
+  auto_style_factors:
+    smooth: null
+    normal: null
+    aggressive: null
+  planning_distance_bound_type: null
+  final_recheck_tolerance: null
+
+allocator:
+  sample_hz: null
+  alpha: null
+  beta_xy: null
+  beta_proximity: null
+  gamma: null
+  epsilon: null
+  minimum_improvement: null
+  parallel_d_plan_aggregation: null
+
+execution_profile:
+  policy_type: null
+  baseline_omega_c: [null, null, null]
+  baseline_omega_o: [null, null, null]
+  style_gains:
+    smooth: null
+    normal: null
+    aggressive: null
+  task_reference_speed: null
+  task_gain_intercept: null
+  task_gain_slope: null
+  task_gain_range: [null, null]
+  total_gain_range: [null, null]
+  velocity_limit: null
+  acceleration_limit: null
+  jerk_limit: null
+
+controller_hard_clamps:
+  smoothing_alpha: null
+  omega_c_min: [null, null, null]
+  omega_c_max: [null, null, null]
+  omega_o_min: [null, null, null]
+  omega_o_max: [null, null, null]
+  velocity_max: null
+  acceleration_max: null
+  jerk_max: null
+  iapf_enter_min: null
+  iapf_enter_max: null
+  iapf_exit_max: null
+  iapf_repulsion_max: null
+
+pending_semantics:
+  line_vs_lineup: pending_confirmation
+  free_formation: pending_confirmation
+  forward_reference_frame: pending_confirmation
