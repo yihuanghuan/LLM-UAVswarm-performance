@@ -15,6 +15,8 @@ class UAVState:
     receive_timestamp: float
     velocity: Optional[Vector3] = None
     source_timestamp: Optional[float] = None
+    timestamp_source: str = "receive_time"
+    warnings: Tuple[str, ...] = ()
 
     @property
     def effective_timestamp(self) -> float:
@@ -31,6 +33,7 @@ class StateSnapshot:
 
     epoch: float
     states: Mapping[int, UAVState]
+    warnings: Tuple[str, ...] = ()
 
     def positions(self, uav_ids: Sequence[int]) -> List[Vector3]:
         return [self.states[int(uid)].position for uid in uav_ids]

@@ -10,6 +10,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(builtin_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(px4_msgs REQUIRED)
 find_package(uav_swarm_interfaces REQUIRED)
@@ -83,6 +84,9 @@ if(BUILD_TESTING)
   target_link_libraries(test_iapf_core ladrc_lib)
   ament_add_gtest(
     test_execution_profile_guard test/test_execution_profile_guard.cpp)
+  ament_add_gtest(test_swarm_state_builder test/test_swarm_state_builder.cpp)
+  ament_target_dependencies(
+    test_swarm_state_builder nav_msgs px4_msgs builtin_interfaces)
 endif()
 
 ament_package()

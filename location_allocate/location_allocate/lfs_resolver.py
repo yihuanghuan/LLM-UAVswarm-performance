@@ -79,5 +79,6 @@ def resolve_candidate_task(
         center_source=center_source,
         resolved_center=intent.center,
         t_request=dict(intent.time_request),
+        warnings=list(snapshot.warnings),
     )
     return intent, trace

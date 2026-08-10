@@ -11,10 +11,12 @@
 #include <uav_swarm_interfaces/msg/control_adaptation_log.hpp>
 #include <uav_swarm_interfaces/msg/iapf_debug.hpp>
 #include <geometry_msgs/msg/point.hpp>
+#include <nav_msgs/msg/odometry.hpp>
 #include "ladrc_controller/ladrc_core.hpp"
 #include "ladrc_controller/iapf_core.hpp"
 #include "ladrc_controller/minimum_jerk_trajectory.hpp"
 #include "ladrc_controller/execution_profile_guard.hpp"
+#include "ladrc_controller/swarm_state_builder.hpp"
 #include <cmath>
 #include <chrono>
 #include <atomic>
@@ -227,6 +229,8 @@ public:
 
     // 低频 ENU 位置发布器（供调度层获取真实坐标）
     odom_pub_ = this->create_publisher<geometry_msgs::msg::Point>("odom", 10);
+    swarm_state_pub_ = this->create_publisher<nav_msgs::msg::Odometry>(
+        "swarm_state", rclcpp::SensorDataQoS());
 
     // 低频轨迹指标发布器（供外部订阅查看 Minimum Jerk 编译结果）
     trajectory_metrics_pub_ =
@@ -591,6 +595,16 @@ private:
     RCLCPP_INFO_ONCE(this->get_logger(), "已接收到 vehicle_odometry 消息");
     current_odom_ = *msg;
     has_odom_ = true;
+
+    // Standardized Candidate planning state. PX4 timestamps are boot-clock
+    // microseconds, so the normalization boundary stamps the received sample
+    // with this node's ROS clock instead of pretending it is ROS epoch time.
+    auto state = ladrc_controller::buildSwarmState(
+      *msg, this->now(), self_uav_id_,
+      this->get_parameter("enu_offset_x").as_double(),
+      this->get_parameter("enu_offset_y").as_double(),
+      this->get_parameter("enu_offset_z").as_double());
+    swarm_state_pub_->publish(state);
   }
 
   // --- 状态机逻辑 ---
@@ -1359,6 +1373,7 @@ private:
   rclcpp::Subscription<px4_msgs::msg::VehicleOdometry>::SharedPtr odom_sub_;
   rclcpp::Publisher<uav_swarm_interfaces::msg::UAVStatus>::SharedPtr status_pub_;
   rclcpp::Publisher<geometry_msgs::msg::Point>::SharedPtr odom_pub_;
+  rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr swarm_state_pub_;
   rclcpp::Publisher<uav_swarm_interfaces::msg::TrajectoryMetrics>::SharedPtr
       trajectory_metrics_pub_;
   rclcpp::Publisher<uav_swarm_interfaces::msg::ControlAdaptationLog>::SharedPtr

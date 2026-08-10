@@ -22,11 +22,20 @@ def _vector3(value: Sequence[float], name: str) -> Vector3:
 class FreshStateSnapshotManager:
     """Maintain timestamped states and produce all-or-nothing snapshots."""
 
-    def __init__(self, state_timeout: float, snapshot_skew: float):
+    def __init__(
+        self,
+        state_timeout: float,
+        snapshot_skew: float,
+        *,
+        require_velocity: bool = False,
+        allow_receive_time_fallback: bool = True,
+    ):
         if state_timeout <= 0.0 or snapshot_skew < 0.0:
             raise ValueError("invalid freshness configuration")
         self.state_timeout = float(state_timeout)
         self.snapshot_skew = float(snapshot_skew)
+        self.require_velocity = bool(require_velocity)
+        self.allow_receive_time_fallback = bool(allow_receive_time_fallback)
         self._states: Dict[int, UAVState] = {}
 
     def update(
@@ -39,8 +48,17 @@ class FreshStateSnapshotManager:
     ) -> None:
         if not math.isfinite(receive_timestamp):
             raise ValueError("receive_timestamp must be finite")
-        if source_timestamp is not None and not math.isfinite(source_timestamp):
-            raise ValueError("source_timestamp must be finite")
+        warnings = []
+        if source_timestamp is not None and (
+            not math.isfinite(source_timestamp) or source_timestamp <= 0.0
+        ):
+            source_timestamp = None
+        if source_timestamp is None:
+            if not self.allow_receive_time_fallback:
+                raise ValueError("valid source_timestamp is required")
+            warnings.append("state timestamp used receive-time fallback")
+        if self.require_velocity and velocity is None:
+            raise ValueError("velocity is required")
         self._states[int(uav_id)] = UAVState(
             position=_vector3(position, "position"),
             velocity=None if velocity is None else _vector3(velocity, "velocity"),
@@ -48,6 +66,12 @@ class FreshStateSnapshotManager:
             source_timestamp=(
                 None if source_timestamp is None else float(source_timestamp)
             ),
+            timestamp_source=(
+                "source_timestamp"
+                if source_timestamp is not None
+                else "receive_time_fallback"
+            ),
+            warnings=tuple(warnings),
         )
 
     def snapshot(self, uav_ids: Iterable[int], now: float) -> StateSnapshot:
@@ -69,4 +93,9 @@ class FreshStateSnapshotManager:
         timestamps = [state.effective_timestamp for state in selected.values()]
         if max(timestamps) - min(timestamps) > self.snapshot_skew:
             raise SnapshotError("participating UAV states exceed snapshot_skew")
-        return StateSnapshot(epoch=float(now), states=selected)
+        warnings = tuple(
+            warning
+            for state in selected.values()
+            for warning in state.warnings
+        )
+        return StateSnapshot(epoch=float(now), states=selected, warnings=warnings)
