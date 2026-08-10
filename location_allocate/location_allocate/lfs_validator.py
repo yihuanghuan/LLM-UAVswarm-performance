@@ -1,5 +1,6 @@
 import copy
 import json
+import math
 import os
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
@@ -42,6 +43,63 @@ LFS_REQUIRED_FIELDS = ["U", "F", "c", "r", "T", "m", "s", "q"]
 
 class LFSValidationError(ValueError):
     """Raised when an LFS payload fails schema or semantic validation."""
+
+
+def is_candidate_mission(payload: Dict[str, Any]) -> bool:
+    """Return whether payload uses the draft Candidate Mission envelope."""
+    return isinstance(payload.get("mission"), dict)
+
+
+def _assert_finite(value: Any, location: str) -> None:
+    if isinstance(value, bool):
+        return
+    if isinstance(value, (int, float)):
+        if not math.isfinite(float(value)):
+            raise LFSValidationError(f"{location} must be finite")
+        return
+    if isinstance(value, list):
+        for index, item in enumerate(value):
+            _assert_finite(item, f"{location}[{index}]")
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            _assert_finite(item, f"{location}.{key}")
+
+
+def early_validate_candidate_mission(
+    payload: Dict[str, Any],
+    schema: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Run state-independent schema and semantic checks."""
+    validate_schema(payload, schema)
+    if not is_candidate_mission(payload):
+        raise LFSValidationError("payload is not a Candidate Mission")
+    _assert_finite(payload, "<root>")
+
+    seen_task_ids = set()
+    for node_index, node in enumerate(payload["mission"]["nodes"]):
+        tasks = node.get("tasks", []) if node["type"] == "parallel" else []
+        if node["type"] == "task":
+            tasks = [node["task"]]
+        if node["type"] == "parallel":
+            seen_uavs = set()
+            for task in tasks:
+                overlap = seen_uavs.intersection(task["U"])
+                if overlap:
+                    raise LFSValidationError(
+                        f"parallel node {node_index} has overlapping UAV IDs: "
+                        f"{sorted(overlap)}"
+                    )
+                seen_uavs.update(task["U"])
+        for task in tasks:
+            task_id = int(task["task_id"])
+            if task_id in seen_task_ids:
+                raise LFSValidationError(f"duplicate task_id: {task_id}")
+            seen_task_ids.add(task_id)
+            if float(task["s"]) < 1.0:
+                raise LFSValidationError(
+                    f"task {task_id} safety factor s must be >= 1"
+                )
+    return copy.deepcopy(payload)
 
 
 def _schema_candidates() -> List[Path]:
@@ -124,6 +182,11 @@ def validate_and_compile_lfs(
     available_uav_ids: Optional[Sequence[int]] = None,
     schema: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
+    if is_candidate_mission(payload):
+        raise LFSValidationError(
+            "Candidate Mission requires early_validate_candidate_mission() and "
+            "the late-resolution runtime; it cannot be flattened eagerly"
+        )
     validate_schema(payload, schema)
 
     compiled = _compile_formal_lfs(payload) if _is_formal_lfs(payload) else _normalize_legacy_payload(payload)

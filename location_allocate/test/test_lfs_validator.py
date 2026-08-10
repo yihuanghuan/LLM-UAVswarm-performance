@@ -1,6 +1,15 @@
 import pytest
 
-from location_allocate.lfs_validator import LFSValidationError, validate_and_compile_lfs
+from location_allocate.lfs_validator import (
+    LFSValidationError,
+    early_validate_candidate_mission,
+    validate_and_compile_lfs,
+)
+from location_allocate.mission_compiler import (
+    MissionCompileError,
+    QRelationPolicy,
+    compile_candidate_mission,
+)
 
 
 AVAILABLE_UAV_IDS = [1, 2, 3, 4, 5]
@@ -46,6 +55,37 @@ def legacy_task(**overrides):
     }
     task.update(overrides)
     return task
+
+
+def candidate_task(**overrides):
+    task = {
+        "task_id": 1,
+        "U": [1, 2, 3],
+        "F": "Circle",
+        "c": {"mode": "maintain_current_centroid"},
+        "r": {"mode": "qualitative", "value": "normal"},
+        "T": {"mode": "auto"},
+        "m": "normal",
+        "s": 1.0,
+        "q": "direct",
+    }
+    task.update(overrides)
+    return task
+
+
+def relation_policy():
+    return QRelationPolicy(
+        completion_event_by_q={
+            "direct": "stable",
+            "hover-and-wait": "stable",
+            "continuous": "trajectory_complete",
+        },
+        wait_condition_by_q={
+            "direct": None,
+            "hover-and-wait": "hover_stable",
+            "continuous": None,
+        },
+    )
 
 
 def test_valid_formal_lfs_compiles_to_task_sequences():
@@ -112,3 +152,90 @@ def test_invalid_motion_style_raises():
 
     with pytest.raises(LFSValidationError, match="schema"):
         validate_and_compile_lfs(payload, AVAILABLE_UAV_IDS)
+
+
+def test_candidate_mission_early_validation_and_graph_compilation():
+    payload = {
+        "mission": {
+            "nodes": [
+                {"type": "task", "task": candidate_task()},
+                {
+                    "type": "parallel",
+                    "completion_mode": "independent",
+                    "tasks": [
+                        candidate_task(task_id=2, U=[1, 2]),
+                        candidate_task(task_id=3, U=[3, 4]),
+                    ],
+                },
+            ]
+        }
+    }
+
+    validated = early_validate_candidate_mission(payload)
+    compiled = compile_candidate_mission(validated, relation_policy())
+
+    assert len(compiled.nodes) == 2
+    assert compiled.nodes[1].completion_mode == "independent"
+    assert compiled.nodes[1].tasks[0].task["T"] == {"mode": "auto"}
+
+
+def test_candidate_parallel_overlap_is_rejected_early():
+    payload = {
+        "mission": {
+            "nodes": [{
+                "type": "parallel",
+                "tasks": [
+                    candidate_task(task_id=1, U=[1, 2]),
+                    candidate_task(task_id=2, U=[2, 3]),
+                ],
+            }]
+        }
+    }
+
+    with pytest.raises(LFSValidationError, match="overlapping UAV"):
+        early_validate_candidate_mission(payload)
+
+
+def test_candidate_non_finite_and_weak_safety_are_rejected():
+    infinite = {
+        "mission": {"nodes": [{
+            "type": "task",
+            "task": candidate_task(
+                c={"mode": "absolute", "value": [0.0, float("inf"), 1.0]}
+            ),
+        }]}
+    }
+    weak_safety = {
+        "mission": {"nodes": [{
+            "type": "task", "task": candidate_task(s=0.5)
+        }]}
+    }
+
+    with pytest.raises(LFSValidationError):
+        early_validate_candidate_mission(infinite)
+    with pytest.raises(LFSValidationError):
+        early_validate_candidate_mission(weak_safety)
+
+
+def test_candidate_requires_explicit_q_graph_policy():
+    payload = {
+        "mission": {"nodes": [{
+            "type": "task", "task": candidate_task(q="direct")
+        }]}
+    }
+    validated = early_validate_candidate_mission(payload)
+    missing_policy = QRelationPolicy({}, {})
+
+    with pytest.raises(MissionCompileError, match="no configured graph mapping"):
+        compile_candidate_mission(validated, missing_policy)
+
+
+def test_candidate_cannot_be_eagerly_flattened_to_legacy_tasks():
+    payload = {
+        "mission": {"nodes": [{
+            "type": "task", "task": candidate_task()
+        }]}
+    }
+
+    with pytest.raises(LFSValidationError, match="cannot be flattened eagerly"):
+        validate_and_compile_lfs(payload)

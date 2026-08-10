@@ -6,6 +6,16 @@
   "type": "object",
   "oneOf": [
     {
+      "title": "Candidate Mission payload",
+      "required": ["mission"],
+      "properties": {
+        "mission": {
+          "$ref": "#/$defs/candidate_mission"
+        }
+      },
+      "additionalProperties": true
+    },
+    {
       "title": "Formal LFS payload",
       "oneOf": [
         {
@@ -46,6 +56,145 @@
     }
   ],
   "$defs": {
+    "candidate_center": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["mode", "value"],
+          "properties": {
+            "mode": {"const": "absolute"},
+            "value": {"$ref": "#/$defs/center"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["mode", "reference", "offset", "frame"],
+          "properties": {
+            "mode": {"const": "relative"},
+            "reference": {"const": "current_swarm_centroid"},
+            "offset": {"$ref": "#/$defs/center"},
+            "frame": {"const": "world"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["mode"],
+          "properties": {
+            "mode": {"const": "maintain_current_centroid"}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "candidate_radius": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["mode", "value"],
+          "properties": {
+            "mode": {"const": "explicit"},
+            "value": {"type": "number", "exclusiveMinimum": 0}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["mode", "value"],
+          "properties": {
+            "mode": {"const": "qualitative"},
+            "value": {"enum": ["compact", "normal", "spacious"]}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "candidate_time": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["mode", "value"],
+          "properties": {
+            "mode": {"const": "explicit"},
+            "value": {"type": "number", "exclusiveMinimum": 0}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["mode"],
+          "properties": {"mode": {"const": "auto"}},
+          "additionalProperties": false
+        }
+      ]
+    },
+    "candidate_task": {
+      "type": "object",
+      "required": ["task_id", "U", "F", "c", "r", "T", "m", "s", "q"],
+      "properties": {
+        "task_id": {"type": "integer", "minimum": 1},
+        "U": {"$ref": "#/$defs/uav_id_array"},
+        "F": {"$ref": "#/$defs/formation_type"},
+        "c": {"$ref": "#/$defs/candidate_center"},
+        "r": {"$ref": "#/$defs/candidate_radius"},
+        "T": {"$ref": "#/$defs/candidate_time"},
+        "m": {"$ref": "#/$defs/motion_profile"},
+        "s": {"type": "number", "minimum": 1},
+        "q": {"$ref": "#/$defs/lfs_trigger"},
+        "wait_time": {"type": ["number", "null"], "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "candidate_mission_node": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["type", "task"],
+          "properties": {
+            "type": {"const": "task"},
+            "task": {"$ref": "#/$defs/candidate_task"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["type", "tasks"],
+          "properties": {
+            "type": {"const": "parallel"},
+            "completion_mode": {"enum": ["independent", "synchronized"]},
+            "tasks": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/candidate_task"},
+              "minItems": 2
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["type", "condition"],
+          "properties": {
+            "type": {"const": "wait"},
+            "condition": {"type": "string", "minLength": 1},
+            "duration": {"type": ["number", "null"], "minimum": 0}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "candidate_mission": {
+      "type": "object",
+      "required": ["nodes"],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/candidate_mission_node"},
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
     "uav_id_array": {
       "type": "array",
       "items": {
