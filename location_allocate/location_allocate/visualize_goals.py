@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-UAV 目标点分配可视化
+UAV 目标点分配可视化.
+
 - 灰球 = 各无人机初始位置
 - 彩色三角 = 经匈牙利算法分配后的目标位置
 - 虚线 = 每架无人机的分配路线
@@ -15,16 +16,16 @@ UAV 目标点分配可视化
     输入编队指令即可看到可视化效果
 """
 
-import numpy as np
 import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
-from mpl_toolkits.mplot3d import Axes3D
-
+import numpy as np
 import rclpy
-from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped
+from rclpy.node import Node
+
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib.animation import FuncAnimation  # noqa: E402
+from matplotlib.lines import Line2D  # noqa: E402
 
 # ---- 硬编码初始位置（与 location_allocate.py 一致） ----
 ALL_UAV_IDS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -44,7 +45,7 @@ UAV_COLORS = plt.cm.tab10(np.linspace(0, 1, 10))
 
 
 class GoalListener(Node):
-    """订阅 /uav1~10/goal_pose，缓存最新目标坐标"""
+    """订阅 /uav1~10/goal_pose，缓存最新目标坐标."""
 
     def __init__(self):
         super().__init__('goal_pose_viz')
@@ -63,7 +64,10 @@ class GoalListener(Node):
         self.target[uid] = [p.x, p.y, p.z]
         if uid not in self.received:
             self.received.add(uid)
-            self.get_logger().info(f'[{len(self.received)}/10] UAV{uid} -> ({p.x:.2f}, {p.y:.2f}, {p.z:.2f})')
+            self.get_logger().info(
+                f'[{len(self.received)}/10] UAV{uid} -> '
+                f'({p.x:.2f}, {p.y:.2f}, {p.z:.2f})'
+            )
 
 
 def main():
@@ -76,8 +80,12 @@ def main():
     fig = plt.figure(figsize=(12, 9))
     ax = fig.add_subplot(111, projection='3d')
     ax.set_title('UAV Goal Position Assignment', fontsize=14, fontweight='bold')
-    ax.set_xlabel('X (m)'); ax.set_ylabel('Y (m)'); ax.set_zlabel('Z (m)')
-    ax.set_xlim(-2, 6); ax.set_ylim(-3, 3); ax.set_zlim(0, 6)
+    ax.set_xlabel('X (m)')
+    ax.set_ylabel('Y (m)')
+    ax.set_zlabel('Z (m)')
+    ax.set_xlim(-2, 6)
+    ax.set_ylim(-3, 3)
+    ax.set_zlim(0, 6)
 
     # 绘制初始位置（灰球 + 标签）
     for uid in ALL_UAV_IDS:
@@ -95,7 +103,6 @@ def main():
         lines[uid] = l
 
     # 图例
-    from matplotlib.lines import Line2D
     ax.legend([
         Line2D([0], [0], marker='o', color='w', markerfacecolor='lightgray',
                markersize=8, markeredgecolor='gray', linestyle=''),
@@ -119,7 +126,9 @@ def main():
         for uid in ALL_UAV_IDS:
             if uid in node.target:
                 p = node.target[uid]
-                tx.append(p[0]); ty.append(p[1]); tz.append(p[2])
+                tx.append(p[0])
+                ty.append(p[1])
+                tz.append(p[2])
                 tc.append(UAV_COLORS[uid - 1])
                 xi, yi, zi = INITIAL[uid]
                 lines[uid].set_data([xi, p[0]], [yi, p[1]])
@@ -138,7 +147,9 @@ def main():
 
         return [target_scatter, info_text] + list(lines.values())
 
-    ani = FuncAnimation(fig, update, interval=200, cache_frame_data=False)
+    fig._animation = FuncAnimation(
+        fig, update, interval=200, cache_frame_data=False
+    )
     plt.show()
 
     node.destroy_node()

@@ -1,13 +1,13 @@
+import json
 import math
 import time
-from typing import List, Dict
-import json
+from typing import Dict, List
 
 # -------------------------- ROS2 依赖导入 --------------------------
 import rclpy
 from rclpy.node import Node
-from uav_swarm_interfaces.msg import UAVExecutionCommand, UAVSwarmCommand, UAVStatus
 from geometry_msgs.msg import Point
+from uav_swarm_interfaces.msg import UAVExecutionCommand, UAVStatus, UAVSwarmCommand
 # -------------------------------------------------------------------
 from .no_location import parse_uav_command
 from .safety_aware_allocator import SafetyAwareTopologyAllocator
@@ -26,6 +26,8 @@ all_initial_positions = [
 ]
 
 # ====================== 1. 坐标生成层  ======================
+
+
 class FormationGenerator:
     def __init__(self, global_center: List[float], formation_radius: float):
         self.center = global_center
@@ -61,19 +63,27 @@ class FormationGenerator:
         return points
 
     def generate(self, formation_type: str, uav_count: int) -> List[List[float]]:
-        if formation_type in ["Line", "Lineup"]: return self.generate_line(uav_count)
-        elif formation_type in ["Circle", "Polygon", "Triangle"]: return self.generate_circle(uav_count)
-        elif formation_type == "Sphere": return self.generate_sphere(uav_count)
-        elif formation_type == "Free": return []
-        else: raise ValueError(f"不支持的编队类型: {formation_type}")
+        if formation_type in ["Line", "Lineup"]:
+            return self.generate_line(uav_count)
+        if formation_type in ["Circle", "Polygon", "Triangle"]:
+            return self.generate_circle(uav_count)
+        if formation_type == "Sphere":
+            return self.generate_sphere(uav_count)
+        if formation_type == "Free":
+            return []
+        raise ValueError(f"不支持的编队类型: {formation_type}")
 
 # ====================== 2. 安全感知拓扑分配层 ======================
+
+
 class TopologyAllocator(SafetyAwareTopologyAllocator):
     def allocate(self, initial, target, cross_penalty=10.0, duration=3.0):
         del cross_penalty
         return super().allocate(initial, target, duration=duration)
 
 # ====================== 3. ROS2 核心调度层  ======================
+
+
 class UAVFormationNode(Node):
     def __init__(self):
         super().__init__('location_allocate')
@@ -85,7 +95,7 @@ class UAVFormationNode(Node):
         if assignment_mode not in ('fixed', 'distance_hungarian', 'safety_aware'):
             raise ValueError(
                 'assignment_mode must be fixed, distance_hungarian, or safety_aware')
-        
+
         # 状态变量：由 C++ 节点低频发布的 /uav{id}/odom 实时更新（不再使用硬编码初始坐标）
         self.uav_state_map: Dict[int, List[float]] = {}
         for uid in all_uav_ids:
@@ -96,7 +106,9 @@ class UAVFormationNode(Node):
         self.execution_publisher = {}
         for uid in all_uav_ids:
             topic_name = f'/uav{uid}/swarm_command'
-            self.publisher[uid] = self.create_publisher(UAVSwarmCommand, topic_name, 10)
+            self.publisher[uid] = self.create_publisher(
+                UAVSwarmCommand, topic_name, 10
+            )
             self.execution_publisher[uid] = self.create_publisher(
                 UAVExecutionCommand, f'/uav{uid}/execution_command', 10)
             self.get_logger().info(f"创建发布者: {topic_name}")
@@ -130,7 +142,7 @@ class UAVFormationNode(Node):
 
     def _publish_single_goal(self, mission_id: int, uav_id: int, position: List[float],
                              duration: float, motion_style: str, safety_factor: float):
-        """向单个无人机发送 swarm_command 自定义消息"""
+        """向单个无人机发送 swarm_command 自定义消息."""
         if uav_id not in self.publisher:
             self.get_logger().warn(f"未找到 UAV{uav_id} 的发布者，跳过")
             return
@@ -150,17 +162,20 @@ class UAVFormationNode(Node):
         self.publisher[uav_id].publish(msg)
 
     def _status_callback(self, msg: UAVStatus, uid: int):
-        """接收 C++ 执行层反馈的悬停状态"""
+        """接收 C++ 执行层反馈的悬停状态."""
         if msg.is_hover_stable and not self.uav_hover_status.get(uid, False):
             self.get_logger().info(f"   >>> UAV{uid} 到达目标并悬停稳定!")
         self.uav_hover_status[uid] = msg.is_hover_stable
 
     def _odom_callback(self, msg: Point, uid: int):
-        """接收 C++ 节点低频发布的 ENU 位置，更新全局状态地图"""
+        """接收 C++ 节点低频发布的 ENU 位置，更新全局状态地图."""
         self.uav_state_map[uid] = [msg.x, msg.y, msg.z]
         if self.snapshot_manager is not None:
             self.snapshot_manager.update(
-                uid, [msg.x, msg.y, msg.z], self.get_clock().now().nanoseconds / 1e9)
+                uid,
+                [msg.x, msg.y, msg.z],
+                self.get_clock().now().nanoseconds / 1e9,
+            )
 
     def resolve_and_publish_candidate_task(
             self, task: Dict, policy: LateResolutionPolicy,
@@ -170,7 +185,9 @@ class UAVFormationNode(Node):
             raise RuntimeError(
                 'Candidate state freshness parameters are not configured')
         now = self.get_clock().now()
-        snapshot = self.snapshot_manager.snapshot(task['U'], now.nanoseconds / 1e9)
+        snapshot = self.snapshot_manager.snapshot(
+            task['U'], now.nanoseconds / 1e9
+        )
         resolved = resolve_execution_task(task, snapshot, policy)
         for index, uid in enumerate(resolved.executable_lfs.uav_ids):
             command = build_execution_command(
@@ -179,15 +196,22 @@ class UAVFormationNode(Node):
             self.execution_publisher[uid].publish(command)
         return resolved
 
-    def send_goal_positions(self, task_uav_ids: List[int], allocated_positions: List[List[float]],
-                            task: Dict):
+    def send_goal_positions(
+        self,
+        task_uav_ids: List[int],
+        allocated_positions: List[List[float]],
+        task: Dict,
+    ):
         """
-        广播 UAVSwarmCommand 自定义消息
+        广播 UAVSwarmCommand 自定义消息.
+
         :param task_uav_ids: 本次参与任务的无人机ID列表
         :param allocated_positions: 对应的目标坐标列表，顺序与ID一一对应
         :param task: LLM 解析的原始 task dict (获取 duration / motion_style / safety_factor)
         """
-        self.get_logger().info(f">>> 正在向 {len(task_uav_ids)} 架无人机发送 swarm_command ...")
+        self.get_logger().info(
+            f">>> 正在向 {len(task_uav_ids)} 架无人机发送 swarm_command ..."
+        )
 
         duration = float(task.get('duration_seconds', 3.0))
         mission_id = int(task.get('task_sequence_id', 0))
@@ -202,14 +226,26 @@ class UAVFormationNode(Node):
             self.uav_hover_status[uid] = False
 
         for uid, pos in zip(task_uav_ids, allocated_positions):
-            self._publish_single_goal(mission_id, uid, pos, duration, motion_style, safety_factor)
-            self.get_logger().info(f"UAV{uid} -> {[round(x,2) for x in pos]} "
-                                    f"mission={mission_id} dur={duration}s "
-                                    f"style={motion_style} sf={safety_factor}")
+            self._publish_single_goal(
+                mission_id, uid, pos, duration, motion_style, safety_factor
+            )
+            self.get_logger().info(
+                f"UAV{uid} -> {[round(x, 2) for x in pos]} "
+                f"mission={mission_id} dur={duration}s "
+                f"style={motion_style} sf={safety_factor}"
+            )
 
-    def wait_for_hover_and_time(self, task_uav_ids: List[int], wait_seconds: float, timeout: float = 120.0):
-        """等待所有参与任务的无人机到达目标并悬停稳定 (基于 /uav{id}/status 真实反馈)"""
-        self.get_logger().info(f">>> 等待 {len(task_uav_ids)} 架无人机到达并悬停 (超时: {timeout}s) ...")
+    def wait_for_hover_and_time(
+        self,
+        task_uav_ids: List[int],
+        wait_seconds: float,
+        timeout: float = 120.0,
+    ):
+        """等待所有参与任务的无人机到达并悬停稳定."""
+        self.get_logger().info(
+            f">>> 等待 {len(task_uav_ids)} 架无人机到达并悬停 "
+            f"(超时: {timeout}s) ..."
+        )
 
         # 先重置悬停状态，排空 DDS 队列中旧消息
         for uid in task_uav_ids:
@@ -223,10 +259,15 @@ class UAVFormationNode(Node):
             rclpy.spin_once(self, timeout_sec=0.2)
 
             # 检查所有参与无人机是否都已悬停
-            all_stable = all(self.uav_hover_status.get(uid, False) for uid in task_uav_ids)
+            all_stable = all(
+                self.uav_hover_status.get(uid, False) for uid in task_uav_ids
+            )
             if all_stable:
                 elapsed = time.time() - start_time
-                self.get_logger().info(f"   >>> 全部 {len(task_uav_ids)} 架无人机已悬停稳定! (耗时 {elapsed:.1f}s)")
+                self.get_logger().info(
+                    f"   >>> 全部 {len(task_uav_ids)} 架无人机已悬停稳定! "
+                    f"(耗时 {elapsed:.1f}s)"
+                )
 
                 # 悬停保持计时
                 self.get_logger().info(f">>> 开始悬停计时: {wait_seconds} 秒")
@@ -238,17 +279,31 @@ class UAVFormationNode(Node):
                 return
 
             # 打印等待中的进度 (每 5 秒)
-            if int(time.time() - start_time) % 5 == 0 and int(time.time() - start_time) > 0:
-                stable_count = sum(1 for uid in task_uav_ids if self.uav_hover_status.get(uid, False))
-                self.get_logger().info(f"   等待中... {stable_count}/{len(task_uav_ids)} 已稳定")
+            elapsed_seconds = int(time.time() - start_time)
+            if elapsed_seconds % 5 == 0 and elapsed_seconds > 0:
+                stable_count = sum(
+                    1 for uid in task_uav_ids
+                    if self.uav_hover_status.get(uid, False)
+                )
+                self.get_logger().info(
+                    f"   等待中... {stable_count}/{len(task_uav_ids)} 已稳定"
+                )
 
         # 超时
-        stable_list = [uid for uid in task_uav_ids if self.uav_hover_status.get(uid, False)]
-        unstable_list = [uid for uid in task_uav_ids if not self.uav_hover_status.get(uid, False)]
-        self.get_logger().warn(f">>> 悬停等待超时! 已稳定: {stable_list}, 未稳定: {unstable_list}")
+        stable_list = [
+            uid for uid in task_uav_ids
+            if self.uav_hover_status.get(uid, False)
+        ]
+        unstable_list = [
+            uid for uid in task_uav_ids
+            if not self.uav_hover_status.get(uid, False)
+        ]
+        self.get_logger().warn(
+            f">>> 悬停等待超时! 已稳定: {stable_list}, 未稳定: {unstable_list}"
+        )
 
     def execute_task(self, task: Dict, skip_wait: bool = False):
-        """执行单步任务（核心修改：支持分群）"""
+        """执行单步任务（核心修改：支持分群）."""
         print(f"\n{'='*60}")
         self.get_logger().info(f"执行任务 {task['task_sequence_id']}")
 
@@ -258,11 +313,11 @@ class UAVFormationNode(Node):
         center = task['global_center']
         radius = task['parametric_data']['formation_radius']
         f_type = task['parametric_data']['formation_type']
-        
+
         # 【关键修改】从LLM输出中读取本次参与的无人机ID
         task_uav_ids: List[int] = task['uav_id']
         task_uav_count: int = task['uav_count']
-        
+
         self.get_logger().info(f"任务参与无人机ID: {task_uav_ids}")
 
         # ==========================================
@@ -297,7 +352,7 @@ class UAVFormationNode(Node):
         # ==========================================
         generator = FormationGenerator(center, radius)
         targets = generator.generate(f_type, task_uav_count)
-        
+
         if not targets:
             self.get_logger().info("编队类型: Free (返回初始点)")
             # Free模式：找到这些无人机的初始点
@@ -306,7 +361,9 @@ class UAVFormationNode(Node):
                 idx = all_uav_ids.index(uid)
                 targets.append(all_initial_positions[idx].copy())
         else:
-            self.get_logger().info(f"编队类型: {f_type} | 中心: {center} | 半径: {radius}")
+            self.get_logger().info(
+                f"编队类型: {f_type} | 中心: {center} | 半径: {radius}"
+            )
 
         # ==========================================
         # 4. 匈牙利算法分配 (仅针对参与机)
@@ -330,7 +387,7 @@ class UAVFormationNode(Node):
             f"swap_iter={metrics['iterations']}"
         )
 
-         #打印分配结果映射表
+        # 打印分配结果映射表
         # ==========================================
         self.get_logger().info("   ---------- 分配结果映射表 ----------")
         self.get_logger().info(f"   {'UAV ID':<8} | {'分配后的目标坐标 (x, y, z)':<30}")
@@ -347,7 +404,7 @@ class UAVFormationNode(Node):
         self.send_goal_positions(task_uav_ids, allocated_subset, task)
 
         # ==========================================
-        # 6. 更新全局状态地图 
+        # 6. 更新全局状态地图
         # ==========================================
         for uid, new_pos in zip(task_uav_ids, allocated_subset):
             self.uav_state_map[uid] = new_pos.copy()
@@ -357,8 +414,13 @@ class UAVFormationNode(Node):
         # 7. 处理阻塞逻辑
         # ==========================================
         if not skip_wait:
-            if task.get('trigger_condition') in ('hover_and_wait', 'continuous_transit', 'direct_execution') \
-               or task.get('task_sequence_id', 1) > 1:
+            blocking_triggers = (
+                'hover_and_wait', 'continuous_transit', 'direct_execution'
+            )
+            if (
+                task.get('trigger_condition') in blocking_triggers
+                or task.get('task_sequence_id', 1) > 1
+            ):
                 wt = task.get('wait_time') or 0.0
                 self.wait_for_hover_and_time(task_uav_ids, wt)
 
@@ -436,59 +498,60 @@ class UAVFormationNode(Node):
             else:
                 if i > 0:
                     prev_ids = set(tasks[i-1].get('uav_id', []))
-                    self.get_logger().info(f">>> 等待前一任务悬停...")
+                    self.get_logger().info(">>> 等待前一任务悬停...")
                     self.wait_for_hover_and_time(list(prev_ids), 1.0)
                 self.execute_task(tasks[i])
             i = j
 
         self.get_logger().info(">>> 所有任务序列执行完毕！")
-
-
-
 # ====================== 主入口 (终端输入循环) ======================
+
+
 def main():
     rclpy.init()
-    
+
     # 硬编码可用无人机数量和id
     test_ros = "当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10"
     node = UAVFormationNode()
-    
+
     try:
         # 主循环：持续等待输入
         while True:
             # 获取用户输入
             user_command = input("\n请输入无人机编队指令: ")
-            
+
             # 退出指令
             if user_command.strip().lower() in ["exit", "quit", "q"]:
                 break
-            
+
             # 空输入跳过
             if not user_command.strip():
                 continue
-            
+
             # 调用LLM解析
             print("正在调用 LLM 解析指令...")
-            llm_result = parse_uav_command(user_command, test_ros)#test_ros只是用来让LLM判断一共有多少架UAV可以用
-            
+            # test_ros 仅用于让 LLM 判断可用 UAV 数量。
+            llm_result = parse_uav_command(user_command, test_ros)
+
             # 打印解析结果（保持原有格式）
             print("\n" + "=" * 50)
             print("最终解析结果：")
             print("=" * 50)
             print(json.dumps(llm_result, indent=2, ensure_ascii=False))
-            
+
             # 执行任务
             node.run_mission(llm_result)
-            
+
             # 执行完毕提示
             print("\n任务执行完毕，等待下一条指令...")
-    
+
     except KeyboardInterrupt:
         node.get_logger().info("收到 Ctrl+C，停止任务")
     finally:
         node.destroy_node()
         rclpy.shutdown()
         print("\n系统已退出")
+
 
 if __name__ == "__main__":
     main()
