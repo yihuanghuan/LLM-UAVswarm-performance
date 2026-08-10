@@ -39,7 +39,7 @@ def build_unit_geometry(formation: str, count: int) -> UnitGeometry:
     if count < 1:
         raise GeometryError("formation needs at least one UAV")
     points = []
-    if formation in ("Line", "Lineup"):
+    if formation == "Line":
         if count < 2:
             raise GeometryError("Line unit geometry needs at least two UAVs")
         points = [(index - (count - 1) / 2.0, 0.0, 0.0) for index in range(count)]
@@ -69,8 +69,10 @@ def build_unit_geometry(formation: str, count: int) -> UnitGeometry:
             theta = golden_angle * index
             points.append((math.cos(theta) * radial, y_value,
                            math.sin(theta) * radial))
-    elif formation == "Free":
-        raise GeometryError("Free Candidate geometry is pending confirmation")
+    elif formation in ("Lineup", "Free"):
+        raise GeometryError(
+            f"{formation} Candidate geometry is pending confirmation"
+        )
     else:
         raise GeometryError(f"unsupported formation: {formation}")
     tuple_points = tuple(points)
@@ -174,4 +176,3 @@ def build_final_geometry(
     if _minimum_distance(targets) + 1e-9 < d_plan:
         raise GeometryError("final geometry violates d_plan(s)")
     return targets  # type: ignore[return-value]
-

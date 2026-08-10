@@ -1,0 +1,132 @@
+from dataclasses import replace
+
+import pytest
+
+from location_allocate.execution_profile_compiler import (
+    ExecutionProfilePolicy,
+    SoftSafetyParameters,
+)
+from location_allocate.execution_command_builder import build_execution_command
+from location_allocate.formation_geometry import ScalePolicy
+from location_allocate.late_resolution import (
+    LateResolutionError,
+    LateResolutionPolicy,
+    SafetyResolution,
+    resolve_execution_task,
+)
+from location_allocate.safety_aware_allocator import SafetyAwareTopologyAllocator
+from location_allocate.state_snapshot import FreshStateSnapshotManager
+from location_allocate.timing_resolution import (
+    ConfiguredMinimumJerkTimingPolicy,
+    max_pairwise_distance_bound,
+)
+
+
+def candidate_task():
+    return {
+        "task_id": 1,
+        "U": [1, 2, 3],
+        "F": "Triangle",
+        "c": {"mode": "maintain_current_centroid"},
+        "r": {"mode": "qualitative", "value": "normal"},
+        "T": {"mode": "auto"},
+        "m": "normal",
+        "s": 1.0,
+        "q": "direct",
+    }
+
+
+def snapshot():
+    manager = FreshStateSnapshotManager(1.0, 0.1)
+    manager.update(1, [-2.0, 0.0, 2.0], 10.0)
+    manager.update(2, [1.0, -1.5, 2.0], 10.0)
+    manager.update(3, [1.0, 1.5, 2.0], 10.0)
+    return manager.snapshot([1, 2, 3], 10.0)
+
+
+def policy(safety_resolver=None, tolerance=0.0):
+    if safety_resolver is None:
+        safety_resolver = lambda s: SafetyResolution(
+            d_hard=0.5,
+            d_plan=0.8 * s,
+            soft_iapf=SoftSafetyParameters(1.0 * s, 1.2 * s, 1.0),
+        )
+    return LateResolutionPolicy(
+        scale=ScalePolicy(
+            nominal_spacing=2.0,
+            qualitative_multipliers={"normal": 1.0},
+            workspace_bounds=((-20.0, -20.0, 0.0), (20.0, 20.0, 10.0)),
+            configuration_id="test-only",
+        ),
+        timing=ConfiguredMinimumJerkTimingPolicy(
+            velocity_limit=2.0,
+            acceleration_limit=1.5,
+            jerk_limit=3.0,
+            minimum_duration=0.5,
+            auto_style_factors={"normal": 1.1},
+            configuration_id="test-only",
+        ),
+        profile=ExecutionProfilePolicy(
+            base_omega_c=(3.0, 3.0, 3.5),
+            base_omega_o=(10.0, 10.0, 15.0),
+            style_gains={"normal": 1.0},
+            task_reference_speed=2.0,
+            task_gain_intercept=0.8,
+            task_gain_slope=0.2,
+            task_gain_range=(0.7, 1.3),
+            total_gain_range=(0.5, 1.8),
+            velocity_limit=2.0,
+            acceleration_limit=1.5,
+            jerk_limit=3.0,
+            configuration_id="test-only",
+        ),
+        resolve_safety=safety_resolver,
+        planning_distance_bound=max_pairwise_distance_bound,
+        timing_recheck_tolerance=tolerance,
+        allocator_factory=lambda d_plan: SafetyAwareTopologyAllocator(
+            sample_hz=20.0, d_safe=d_plan
+        ),
+    )
+
+
+def test_candidate_to_executable_pipeline_has_one_duration_source():
+    result = resolve_execution_task(candidate_task(), snapshot(), policy())
+
+    assert result.executable_lfs.duration == result.trace.t_exec
+    assert all(
+        profile.duration == result.executable_lfs.duration
+        for profile in result.profiles
+    )
+    assert result.trace.t_request == {"mode": "auto"}
+    assert result.trace.d_hard == 0.5
+    assert result.trace.r_safe == pytest.approx(
+        result.trace.d_plan / result.trace.delta_min
+    )
+
+
+def test_timing_difference_causes_only_one_final_recheck():
+    result = resolve_execution_task(candidate_task(), snapshot(), policy(tolerance=0.0))
+
+    assert result.trace.corrections.count(
+        "final assignment safety re-evaluated once"
+    ) == 1
+
+
+def test_invalid_safety_mapping_is_rejected_before_geometry():
+    unsafe = lambda s: SafetyResolution(
+        d_hard=1.0,
+        d_plan=0.5,
+        soft_iapf=SoftSafetyParameters(1.2, 1.4, 1.0),
+    )
+
+    with pytest.raises(LateResolutionError, match="d_plan >= d_hard"):
+        resolve_execution_task(candidate_task(), snapshot(), policy(unsafe))
+
+
+def test_composite_command_has_no_second_duration_field():
+    result = resolve_execution_task(candidate_task(), snapshot(), policy())
+    command = build_execution_command(result, 0, mission_id=5, task_id=1)
+
+    assert not hasattr(command, "duration")
+    assert command.profile.duration == result.executable_lfs.duration
+    assert command.target_pos.x == result.assigned_targets[0][0]

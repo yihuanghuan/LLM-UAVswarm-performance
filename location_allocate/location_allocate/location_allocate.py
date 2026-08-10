@@ -6,11 +6,14 @@ import json
 # -------------------------- ROS2 依赖导入 --------------------------
 import rclpy
 from rclpy.node import Node
-from uav_swarm_interfaces.msg import UAVSwarmCommand, UAVStatus
+from uav_swarm_interfaces.msg import UAVExecutionCommand, UAVSwarmCommand, UAVStatus
 from geometry_msgs.msg import Point
 # -------------------------------------------------------------------
 from .no_location import parse_uav_command
 from .safety_aware_allocator import SafetyAwareTopologyAllocator
+from .execution_command_builder import build_execution_command
+from .late_resolution import LateResolutionPolicy, resolve_execution_task
+from .state_snapshot import FreshStateSnapshotManager
 
 # ====================== 硬编码：无人机初始坐标 + ID (全局地图) ======================
 # 注意：这里是全局数据库，存储所有无人机的状态
@@ -75,6 +78,8 @@ class UAVFormationNode(Node):
     def __init__(self):
         super().__init__('location_allocate')
         self.declare_parameter('assignment_mode', 'safety_aware')
+        self.declare_parameter('candidate_state_timeout', -1.0)
+        self.declare_parameter('candidate_snapshot_skew', -1.0)
         assignment_mode = self.get_parameter(
             'assignment_mode').get_parameter_value().string_value
         if assignment_mode not in ('fixed', 'distance_hungarian', 'safety_aware'):
@@ -88,9 +93,12 @@ class UAVFormationNode(Node):
 
         # -------------------------- 发布者管理 --------------------------
         self.publisher = {}
+        self.execution_publisher = {}
         for uid in all_uav_ids:
             topic_name = f'/uav{uid}/swarm_command'
             self.publisher[uid] = self.create_publisher(UAVSwarmCommand, topic_name, 10)
+            self.execution_publisher[uid] = self.create_publisher(
+                UAVExecutionCommand, f'/uav{uid}/execution_command', 10)
             self.get_logger().info(f"创建发布者: {topic_name}")
 
         # -------------------------- 订阅者管理 (odom 位置 + status 状态) --------------------------
@@ -110,6 +118,15 @@ class UAVFormationNode(Node):
                 Point, topic_name,
                 lambda msg, uid=uid: self._odom_callback(msg, uid), 10)
             self.get_logger().info(f"创建订阅者: /uav{uid}/status, /uav{uid}/odom")
+
+        state_timeout = float(self.get_parameter(
+            'candidate_state_timeout').value)
+        snapshot_skew = float(self.get_parameter(
+            'candidate_snapshot_skew').value)
+        self.snapshot_manager = None
+        if state_timeout > 0.0 and snapshot_skew >= 0.0:
+            self.snapshot_manager = FreshStateSnapshotManager(
+                state_timeout, snapshot_skew)
 
     def _publish_single_goal(self, mission_id: int, uav_id: int, position: List[float],
                              duration: float, motion_style: str, safety_factor: float):
@@ -141,6 +158,26 @@ class UAVFormationNode(Node):
     def _odom_callback(self, msg: Point, uid: int):
         """接收 C++ 节点低频发布的 ENU 位置，更新全局状态地图"""
         self.uav_state_map[uid] = [msg.x, msg.y, msg.z]
+        if self.snapshot_manager is not None:
+            self.snapshot_manager.update(
+                uid, [msg.x, msg.y, msg.z], self.get_clock().now().nanoseconds / 1e9)
+
+    def resolve_and_publish_candidate_task(
+            self, task: Dict, policy: LateResolutionPolicy,
+            mission_id: int, group_id: int = 0):
+        """Run the new late-resolution path when explicit policy is supplied."""
+        if self.snapshot_manager is None:
+            raise RuntimeError(
+                'Candidate state freshness parameters are not configured')
+        now = self.get_clock().now()
+        snapshot = self.snapshot_manager.snapshot(task['U'], now.nanoseconds / 1e9)
+        resolved = resolve_execution_task(task, snapshot, policy)
+        for index, uid in enumerate(resolved.executable_lfs.uav_ids):
+            command = build_execution_command(
+                resolved, index, mission_id, int(task['task_id']),
+                group_id, now.to_msg())
+            self.execution_publisher[uid].publish(command)
+        return resolved
 
     def send_goal_positions(self, task_uav_ids: List[int], allocated_positions: List[List[float]],
                             task: Dict):
