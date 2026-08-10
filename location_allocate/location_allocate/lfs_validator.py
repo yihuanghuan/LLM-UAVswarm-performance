@@ -5,6 +5,8 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
+from .lfs_types import StateSnapshot
+
 try:
     from jsonschema import Draft202012Validator
 except ModuleNotFoundError:
@@ -117,11 +119,9 @@ def early_validate_candidate_semantics(payload: Dict[str, Any]) -> None:
 
 
 def runtime_validate_candidate_task(
-    task: Dict[str, Any], snapshot: "StateSnapshot"
+    task: Dict[str, Any], snapshot: StateSnapshot
 ) -> None:
     """Runtime layer: validate facts that depend on the fresh snapshot."""
-    from .lfs_types import StateSnapshot
-
     if not isinstance(snapshot, StateSnapshot):
         raise LFSValidationError("runtime validation requires StateSnapshot")
     requested = tuple(int(uid) for uid in task["U"])
@@ -176,9 +176,14 @@ def load_lfs_schema() -> Dict[str, Any]:
     raise FileNotFoundError(f"未找到 LFS schema，已搜索: {searched}")
 
 
-def validate_schema(payload: Dict[str, Any], schema: Optional[Dict[str, Any]] = None) -> None:
+def validate_schema(
+    payload: Dict[str, Any], schema: Optional[Dict[str, Any]] = None
+) -> None:
     if Draft202012Validator is None:
-        raise LFSValidationError("缺少 jsonschema 依赖，请安装 python3-jsonschema 或在虚拟环境中执行 pip install jsonschema")
+        raise LFSValidationError(
+            "缺少 jsonschema 依赖，请安装 python3-jsonschema 或在虚拟环境中"
+            "执行 pip install jsonschema"
+        )
 
     validator = Draft202012Validator(schema or load_lfs_schema())
     errors = sorted(validator.iter_errors(payload), key=lambda err: list(err.path))
@@ -227,7 +232,11 @@ def validate_and_compile_lfs(
         )
     validate_schema(payload, schema)
 
-    compiled = _compile_formal_lfs(payload) if _is_formal_lfs(payload) else _normalize_legacy_payload(payload)
+    compiled = (
+        _compile_formal_lfs(payload)
+        if _is_formal_lfs(payload)
+        else _normalize_legacy_payload(payload)
+    )
     _validate_semantics(compiled, available_uav_ids)
     return compiled
 
@@ -289,8 +298,12 @@ def _normalize_legacy_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
         task["duration_seconds"] = float(task["duration_seconds"])
         task["global_center"] = [float(value) for value in task["global_center"]]
         task["wait_time"] = _none_or_float(task.get("wait_time"))
-        task["iapf_safety_margin_factor"] = _none_or_float(task.get("iapf_safety_margin_factor"))
-        task["parametric_data"]["formation_radius"] = float(task["parametric_data"]["formation_radius"])
+        task["iapf_safety_margin_factor"] = _none_or_float(
+            task.get("iapf_safety_margin_factor")
+        )
+        task["parametric_data"]["formation_radius"] = float(
+            task["parametric_data"]["formation_radius"]
+        )
         normalized_tasks.append(task)
     normalized["task_sequences"] = normalized_tasks
     return normalized
@@ -304,7 +317,9 @@ def _none_or_float(value: Any) -> Optional[float]:
     return float(value)
 
 
-def _validate_semantics(payload: Dict[str, Any], available_uav_ids: Optional[Sequence[int]]) -> None:
+def _validate_semantics(
+    payload: Dict[str, Any], available_uav_ids: Optional[Sequence[int]]
+) -> None:
     tasks = payload.get("task_sequences", [])
     available_ids = set(int(uid) for uid in available_uav_ids) if available_uav_ids else None
 
@@ -325,8 +340,11 @@ def _validate_semantics(payload: Dict[str, Any], available_uav_ids: Optional[Seq
             raise LFSValidationError(f"任务 {task_label} 的 duration_seconds 必须大于 0")
         if task["parametric_data"]["formation_radius"] <= 0:
             raise LFSValidationError(f"任务 {task_label} 的 formation_radius 必须大于 0")
-        if task.get("iapf_safety_margin_factor") is not None and task["iapf_safety_margin_factor"] < 0:
-            raise LFSValidationError(f"任务 {task_label} 的 iapf_safety_margin_factor 不能小于 0")
+        safety_factor = task.get("iapf_safety_margin_factor")
+        if safety_factor is not None and safety_factor < 0:
+            raise LFSValidationError(
+                f"任务 {task_label} 的 iapf_safety_margin_factor 不能小于 0"
+            )
 
     _validate_parallel_groups(tasks)
 
@@ -348,6 +366,7 @@ def _validate_parallel_groups(tasks: Iterable[Dict[str, Any]]) -> None:
         if overlap:
             current_task_id = task.get("task_sequence_id", 0)
             raise LFSValidationError(
-                f"parallel_group={group_id} 中任务 {first_task_id} 与任务 {current_task_id} 的 UAV 集合重叠: {overlap}"
+                f"parallel_group={group_id} 中任务 {first_task_id} 与任务 "
+                f"{current_task_id} 的 UAV 集合重叠: {overlap}"
             )
         existing_ids.update(task_ids)

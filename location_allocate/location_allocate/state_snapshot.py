@@ -70,4 +70,3 @@ class FreshStateSnapshotManager:
         if max(timestamps) - min(timestamps) > self.snapshot_skew:
             raise SnapshotError("participating UAV states exceed snapshot_skew")
         return StateSnapshot(epoch=float(now), states=selected)
-

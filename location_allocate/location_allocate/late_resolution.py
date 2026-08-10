@@ -193,7 +193,8 @@ def resolve_execution_parallel(
     completion_mode: str,
     group_d_plan: float,
 ) -> ResolvedParallelGroup:
-    """Resolve one parallel group with a shared snapshot and joint safety horizon.
+    """
+    Resolve one parallel group with a shared snapshot and joint safety horizon.
 
     ``group_d_plan`` is deliberately supplied by the caller: aggregation of
     task-specific planning margins is not frozen by this implementation.

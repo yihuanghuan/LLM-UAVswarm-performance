@@ -1,6 +1,4 @@
 import dataclasses
-import math
-
 import pytest
 
 from location_allocate.execution_profile_compiler import (
@@ -107,4 +105,3 @@ def test_soft_safety_does_not_expose_hard_violation_threshold():
     assert "hard" not in " ".join(
         field.name for field in dataclasses.fields(SoftSafetyParameters)
     )
-

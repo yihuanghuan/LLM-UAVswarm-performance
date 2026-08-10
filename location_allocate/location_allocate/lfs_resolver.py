@@ -78,4 +78,3 @@ def resolve_candidate_task(
         t_request=dict(intent.time_request),
     )
     return intent, trace
-

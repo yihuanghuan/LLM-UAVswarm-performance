@@ -103,4 +103,3 @@ def test_executable_lfs_uses_only_final_t_exec():
 def test_recheck_tolerance_is_explicit_and_deterministic():
     assert timing_requires_recheck(5.0, 6.0, tolerance=0.5)
     assert not timing_requires_recheck(5.0, 5.4, tolerance=0.5)
-

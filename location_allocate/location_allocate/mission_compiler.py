@@ -81,4 +81,3 @@ def compile_candidate_mission(
             continue
         raise MissionCompileError(f"unsupported mission node type: {node_type}")
     return CompiledMission(nodes=tuple(nodes))
-

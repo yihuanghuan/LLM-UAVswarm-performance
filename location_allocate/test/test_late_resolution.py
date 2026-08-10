@@ -1,5 +1,3 @@
-from dataclasses import replace
-
 import pytest
 
 from location_allocate.execution_profile_compiler import (
@@ -47,11 +45,12 @@ def snapshot():
 
 def policy(safety_resolver=None, tolerance=0.0):
     if safety_resolver is None:
-        safety_resolver = lambda s: SafetyResolution(
-            d_hard=0.5,
-            d_plan=0.8 * s,
-            soft_iapf=SoftSafetyParameters(1.0 * s, 1.2 * s, 1.0),
-        )
+        def safety_resolver(s):
+            return SafetyResolution(
+                d_hard=0.5,
+                d_plan=0.8 * s,
+                soft_iapf=SoftSafetyParameters(1.0 * s, 1.2 * s, 1.0),
+            )
     return LateResolutionPolicy(
         scale=ScalePolicy(
             nominal_spacing=2.0,
@@ -114,11 +113,12 @@ def test_timing_difference_causes_only_one_final_recheck():
 
 
 def test_invalid_safety_mapping_is_rejected_before_geometry():
-    unsafe = lambda s: SafetyResolution(
-        d_hard=1.0,
-        d_plan=0.5,
-        soft_iapf=SoftSafetyParameters(1.2, 1.4, 1.0),
-    )
+    def unsafe(s):
+        return SafetyResolution(
+            d_hard=1.0,
+            d_plan=0.5,
+            soft_iapf=SoftSafetyParameters(1.2, 1.4, 1.0),
+        )
 
     with pytest.raises(LateResolutionError, match="d_plan >= d_hard"):
         resolve_execution_task(candidate_task(), snapshot(), policy(unsafe))

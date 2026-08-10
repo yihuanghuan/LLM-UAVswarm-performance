@@ -159,7 +159,9 @@ class SafetyAwareTopologyAllocator:
         min_distance = float("inf")
 
         for i, j in itertools.combinations(range(len(init_np)), 2):
-            if self._xy_segments_cross(init_np[i], assigned_targets[i], init_np[j], assigned_targets[j]):
+            if self._xy_segments_cross(
+                init_np[i], assigned_targets[i], init_np[j], assigned_targets[j]
+            ):
                 xy_crossings += 1
 
             distances = np.linalg.norm(trajectories[i] - trajectories[j], axis=1)

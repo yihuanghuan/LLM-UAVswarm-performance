@@ -4,7 +4,7 @@ import math
 from dataclasses import dataclass
 from typing import Callable, Mapping, Protocol, Sequence
 
-from .lfs_types import ExecutableLFS, ResolutionTrace, ResolvedTaskIntent, Vector3
+from .lfs_types import ExecutableLFS, ResolutionTrace, ResolvedTaskIntent
 
 
 class TimingError(ValueError):
@@ -175,4 +175,3 @@ def build_executable_lfs(
         safety_factor=intent.safety_factor,
         trigger_semantics=intent.trigger_semantics,
     )
-
