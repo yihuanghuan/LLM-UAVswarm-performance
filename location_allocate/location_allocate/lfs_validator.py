@@ -70,10 +70,25 @@ def early_validate_candidate_mission(
     schema: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Run state-independent schema and semantic checks."""
+    validate_candidate_schema(payload, schema)
+    early_validate_candidate_semantics(payload)
+    return copy.deepcopy(payload)
+
+
+def validate_candidate_schema(
+    payload: Dict[str, Any], schema: Optional[Dict[str, Any]] = None
+) -> None:
+    """Early layer 1: structural checks that never require swarm state."""
     validate_schema(payload, schema)
     if not is_candidate_mission(payload):
         raise LFSValidationError("payload is not a Candidate Mission")
     _assert_finite(payload, "<root>")
+
+
+def early_validate_candidate_semantics(payload: Dict[str, Any]) -> None:
+    """Early layer 2: state-independent Candidate Mission semantics."""
+    if not is_candidate_mission(payload):
+        raise LFSValidationError("payload is not a Candidate Mission")
 
     seen_task_ids = set()
     for node_index, node in enumerate(payload["mission"]["nodes"]):
@@ -99,7 +114,30 @@ def early_validate_candidate_mission(
                 raise LFSValidationError(
                     f"task {task_id} safety factor s must be >= 1"
                 )
-    return copy.deepcopy(payload)
+
+
+def runtime_validate_candidate_task(
+    task: Dict[str, Any], snapshot: "StateSnapshot"
+) -> None:
+    """Runtime layer: validate facts that depend on the fresh snapshot."""
+    from .lfs_types import StateSnapshot
+
+    if not isinstance(snapshot, StateSnapshot):
+        raise LFSValidationError("runtime validation requires StateSnapshot")
+    requested = tuple(int(uid) for uid in task["U"])
+    if not requested or len(requested) != len(set(requested)):
+        raise LFSValidationError("runtime task U must contain unique UAV IDs")
+    missing = sorted(uid for uid in requested if uid not in snapshot.states)
+    if missing:
+        raise LFSValidationError(f"runtime snapshot is missing UAV IDs: {missing}")
+    if not math.isfinite(snapshot.epoch):
+        raise LFSValidationError("runtime snapshot epoch must be finite")
+    for uid in requested:
+        state = snapshot.states[uid]
+        if state.effective_timestamp > snapshot.epoch:
+            raise LFSValidationError(
+                f"runtime snapshot contains future state for UAV {uid}"
+            )
 
 
 def _schema_candidates() -> List[Path]:

@@ -156,3 +156,12 @@ class CompiledParallelGroup:
 class CompiledMission:
     nodes: Tuple[Any, ...]
 
+
+@dataclass(frozen=True)
+class TaskStateMachine:
+    """Per-task runtime FSM compiled from graph semantics, not Candidate q."""
+
+    task: Dict[str, Any]
+    states: Tuple[str, ...]
+    completion_event: str
+    post_completion_wait: Optional[WaitSpec]

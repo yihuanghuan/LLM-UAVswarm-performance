@@ -15,6 +15,7 @@ from .formation_geometry import (
     resolve_scale,
 )
 from .lfs_resolver import resolve_candidate_task
+from .lfs_validator import runtime_validate_candidate_task
 from .lfs_types import (
     ExecutableLFS,
     ExecutionProfile,
@@ -76,6 +77,7 @@ def resolve_execution_task(
     policy: LateResolutionPolicy,
 ) -> ResolvedExecutionTask:
     """Resolve one task exactly once through each independent stage."""
+    runtime_validate_candidate_task(candidate_task, snapshot)
     intent, trace = resolve_candidate_task(candidate_task, snapshot)
     safety = policy.resolve_safety(intent.safety_factor)
     if safety.d_hard <= 0.0 or safety.d_plan < safety.d_hard:
