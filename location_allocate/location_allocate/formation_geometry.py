@@ -127,6 +127,8 @@ def resolve_scale(
         if label not in policy.qualitative_multipliers:
             raise GeometryError(f"missing qualitative multiplier: {label}")
         requested = r_nominal * float(policy.qualitative_multipliers[label])
+    elif request["mode"] == "auto":
+        requested = r_nominal
     else:
         raise GeometryError(f"unsupported radius mode: {request['mode']}")
     if not math.isfinite(requested) or requested <= 0.0:

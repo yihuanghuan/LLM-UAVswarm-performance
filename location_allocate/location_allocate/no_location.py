@@ -16,16 +16,24 @@
 # test_cmd 为准备谢幕表演的复合指令。
 # 输出两任务（悬停+直接执行），10 个 UAV 耗时约 25s。
 # 原来的指令:准备谢幕表演：首先用 3 秒钟聚拢成一个最紧凑的球形编队；稳定悬停 2 秒钟后；全体向外发散，各自用 4 秒时间飞回初始起飞点降落,ai通过断句会把悬停判给第二个任务
-from openai import OpenAI
 import re
 import json
 import time
 import os
 import uuid
-import httpx
+try:
+    import httpx
+except ModuleNotFoundError:  # OpenAI can still use its default HTTP client.
+    httpx = None
+
+try:
+    from openai import OpenAI
+except ModuleNotFoundError:  # Allows schema/parser unit tests without SDK.
+    OpenAI = None
 
 from .llm_parse_logger import append_llm_parse_log
 from .lfs_validator import (
+    LFSValidationError,
     early_validate_candidate_mission,
     estimate_field_accuracy,
     is_candidate_mission,
@@ -40,7 +48,7 @@ MODEL_NAME = "MiniMax-M2.7-highspeed"
 # -------------------------------------------------------------------------
 
 # ====================== 固定系统Prompt（LFS格式） ======================
-SYSTEM_PROMPT = """
+LEGACY_SYSTEM_PROMPT = """
 # 角色定位
 你是无人机集群编队变换专属指令解析专家，唯一职责是将操作人员输入的自然语言指令，
 严格解析为 Language-to-Formation Specification (LFS) JSON，禁止处理任何无关请求。
@@ -115,7 +123,7 @@ SYSTEM_PROMPT = """
 """
 
 # ====================== Few-Shot 示例（LFS格式） ======================
-FEW_SHOT_EXAMPLES = """
+LEGACY_FEW_SHOT_EXAMPLES = """
 【示例1：单任务标准图形】
 用户指令：UAV1-6 以[3,4,5]为中心，变换成圆形编队，半径为1.5米，限时3秒
 ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
@@ -192,6 +200,82 @@ ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
 }
 """
 
+CANDIDATE_SYSTEM_PROMPT = r"""
+# Role
+You are a semantic parser for UAV formation missions. Return JSON only. Your
+output is a Candidate Mission: it describes user intent and task relations,
+but never computes executable coordinates, controller gains, safety-critical
+parameters, allocation weights, per-UAV targets, or velocity/acceleration/jerk
+limits.
+
+# Envelope and graph
+Return exactly:
+{"lfs_version":"2.0","mission":{"nodes":[...]}}
+Every node is one of:
+- {"type":"task","task": TASK}
+- {"type":"parallel","completion_mode":"independent|synchronized","tasks":[TASK,...]}
+- {"type":"wait","condition":"elapsed","duration":SECONDS}
+Use a parallel node only when the language explicitly expresses simultaneous
+execution. Never infer parallelism merely because UAV sets do not overlap.
+completion_mode defaults to independent. Use synchronized only when the user
+explicitly requires simultaneous completion.
+
+# TASK = tau_candidate(U,F,c,r,T,m,s,q)
+- task_id: unique positive integer
+- U: participating UAV IDs; when omitted by the user use all IDs from the ROS
+  availability information
+- F: Circle, Line, Sphere, Triangle, Polygon, Lineup, or Free. Lineup and Free
+  remain compatibility vocabulary and may be rejected later by deterministic
+  Candidate geometry; do not reinterpret them as another formation.
+- c:
+  * explicit world center: {"mode":"absolute","value":[x,y,z]}
+  * explicit offset: {"mode":"relative","reference":"current_swarm_centroid",
+    "offset":[dx,dy,dz],"frame":"world"}
+  * user explicitly asks to keep the current center:
+    {"mode":"maintain_current_centroid"}
+  * user gives no center: {"mode":"auto"}
+- r:
+  * explicit scale: {"mode":"explicit","value":POSITIVE_NUMBER}
+  * explicit qualitative wording: {"mode":"qualitative",
+    "value":"compact|normal|spacious"}
+  * user gives no scale: {"mode":"auto"}
+- T: explicit {"mode":"explicit","value":POSITIVE_SECONDS}; otherwise
+  {"mode":"auto"}
+- m: smooth, normal, aggressive. If no style is expressed, use normal. This is
+  a semantic label, not a request to generate gains.
+- s: safety factor >= 1. If absent, use 1.0.
+- q: direct, hover-and-wait, continuous. q is only task completion/wait intent.
+  hover-and-wait requires a non-negative wait_time. Use direct for "after this
+  formation becomes stable, start the next task" when no extra timed hold was
+  requested. Use continuous only for a stated no-stop transition.
+
+# Hard restrictions
+- Do not invent numeric c, r, or T when the user omitted them; use auto.
+- Do not output LADRC gains, IAPF parameters, safety distances, allocator
+  parameters, dynamics limits, target_pos, global_center, parametric_data, or
+  task_sequences.
+- Do not add explanatory text, markdown, error recovery payloads, or fields not
+  defined above.
+"""
+
+CANDIDATE_FEW_SHOT_EXAMPLES = r"""
+User: 让1到5号无人机组成圆形
+Output:
+{"lfs_version":"2.0","mission":{"nodes":[{"type":"task","task":{"task_id":1,"U":[1,2,3,4,5],"F":"Circle","c":{"mode":"auto"},"r":{"mode":"auto"},"T":{"mode":"auto"},"m":"normal","s":1.0,"q":"direct"}}]}}
+
+User: 1到3号机以[2,3,4]为中心、半径2米，在5秒内组成三角形；同时4到6号机保持当前中心组成紧凑圆形，两组同时完成
+Output:
+{"lfs_version":"2.0","mission":{"nodes":[{"type":"parallel","completion_mode":"synchronized","tasks":[{"task_id":1,"U":[1,2,3],"F":"Triangle","c":{"mode":"absolute","value":[2,3,4]},"r":{"mode":"explicit","value":2},"T":{"mode":"explicit","value":5},"m":"normal","s":1.0,"q":"direct"},{"task_id":2,"U":[4,5,6],"F":"Circle","c":{"mode":"maintain_current_centroid"},"r":{"mode":"qualitative","value":"compact"},"T":{"mode":"auto"},"m":"normal","s":1.0,"q":"direct"}]}]}}
+
+User: 全体先组成圆形，稳定后以当前位置中心上方2米组成正方形
+Output:
+{"lfs_version":"2.0","mission":{"nodes":[{"type":"task","task":{"task_id":1,"U":[1,2,3,4],"F":"Circle","c":{"mode":"auto"},"r":{"mode":"auto"},"T":{"mode":"auto"},"m":"normal","s":1.0,"q":"direct"}},{"type":"task","task":{"task_id":2,"U":[1,2,3,4],"F":"Polygon","c":{"mode":"relative","reference":"current_swarm_centroid","offset":[0,0,2],"frame":"world"},"r":{"mode":"auto"},"T":{"mode":"auto"},"m":"normal","s":1.0,"q":"direct"}}]}}
+"""
+
+
+class CandidateParseError(RuntimeError):
+    """Candidate parsing failed without permission to enter the legacy path."""
+
 
 # ====================== 工具函数 ======================
 def purify_json_content(raw_content: str) -> str:
@@ -245,35 +329,54 @@ def _log_parse_attempt(command_id: str, raw_command: str, retry_count: int, **kw
 
 
 # ====================== 核心解析函数（新格式） ======================
-def parse_uav_command(user_command: str, ros_aux_info: str = ""):
+def parse_uav_command(
+    user_command: str,
+    ros_aux_info: str = "",
+    runtime_mode: str = "legacy_v1",
+):
+    """Parse one command in an explicitly selected, non-fallback mode."""
+    if runtime_mode not in ("candidate_v2", "legacy_v1"):
+        raise ValueError("runtime_mode must be candidate_v2 or legacy_v1")
     command_id = uuid.uuid4().hex[:12]
 
-    if not API_KEY:
+    if not API_KEY or OpenAI is None:
         _log_parse_attempt(
             command_id,
             user_command,
             0,
             error_type="missing_api_key",
         )
-        return {
+        error = {
             "task_sequences": [],
             "error_code": 4,
-            "error_msg": "缺少 LLM API Key，请设置 LLM_API_KEY 或 MINIMAX_API_KEY 环境变量"
+            "error_msg": (
+                "LLM client unavailable; install openai and set "
+                "LLM_API_KEY or MINIMAX_API_KEY"
+            )
         }
+        if runtime_mode == "candidate_v2":
+            raise CandidateParseError(error["error_msg"])
+        return error
+
+    if runtime_mode == "candidate_v2":
+        system_prompt = CANDIDATE_SYSTEM_PROMPT
+        examples = CANDIDATE_FEW_SHOT_EXAMPLES
+    else:
+        system_prompt = LEGACY_SYSTEM_PROMPT
+        examples = LEGACY_FEW_SHOT_EXAMPLES
 
     full_prompt = (
-        SYSTEM_PROMPT + "\n"
-        + FEW_SHOT_EXAMPLES + "\n"
+        system_prompt + "\n"
+        + examples + "\n"
         + "【ROS实时情报】\n" + ros_aux_info + "\n"
         + "【用户指令】\n" + user_command + "\n"
         + "【输出】\n"
     )
 
-    client = OpenAI(
-        api_key=API_KEY,
-        base_url=BASE_URL,
-        http_client=httpx.Client(trust_env=False)
-    )
+    client_options = {"api_key": API_KEY, "base_url": BASE_URL}
+    if httpx is not None:
+        client_options["http_client"] = httpx.Client(trust_env=False)
+    client = OpenAI(**client_options)
 
     max_retries = 3
 
@@ -301,9 +404,17 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
             cfr_result = json.loads(pure_json_str)
             valid_json = True
             field_accuracy = estimate_field_accuracy(cfr_result)
-            if is_candidate_mission(cfr_result):
+            if runtime_mode == "candidate_v2":
+                if not is_candidate_mission(cfr_result):
+                    raise CandidateParseError(
+                        "Candidate parser returned a non-Candidate payload"
+                    )
                 cfr_result = early_validate_candidate_mission(cfr_result)
             else:
+                if is_candidate_mission(cfr_result):
+                    raise LFSValidationError(
+                        "legacy parser returned a Candidate payload"
+                    )
                 available_uav_ids = parse_available_uav_ids(ros_aux_info)
                 cfr_result = validate_and_compile_lfs(
                     cfr_result, available_uav_ids
@@ -341,12 +452,24 @@ def parse_uav_command(user_command: str, ros_aux_info: str = ""):
             )
             print(f" 第{attempt + 1}次解析失败：{str(e)}")
             if attempt == max_retries - 1:
+                if runtime_mode == "candidate_v2":
+                    raise CandidateParseError(
+                        f"Candidate 解析失败（重试{max_retries}次）：{str(e)}"
+                    ) from e
                 return {
                     "task_sequences": [],
                     "error_code": 4,
                     "error_msg": f"解析失败（重试{max_retries}次）：{str(e)}"
                 }
             time.sleep(2)
+
+
+def parse_candidate_mission(user_command: str, ros_aux_info: str = ""):
+    return parse_uav_command(user_command, ros_aux_info, "candidate_v2")
+
+
+def parse_legacy_uav_command(user_command: str, ros_aux_info: str = ""):
+    return parse_uav_command(user_command, ros_aux_info, "legacy_v1")
 
 
 # ====================== 测试 ======================

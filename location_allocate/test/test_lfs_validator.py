@@ -179,6 +179,30 @@ def test_candidate_mission_early_validation_and_graph_compilation():
     assert compiled.nodes[1].tasks[0].task["T"] == {"mode": "auto"}
 
 
+def test_candidate_auto_center_and_scale_are_schema_valid():
+    payload = {
+        "mission": {"nodes": [{
+            "type": "task",
+            "task": candidate_task(c={"mode": "auto"}, r={"mode": "auto"}),
+        }]}
+    }
+
+    assert early_validate_candidate_mission(payload) == payload
+
+
+def test_candidate_wait_node_has_one_supported_runtime_semantic():
+    valid = {"mission": {"nodes": [
+        {"type": "wait", "condition": "elapsed", "duration": 2.0}
+    ]}}
+    invalid = {"mission": {"nodes": [
+        {"type": "wait", "condition": "external_event", "duration": 2.0}
+    ]}}
+
+    assert early_validate_candidate_mission(valid) == valid
+    with pytest.raises(LFSValidationError, match="schema"):
+        early_validate_candidate_mission(invalid)
+
+
 def test_candidate_parallel_overlap_is_rejected_early():
     payload = {
         "mission": {

@@ -116,6 +116,14 @@ def early_validate_candidate_semantics(payload: Dict[str, Any]) -> None:
                 raise LFSValidationError(
                     f"task {task_id} safety factor s must be >= 1"
                 )
+            if task["q"] == "hover-and-wait" and task.get("wait_time") is None:
+                raise LFSValidationError(
+                    f"task {task_id} hover-and-wait requires wait_time"
+                )
+            if task["q"] != "hover-and-wait" and task.get("wait_time") is not None:
+                raise LFSValidationError(
+                    f"task {task_id} q={task['q']!r} does not permit wait_time"
+                )
 
 
 def runtime_validate_candidate_task(

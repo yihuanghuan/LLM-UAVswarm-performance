@@ -75,7 +75,17 @@ def test_current_centroid_uses_only_current_task_u():
     intent, trace = resolve_candidate_task(task, snapshot)
 
     assert intent.center == (1.0, 0.0, 1.0)
-    assert trace.center_source == "snapshot.participant_centroid"
+    assert trace.center_source == "candidate.maintain_current_centroid"
+
+
+def test_auto_center_is_distinct_in_trace_but_uses_current_task_centroid():
+    snapshot = snapshot_manager().snapshot([1, 2, 3], now=10.0)
+    intent, trace = resolve_candidate_task(
+        candidate_task(U=[1, 2], c={"mode": "auto"}), snapshot
+    )
+
+    assert intent.center == (1.0, 0.0, 1.0)
+    assert trace.center_source == "default.current_task_centroid"
 
 
 def test_relative_center_reuses_participant_centroid():
@@ -147,6 +157,23 @@ def test_r_safe_uses_d_plan_not_d_hard():
     assert radius == pytest.approx(2.4 / unit.delta_min)
     assert trace.d_hard is None
     assert "d_plan(s)" in trace.corrections[0]
+
+
+def test_auto_scale_uses_nominal_formation_scale():
+    snapshot = snapshot_manager().snapshot([1, 2, 3], now=10.0)
+    intent, trace = resolve_candidate_task(
+        candidate_task(
+            c={"mode": "absolute", "value": [0.0, 0.0, 2.0]},
+            r={"mode": "auto"},
+        ),
+        snapshot,
+    )
+    unit = build_unit_geometry("Circle", 3)
+    radius = resolve_scale(
+        intent, unit, d_plan=1.0, policy=scale_policy(), trace=trace
+    )
+
+    assert radius == pytest.approx(scale_policy().nominal_spacing / unit.delta_min)
 
 
 def test_workspace_never_shrinks_below_safety_lower_bound():

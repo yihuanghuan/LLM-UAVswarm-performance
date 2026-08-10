@@ -85,6 +85,14 @@
             "mode": {"const": "maintain_current_centroid"}
           },
           "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["mode"],
+          "properties": {
+            "mode": {"const": "auto"}
+          },
+          "additionalProperties": false
         }
       ]
     },
@@ -96,6 +104,14 @@
           "properties": {
             "mode": {"const": "explicit"},
             "value": {"type": "number", "exclusiveMinimum": 0}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["mode"],
+          "properties": {
+            "mode": {"const": "auto"}
           },
           "additionalProperties": false
         },
@@ -173,11 +189,11 @@
         },
         {
           "type": "object",
-          "required": ["type", "condition"],
+          "required": ["type", "condition", "duration"],
           "properties": {
             "type": {"const": "wait"},
-            "condition": {"type": "string", "minLength": 1},
-            "duration": {"type": ["number", "null"], "minimum": 0}
+            "condition": {"const": "elapsed"},
+            "duration": {"type": "number", "minimum": 0}
           },
           "additionalProperties": false
         }

@@ -39,7 +39,10 @@ def resolve_candidate_task(
         center_source = "candidate.absolute"
     elif mode == "maintain_current_centroid":
         center = _centroid(snapshot, uav_ids)
-        center_source = "snapshot.participant_centroid"
+        center_source = "candidate.maintain_current_centroid"
+    elif mode == "auto":
+        center = _centroid(snapshot, uav_ids)
+        center_source = "default.current_task_centroid"
     elif mode == "relative":
         if (
             center_spec.get("reference") != "current_swarm_centroid"
