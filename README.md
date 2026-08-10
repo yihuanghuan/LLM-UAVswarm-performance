@@ -6,7 +6,7 @@
 [![C++](https://img.shields.io/badge/C++-17-blue.svg)](https://en.cppreference.com/w/cpp/17)
 [![Python](https://img.shields.io/badge/Python-3.10-yellow.svg)](https://www.python.org/)
 
-基于大型语言模型 (LLM) 和 ROS 2 的多无人机集群编队控制系统。操作员输入自然语言指令，系统自动解析、执行匈牙利防交叉分配，并通过 LADRC 控制器 + IAPF 分布式避障完成平滑编队飞行。
+基于大型语言模型 (LLM) 和 ROS 2 的多无人机集群编队系统。操作员输入自然语言指令，系统通过 Candidate Mission、确定性 late resolution 和安全感知分配生成复合执行消息。当前 PX4 主 setpoint 仍使用既有 Minimum-Jerk/IAPF 路径；LADRC 输出接入 PX4 的最终合成将在后续单独重构。
 
 ## 系统架构
 
@@ -14,7 +14,8 @@
 Natural Language → LLM → Candidate Mission → Mission Graph / FSM
 → fresh snapshot → validation/resolution/geometry → T_plan → allocator
 → T_exec → Executable LFS + ResolutionTrace → Execution Profile
-→ UAVExecutionCommand → Minimum Jerk + LADRC + IAPF → PX4
+→ UAVExecutionCommand → controller checks/LADRC runtime
+→ existing Minimum-Jerk + IAPF setpoint path → PX4
 ```
 
 迁移期继续保留旧 LFS → `UAVSwarmCommand` 路径。完整的 late-binding 边界、冻结项和待确认项见 [Candidate LFS 架构](docs/candidate_lfs_architecture.md)，接口与运行步骤见 [迁移说明](docs/candidate_lfs_migration.md)。
@@ -25,13 +26,13 @@ Natural Language → LLM → Candidate Mission → Mission Graph / FSM
 |------|--------|------|
 | **认知层** | Python + LLM API | 自然语言 → 规范 JSON 蓝图（编队类型、参数、时间、运动风格） |
 | **调度层** | Python ROS 2 (`location_allocate`) | 坐标生成、匈牙利算法防交叉分配、状态闭环、多任务编排 |
-| **执行层** | C++ ROS 2 (`ladrc_controller`) | Minimum Jerk 轨迹生成、LADRC 动态增益控制、IAPF 分布式避障 |
+| **执行层** | C++ ROS 2 (`ladrc_controller`) | profile 检查与 LADRC runtime、Minimum Jerk 轨迹、IAPF 分布式避障；LADRC→PX4 合成待后续完成 |
 
 ## 核心特性
 
 - **自然语言控制**：支持单一/复合/并行编队指令，如"1到5号机组成圆形，6到8号机组成直线"
 - **匈牙利防交叉分配**：全局最优目标分配，避免飞行轨迹交叉
-- **LADRC 自抗扰控制**：新路径由中央 Execution Profile Compiler 确定性生成参数；控制器仅校验、硬限幅和平滑应用
+- **LADRC profile 边界**：新路径由中央 Execution Profile Compiler 确定性生成参数；控制器校验、硬限幅和平滑应用，但当前 LADRC 输出尚未进入 PX4 主 setpoint
 - **IAPF 分布式避障**：基于相对速度、滞回和平滑的双通道斥力，使用确定性成对垂直逃逸方向缓解局部极小值
 - **多机命名空间隔离**：自动话题重映射，兼容 PX4 多实例 Gazebo 仿真
 - **闭环状态反馈**：基于真实悬停检测推进任务序列
@@ -128,11 +129,12 @@ ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1,2,3,4,5] enable_iapf_ac
 ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1,2,3,4,5] enable_iapf_accel_feedforward:=true
 
 # 终端 4: LLM 调度器
-source ~/learning/LLM_swarm_ws/llm_env/bin/activate
-unset ALL_PROXY all_proxy
 source ~/learning/LLM_swarm_ws/install/setup.bash
-python3 -m location_allocate.location_allocate
+export LLM_API_KEY='<your-key>'
+ros2 run location_allocate location_allocate
 ```
+
+调度器默认使用 `candidate_v2` 和 `migration-main-v1` policy。只有历史实验/回归需要显式加入 `--ros-args -p lfs_runtime_mode:=legacy_v1`。Candidate 失败不会 fallback 到旧 `task_sequences`。
 
 ## 指令示例
 
@@ -205,6 +207,7 @@ LLM_swarm_ws/
 │   │       ├── location_allocate.py   # 匈牙利分配 + ROS2 节点
 │   │       ├── no_location.py         # LLM API 解析
 │   │       └── visualize_goals.py     # 可视化工具
+│   ├── lfs_policy/                    # typed template/migration policy loader
 │   ├── minisnap_LADRC/
 │   │   └── ladrc_controller/          # C++ 执行层
 │   │       ├── src/
@@ -318,14 +321,17 @@ Executable LFS + ResolutionTrace → Execution Profile Compiler
     ↓
 UAVExecutionCommand → /uav{N}/execution_command
     ↓
-MinimumJerkTrajectory + profile-driven LADRC + IAPF
+MinimumJerkTrajectory + profile-checked LADRC runtime + IAPF
     ↓
-PX4 Offboard 位置控制（NED 坐标）
+现有 PX4 Offboard 位置/Minimum-Jerk/IAPF setpoint 路径（NED 坐标）
     ↓
 Gazebo 物理仿真
     ↓
-UAVStatus + ENU odom → 调度器闭环反馈
+UAVStatus + /uav{N}/swarm_state (nav_msgs/Odometry, world ENU)
+→ Candidate 调度器闭环反馈
 ```
+
+注意：当前 LADRC `update()` 输出尚未接入 PX4 acceleration/setpoint 主通道；本轮也没有实现 profile velocity/jerk 的 controller runtime enforcement。旧 `/uavN/odom : geometry_msgs/Point` 继续供 legacy scheduler 使用。
 
 ## 已知限制
 

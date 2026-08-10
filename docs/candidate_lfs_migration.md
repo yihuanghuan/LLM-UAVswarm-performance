@@ -1,20 +1,96 @@
 # Candidate LFS 运行、接口与迁移
 
-## 当前 main 兼容行为
+## 默认与兼容模式
 
-默认 `location_allocate` main、旧 LLM v1 prompt、`FormationGenerator`、`/uavN/swarm_command` 和既有实验脚本保持可用。新 Candidate 路径没有生产参数默认值，不会被默认 main 偷偷启用。
+`location_allocate` 当前默认使用：
 
-旧消息到达控制器时：
+```text
+Natural Language → Candidate Mission → Mission Graph/FSM
+→ per-task/group fresh snapshot → late resolution
+→ Executable LFS → Execution Profile → UAVExecutionCommand
+```
 
-- target 和合法 duration 继续生效；
-- safety factor 被约束为至少 1；
-- motion style 只记录，不再计算 semantic LADRC gain；
-- LADRC 使用 `ladrc_params.yaml` baseline/normal 值，并输出 legacy fallback warning；
-- 活跃的新 Execution Profile 任务优先，旧消息会被忽略。
+显式兼容模式：
 
-## 新接口
+```bash
+ros2 run location_allocate location_allocate --ros-args \
+  -p lfs_runtime_mode:=legacy_v1
+```
 
-`/uavN/execution_command` 使用 `uav_swarm_interfaces/msg/UAVExecutionCommand`：
+legacy 模式保留 v1 parser、`task_sequences`、旧 FormationGenerator、
+`/uavN/odom`、`UAVSwarmCommand` 和历史 allocator API。Candidate 解析、验证或执行失败时只记录错误和 ResolutionTrace，不会进入 legacy fallback。
+
+## Candidate 运行
+
+构建：
+
+```bash
+cd ~/learning/LLM_swarm_ws
+source /opt/ros/humble/setup.bash
+colcon build --symlink-install --packages-select \
+  uav_swarm_interfaces lfs_policy location_allocate ladrc_controller
+source install/setup.bash
+```
+
+PX4/Gazebo 和 XRCE Agent 启动后：
+
+```bash
+# 控制器：默认加载同一 migration policy，并接收新复合消息
+ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1,2,3,4,5]
+
+# 调度器：Candidate v2 是默认 mode
+ros2 run location_allocate location_allocate
+```
+
+示例自然语言：
+
+```text
+让1到5号无人机组成圆形编队
+```
+
+未给出 center、scale、duration 时，Candidate 分别输出 `c:auto`、`r:auto`、`T:auto`，不会补 `[0,0,1.5]`、`1.5m` 或 `3s`。
+
+## Policy 层级
+
+- `location_allocate/config/lfs_policy.template.yaml`：完整字段模板，允许 null/TBD，production loader 必须拒绝。
+- `lfs_policy/config/lfs_policy.migration.yaml`：当前可运行仿真基线，`configuration_id=migration-main-v1`。
+- 未来 `lfs_policy_experiment_*.yaml`：实验冻结后另建，本轮不存在 paper-final policy。
+
+migration 数值只用于集成、仿真和迁移回归，不是论文冻结参数。完整来源见 [lfs_policy_provenance.md](lfs_policy_provenance.md)。
+
+启动时 typed loader 会一次性检查 missing/null、NaN/Inf、workspace 顺序、安全 ordering、IAPF hysteresis、controller clamp 覆盖、configuration ID 和 provenance。任何不完整 policy 都在发布 UAV command 前 fail fast。
+
+## 状态接口
+
+Candidate production state：
+
+```text
+/uavN/swarm_state : nav_msgs/msg/Odometry
+header.frame_id    : world
+child_frame_id     : uavN/base_link_enu
+position           : global ENU（含 spawn offset）
+linear velocity    : global ENU
+header.stamp       : controller 收到对应 PX4 sample 时的 ROS clock
+```
+
+PX4 timestamp 是 boot-clock microseconds，不能冒充 ROS epoch/sim time，因此 frame-normalization publisher 在接收 sample 时生成 ROS source stamp。Scheduler 另存 receive stamp，freshness 使用 header source stamp。
+
+migration production 要求：
+
+- `state_timeout=0.5s`
+- `snapshot_skew=0.15s`
+- 等待 fresh state 最多 `2s`
+- velocity 必须 finite
+- zero/future/stale timestamp 拒绝
+- `allow_receive_time_fallback=false`
+
+debug 显式打开 fallback 时会在 ResolutionTrace 留 warning。ParallelGroup 对 U 的并集只建立一个 immutable snapshot。
+
+旧 `/uavN/odom : geometry_msgs/Point` 保持原类型和频率，只供 legacy 路径使用。
+
+## 新执行接口
+
+`/uavN/execution_command` 使用 `UAVExecutionCommand`：
 
 ```text
 Header header
@@ -26,57 +102,24 @@ Point target_pos
 ExecutionProfile profile
 ```
 
-`ExecutionProfile.duration` 是唯一 duration。外层消息没有第二份 duration。Profile 还包含 style、三轴 `omega_c/omega_o`、velocity/acceleration/jerk limits、IAPF enter/exit/repulsion soft 参数、style/task provenance gain 和 `configuration_id`。`d_hard` 不在消息中，继续由控制器固定配置定义 violation。
+`profile.duration` 来自最终 `T_exec`，是新路径唯一 duration。Profile 的 style/task gain 在 migration policy 中恒为 1，LADRC 使用现有 baseline。velocity/acceleration/jerk limits 当前用于 timing、完整性检查和审计；本轮没有新增 controller velocity/jerk runtime enforcement。
 
-## 构建与测试
+控制器收到新命令后会进行 finite、hard clamp 和 smooth apply，并发布本任务代际的 `is_hover_stable=false`。Scheduler 只有看到该 false 后才接受后续 true，避免上一任务状态误判。
 
-```bash
-cd ~/learning/LLM_swarm_ws
-source /opt/ros/humble/setup.bash
-colcon build --symlink-install \
-  --packages-select uav_swarm_interfaces location_allocate ladrc_controller
-source install/setup.bash
-colcon test --packages-select uav_swarm_interfaces location_allocate ladrc_controller
-colcon test-result --all --verbose
+## ResolutionTrace
+
+默认追加到：
+
+```text
+~/.ros/candidate_resolution_trace.jsonl
 ```
 
-虚拟环境运行 Python 单测时，需要保留 ROS 的 local dist-packages：
+记录 Candidate、configuration ID、snapshot source/receive timestamp、center/scale/timing 来源、correction、fallback warning和 rejection reason。它与 Executable LFS 八元组分离，不写入或覆盖历史 `experiments/results`。
 
-```bash
-source llm_env/bin/activate
-source /opt/ros/humble/setup.bash
-source install/setup.bash
-export PYTHONPATH="$PWD/src/LLM-UAVswarm-performance/location_allocate:$PWD/install/uav_swarm_interfaces/local/lib/python3.10/dist-packages:/opt/ros/humble/local/lib/python3.10/dist-packages"
-```
+## 当前明确未完成的控制工作
 
-## 启用 Candidate 路径前的必要步骤
-
-1. 复制并填写 `location_allocate/config/lfs_policy.template.yaml` 中全部相关 null；评审并分配唯一 `configuration_id`。
-2. 由 composition root 显式构造 `ScalePolicy`、`TimingPolicy`、allocator factory、safety resolver 和 `ExecutionProfilePolicy`。任何缺项都应 fail closed。
-3. 为调度节点显式设置正数 `candidate_state_timeout` 和非负 `candidate_snapshot_skew`；未设置时 snapshot manager 不启用。
-4. 为控制器配置所有 execution-profile hard clamps 和 smoothing alpha，然后显式设置 `enable_execution_profiles:=true`。缺少 clamps 时新 profile 被拒绝。
-5. Candidate Mission 先通过 early validation 与 `compile_candidate_mission()`；每个即将执行的 task/group 再调用 late-resolution API。parallel group 必须传入经评审的 `group_d_plan` 聚合结果。
-
-在 provisional 参数获确认前，不应把这些步骤固化进默认 launch。
-
-## 迁移保护
-
-- 不删除或重命名旧 topic/message/API；旧 LFS eager path 仍有回归测试。
-- `Lineup`/`Free` 的 legacy geometry 保持历史行为；Candidate v2 明确拒绝并等待确认。
-- 新增代码和测试不写 `experiments/results`。历史结果目录不作为测试输出目录，不执行清理或覆盖。
-- ResolutionTrace 与 Executable LFS 分离；实验运行方应以新的 run ID 追加保存 trace，不回写历史 run。
-- 新旧命令优先级由控制器执行，而不是依赖 DDS 到达顺序。
-
-## 验收覆盖
-
-- Candidate → Executable → Execution Profile → composite message；
-- early/runtime validation 分层、stale/missing/future/skew state；
-- participant-only centroid 与 relative offset；
-- Unit Geometry → Scale Resolution → Final Geometry；Triangle/Polygon 真实几何；
-- qualitative r 安全下限 `d_plan(s)/delta_F` 和 AABB 冲突失败；
-- explicit/auto T × smooth/normal/aggressive；不可行 explicit T 上调并留 trace；
-- `T_plan`/`T_exec` 差异只触发一次复评；
-- parallel independent/synchronized duration 和完成后 hover 轨迹；
-- invalid/NaN/Inf/boundary inputs；
-- legacy input、消息优先级、profile finite/clamp/smooth controller guard；
-- 原 allocator、IAPF 和 legacy LFS 回归测试。
+- LADRC `update()` 输出尚未接入 PX4 acceleration/setpoint 主通道。
+- semantic LADRC style/task adaptation 尚未重新实验设计和冻结。
+- profile velocity/jerk limit 尚未成为 controller runtime enforcement。
+- Minimum-Jerk、LADRC 与 IAPF 的最终合成公式本轮未改变。
+- Lineup/Free 的 Candidate v2 最终语义仍待确认；legacy 行为不变，Candidate geometry 继续 fail closed。

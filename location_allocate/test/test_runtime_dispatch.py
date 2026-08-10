@@ -1,8 +1,7 @@
 from types import SimpleNamespace
 
 import pytest
-
-rclpy = pytest.importorskip("rclpy")
+import rclpy  # noqa: F401
 
 from location_allocate.location_allocate import execute_runtime_payload
 

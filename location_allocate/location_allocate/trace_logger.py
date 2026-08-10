@@ -8,7 +8,10 @@ from typing import Any, Mapping
 
 
 def default_trace_path() -> Path:
-    return Path(os.environ.get("ROS_HOME", Path.home() / ".ros")) / "candidate_resolution_trace.jsonl"
+    return (
+        Path(os.environ.get("ROS_HOME", Path.home() / ".ros"))
+        / "candidate_resolution_trace.jsonl"
+    )
 
 
 def append_resolution_trace(record: Any, path: str | Path | None = None) -> None:

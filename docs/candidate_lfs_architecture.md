@@ -1,10 +1,10 @@
 # Candidate LFS → Executable LFS 架构
 
-本文描述迁移期实现。架构不等于参数冻结：所有尚未确认的数值只通过显式 policy 注入，仓库不提供可被误认为正式值的生产默认值。
+本文描述当前默认 Candidate v2 实现。架构冻结不等于论文参数冻结：默认 runtime 使用完整的 `migration-main-v1` 仿真基线，所有迁移数值继续通过显式 policy 注入并标记为非 paper-final。
 
 ## 新旧流程
 
-旧路径（继续保留）：
+旧路径（仅显式 `legacy_v1`，继续保留）：
 
 ```text
 Natural Language → LLM v1 LFS → eager validation/normalization
@@ -12,7 +12,7 @@ Natural Language → LLM v1 LFS → eager validation/normalization
 → YAML baseline LADRC + IAPF
 ```
 
-Candidate v2 路径：
+Candidate v2 路径（默认）：
 
 ```text
 Natural Language → LLM Semantic Parser → Candidate Mission / Candidate LFS
@@ -44,7 +44,7 @@ Mission Graph 编译只处理 Candidate 级任务关系。任何依赖当前位�
 | Early Semantic Validator | 无状态 Candidate Mission | task ID、并行 UAV 重叠、`s >= 1` 等 |
 | Mission Graph Compiler | Candidate Mission、显式 `QRelationPolicy` | `CompiledMission`；唯一消费 `q` 的模块 |
 | Per-task FSM Compiler | `CompiledTaskNode` | `TaskStateMachine`；不再读取 Candidate `q` |
-| Fresh State Snapshot Manager | position、可选 velocity、source/receive timestamp | 对 U 完整、fresh、skew 有界的不可变 snapshot |
+| Fresh State Snapshot Manager | `/uavN/swarm_state` 的 ENU position、velocity、source/receive timestamp | 对 U 完整、fresh、skew 有界的不可变 snapshot |
 | Runtime Validator | task、fresh snapshot | 参与 UAV 和时刻相关检查 |
 | Deterministic Resolver | task、snapshot | `ResolvedTaskIntent`；本任务 U 的中心解析 |
 | Unit Geometry | F、N | 无中心、无尺度的 offsets 和 `delta_F(N)` |
@@ -67,6 +67,7 @@ Allocator、Resolver 和 Compiler 是独立模块；没有共享一个含糊的�
 - `current_swarm_centroid` 与 `maintain_current_centroid` 只计算当前 task 的 U：`c_U(t)=sum(p_i)/|U|`。
 - `relative + current_swarm_centroid` 使用同一 resolver 后叠加 world-frame offset；若未来需要全局质心，必须新增 `active_swarm_centroid`。
 - snapshot 对所有参与 UAV 是 all-or-nothing；缺失、过期、未来时间戳或过大 epoch skew 均失败，不会忽略 UAV。
+- Candidate state 使用 `/uavN/swarm_state : nav_msgs/Odometry`；旧 Point odom 不会进入 Candidate snapshot。ParallelGroup 的 center、start、timing 和 allocator 共用一个 snapshot epoch。
 - `d_hard` 是固定 violation 定义，不随 `s` 改变；`d_plan(s)` 与 IAPF soft activation margin 可增大。
 - `r_safe` 使用 `d_plan(s)`，不使用 `d_hard`。若 workspace 与安全下限冲突，任务失败，不缩小到不安全尺度。
 - `T_request` 来自 Candidate；`T_plan` 只供 allocator；`T_exec` 在 assignment 后定稿，并是 Executable LFS、Execution Profile、消息和控制器的唯一 duration 来源。
@@ -79,11 +80,13 @@ Allocator、Resolver 和 Compiler 是独立模块；没有共享一个含糊的�
 - LLM 不输出 `omega_c`、`omega_o`、LADRC gain、控制限幅或 IAPF 增益。它们只由确定性 Execution Profile Compiler 生成。
 - 新消息优先于旧消息。新 profile 活跃时，旧 `UAVSwarmCommand` 不可覆盖它。
 
-## Provisional / TBD
+## Migration baseline / Provisional
 
-以下只定义配置槽位，不冻结数值：workspace AABB、snapshot timeout/skew、nominal spacing、qualitative r 倍率、`d_hard` 的最终实验值、`d_plan(s)` 映射、IAPF soft 映射、动力学 limits、auto-T 算法选择及参数、timing recheck tolerance、allocator weights/sample rate、parallel planning-margin 聚合、style/task gain 函数、LADRC bandwidth 和所有 controller hard clamp。
+仓库现在提供可运行 `lfs_policy/config/lfs_policy.migration.yaml`，其 workspace、freshness、qualitative scale、jerk、safety mapping和hard clamps只是迁移基线。来源与待确认项见 `docs/lfs_policy_provenance.md`。`location_allocate/config/lfs_policy.template.yaml` 仍是允许 null/TBD 的完整模板，production loader 必须拒绝它。
 
-候选公式实现（例如解析 Minimum-Jerk feasibility timing 和线性 task-intensity gain）只有在调用方显式构造 policy 时才会启用；它们不是生产默认或冻结算法。统一待填结构见 `location_allocate/config/lfs_policy.template.yaml`。
+当前 Execution Profile 对 style/task 使用中性恒等映射，全部 gain 为 1；没有恢复历史 semantic gain 公式。Minimum-Jerk timing 与 allocator 使用 migration policy 显式构造，不代表论文最终参数。
+
+当前 controller 仍未把 LADRC `update()` 输出接入 PX4 acceleration/setpoint 主通道，也没有新增 velocity/jerk runtime enforcement；本架构图中的 controller stage 只表示消息接收、检查、现有 LADRC/IAPF runtime和日志边界。
 
 ## 仍需确认
 
@@ -91,7 +94,7 @@ Allocator、Resolver 和 Compiler 是独立模块；没有共享一个含糊的�
 - `Free`：v2 删除、显式 per-UAV target primitive、或 return-home primitive。当前同样 fail closed，v1 不变。
 - “前方”的 reference：world +x、swarm heading 或 leader heading。
 - Candidate Mission wire schema 的正式版本号和长期兼容承诺。
-- 上述全部 provisional 参数和候选函数的实验定稿。
+- 上述 migration 参数和候选函数的实验定稿。
 
 ## 关键实现文件
 
