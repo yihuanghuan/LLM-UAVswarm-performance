@@ -1,6 +1,6 @@
 import itertools
 from dataclasses import dataclass
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
 import numpy as np
 from scipy.optimize import linear_sum_assignment
@@ -80,6 +80,32 @@ class SafetyAwareTopologyAllocator:
         delta = target_np - init_np
         return init_np[:, None, :] + progress[None, :, None] * delta[:, None, :]
 
+    def sample_nominal_trajectories_variable(
+        self,
+        initial: Sequence[Sequence[float]],
+        assigned_targets: Sequence[Sequence[float]],
+        durations: Sequence[float],
+    ) -> np.ndarray:
+        """Sample per-UAV durations; completed vehicles remain at their goals."""
+        init_np = np.asarray(initial, dtype=float)
+        target_np = np.asarray(assigned_targets, dtype=float)
+        duration_np = np.asarray(durations, dtype=float)
+        if init_np.shape != target_np.shape:
+            raise ValueError("initial and assigned_targets must have the same shape")
+        if init_np.ndim != 2 or init_np.shape[1] != 3:
+            raise ValueError("positions must be shaped as N x 3")
+        if duration_np.shape != (len(init_np),):
+            raise ValueError("durations must contain one value per UAV")
+        if not np.all(np.isfinite(duration_np)) or np.any(duration_np <= 0.0):
+            raise ValueError("durations must be finite and positive")
+        horizon = float(duration_np.max())
+        sample_count = max(2, int(np.ceil(horizon * self.sample_hz)) + 1)
+        times = np.linspace(0.0, horizon, sample_count)
+        normalized = np.minimum(times[None, :] / duration_np[:, None], 1.0)
+        progress = 10.0 * normalized**3 - 15.0 * normalized**4 + 6.0 * normalized**5
+        delta = target_np - init_np
+        return init_np[:, None, :] + progress[:, :, None] * delta[:, None, :]
+
     @staticmethod
     def _orientation(a: np.ndarray, b: np.ndarray, c: np.ndarray) -> float:
         return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
@@ -146,6 +172,54 @@ class SafetyAwareTopologyAllocator:
         if len(init_np) < 2:
             min_distance = float("inf")
 
+        total = (
+            self.alpha * distance_cost
+            + self.beta_xy * xy_crossings
+            + self.beta_prox * proximity_crossings
+            + self.gamma * safety_cost
+        )
+        return AssignmentMetrics(
+            total=float(total),
+            distance=distance_cost,
+            xy_crossings=xy_crossings,
+            proximity_crossings=proximity_crossings,
+            safety=float(safety_cost),
+            min_distance=min_distance,
+        )
+
+    def evaluate_variable(
+        self,
+        initial: Sequence[Sequence[float]],
+        targets: Sequence[Sequence[float]],
+        assignment: Sequence[int],
+        durations: Sequence[float],
+    ) -> AssignmentMetrics:
+        """Evaluate one assignment over max(T_i), holding early finishers still."""
+        init_np = np.asarray(initial, dtype=float)
+        target_np = np.asarray(targets, dtype=float)
+        assignment_np = np.asarray(assignment, dtype=int)
+        assigned_targets = target_np[assignment_np]
+        distance_cost = float(np.linalg.norm(assigned_targets - init_np, axis=1).sum())
+        trajectories = self.sample_nominal_trajectories_variable(
+            init_np, assigned_targets, durations
+        )
+        xy_crossings = 0
+        proximity_crossings = 0
+        safety_cost = 0.0
+        min_distance = float("inf")
+        for i, j in itertools.combinations(range(len(init_np)), 2):
+            if self._xy_segments_cross(
+                init_np[i], assigned_targets[i], init_np[j], assigned_targets[j]
+            ):
+                xy_crossings += 1
+            distances = np.linalg.norm(trajectories[i] - trajectories[j], axis=1)
+            pair_min = float(distances.min())
+            min_distance = min(min_distance, pair_min)
+            if pair_min < self.d_safe:
+                proximity_crossings += 1
+                safety_cost += 1.0 / (pair_min + self.epsilon)
+        if len(init_np) < 2:
+            min_distance = float("inf")
         total = (
             self.alpha * distance_cost
             + self.beta_xy * xy_crossings
@@ -250,8 +324,9 @@ class SafetyAwareTopologyAllocator:
     def allocate_grouped(
         self,
         groups: Sequence[Dict[str, Any]],
-        duration: float,
+        duration: Optional[float] = None,
         mode: str = "safety_aware",
+        durations: Optional[Sequence[float]] = None,
     ) -> tuple[List[List[List[float]]], AssignmentMetrics]:
         """Allocate within groups while evaluating safety over every UAV pair."""
         if not groups:
@@ -259,15 +334,27 @@ class SafetyAwareTopologyAllocator:
             self.last_metrics = metrics
             self.last_iterations = 0
             return [], metrics
-        if duration <= 0.0:
-            raise ValueError("duration must be positive")
+        if durations is None:
+            if duration is None or duration <= 0.0:
+                raise ValueError("duration must be positive")
+            group_durations = [float(duration)] * len(groups)
+        else:
+            group_durations = [float(value) for value in durations]
+            if len(group_durations) != len(groups):
+                raise ValueError("durations must contain one value per group")
+            if any(
+                not np.isfinite(value) or value <= 0.0
+                for value in group_durations
+            ):
+                raise ValueError("durations must be finite and positive")
 
         initial: List[List[float]] = []
         targets: List[List[float]] = []
         ranges: List[range] = []
         seen_uav_ids: set[int] = set()
+        uav_durations: List[float] = []
         cursor = 0
-        for group in groups:
+        for group, group_duration in zip(groups, group_durations):
             group_initial = group.get("initial", [])
             group_targets = group.get("targets", [])
             group_ids = [int(value) for value in group.get("uav_ids", [])]
@@ -278,6 +365,7 @@ class SafetyAwareTopologyAllocator:
             seen_uav_ids.update(group_ids)
             initial.extend(group_initial)
             targets.extend(group_targets)
+            uav_durations.extend([group_duration] * len(group_ids))
             ranges.append(range(cursor, cursor + len(group_ids)))
             cursor += len(group_ids)
 
@@ -294,7 +382,9 @@ class SafetyAwareTopologyAllocator:
                 )
                 for local_row, local_target in enumerate(local_assignment):
                     assignment[group_indices[local_row]] = group_indices[local_target]
-        best_metrics = self.evaluate(initial, targets, assignment, duration)
+        best_metrics = self.evaluate_variable(
+            initial, targets, assignment, uav_durations
+        )
 
         iterations = 0
         if mode == "safety_aware":
@@ -305,8 +395,8 @@ class SafetyAwareTopologyAllocator:
                 for group_range in ranges:
                     for i, j in itertools.combinations(group_range, 2):
                         candidate = self._swap(assignment, i, j)
-                        candidate_metrics = self.evaluate(
-                            initial, targets, candidate, duration
+                        candidate_metrics = self.evaluate_variable(
+                            initial, targets, candidate, uav_durations
                         )
                         if candidate_metrics.total < best_metrics.total - self.min_improvement:
                             assignment = candidate

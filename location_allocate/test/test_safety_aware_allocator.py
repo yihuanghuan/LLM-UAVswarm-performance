@@ -163,3 +163,52 @@ def test_grouped_allocator_rejects_duplicate_uav_ids():
     ]
     with np.testing.assert_raises(ValueError):
         allocator.allocate_grouped(groups, duration=3.0)
+
+
+def test_variable_duration_trajectory_holds_early_finisher_at_goal():
+    allocator = SafetyAwareTopologyAllocator(sample_hz=10.0)
+    trajectories = allocator.sample_nominal_trajectories_variable(
+        [[0.0, 0.0, 0.0], [0.0, 2.0, 0.0]],
+        [[1.0, 0.0, 0.0], [4.0, 2.0, 0.0]],
+        durations=[1.0, 3.0],
+    )
+
+    assert trajectories.shape == (2, 31, 3)
+    assert trajectories[0, 10:].tolist() == [[1.0, 0.0, 0.0]] * 21
+    assert trajectories[1, -1].tolist() == [4.0, 2.0, 0.0]
+
+
+def test_grouped_allocator_accepts_independent_group_durations():
+    allocator = SafetyAwareTopologyAllocator(sample_hz=10.0)
+    groups = [
+        {
+            "uav_ids": [1, 2],
+            "initial": [[0.0, 0.0, 0.0], [0.0, 2.0, 0.0]],
+            "targets": [[2.0, 0.0, 0.0], [2.0, 2.0, 0.0]],
+        },
+        {
+            "uav_ids": [3, 4],
+            "initial": [[0.0, 4.0, 0.0], [0.0, 6.0, 0.0]],
+            "targets": [[4.0, 4.0, 0.0], [4.0, 6.0, 0.0]],
+        },
+    ]
+
+    allocated, metrics = allocator.allocate_grouped(
+        groups, durations=[1.0, 3.0], mode="distance_hungarian"
+    )
+
+    assert len(allocated) == 2
+    assert metrics.min_distance > 0.0
+
+
+def test_grouped_allocator_keeps_legacy_scalar_duration_api():
+    allocator = SafetyAwareTopologyAllocator()
+    groups = [{
+        "uav_ids": [1, 2],
+        "initial": [[0.0, 0.0, 0.0], [0.0, 2.0, 0.0]],
+        "targets": [[2.0, 0.0, 0.0], [2.0, 2.0, 0.0]],
+    }]
+
+    allocated, _ = allocator.allocate_grouped(groups, duration=2.0)
+
+    assert len(allocated[0]) == 2
