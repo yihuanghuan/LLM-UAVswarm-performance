@@ -521,7 +521,19 @@ private:
       msg->profile.jerk_limit,
       msg->profile.iapf_enter_distance,
       msg->profile.iapf_exit_distance,
-      msg->profile.iapf_repulsion_scale};
+      msg->profile.iapf_repulsion_scale,
+      msg->profile.style_gain,
+      msg->profile.task_gain};
+    if (msg->uav_id != static_cast<uint8_t>(self_uav_id_) ||
+      !std::isfinite(msg->target_pos.x) ||
+      !std::isfinite(msg->target_pos.y) ||
+      !std::isfinite(msg->target_pos.z) ||
+      msg->profile.style.empty() || msg->profile.configuration_id.empty())
+    {
+      RCLCPP_ERROR(this->get_logger(),
+        "拒绝 Execution Profile: command metadata is incomplete or non-finite");
+      return;
+    }
     std::string error;
     if (!ladrc_controller::validateAndClampExecutionProfile(values, limits, &error))
     {
@@ -561,7 +573,7 @@ private:
     ladrc_x_->setOutputLimits(-values.acceleration_limit, values.acceleration_limit);
     ladrc_y_->setOutputLimits(-values.acceleration_limit, values.acceleration_limit);
     ladrc_z_->setOutputLimits(-values.acceleration_limit, values.acceleration_limit);
-    gain_multiplier_ = msg->profile.style_gain * msg->profile.task_gain;
+    gain_multiplier_ = values.style_gain * values.task_gain;
     profile_iapf_enter_distance_ = values.iapf_enter_distance;
     profile_iapf_exit_distance_ = values.iapf_exit_distance;
     profile_iapf_repulsion_scale_ = values.iapf_repulsion_scale;

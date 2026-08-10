@@ -20,7 +20,7 @@ ladrc_controller::ExecutionProfileValues profile()
 {
   return {
     5.0, {3.0, 3.0, 3.5}, {10.0, 10.0, 15.0},
-    2.0, 1.5, 3.0, 1.5, 1.8, 1.0};
+    2.0, 1.5, 3.0, 1.5, 1.8, 1.0, 1.0, 1.0};
 }
 
 }  // namespace
@@ -47,6 +47,13 @@ TEST(ExecutionProfileGuard, ClampsToInjectedHardLimits)
   EXPECT_DOUBLE_EQ(values.iapf_repulsion_scale, 2.0);
 }
 
+TEST(ExecutionProfileGuard, RejectsNonFiniteProvenanceGain)
+{
+  auto values = profile();
+  values.task_gain = std::numeric_limits<double>::infinity();
+  EXPECT_FALSE(ladrc_controller::validateAndClampExecutionProfile(values, limits()));
+}
+
 TEST(ExecutionProfileGuard, RejectsBrokenHysteresisAfterClamp)
 {
   auto values = profile();
@@ -60,4 +67,3 @@ TEST(ExecutionProfileGuard, SmoothApplyUsesConfiguredAlpha)
   EXPECT_DOUBLE_EQ(ladrc_controller::smoothProfileValue(2.0, 4.0, 0.25), 2.5);
   EXPECT_DOUBLE_EQ(ladrc_controller::smoothProfileValue(2.0, 4.0, -1.0), 4.0);
 }
-

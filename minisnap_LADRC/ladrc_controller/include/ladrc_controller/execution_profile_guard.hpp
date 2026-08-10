@@ -20,6 +20,8 @@ struct ExecutionProfileValues
   double iapf_enter_distance{0.0};
   double iapf_exit_distance{0.0};
   double iapf_repulsion_scale{0.0};
+  double style_gain{0.0};
+  double task_gain{0.0};
 };
 
 struct ExecutionProfileLimits
@@ -73,7 +75,9 @@ inline bool validateAndClampExecutionProfile(
     !finite_positive(profile.jerk_limit) ||
     !finite_positive(profile.iapf_enter_distance) ||
     !finite_positive(profile.iapf_exit_distance) ||
-    !finite_positive(profile.iapf_repulsion_scale))
+    !finite_positive(profile.iapf_repulsion_scale) ||
+    !finite_positive(profile.style_gain) ||
+    !finite_positive(profile.task_gain))
   {
     if (error != nullptr) *error = "profile contains non-finite or non-positive values";
     return false;
@@ -121,4 +125,3 @@ inline double smoothProfileValue(double previous, double requested, double alpha
 }  // namespace ladrc_controller
 
 #endif  // LADRC_CONTROLLER__EXECUTION_PROFILE_GUARD_HPP_
-
