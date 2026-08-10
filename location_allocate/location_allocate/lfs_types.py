@@ -46,6 +46,7 @@ class ResolutionTrace:
     task_id: int
     candidate_lfs: Dict[str, Any]
     snapshot_epoch: Optional[float] = None
+    state_timestamps: Dict[int, Dict[str, Any]] = field(default_factory=dict)
     center_source: Optional[str] = None
     resolved_center: Optional[Vector3] = None
     unit_geometry: Optional[str] = None

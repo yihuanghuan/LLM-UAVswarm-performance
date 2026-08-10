@@ -13,6 +13,7 @@ from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
+from lfs_policy import load_policy
 import os
 
 
@@ -26,6 +27,9 @@ def px4_topic(px4_ns: str, suffix: str) -> str:
 def generate_launch_description():
     pkg_share = get_package_share_directory('ladrc_controller')
     config_file = os.path.join(pkg_share, 'config', 'ladrc_params.yaml')
+    default_policy_file = os.path.join(
+        get_package_share_directory('lfs_policy'),
+        'config', 'lfs_policy.migration.yaml')
 
     def create_uav_nodes(context):
         ids_str = LaunchConfiguration('uav_ids').perform(context)
@@ -35,6 +39,9 @@ def generate_launch_description():
         escape_mode = LaunchConfiguration('iapf_escape_mode').perform(context)
         legacy_value = LaunchConfiguration(
             'enable_iapf_accel_feedforward').perform(context).strip().lower()
+        policy_file = LaunchConfiguration('lfs_policy_file').perform(context)
+        controller_policy = load_policy(
+            policy_file, production=True).controller.ros_parameters()
 
         nodes = []
         for uid in ids:
@@ -95,6 +102,7 @@ def generate_launch_description():
                     config_file,
                     spawn_offset,
                     experiment_parameters,
+                    controller_policy,
                 ],
                 remappings=remappings,
                 output='screen',
@@ -103,6 +111,10 @@ def generate_launch_description():
         return nodes
 
     return LaunchDescription([
+        DeclareLaunchArgument(
+            'lfs_policy_file',
+            default_value=default_policy_file,
+            description='Complete Candidate production/migration policy'),
         DeclareLaunchArgument(
             'uav_ids',
             default_value='[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]',

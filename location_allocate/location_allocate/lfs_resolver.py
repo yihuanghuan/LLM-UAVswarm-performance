@@ -76,6 +76,14 @@ def resolve_candidate_task(
         task_id=intent.task_id,
         candidate_lfs=dict(task),
         snapshot_epoch=snapshot.epoch,
+        state_timestamps={
+            uid: {
+                "source": snapshot.states[uid].source_timestamp,
+                "receive": snapshot.states[uid].receive_timestamp,
+                "effective_source": snapshot.states[uid].timestamp_source,
+            }
+            for uid in uav_ids
+        },
         center_source=center_source,
         resolved_center=intent.center,
         t_request=dict(intent.time_request),

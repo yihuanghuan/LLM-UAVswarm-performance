@@ -107,3 +107,61 @@ def test_legacy_parser_remains_explicitly_available(monkeypatch):
     )
 
     assert parsed["task_sequences"][0]["duration_seconds"] == 3.0
+
+
+@pytest.mark.parametrize(
+    "task_overrides",
+    [
+        {
+            "c": {"mode": "absolute", "value": [1, 2, 3]},
+            "r": {"mode": "explicit", "value": 2.0},
+            "T": {"mode": "explicit", "value": 5.0},
+        },
+        {
+            "c": {
+                "mode": "relative",
+                "reference": "current_swarm_centroid",
+                "offset": [1, 0, 2],
+                "frame": "world",
+            },
+            "r": {"mode": "qualitative", "value": "spacious"},
+        },
+        {"c": {"mode": "maintain_current_centroid"}},
+    ],
+)
+def test_candidate_parser_accepts_all_center_scale_time_semantics(
+        monkeypatch, task_overrides):
+    payload = candidate_payload()
+    payload["mission"]["nodes"][0]["task"].update(task_overrides)
+    configure_fake(monkeypatch, payload)
+
+    assert no_location.parse_candidate_mission("fixture") == payload
+
+
+@pytest.mark.parametrize("completion_mode", ["independent", "synchronized"])
+def test_candidate_parser_preserves_explicit_parallel_relation(
+        monkeypatch, completion_mode):
+    first = candidate_payload()["mission"]["nodes"][0]["task"]
+    second = {**first, "task_id": 2, "U": [4, 5, 6]}
+    payload = {"lfs_version": "2.0", "mission": {"nodes": [{
+        "type": "parallel",
+        "completion_mode": completion_mode,
+        "tasks": [first, second],
+    }]}}
+    configure_fake(monkeypatch, payload)
+
+    parsed = no_location.parse_candidate_mission("fixture")
+
+    assert parsed["mission"]["nodes"][0]["completion_mode"] == completion_mode
+
+
+def test_candidate_parser_accepts_hover_wait_and_explicit_wait_node(monkeypatch):
+    first = candidate_payload()["mission"]["nodes"][0]["task"]
+    first.update(q="hover-and-wait", wait_time=2.0)
+    payload = {"lfs_version": "2.0", "mission": {"nodes": [
+        {"type": "task", "task": first},
+        {"type": "wait", "condition": "elapsed", "duration": 1.0},
+    ]}}
+    configure_fake(monkeypatch, payload)
+
+    assert no_location.parse_candidate_mission("fixture") == payload

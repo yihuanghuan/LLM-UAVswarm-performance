@@ -584,6 +584,9 @@ private:
     profile_soft_safety_active_ = true;
     active_new_profile_ = true;
     active_profile_configuration_id_ = msg->profile.configuration_id;
+    // A fresh false sample acknowledges the new command generation. The
+    // Candidate FSM will not accept a stale true from the preceding task.
+    publishUAVStatus();
     RCLCPP_INFO(this->get_logger(),
       "应用 Execution Profile mission=%u task=%u config=%s T_exec=%.3f",
       msg->mission_id, msg->task_id,

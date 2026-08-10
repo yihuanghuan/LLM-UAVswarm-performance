@@ -47,3 +47,41 @@ def build_execution_command(
     command.profile.task_gain = source.task_gain
     command.profile.configuration_id = source.configuration_id
     return command
+
+
+def build_task_command_batch(
+    resolved,
+    mission_id,
+    task_id,
+    group_id=0,
+    stamp=None,
+    command_type=None,
+):
+    """Build a complete task batch before the caller performs any publish."""
+    return tuple(
+        build_execution_command(
+            resolved, index, mission_id, task_id, group_id, stamp, command_type
+        )
+        for index in range(len(resolved.executable_lfs.uav_ids))
+    )
+
+
+def build_parallel_command_batch(
+    resolved_group,
+    mission_id,
+    group_id,
+    stamp=None,
+    command_type=None,
+):
+    """All-or-nothing construction boundary for a resolved parallel group."""
+    commands = []
+    for resolved in resolved_group.tasks:
+        commands.extend(build_task_command_batch(
+            resolved,
+            mission_id,
+            resolved.trace.task_id,
+            group_id,
+            stamp,
+            command_type,
+        ))
+    return tuple(commands)

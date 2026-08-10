@@ -332,7 +332,7 @@ def _log_parse_attempt(command_id: str, raw_command: str, retry_count: int, **kw
 def parse_uav_command(
     user_command: str,
     ros_aux_info: str = "",
-    runtime_mode: str = "legacy_v1",
+    runtime_mode: str = "candidate_v2",
 ):
     """Parse one command in an explicitly selected, non-fallback mode."""
     if runtime_mode not in ("candidate_v2", "legacy_v1"):

@@ -97,11 +97,21 @@ def _prepare_task(
     candidate_task: dict,
     snapshot: StateSnapshot,
     policy: LateResolutionPolicy,
+    minimum_d_plan: float | None = None,
 ) -> _PreparedTask:
     """Resolve through T_plan, stopping before any assignment is chosen."""
     runtime_validate_candidate_task(candidate_task, snapshot)
     intent, trace = resolve_candidate_task(candidate_task, snapshot)
     safety = policy.resolve_safety(intent.safety_factor)
+    if minimum_d_plan is not None and minimum_d_plan > safety.d_plan:
+        safety = SafetyResolution(
+            d_hard=safety.d_hard,
+            d_plan=float(minimum_d_plan),
+            soft_iapf=safety.soft_iapf,
+        )
+        trace.corrections.append(
+            "d_plan raised to ParallelGroup maximum safety margin"
+        )
     if safety.d_hard <= 0.0 or safety.d_plan < safety.d_hard:
         raise LateResolutionError("resolved safety violates d_plan >= d_hard")
     trace.d_hard = safety.d_hard
@@ -168,7 +178,7 @@ def resolve_execution_task(
             duration=t_exec,
         )
         trace.corrections.append("final assignment safety re-evaluated once")
-    if final_metrics.min_distance < safety.d_plan:
+    if final_metrics.min_distance + 1e-9 < safety.d_plan:
         trace.rejection_reason = "final assignment violates d_plan(s)"
         raise LateResolutionError(trace.rejection_reason)
 
@@ -203,16 +213,21 @@ def resolve_execution_parallel(
         raise LateResolutionError("invalid parallel completion_mode")
     if not candidate_tasks:
         raise LateResolutionError("parallel group must not be empty")
+    requested_d_plan = tuple(
+        policy.resolve_safety(float(task["s"])).d_plan
+        for task in candidate_tasks
+    )
+    if group_d_plan < max(requested_d_plan):
+        raise LateResolutionError(
+            "group_d_plan must cover every task planning margin"
+        )
     prepared = tuple(
-        _prepare_task(task, snapshot, policy) for task in candidate_tasks
+        _prepare_task(task, snapshot, policy, group_d_plan)
+        for task in candidate_tasks
     )
     hard_values = {item.safety.d_hard for item in prepared}
     if len(hard_values) != 1:
         raise LateResolutionError("d_hard must be constant across a mission")
-    if group_d_plan < max(item.safety.d_plan for item in prepared):
-        raise LateResolutionError(
-            "group_d_plan must cover every task planning margin"
-        )
 
     groups = [
         {
@@ -271,7 +286,7 @@ def resolve_execution_parallel(
             item.trace.corrections.append(
                 "parallel assignment safety re-evaluated once"
             )
-    if final_metrics.min_distance < group_d_plan:
+    if final_metrics.min_distance + 1e-9 < group_d_plan:
         for item in prepared:
             item.trace.rejection_reason = (
                 "parallel assignment violates explicit group_d_plan"

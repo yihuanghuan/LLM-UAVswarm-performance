@@ -1,13 +1,15 @@
 # Candidate LFS policy structure. Every null is provisional/TBD and must be
 # explicitly resolved before the new runtime path is enabled. This file is not
 # a ROS parameter file and does not change legacy main behavior.
-policy_status: provisional
+policy_status: template
 configuration_id: null
 
 state_snapshot:
   state_timeout: null
   snapshot_skew: null
   fresh_state_wait_timeout: null
+  allow_receive_time_fallback: null
+  require_velocity: null
 
 geometry:
   workspace_bounds:
@@ -21,15 +23,15 @@ geometry:
 
 safety:
   d_hard: null
-  d_plan_mapping:
-    type: null
-    base: null
-    parameters: null
-  iapf_soft_mapping:
-    type: null
-    enter_base: null
-    exit_base: null
-    repulsion_parameters: null
+  d_plan_base: null
+  d_plan_margin: null
+  iapf_enter_base: null
+  iapf_enter_margin: null
+  iapf_exit_base: null
+  iapf_exit_margin: null
+  repulsion_scale: null
+  s_min: null
+  s_max: null
 
 timing:
   policy_type: null
@@ -55,18 +57,15 @@ allocator:
   parallel_d_plan_aggregation: null
 
 execution_profile:
-  policy_type: null
+  task_adaptation_type: null
   baseline_omega_c: [null, null, null]
   baseline_omega_o: [null, null, null]
   style_gains:
     smooth: null
     normal: null
     aggressive: null
-  task_reference_speed: null
-  task_gain_intercept: null
-  task_gain_slope: null
-  task_gain_range: [null, null]
-  total_gain_range: [null, null]
+  # Required only by a future non-identity task_adaptation_type.
+  task_adaptation_parameters: null
   velocity_limit: null
   acceleration_limit: null
   jerk_limit: null
@@ -89,3 +88,5 @@ pending_semantics:
   line_vs_lineup: pending_confirmation
   free_formation: pending_confirmation
   forward_reference_frame: pending_confirmation
+
+provenance: null
