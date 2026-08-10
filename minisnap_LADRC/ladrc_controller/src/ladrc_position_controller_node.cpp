@@ -5,6 +5,7 @@
 #include <px4_msgs/msg/vehicle_command.hpp>
 #include <px4_msgs/msg/vehicle_control_mode.hpp>
 #include <uav_swarm_interfaces/msg/uav_swarm_command.hpp>
+#include <uav_swarm_interfaces/msg/uav_execution_command.hpp>
 #include <uav_swarm_interfaces/msg/uav_status.hpp>
 #include <uav_swarm_interfaces/msg/trajectory_metrics.hpp>
 #include <uav_swarm_interfaces/msg/control_adaptation_log.hpp>
@@ -13,6 +14,7 @@
 #include "ladrc_controller/ladrc_core.hpp"
 #include "ladrc_controller/iapf_core.hpp"
 #include "ladrc_controller/minimum_jerk_trajectory.hpp"
+#include "ladrc_controller/execution_profile_guard.hpp"
 #include <cmath>
 #include <chrono>
 #include <atomic>
@@ -65,6 +67,19 @@ public:
     this->declare_parameter("max_acceleration_x", 3.0);
     this->declare_parameter("max_acceleration_y", 3.0);
     this->declare_parameter("max_acceleration_z", 3.0);
+    this->declare_parameter("enable_execution_profiles", false);
+    this->declare_parameter("execution_profile_smoothing_alpha", -1.0);
+    this->declare_parameter("execution_profile_omega_c_min", std::vector<double>{});
+    this->declare_parameter("execution_profile_omega_c_max", std::vector<double>{});
+    this->declare_parameter("execution_profile_omega_o_min", std::vector<double>{});
+    this->declare_parameter("execution_profile_omega_o_max", std::vector<double>{});
+    this->declare_parameter("execution_profile_velocity_max", -1.0);
+    this->declare_parameter("execution_profile_acceleration_max", -1.0);
+    this->declare_parameter("execution_profile_jerk_max", -1.0);
+    this->declare_parameter("execution_profile_iapf_enter_min", -1.0);
+    this->declare_parameter("execution_profile_iapf_enter_max", -1.0);
+    this->declare_parameter("execution_profile_iapf_exit_max", -1.0);
+    this->declare_parameter("execution_profile_iapf_repulsion_max", -1.0);
 
     // Gazebo 多机 spawn 偏移量（sitl_multiple_run.sh 默认 Y=3*instance）
     this->declare_parameter("enu_offset_x", 0.0);
@@ -148,6 +163,12 @@ public:
     swarm_command_sub_ = this->create_subscription<uav_swarm_interfaces::msg::UAVSwarmCommand>(
         "swarm_command", rclcpp::QoS(10),
         std::bind(&LADRCPositionControllerNode::swarmCommandCallback, this, std::placeholders::_1));
+    execution_command_sub_ =
+      this->create_subscription<uav_swarm_interfaces::msg::UAVExecutionCommand>(
+        "execution_command", rclcpp::QoS(10),
+        std::bind(
+          &LADRCPositionControllerNode::executionCommandCallback,
+          this, std::placeholders::_1));
 
     odom_sub_ = this->create_subscription<px4_msgs::msg::VehicleOdometry>(
         "fmu/out/vehicle_odometry",
@@ -299,19 +320,130 @@ private:
     ladrc_z_ = std::make_unique<ladrc_controller::LADRCController>(params_z);
   }
 
-  // --- [Phase 2] swarm_command 回调（含轨迹初始化） ---
+  bool readyForCommand(uint8_t message_uav_id)
+  {
+    if (flight_state_.load() == FlightState::RUNNING_TRAJECTORY && has_odom_)
+    {
+      return true;
+    }
+    RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
+        "UAV%d 尚未就绪（状态=%d, odom=%d），忽略命令", message_uav_id,
+        (int)flight_state_.load(), has_odom_);
+    return false;
+  }
+
+  bool loadExecutionProfileLimits(
+      ladrc_controller::ExecutionProfileLimits & limits)
+  {
+    const auto to_array = [this](
+      const std::string & name, std::array<double, 3> & result) {
+        const auto values = this->get_parameter(name).as_double_array();
+        if (values.size() != 3) return false;
+        std::copy(values.begin(), values.end(), result.begin());
+        return true;
+      };
+    if (!to_array("execution_profile_omega_c_min", limits.omega_c_min) ||
+      !to_array("execution_profile_omega_c_max", limits.omega_c_max) ||
+      !to_array("execution_profile_omega_o_min", limits.omega_o_min) ||
+      !to_array("execution_profile_omega_o_max", limits.omega_o_max))
+    {
+      return false;
+    }
+    limits.velocity_max =
+      this->get_parameter("execution_profile_velocity_max").as_double();
+    limits.acceleration_max =
+      this->get_parameter("execution_profile_acceleration_max").as_double();
+    limits.jerk_max =
+      this->get_parameter("execution_profile_jerk_max").as_double();
+    limits.iapf_enter_min =
+      this->get_parameter("execution_profile_iapf_enter_min").as_double();
+    limits.iapf_enter_max =
+      this->get_parameter("execution_profile_iapf_enter_max").as_double();
+    limits.iapf_exit_max =
+      this->get_parameter("execution_profile_iapf_exit_max").as_double();
+    limits.iapf_repulsion_max =
+      this->get_parameter("execution_profile_iapf_repulsion_max").as_double();
+    return ladrc_controller::validLimits(limits);
+  }
+
+  void initializeAcceptedCommand(
+      uint32_t mission_id, uint8_t uav_id,
+      double global_x, double global_y, double global_z,
+      double duration, const std::string & style, double safety_factor)
+  {
+    if (has_command_) writeControlAdaptationCsvRow();
+    resetIAPFState();
+    mission_id_ = mission_id;
+    uav_id_ = uav_id;
+    target_duration_ = duration;
+    motion_style_ = style;
+    safety_factor_ = safety_factor;
+    has_command_ = true;
+
+    const double off_x = this->get_parameter("enu_offset_x").as_double();
+    const double off_y = this->get_parameter("enu_offset_y").as_double();
+    const double off_z = this->get_parameter("enu_offset_z").as_double();
+    target_pos_x_ = global_x - off_x;
+    target_pos_y_ = global_y - off_y;
+    target_pos_z_ = global_z - off_z;
+
+    const double p0_x = current_odom_.position[1];
+    const double p0_y = current_odom_.position[0];
+    const double p0_z = -current_odom_.position[2];
+    const double dx = target_pos_x_ - p0_x;
+    const double dy = target_pos_y_ - p0_y;
+    const double dz = target_pos_z_ - p0_z;
+    target_distance_ = std::sqrt(dx * dx + dy * dy + dz * dz);
+    average_speed_ = target_distance_ / target_duration_;
+
+    traj_x_.initialize(p0_x, target_pos_x_, target_duration_);
+    traj_y_.initialize(p0_y, target_pos_y_, target_duration_);
+    traj_z_.initialize(p0_z, target_pos_z_, target_duration_);
+    initializeTrajectoryMetrics(
+      p0_x, p0_y, p0_z, global_x, global_y, global_z);
+    ladrc_x_->setObserverInitialState(p0_x, 0.0, 0.0);
+    ladrc_y_->setObserverInitialState(p0_y, 0.0, 0.0);
+    ladrc_z_->setObserverInitialState(p0_z, 0.0, 0.0);
+    command_start_time_ = this->now();
+    is_hover_stable_ = false;
+    arrival_time_recorded_ = false;
+    arrival_time_error_ = std::numeric_limits<double>::quiet_NaN();
+    resetControlAdaptationRuntimeMetrics();
+    trajectory_metrics_pub_counter_ = 0;
+  }
+
+  void applyBaselineGains()
+  {
+    gain_multiplier_ = 1.0;
+    omega_o_x_ = this->get_parameter("omega_o_x").as_double();
+    omega_o_y_ = this->get_parameter("omega_o_y").as_double();
+    omega_o_z_ = this->get_parameter("omega_o_z").as_double();
+    omega_c_x_ = this->get_parameter("omega_c_x").as_double();
+    omega_c_y_ = this->get_parameter("omega_c_y").as_double();
+    omega_c_z_ = this->get_parameter("omega_c_z").as_double();
+    ladrc_x_->setObserverBandwidth(omega_o_x_);
+    ladrc_y_->setObserverBandwidth(omega_o_y_);
+    ladrc_z_->setObserverBandwidth(omega_o_z_);
+    ladrc_x_->setControllerBandwidth(omega_c_x_);
+    ladrc_y_->setControllerBandwidth(omega_c_y_);
+    ladrc_z_->setControllerBandwidth(omega_c_z_);
+  }
+
+  // --- [Phase 2] legacy swarm_command 回调（安全基值降级） ---
   void swarmCommandCallback(const uav_swarm_interfaces::msg::UAVSwarmCommand::SharedPtr msg)
   {
     RCLCPP_INFO(this->get_logger(),
         "UAV%d swarm_cmd 回调触发 (目标=[%.1f,%.1f,%.1f])",
         self_uav_id_, msg->target_pos.x, msg->target_pos.y, msg->target_pos.z);
 
-    // 状态机未就绪或未收到里程计，静默忽略命令
-    if (flight_state_.load() != FlightState::RUNNING_TRAJECTORY || !has_odom_)
+    if (!readyForCommand(msg->uav_id))
     {
-      RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
-          "UAV%d 尚未就绪（状态=%d, odom=%d），忽略命令", msg->uav_id,
-          (int)flight_state_.load(), has_odom_);
+      return;
+    }
+    if (active_new_profile_)
+    {
+      RCLCPP_WARN(this->get_logger(),
+        "忽略 legacy UAVSwarmCommand：新 Execution Profile 任务仍在执行");
       return;
     }
 
@@ -332,64 +464,27 @@ private:
       {
         return;  // 静默忽略重复消息
       }
-      writeControlAdaptationCsvRow();
       RCLCPP_INFO(this->get_logger(),
           "收到新任务指令 (UAV%d)，目标/参数已变更，覆盖旧任务", msg->uav_id);
     }
 
-    resetIAPFState();
-    mission_id_ = msg->mission_id;
-    uav_id_ = msg->uav_id;
-    target_duration_ = msg->duration;
-    motion_style_ = msg->motion_style;
-    safety_factor_ = msg->safety_factor;
-    has_command_ = true;
-
-    // 全局 ENU → 本地 ENU：减去 spawn 偏移量
-    double off_x = this->get_parameter("enu_offset_x").as_double();
-    double off_y = this->get_parameter("enu_offset_y").as_double();
-    double off_z = this->get_parameter("enu_offset_z").as_double();
-    target_pos_x_ = msg->target_pos.x - off_x;
-    target_pos_y_ = msg->target_pos.y - off_y;
-    target_pos_z_ = msg->target_pos.z - off_z;
-
-    // 提取当前实际位置作为轨迹起点 (ENU)
-    double p0_x = current_odom_.position[1];  // NED.y → ENU.x
-    double p0_y = current_odom_.position[0];  // NED.x → ENU.y
-    double p0_z = -current_odom_.position[2]; // -NED.z → ENU.z
-
-    double dx = target_pos_x_ - p0_x;
-    double dy = target_pos_y_ - p0_y;
-    double dz = target_pos_z_ - p0_z;
-    target_distance_ = std::sqrt(dx * dx + dy * dy + dz * dz);
-    average_speed_ = target_distance_ / std::max(target_duration_, 1e-3);
-
-    // 初始化三个轴的 Minimum Jerk 轨迹
-    traj_x_.initialize(p0_x, target_pos_x_, target_duration_);
-    traj_y_.initialize(p0_y, target_pos_y_, target_duration_);
-    traj_z_.initialize(p0_z, target_pos_z_, target_duration_);
-
-    initializeTrajectoryMetrics(
-        p0_x, p0_y, p0_z,
-        msg->target_pos.x, msg->target_pos.y, msg->target_pos.z);
-
-    // Warm start LESO: 用当前测量位置初始化观测器 z1 状态，避免从 0 开始导致瞬态反向指令
-    ladrc_x_->setObserverInitialState(p0_x, 0.0, 0.0);
-    ladrc_y_->setObserverInitialState(p0_y, 0.0, 0.0);
-    ladrc_z_->setObserverInitialState(p0_z, 0.0, 0.0);
-
-    // 记录命令接收时间
-    command_start_time_ = this->now();
-
-    // [Phase 3] 动态增益调节
-    applyDynamicGains();
-
-    // 重置悬停状态
-    is_hover_stable_ = false;
-    arrival_time_recorded_ = false;
-    arrival_time_error_ = std::numeric_limits<double>::quiet_NaN();
-    resetControlAdaptationRuntimeMetrics();
-    trajectory_metrics_pub_counter_ = 0;
+    const double duration = static_cast<double>(msg->duration);
+    if (!std::isfinite(duration) || duration <= 0.0)
+    {
+      RCLCPP_ERROR(this->get_logger(), "拒绝非法 legacy duration");
+      return;
+    }
+    active_new_profile_ = false;
+    profile_soft_safety_active_ = false;
+    initializeAcceptedCommand(
+      msg->mission_id, msg->uav_id,
+      msg->target_pos.x, msg->target_pos.y, msg->target_pos.z,
+      duration, msg->motion_style,
+      std::max(1.0, static_cast<double>(msg->safety_factor)));
+    applyBaselineGains();
+    RCLCPP_WARN(this->get_logger(),
+      "legacy UAVSwarmCommand 使用 YAML baseline；motion_style='%s' 仅记录",
+      msg->motion_style.c_str());
 
     RCLCPP_INFO(this->get_logger(),
         ">>> Mission%u UAV%d 全局[%.1f,%.1f,%.1f]→本地[%.1f,%.1f,%.1f] T=%.1fs %s",
@@ -397,6 +492,86 @@ private:
         msg->target_pos.x, msg->target_pos.y, msg->target_pos.z,
         target_pos_x_, target_pos_y_, target_pos_z_,
         target_duration_, motion_style_.c_str());
+  }
+
+  void executionCommandCallback(
+      const uav_swarm_interfaces::msg::UAVExecutionCommand::SharedPtr msg)
+  {
+    if (!this->get_parameter("enable_execution_profiles").as_bool())
+    {
+      RCLCPP_ERROR(this->get_logger(),
+        "收到 UAVExecutionCommand，但 enable_execution_profiles=false");
+      return;
+    }
+    if (!readyForCommand(msg->uav_id)) return;
+
+    ladrc_controller::ExecutionProfileLimits limits;
+    if (!loadExecutionProfileLimits(limits))
+    {
+      RCLCPP_ERROR(this->get_logger(),
+        "Execution Profile hard limits 未完整配置，拒绝新命令");
+      return;
+    }
+    ladrc_controller::ExecutionProfileValues values{
+      msg->profile.duration,
+      {msg->profile.omega_c[0], msg->profile.omega_c[1], msg->profile.omega_c[2]},
+      {msg->profile.omega_o[0], msg->profile.omega_o[1], msg->profile.omega_o[2]},
+      msg->profile.velocity_limit,
+      msg->profile.acceleration_limit,
+      msg->profile.jerk_limit,
+      msg->profile.iapf_enter_distance,
+      msg->profile.iapf_exit_distance,
+      msg->profile.iapf_repulsion_scale};
+    std::string error;
+    if (!ladrc_controller::validateAndClampExecutionProfile(values, limits, &error))
+    {
+      RCLCPP_ERROR(this->get_logger(),
+        "拒绝 Execution Profile: %s", error.c_str());
+      return;
+    }
+
+    const double alpha =
+      this->get_parameter("execution_profile_smoothing_alpha").as_double();
+    for (std::size_t axis = 0; axis < 3; ++axis)
+    {
+      const std::array<double, 3> previous_c{omega_c_x_, omega_c_y_, omega_c_z_};
+      const std::array<double, 3> previous_o{omega_o_x_, omega_o_y_, omega_o_z_};
+      values.omega_c[axis] = ladrc_controller::smoothProfileValue(
+        previous_c[axis], values.omega_c[axis], alpha);
+      values.omega_o[axis] = ladrc_controller::smoothProfileValue(
+        previous_o[axis], values.omega_o[axis], alpha);
+    }
+
+    initializeAcceptedCommand(
+      msg->mission_id, msg->uav_id,
+      msg->target_pos.x, msg->target_pos.y, msg->target_pos.z,
+      values.duration, msg->profile.style, 1.0);
+    omega_c_x_ = values.omega_c[0];
+    omega_c_y_ = values.omega_c[1];
+    omega_c_z_ = values.omega_c[2];
+    omega_o_x_ = values.omega_o[0];
+    omega_o_y_ = values.omega_o[1];
+    omega_o_z_ = values.omega_o[2];
+    ladrc_x_->setControllerBandwidth(omega_c_x_);
+    ladrc_y_->setControllerBandwidth(omega_c_y_);
+    ladrc_z_->setControllerBandwidth(omega_c_z_);
+    ladrc_x_->setObserverBandwidth(omega_o_x_);
+    ladrc_y_->setObserverBandwidth(omega_o_y_);
+    ladrc_z_->setObserverBandwidth(omega_o_z_);
+    ladrc_x_->setOutputLimits(-values.acceleration_limit, values.acceleration_limit);
+    ladrc_y_->setOutputLimits(-values.acceleration_limit, values.acceleration_limit);
+    ladrc_z_->setOutputLimits(-values.acceleration_limit, values.acceleration_limit);
+    gain_multiplier_ = msg->profile.style_gain * msg->profile.task_gain;
+    profile_iapf_enter_distance_ = values.iapf_enter_distance;
+    profile_iapf_exit_distance_ = values.iapf_exit_distance;
+    profile_iapf_repulsion_scale_ = values.iapf_repulsion_scale;
+    profile_soft_safety_active_ = true;
+    active_new_profile_ = true;
+    active_profile_configuration_id_ = msg->profile.configuration_id;
+    RCLCPP_INFO(this->get_logger(),
+      "应用 Execution Profile mission=%u task=%u config=%s T_exec=%.3f",
+      msg->mission_id, msg->task_id,
+      active_profile_configuration_id_.c_str(), target_duration_);
   }
 
   void odomCallback(const px4_msgs::msg::VehicleOdometry::SharedPtr msg)
@@ -629,74 +804,6 @@ private:
         (iapf.active ? " !IAPF!" : ""));
   }
 
-  // --- [Phase 3] 动态增益调节 ---
-  double computeSemanticTaskGain(
-      const std::string& motion_style,
-      double target_distance,
-      double duration)
-  {
-    struct StyleProfile
-    {
-      double base_gain;
-      double reference_speed;
-    };
-
-    StyleProfile profile{1.0, 1.8};
-    if (motion_style == "smooth")
-    {
-      profile = {0.75, 1.0};
-    }
-    else if (motion_style == "normal")
-    {
-      profile = {1.0, 1.8};
-    }
-    else if (motion_style == "aggressive")
-    {
-      profile = {1.3, 2.6};
-    }
-    else
-    {
-      RCLCPP_WARN(this->get_logger(),
-          "未知 motion_style='%s'，按 normal 计算任务带宽倍率",
-          motion_style.c_str());
-    }
-
-    double safe_duration = std::max(duration, 1e-3);
-    double average_speed = target_distance / safe_duration;
-    double urgency = average_speed / std::max(profile.reference_speed, 1e-3);
-    double kappa = profile.base_gain * (0.75 + 0.25 * urgency);
-    return std::clamp(kappa, 0.5, 2.0);
-  }
-
-  void applyDynamicGains()
-  {
-    gain_multiplier_ = computeSemanticTaskGain(
-        motion_style_, target_distance_, target_duration_);
-
-    // 读取配置文件的基值，乘以增益系数后应用到各轴
-    auto apply_axis = [this](
-        std::unique_ptr<ladrc_controller::LADRCController>& ctrl,
-        const std::string& param_o, const std::string& param_c,
-        double& omega_o_out, double& omega_c_out)
-    {
-      double base_omega_o = this->get_parameter(param_o).as_double();
-      double base_omega_c = this->get_parameter(param_c).as_double();
-      omega_o_out = base_omega_o * gain_multiplier_;
-      omega_c_out = base_omega_c * gain_multiplier_;
-      ctrl->setObserverBandwidth(omega_o_out);
-      ctrl->setControllerBandwidth(omega_c_out);
-    };
-
-    apply_axis(ladrc_x_, "omega_o_x", "omega_c_x", omega_o_x_, omega_c_x_);
-    apply_axis(ladrc_y_, "omega_o_y", "omega_c_y", omega_o_y_, omega_c_y_);
-    apply_axis(ladrc_z_, "omega_o_z", "omega_c_z", omega_o_z_, omega_c_z_);
-
-    RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
-        "任务条件化带宽: mission=%u style=%s distance=%.2fm duration=%.2fs avg_v=%.2fm/s kappa=%.3f",
-        mission_id_, motion_style_.c_str(), target_distance_, target_duration_,
-        average_speed_, gain_multiplier_);
-  }
-
   ladrc_controller::AvoidanceMode currentAvoidanceMode() const
   {
     if (avoidance_mode_from_legacy_)
@@ -711,6 +818,7 @@ private:
 
   double currentEnterDistance() const
   {
+    if (profile_soft_safety_active_) return profile_iapf_enter_distance_;
     return this->get_parameter(
       enter_distance_from_legacy_
       ? "iapf_safe_distance"
@@ -734,10 +842,12 @@ private:
     parameters.violation_distance =
       this->get_parameter("iapf_violation_distance").as_double();
     parameters.enter_distance = currentEnterDistance();
-    parameters.exit_distance =
-      this->get_parameter("iapf_exit_distance").as_double();
+    parameters.exit_distance = profile_soft_safety_active_
+      ? profile_iapf_exit_distance_
+      : this->get_parameter("iapf_exit_distance").as_double();
     parameters.repulsion_gain =
-      this->get_parameter("iapf_repulsion_gain").as_double();
+      this->get_parameter("iapf_repulsion_gain").as_double() *
+      (profile_soft_safety_active_ ? profile_iapf_repulsion_scale_ : 1.0);
     parameters.distance_epsilon =
       this->get_parameter("iapf_distance_epsilon").as_double();
     parameters.position_gain =
@@ -1232,6 +1342,8 @@ private:
 
   // [Phase 1] Swarm 命令订阅 & 状态发布
   rclcpp::Subscription<uav_swarm_interfaces::msg::UAVSwarmCommand>::SharedPtr swarm_command_sub_;
+  rclcpp::Subscription<uav_swarm_interfaces::msg::UAVExecutionCommand>::SharedPtr
+      execution_command_sub_;
   rclcpp::Subscription<px4_msgs::msg::VehicleOdometry>::SharedPtr odom_sub_;
   rclcpp::Publisher<uav_swarm_interfaces::msg::UAVStatus>::SharedPtr status_pub_;
   rclcpp::Publisher<geometry_msgs::msg::Point>::SharedPtr odom_pub_;
@@ -1262,6 +1374,12 @@ private:
   std::string motion_style_ = "normal";
   double safety_factor_ = 0.0;
   bool has_command_ = false;
+  bool active_new_profile_ = false;
+  bool profile_soft_safety_active_ = false;
+  double profile_iapf_enter_distance_ = 0.0;
+  double profile_iapf_exit_distance_ = 0.0;
+  double profile_iapf_repulsion_scale_ = 1.0;
+  std::string active_profile_configuration_id_;
 
   // 悬停保持：用首次位置作为固定 setpoint，避免漂移正反馈
   bool hover_hold_set_ = false;
