@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 import pytest
 
 from location_allocate.execution_profile_compiler import (
@@ -41,6 +43,14 @@ def snapshot():
     manager.update(2, [1.0, -1.5, 2.0], 10.0)
     manager.update(3, [1.0, 1.5, 2.0], 10.0)
     return manager.snapshot([1, 2, 3], 10.0)
+
+
+def fake_command_type():
+    return SimpleNamespace(
+        header=SimpleNamespace(stamp=None, frame_id=""),
+        target_pos=SimpleNamespace(x=0.0, y=0.0, z=0.0),
+        profile=SimpleNamespace(),
+    )
 
 
 def policy(safety_resolver=None, tolerance=0.0):
@@ -126,7 +136,9 @@ def test_invalid_safety_mapping_is_rejected_before_geometry():
 
 def test_composite_command_has_no_second_duration_field():
     result = resolve_execution_task(candidate_task(), snapshot(), policy())
-    command = build_execution_command(result, 0, mission_id=5, task_id=1)
+    command = build_execution_command(
+        result, 0, mission_id=5, task_id=1, command_type=fake_command_type
+    )
 
     assert not hasattr(command, "duration")
     assert command.profile.duration == result.executable_lfs.duration

@@ -12,11 +12,15 @@ def build_execution_command(
     task_id: int,
     group_id: int = 0,
     stamp: Any = None,
+    command_type=None,
 ):
     """Build a composite command without introducing another duration field."""
-    from uav_swarm_interfaces.msg import UAVExecutionCommand
+    if command_type is None:
+        from uav_swarm_interfaces.msg import UAVExecutionCommand
 
-    command = UAVExecutionCommand()
+        command_type = UAVExecutionCommand
+
+    command = command_type()
     if stamp is not None:
         command.header.stamp = stamp
     command.header.frame_id = "world"
