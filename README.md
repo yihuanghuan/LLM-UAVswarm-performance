@@ -10,19 +10,14 @@
 
 ## 系统架构
 
+```text
+Natural Language → LLM → Candidate Mission → Mission Graph / FSM
+→ fresh snapshot → validation/resolution/geometry → T_plan → allocator
+→ T_exec → Executable LFS + ResolutionTrace → Execution Profile
+→ UAVExecutionCommand → Minimum Jerk + LADRC + IAPF → PX4
 ```
-自然语言指令 → LLM 解析 → JSON 蓝图
-                              ↓
-              Python 调度层（匈牙利防交叉分配）
-                              ↓
-              UAVSwarmCommand (/uav{N}/swarm_command)
-                              ↓
-              C++ 执行层（Minimum Jerk 轨迹 + LADRC + IAPF）
-                              ↓
-              PX4 Offboard 控制 → Gazebo 仿真
-                              ↓
-              UAVStatus + ENU 位置反馈 → 调度层闭环
-```
+
+迁移期继续保留旧 LFS → `UAVSwarmCommand` 路径。完整的 late-binding 边界、冻结项和待确认项见 [Candidate LFS 架构](docs/candidate_lfs_architecture.md)，接口与运行步骤见 [迁移说明](docs/candidate_lfs_migration.md)。
 
 ### 三层解耦
 
@@ -36,7 +31,7 @@
 
 - **自然语言控制**：支持单一/复合/并行编队指令，如"1到5号机组成圆形，6到8号机组成直线"
 - **匈牙利防交叉分配**：全局最优目标分配，避免飞行轨迹交叉
-- **LADRC 自抗扰控制**：基于带宽参数化的线性自抗扰控制器，支持 smooth/normal/aggressive 动态增益调节
+- **LADRC 自抗扰控制**：新路径由中央 Execution Profile Compiler 确定性生成参数；控制器仅校验、硬限幅和平滑应用
 - **IAPF 分布式避障**：基于相对速度、滞回和平滑的双通道斥力，使用确定性成对垂直逃逸方向缓解局部极小值
 - **多机命名空间隔离**：自动话题重映射，兼容 PX4 多实例 Gazebo 仿真
 - **闭环状态反馈**：基于真实悬停检测推进任务序列
@@ -109,7 +104,7 @@ source ~/learning/LLM_swarm_ws/install/setup.bash
 ros2 topic pub --once /uav0/swarm_command uav_swarm_interfaces/msg/UAVSwarmCommand \
   "{header: {stamp: {sec: 0, nanosec: 0}, frame_id: 'world'}, mission_id: 1, uav_id: 0, \
     target_pos: {x: 3.0, y: 0.0, z: 3.0}, duration: 5.0, \
-    motion_style: 'normal', safety_factor: 0.0}"
+    motion_style: 'normal', safety_factor: 1.0}"
 ```
 
 单机 `make px4_sitl gazebo-classic` 使用 PX4 instance 0，话题为 `/fmu/...`；`swarm_launch.py` 中用 `uav_ids:=[0]` 对应该单机实例。多机 `sitl_multiple_run.sh` 仍使用 `uav_ids:=[1,2,...]`。
@@ -166,14 +161,7 @@ python3 -m location_allocate.location_allocate
 - `normal`（标准）：中等参考速度的默认带宽
 - `aggressive`（激进）：高参考速度和快速响应优先的基础带宽
 
-执行层不再使用固定 `0.7 / 1.0 / 1.5` 倍率，而是按任务条件计算：
-
-```text
-average_speed = target_distance / duration
-kappa = clamp(style_base * (0.75 + 0.25 * average_speed / style_v_ref), 0.5, 2.0)
-omega_o_new = kappa * omega_o_base
-omega_c_new = kappa * omega_c_base
-```
+新路径不允许 LLM 输出 LADRC gain。`m`、assignment 后的 `D_i` 和唯一的 `T_exec` 由中央 Execution Profile Compiler 映射为控制参数；具体映射及数值仍为 provisional，必须通过显式配置注入。旧消息中的 motion style 仅记录，控制器使用 YAML baseline。
 
 控制适应数据可通过 topic 和 CSV 查看：
 
@@ -276,8 +264,22 @@ uint8 uav_id                        # 无人机编号
 geometry_msgs/Point target_pos      # 全局 ENU 目标坐标 [x, y, z]
 float32 duration                    # 期望飞行时间 (s)
 string motion_style                 # "smooth" / "normal" / "aggressive"
-float32 safety_factor               # IAPF 避障系数 (0=关闭)
+float32 safety_factor               # 安全裕度系数；迁移路径强制 >= 1
 ```
+
+### UAVExecutionCommand（Candidate 新路径）
+
+```text
+std_msgs/Header header
+uint32 mission_id
+uint32 task_id
+uint32 group_id
+uint8 uav_id
+geometry_msgs/Point target_pos
+uav_swarm_interfaces/ExecutionProfile profile
+```
+
+`profile.duration` 是新路径唯一时长源；外层不重复保存 duration。`profile` 的 LADRC、运动限幅和 IAPF soft 参数由中央 Compiler 确定性生成，控制器不会从 style 重新推导。
 
 ### ControlAdaptationLog
 
@@ -308,17 +310,15 @@ bool is_hover_stable                # 到达目标且稳定悬停时为 true
 ## 数据流
 
 ```
-LLM API → JSON 蓝图
+LLM API → Candidate Mission → Mission Graph / FSM
     ↓
-FormationGenerator（坐标生成）
+fresh snapshot → deterministic late resolution → safety-aware allocation
     ↓
-TopologyAllocator（匈牙利防交叉分配）
+Executable LFS + ResolutionTrace → Execution Profile Compiler
     ↓
-UAVSwarmCommand → /uav{N}/swarm_command
+UAVExecutionCommand → /uav{N}/execution_command
     ↓
-MinimumJerkTrajectory（轨迹规划）
-    ↓
-任务条件化 LADRC 带宽计算 → /uav{N}/control_adaptation + logs/control_adaptation_log.csv
+MinimumJerkTrajectory + profile-driven LADRC + IAPF
     ↓
 PX4 Offboard 位置控制（NED 坐标）
     ↓
