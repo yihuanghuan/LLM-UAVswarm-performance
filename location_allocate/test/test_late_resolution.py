@@ -13,6 +13,7 @@ from location_allocate.late_resolution import (
     LateResolutionPolicy,
     SafetyResolution,
     resolve_execution_task,
+    resolve_execution_parallel,
 )
 from location_allocate.safety_aware_allocator import SafetyAwareTopologyAllocator
 from location_allocate.state_snapshot import FreshStateSnapshotManager
@@ -130,3 +131,62 @@ def test_composite_command_has_no_second_duration_field():
     assert not hasattr(command, "duration")
     assert command.profile.duration == result.executable_lfs.duration
     assert command.target_pos.x == result.assigned_targets[0][0]
+
+
+def _parallel_task(task_id, uav_ids, center, duration):
+    task = candidate_task()
+    task.update(
+        {
+            "task_id": task_id,
+            "U": uav_ids,
+            "F": "Line",
+            "c": {"mode": "absolute", "value": center},
+            "r": {"mode": "explicit", "value": 1.0},
+            "T": {"mode": "explicit", "value": duration},
+        }
+    )
+    return task
+
+
+def _parallel_snapshot():
+    manager = FreshStateSnapshotManager(1.0, 0.1)
+    manager.update(1, [-4.0, -2.0, 2.0], 10.0)
+    manager.update(2, [-2.0, -2.0, 2.0], 10.0)
+    manager.update(3, [2.0, 2.0, 2.0], 10.0)
+    manager.update(4, [4.0, 2.0, 2.0], 10.0)
+    return manager.snapshot([1, 2, 3, 4], 10.0)
+
+
+def test_parallel_independent_preserves_distinct_exec_durations():
+    tasks = (
+        _parallel_task(1, [1, 2], [-3.0, -1.0, 2.0], 2.0),
+        _parallel_task(2, [3, 4], [3.0, 1.0, 2.0], 4.0),
+    )
+
+    result = resolve_execution_parallel(
+        tasks, _parallel_snapshot(), policy(tolerance=100.0),
+        "independent", group_d_plan=0.8
+    )
+
+    durations = [task.executable_lfs.duration for task in result.tasks]
+    assert durations[0] != durations[1]
+    assert all(
+        profile.duration == task.executable_lfs.duration
+        for task in result.tasks for profile in task.profiles
+    )
+
+
+def test_parallel_synchronized_uses_max_feasible_exec_duration():
+    tasks = (
+        _parallel_task(1, [1, 2], [-3.0, -1.0, 2.0], 2.0),
+        _parallel_task(2, [3, 4], [3.0, 1.0, 2.0], 4.0),
+    )
+
+    result = resolve_execution_parallel(
+        tasks, _parallel_snapshot(), policy(tolerance=100.0),
+        "synchronized", group_d_plan=0.8
+    )
+
+    durations = [task.executable_lfs.duration for task in result.tasks]
+    assert durations[0] == durations[1]
+    assert durations[0] >= 4.0
