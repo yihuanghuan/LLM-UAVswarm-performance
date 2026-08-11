@@ -200,13 +200,6 @@ ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
 }
 """
 
-from .paper_candidate_parser import (
-    CANDIDATE_FEW_SHOT_EXAMPLES,
-    CANDIDATE_SYSTEM_PROMPT,
-    CandidateParseError,
-)
-
-
 # ====================== 工具函数 ======================
 def purify_json_content(raw_content: str) -> str:
     raw_content = re.sub(r"```json|```", "", raw_content).strip()

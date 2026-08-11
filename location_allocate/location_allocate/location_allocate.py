@@ -61,55 +61,7 @@ def _default_migration_policy_path() -> str:
             / 'lfs_policy.migration.yaml'
         )
 
-# ====================== 1. 坐标生成层  ======================
-
-
-class FormationGenerator:
-    def __init__(self, global_center: List[float], formation_radius: float):
-        self.center = global_center
-        self.radius = formation_radius
-
-    def generate_line(self, n: int) -> List[List[float]]:
-        points = []
-        start_x = self.center[0] - (n - 1) * self.radius / 2
-        for i in range(n):
-            points.append([start_x + i * self.radius, self.center[1], self.center[2]])
-        return points
-
-    def generate_circle(self, n: int) -> List[List[float]]:
-        points = []
-        for i in range(n):
-            theta = 2 * math.pi * i / n
-            x = self.center[0] + self.radius * math.cos(theta)
-            y = self.center[1] + self.radius * math.sin(theta)
-            points.append([x, y, self.center[2]])
-        return points
-
-    def generate_sphere(self, n: int) -> List[List[float]]:
-        points = []
-        phi = math.pi * (3. - math.sqrt(5.))
-        for i in range(n):
-            y_norm = 1 - (i / float(n - 1)) * 2
-            radius_at_y = math.sqrt(1 - y_norm * y_norm)
-            theta = phi * i
-            x = self.center[0] + math.cos(theta) * radius_at_y * self.radius
-            y = self.center[1] + y_norm * self.radius
-            z = self.center[2] + math.sin(theta) * radius_at_y * self.radius
-            points.append([x, y, z])
-        return points
-
-    def generate(self, formation_type: str, uav_count: int) -> List[List[float]]:
-        if formation_type in ["Line", "Lineup"]:
-            return self.generate_line(uav_count)
-        if formation_type in ["Circle", "Polygon", "Triangle"]:
-            return self.generate_circle(uav_count)
-        if formation_type == "Sphere":
-            return self.generate_sphere(uav_count)
-        if formation_type == "Free":
-            return []
-        raise ValueError(f"不支持的编队类型: {formation_type}")
-
-# ====================== 2. 安全感知拓扑分配层 ======================
+# ====================== 1. 安全感知拓扑分配层 ======================
 
 
 class TopologyAllocator(SafetyAwareTopologyAllocator):
@@ -500,6 +452,8 @@ class UAVFormationNode(Node):
         # ==========================================
         # 3. 生成目标坐标
         # ==========================================
+        from .legacy_scheduler import FormationGenerator
+
         generator = FormationGenerator(center, radius)
         targets = generator.generate(f_type, task_uav_count)
 
@@ -584,6 +538,8 @@ class UAVFormationNode(Node):
         for task in tasks:
             uav_ids = [int(uid) for uid in task['uav_id']]
             initial = [self.uav_state_map[uid].copy() for uid in uav_ids]
+            from .legacy_scheduler import FormationGenerator
+
             generator = FormationGenerator(
                 task['global_center'],
                 task['parametric_data']['formation_radius'])
@@ -871,7 +827,7 @@ def main():
                 if node.runtime_mode == 'candidate_v2':
                     llm_result = parse_candidate_mission(user_command, paper_ros)
                 else:
-                    from .no_location import parse_legacy_uav_command
+                    from .legacy_parser import parse_legacy_uav_command
 
                     llm_result = parse_legacy_uav_command(
                         user_command, legacy_ros)
@@ -906,3 +862,12 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def __getattr__(name):
+    """Preserve the historical FormationGenerator import without eager loading."""
+    if name == "FormationGenerator":
+        from .legacy_scheduler import FormationGenerator
+
+        return FormationGenerator
+    raise AttributeError(name)
