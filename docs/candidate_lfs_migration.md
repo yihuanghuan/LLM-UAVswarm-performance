@@ -1,4 +1,4 @@
-# Candidate LFS 运行、接口与迁移
+# Paper Candidate LFS 运行与兼容接口
 
 ## 默认与兼容模式
 
@@ -35,7 +35,7 @@ source install/setup.bash
 PX4/Gazebo 和 XRCE Agent 启动后：
 
 ```bash
-# 控制器：默认加载同一 migration policy，并接收新复合消息
+# 控制器：默认加载 paper-current policy，并接收新复合消息
 ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1,2,3,4,5]
 
 # 调度器：Candidate v2 是默认 mode
@@ -45,7 +45,7 @@ ros2 run location_allocate location_allocate
 示例自然语言：
 
 ```text
-让1到5号无人机组成圆形编队
+Have UAVs 1 through 5 form a circle.
 ```
 
 未给出 center、scale、duration 时，Candidate 分别输出 `c:auto`、`r:auto`、`T:auto`，不会补 `[0,0,1.5]`、`1.5m` 或 `3s`。
@@ -53,10 +53,11 @@ ros2 run location_allocate location_allocate
 ## Policy 层级
 
 - `location_allocate/config/lfs_policy.template.yaml`：完整字段模板，允许 null/TBD，production loader 必须拒绝。
-- `lfs_policy/config/lfs_policy.migration.yaml`：当前可运行仿真基线，`configuration_id=migration-main-v1`。
+- `lfs_policy/config/lfs_policy.paper_current.yaml`：当前论文主路径，`configuration_id=paper-current-v1`；包含 provisional 数值。
+- `lfs_policy/config/lfs_policy.legacy.yaml` 与旧 migration 文件：只供显式历史兼容。
 - 未来 `lfs_policy_experiment_*.yaml`：实验冻结后另建，本轮不存在 paper-final policy。
 
-migration 数值只用于集成、仿真和迁移回归，不是论文冻结参数。完整来源见 [lfs_policy_provenance.md](lfs_policy_provenance.md)。
+paper-current 不等于 paper-final。完整参数状态见 [paper_parameter_calibration.md](paper_parameter_calibration.md)。
 
 启动时 typed loader 会一次性检查 missing/null、NaN/Inf、workspace 顺序、安全 ordering、IAPF hysteresis、controller clamp 覆盖、configuration ID 和 provenance。任何不完整 policy 都在发布 UAV command 前 fail fast。
 
@@ -75,7 +76,7 @@ header.stamp       : controller 收到对应 PX4 sample 时的 ROS clock
 
 PX4 timestamp 是 boot-clock microseconds，不能冒充 ROS epoch/sim time，因此 frame-normalization publisher 在接收 sample 时生成 ROS source stamp。Scheduler 另存 receive stamp，freshness 使用 header source stamp。
 
-migration production 要求：
+当前 paper runtime 要求：
 
 - `state_timeout=0.5s`
 - `snapshot_skew=0.15s`
@@ -102,7 +103,7 @@ Point target_pos
 ExecutionProfile profile
 ```
 
-`profile.duration` 来自最终 `T_exec`，是新路径唯一 duration。Profile 的 style/task gain 在 migration policy 中恒为 1，LADRC 使用现有 baseline。velocity/acceleration/jerk limits 当前用于 timing、完整性检查和审计；本轮没有新增 controller velocity/jerk runtime enforcement。
+`profile.duration` 来自最终 `T_exec`，是新路径唯一 duration。Profile 的 style/task gain 在 paper-current policy 中恒为 1，LADRC 使用现有 baseline。velocity/acceleration/jerk limits 当前用于 timing、完整性检查和审计；controller 没有新增 velocity/jerk runtime enforcement。
 
 控制器收到新命令后会进行 finite、hard clamp 和 smooth apply，并发布本任务代际的 `is_hover_stable=false`。Scheduler 只有看到该 false 后才接受后续 true，避免上一任务状态误判。
 
@@ -122,4 +123,4 @@ ExecutionProfile profile
 - semantic LADRC style/task adaptation 尚未重新实验设计和冻结。
 - profile velocity/jerk limit 尚未成为 controller runtime enforcement。
 - Minimum-Jerk、LADRC 与 IAPF 的最终合成公式本轮未改变。
-- Lineup/Free 的 Candidate v2 最终语义仍待确认；legacy 行为不变，Candidate geometry 继续 fail closed。
+- Lineup/Free 已从 paper Candidate vocabulary 删除；legacy 行为不变。

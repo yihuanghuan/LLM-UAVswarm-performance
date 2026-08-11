@@ -18,7 +18,7 @@ Natural Language → LLM → Candidate Mission → Mission Graph / FSM
 → existing Minimum-Jerk + IAPF setpoint path → PX4
 ```
 
-迁移期继续保留旧 LFS → `UAVSwarmCommand` 路径。完整的 late-binding 边界、冻结项和待确认项见 [Candidate LFS 架构](docs/candidate_lfs_architecture.md)，接口与运行步骤见 [迁移说明](docs/candidate_lfs_migration.md)。
+这是论文实验的正式 paper Candidate path。旧 LFS → `UAVSwarmCommand` 仅作为显式 legacy compatibility path 保留。冻结边界见 [Paper Architecture Freeze](docs/paper_architecture_freeze_v1.md)，运行方法见 [Candidate LFS 接口说明](docs/candidate_lfs_migration.md)。
 
 ### 三层解耦
 
@@ -134,27 +134,26 @@ export LLM_API_KEY='<your-key>'
 ros2 run location_allocate location_allocate
 ```
 
-调度器默认使用 `candidate_v2` 和 `migration-main-v1` policy。只有历史实验/回归需要显式加入 `--ros-args -p lfs_runtime_mode:=legacy_v1`。Candidate 失败不会 fallback 到旧 `task_sequences`。
+调度器默认使用英文 `candidate_v2` parser 和 `paper-current-v1` policy。只有历史实验/回归需要显式加入 `--ros-args -p lfs_runtime_mode:=legacy_v1`。Paper Candidate 失败不会 fallback 到旧 `task_sequences`。
 
 ## 指令示例
 
 ### 单一编队
 
 ```
-无人机1到5号机以[2,9,3]为中心，变换成圆形编队，半径为3米，限时12秒
+Have UAVs 1 through 5 form a circle centered at [2,9,3] with a radius of 3 meters in 12 seconds.
 ```
 
 ### 并行编队（不同 UAV 集合同时变阵）
 
 ```
-1到5号机以[0,0,5]为中心，组成半径为3米的圆形编队；同时，6到8号机以[0,0,8]为中心，组成间隔2米的直线编队
+In parallel, UAVs 1 to 5 form a circle centered at [0,0,5] with radius 3 meters, while UAVs 6 to 8 form a line centered at [0,0,8] with 2-meter spacing.
 ```
 
 ### 串行变阵（同一组 UAV 连续变换）
 
 ```
-首先以[10,0,5]为中心，在10秒内展开为间隔4米的直线编队，使用smooth模式；
-完成后转移目标，以[0,0,5]为中心，在8秒内聚拢成半径4米的圆形编队，使用aggressive模式
+First form a smooth line with 4-meter spacing centered at [10,0,5] in 10 seconds. After it stabilizes, form an aggressive circle centered at [0,0,5] with radius 4 meters in 8 seconds.
 ```
 
 ### 运动风格
@@ -207,7 +206,7 @@ LLM_swarm_ws/
 │   │       ├── location_allocate.py   # 匈牙利分配 + ROS2 节点
 │   │       ├── no_location.py         # LLM API 解析
 │   │       └── visualize_goals.py     # 可视化工具
-│   ├── lfs_policy/                    # typed template/migration policy loader
+│   ├── lfs_policy/                    # typed paper-current/legacy policy loader
 │   ├── minisnap_LADRC/
 │   │   └── ladrc_controller/          # C++ 执行层
 │   │       ├── src/

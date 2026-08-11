@@ -1,6 +1,6 @@
-# Candidate migration policy value provenance
+# Legacy migration policy value provenance
 
-`migration-main-v1` 是可运行迁移基线，不是论文参数冻结。
+`migration-main-v1` 仅为旧配置路径兼容保留，不是默认 paper policy。当前论文主路径参数状态见 [paper_parameter_calibration.md](paper_parameter_calibration.md)。
 
 | policy parameter | 仓库已有等价值 | migration 值与来源 | 可作为 migration baseline | 后续是否需实验确认 |
 |---|---|---|---|---|

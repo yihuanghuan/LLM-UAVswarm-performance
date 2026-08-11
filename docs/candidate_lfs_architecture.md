@@ -1,6 +1,6 @@
 # Candidate LFS → Executable LFS 架构
 
-本文描述当前默认 Candidate v2 实现。架构冻结不等于论文参数冻结：默认 runtime 使用完整的 `migration-main-v1` 仿真基线，所有迁移数值继续通过显式 policy 注入并标记为非 paper-final。
+本文描述已经冻结的 paper Candidate v2 架构。架构冻结不等于数值参数冻结：默认 runtime 使用 `paper-current-v1`，其中尚未校准的数值明确标记为 provisional。
 
 ## 新旧流程
 
@@ -26,7 +26,7 @@ Natural Language → LLM Semantic Parser → Candidate Mission / Candidate LFS
     → Planning Timing Estimate (T_plan)
     → Safety-aware Allocator
     → Final Timing Resolver (T_exec)
-    → at most one assignment safety re-evaluation
+    → exactly one assignment safety re-evaluation when T_exec != T_plan
     → Executable LFS + ResolutionTrace
     → Execution Profile Compiler
     → UAVExecutionCommand
@@ -73,28 +73,24 @@ Allocator、Resolver 和 Compiler 是独立模块；没有共享一个含糊的�
 - `T_request` 来自 Candidate；`T_plan` 只供 allocator；`T_exec` 在 assignment 后定稿，并是 Executable LFS、Execution Profile、消息和控制器的唯一 duration 来源。
 - explicit T 可行时保持原值；不可行时确定性上调并写入 trace。auto T 可使用 m；explicit 且可行时 m 不修改 T。
 - T 优先级为 Safety > Dynamic feasibility > Explicit time preference > Motion style。
-- 最终 T 与 planning T 超过显式 tolerance 时只复评一次，不循环重优化。
+- 只要最终 T 与 planning T 存在实际可表示差异就只复评一次，不循环重优化；内部浮点 epsilon 只用于数值比较。
 - parallel 默认 `independent`；评估区间为 `[0,max(T_k)]`，提前完成者保持在 goal。只有显式 `synchronized` 才统一到最大可行 T。
 - `completion_mode` 只属于 `ParallelGroup`，不进入 LFS 八元组。
 - `q` 只由 Mission Graph Compiler 转成 completion event/WaitSpec；运行 FSM 使用编译结果，不重复解释 q。
 - LLM 不输出 `omega_c`、`omega_o`、LADRC gain、控制限幅或 IAPF 增益。它们只由确定性 Execution Profile Compiler 生成。
 - 新消息优先于旧消息。新 profile 活跃时，旧 `UAVSwarmCommand` 不可覆盖它。
 
-## Migration baseline / Provisional
+## Paper-current baseline / Provisional
 
-仓库现在提供可运行 `lfs_policy/config/lfs_policy.migration.yaml`，其 workspace、freshness、qualitative scale、jerk、safety mapping和hard clamps只是迁移基线。来源与待确认项见 `docs/lfs_policy_provenance.md`。`location_allocate/config/lfs_policy.template.yaml` 仍是允许 null/TBD 的完整模板，production loader 必须拒绝它。
+仓库默认使用 `lfs_policy/config/lfs_policy.paper_current.yaml`。其 workspace、freshness、qualitative scale、jerk 和 hard clamps 中的具体数字仍为 provisional。旧 migration 文件只为路径兼容保留。完整状态见 `docs/paper_parameter_calibration.md`。
 
-当前 Execution Profile 对 style/task 使用中性恒等映射，全部 gain 为 1；没有恢复历史 semantic gain 公式。Minimum-Jerk timing 与 allocator 使用 migration policy 显式构造，不代表论文最终参数。
+当前 Execution Profile 对 style/task 使用中性恒等映射，全部 gain 为 1，smoothing alpha 为 1；这是 baseline-frozen，不是最终 semantic LADRC 创新点。
 
 当前 controller 仍未把 LADRC `update()` 输出接入 PX4 acceleration/setpoint 主通道，也没有新增 velocity/jerk runtime enforcement；本架构图中的 controller stage 只表示消息接收、检查、现有 LADRC/IAPF runtime和日志边界。
 
-## 仍需确认
+## Paper formation vocabulary
 
-- `Lineup`：v2 删除、定义为带朝向的 Line、或作为独立队列 primitive。当前 Candidate schema 为迁移保留枚举，但新 geometry fail closed；v1 历史行为不变。
-- `Free`：v2 删除、显式 per-UAV target primitive、或 return-home primitive。当前同样 fail closed，v1 不变。
-- “前方”的 reference：world +x、swarm heading 或 leader heading。
-- Candidate Mission wire schema 的正式版本号和长期兼容承诺。
-- 上述 migration 参数和候选函数的实验定稿。
+Paper schema `paper-candidate-schema-v1` 只支持 Circle、Line、Sphere、Triangle、Polygon。Lineup 与 Free 仅存在于 legacy schema 和历史 FormationGenerator。Triangle 是单位外接圆上的三个正三角形顶点；Polygon 是正 N 边形；首顶点均位于 world +X，按 XY 逆时针排序。
 
 ## 关键实现文件
 
