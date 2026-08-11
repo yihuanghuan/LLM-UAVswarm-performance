@@ -1,6 +1,7 @@
 """Fail-fast typed loading for Candidate production policies."""
 
 from dataclasses import dataclass
+import hashlib
 import math
 from pathlib import Path
 from typing import Any, Dict, Mapping, Tuple
@@ -115,15 +116,26 @@ class LoadedPolicy:
     execution_profile: Mapping[str, Any]
     controller: ControllerHardClamps
     provenance: Mapping[str, str]
+    policy_hash: str
+    parameter_status: Mapping[str, str]
+    warnings: Tuple[str, ...]
 
 
-def _validate_policy(data: Mapping[str, Any], production: bool) -> LoadedPolicy:
+def _validate_policy(
+    data: Mapping[str, Any], production: bool, policy_hash: str,
+    expected_use: str | None = None,
+) -> LoadedPolicy:
     status = str(_required(data, "policy_status", "policy"))
     configuration_id = str(_required(data, "configuration_id", "policy")).strip()
     if not configuration_id:
         raise PolicyLoadError("configuration_id must not be empty")
-    if production and status != "migration":
-        raise PolicyLoadError("production requires policy_status=migration")
+    allowed = {"migration", "legacy", "paper_current", "paper_frozen"}
+    if production and status not in allowed:
+        raise PolicyLoadError(f"unsupported production policy_status={status}")
+    if expected_use == "paper" and status not in {"paper_current", "paper_frozen"}:
+        raise PolicyLoadError("paper runtime requires a paper_current policy")
+    if expected_use == "legacy" and status not in {"legacy", "migration"}:
+        raise PolicyLoadError("legacy runtime requires a legacy policy")
 
     state_raw = _mapping(_required(data, "state_snapshot", "policy"), "state_snapshot")
     fallback = _required(state_raw, "allow_receive_time_fallback", "state_snapshot")
@@ -152,13 +164,44 @@ def _validate_policy(data: Mapping[str, Any], production: bool) -> LoadedPolicy:
     geometry["qualitative_multipliers"] = {key: _positive(value, f"geometry.qualitative_multipliers.{key}") for key, value in qualitative.items()}
 
     safety = dict(_mapping(_required(data, "safety", "policy"), "safety"))
-    for key in ("d_hard", "d_plan_base", "d_plan_margin", "iapf_enter_base", "iapf_enter_margin", "iapf_exit_base", "iapf_exit_margin", "repulsion_scale", "s_min", "s_max"):
+    mapping_type = safety.get("mapping_type", "legacy_affine")
+    safety["mapping_type"] = mapping_type
+    common_safety = (
+        "d_hard", "d_plan_base", "iapf_enter_base", "iapf_exit_base",
+        "repulsion_scale", "s_min", "s_max",
+    )
+    for key in common_safety:
         safety[key] = _positive(_required(safety, key, "safety"), f"safety.{key}")
+    if mapping_type == "legacy_affine":
+        for key in ("d_plan_margin", "iapf_enter_margin", "iapf_exit_margin"):
+            safety[key] = _positive(
+                _required(safety, key, "safety"), f"safety.{key}"
+            )
+        d_plan_min = safety["d_plan_base"] + safety["d_plan_margin"] * safety["s_min"]
+        enter_min = safety["iapf_enter_base"] + safety["iapf_enter_margin"] * safety["s_min"]
+        exit_min = safety["iapf_exit_base"] + safety["iapf_exit_margin"] * safety["s_min"]
+        max_enter = safety["iapf_enter_base"] + safety["iapf_enter_margin"] * safety["s_max"]
+        max_exit = safety["iapf_exit_base"] + safety["iapf_exit_margin"] * safety["s_max"]
+    elif mapping_type == "hard_anchored_linear":
+        d_plan_min = safety["d_hard"] + safety["s_min"] * (
+            safety["d_plan_base"] - safety["d_hard"]
+        )
+        enter_min = safety["d_hard"] + safety["s_min"] * (
+            safety["iapf_enter_base"] - safety["d_hard"]
+        )
+        exit_min = safety["d_hard"] + safety["s_min"] * (
+            safety["iapf_exit_base"] - safety["d_hard"]
+        )
+        max_enter = safety["d_hard"] + safety["s_max"] * (
+            safety["iapf_enter_base"] - safety["d_hard"]
+        )
+        max_exit = safety["d_hard"] + safety["s_max"] * (
+            safety["iapf_exit_base"] - safety["d_hard"]
+        )
+    else:
+        raise PolicyLoadError("unsupported safety.mapping_type")
     if safety["s_min"] < 1.0 or safety["s_max"] < safety["s_min"]:
         raise PolicyLoadError("safety s range must satisfy 1 <= min <= max")
-    d_plan_min = safety["d_plan_base"] + safety["d_plan_margin"] * safety["s_min"]
-    enter_min = safety["iapf_enter_base"] + safety["iapf_enter_margin"] * safety["s_min"]
-    exit_min = safety["iapf_exit_base"] + safety["iapf_exit_margin"] * safety["s_min"]
     if not safety["d_hard"] <= d_plan_min or not safety["d_hard"] < enter_min < exit_min:
         raise PolicyLoadError("safety ordering or IAPF hysteresis is invalid")
 
@@ -180,7 +223,7 @@ def _validate_policy(data: Mapping[str, Any], production: bool) -> LoadedPolicy:
 
     profile = dict(_mapping(_required(data, "execution_profile", "policy"), "execution_profile"))
     if _required(profile, "task_adaptation_type", "execution_profile") != "identity":
-        raise PolicyLoadError("migration task adaptation must be identity")
+        raise PolicyLoadError("paper-current baseline task adaptation must be identity")
     profile["baseline_omega_c"] = _vector(_required(profile, "baseline_omega_c", "execution_profile"), "execution_profile.baseline_omega_c")
     profile["baseline_omega_o"] = _vector(_required(profile, "baseline_omega_o", "execution_profile"), "execution_profile.baseline_omega_o")
     profile["style_gains"] = _labels(_mapping(_required(profile, "style_gains", "execution_profile"), "execution_profile.style_gains"), "execution_profile.style_gains")
@@ -204,8 +247,6 @@ def _validate_policy(data: Mapping[str, Any], production: bool) -> LoadedPolicy:
     for low, high in zip(controller.omega_o_min, controller.omega_o_max):
         if low <= 0.0 or high < low:
             raise PolicyLoadError("invalid omega_o clamps")
-    max_enter = safety["iapf_enter_base"] + safety["iapf_enter_margin"] * safety["s_max"]
-    max_exit = safety["iapf_exit_base"] + safety["iapf_exit_margin"] * safety["s_max"]
     if controller.iapf_enter_min > enter_min or controller.iapf_enter_max < max_enter or controller.iapf_exit_max < max_exit:
         raise PolicyLoadError("controller IAPF clamps do not cover safety mapping")
     if controller.velocity_max < profile["velocity_limit"] or controller.acceleration_max < profile["acceleration_limit"] or controller.jerk_max < profile["jerk_limit"]:
@@ -215,15 +256,71 @@ def _validate_policy(data: Mapping[str, Any], production: bool) -> LoadedPolicy:
     provenance = {str(key): str(value) for key, value in provenance_raw.items() if str(value).strip()}
     if not provenance:
         raise PolicyLoadError("provenance must not be empty")
-    return LoadedPolicy(configuration_id, status, state, geometry, safety, timing, allocator, profile, controller, provenance)
+    statuses_raw = data.get("parameter_status", {})
+    parameter_status = {
+        str(key): str(value) for key, value in _mapping(
+            statuses_raw, "parameter_status"
+        ).items()
+    }
+    if status.startswith("paper_"):
+        required_status = {"architecture_rules", "physical_environment",
+                           "algorithm_calibration", "semantic_controller"}
+        if set(parameter_status) != required_status:
+            raise PolicyLoadError(
+                "paper policy parameter_status must cover all audit categories"
+            )
+        if timing["final_recheck_tolerance"] != 0.0:
+            raise PolicyLoadError("paper final_recheck_tolerance must be zero")
+        if any(value != 1.0 for value in profile["style_gains"].values()):
+            raise PolicyLoadError("paper-current style gains must be neutral")
+        if controller.smoothing_alpha != 1.0:
+            raise PolicyLoadError("paper-current smoothing_alpha must be 1.0")
+        if mapping_type != "hard_anchored_linear":
+            raise PolicyLoadError("paper safety mapping must be hard_anchored_linear")
+    qualitative_spacing = {
+        label: max(
+            geometry["nominal_spacing"] * multiplier,
+            d_plan_min,
+        )
+        for label, multiplier in geometry["qualitative_multipliers"].items()
+    }
+    warnings = []
+    if not (
+        qualitative_spacing["compact"] < qualitative_spacing["normal"]
+        < qualitative_spacing["spacious"]
+    ):
+        warnings.append(
+            "qualitative scale ordering is safety-clamped at s=1: "
+            f"{qualitative_spacing}"
+        )
+    return LoadedPolicy(
+        configuration_id, status, state, geometry, safety, timing, allocator,
+        profile, controller, provenance, policy_hash, parameter_status,
+        tuple(warnings),
+    )
 
 
-def load_policy(path: str | Path, *, production: bool = True) -> LoadedPolicy:
+def load_policy(
+    path: str | Path, *, production: bool = True,
+    expected_use: str | None = None,
+) -> LoadedPolicy:
     policy_path = Path(path)
     if not policy_path.is_file():
         raise PolicyLoadError(f"policy file not found: {policy_path}")
     try:
-        data = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
+        raw = policy_path.read_bytes()
+        data = yaml.safe_load(raw.decode("utf-8"))
     except (OSError, yaml.YAMLError) as exc:
         raise PolicyLoadError(f"failed to read policy: {exc}") from exc
-    return _validate_policy(_mapping(data, "policy"), production)
+    return _validate_policy(
+        _mapping(data, "policy"), production, hashlib.sha256(raw).hexdigest(),
+        expected_use,
+    )
+
+
+def load_paper_policy(path: str | Path) -> LoadedPolicy:
+    return load_policy(path, production=True, expected_use="paper")
+
+
+def load_legacy_policy(path: str | Path) -> LoadedPolicy:
+    return load_policy(path, production=True, expected_use="legacy")

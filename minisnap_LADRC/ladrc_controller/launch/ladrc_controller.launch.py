@@ -5,7 +5,7 @@ from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
 import os
-from lfs_policy import load_policy
+from lfs_policy import load_paper_policy
 
 
 def generate_launch_description():
@@ -13,12 +13,12 @@ def generate_launch_description():
     config_file = os.path.join(pkg_share, 'config', 'ladrc_params.yaml')
     default_policy_file = os.path.join(
         get_package_share_directory('lfs_policy'),
-        'config', 'lfs_policy.migration.yaml')
+        'config', 'lfs_policy.paper_current.yaml')
 
     def create_node(context):
         policy_file = LaunchConfiguration('lfs_policy_file').perform(context)
-        controller_policy = load_policy(
-            policy_file, production=True).controller.ros_parameters()
+        controller_policy = load_paper_policy(
+            policy_file).controller.ros_parameters()
         return [Node(
             package='ladrc_controller',
             executable='ladrc_position_controller_node',
@@ -48,7 +48,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'lfs_policy_file',
             default_value=default_policy_file,
-            description='Complete Candidate production/migration policy'
+            description='Current paper Candidate policy'
         ),
 
         DeclareLaunchArgument(

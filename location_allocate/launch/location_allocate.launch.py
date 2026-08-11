@@ -17,7 +17,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'lfs_policy_file',
             default_value='',
-            description='Empty selects installed migration policy'),
+            description='Empty selects installed paper-current policy'),
         Node(
             package='location_allocate',
             executable='location_allocate',

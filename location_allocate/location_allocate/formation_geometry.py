@@ -140,6 +140,7 @@ def resolve_scale(
             "workspace scale limit conflicts with d_plan(s) or requested scale"
         )
     trace.unit_geometry = geometry.geometry_version
+    trace.geometry_version = geometry.geometry_version
     trace.delta_min = geometry.delta_min
     trace.r_nominal = r_nominal
     trace.r_safe = r_safe

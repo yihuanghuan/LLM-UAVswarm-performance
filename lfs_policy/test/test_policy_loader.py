@@ -3,11 +3,12 @@ from pathlib import Path
 import pytest
 import yaml
 
-from lfs_policy import PolicyLoadError, load_policy
+from lfs_policy import PolicyLoadError, load_paper_policy, load_policy
 
 
 MIGRATION = Path(__file__).parents[1] / "config" / "lfs_policy.migration.yaml"
 TEMPLATE = Path(__file__).parents[2] / "location_allocate" / "config" / "lfs_policy.template.yaml"
+PAPER = Path(__file__).parents[1] / "config" / "lfs_policy.paper_current.yaml"
 
 
 def write_policy(tmp_path, mutate):
@@ -31,6 +32,21 @@ def test_migration_policy_loads_and_exposes_controller_parameters():
 def test_template_is_not_a_production_policy():
     with pytest.raises(PolicyLoadError):
         load_policy(TEMPLATE)
+
+
+def test_paper_current_has_hash_status_and_explicit_clamp_warning():
+    policy = load_paper_policy(PAPER)
+
+    assert policy.configuration_id == "paper-current-v1"
+    assert policy.status == "paper_current"
+    assert len(policy.policy_hash) == 64
+    assert policy.parameter_status["architecture_rules"] == "paper-frozen"
+    assert "safety-clamped" in policy.warnings[0]
+
+
+def test_paper_runtime_rejects_migration_policy():
+    with pytest.raises(PolicyLoadError, match="paper_current"):
+        load_paper_policy(MIGRATION)
 
 
 @pytest.mark.parametrize(

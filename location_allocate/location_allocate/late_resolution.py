@@ -60,6 +60,11 @@ class LateResolutionPolicy:
     ]
     timing_recheck_tolerance: float
     allocator_factory: Callable[[float], SafetyAwareTopologyAllocator]
+    policy_hash: str = "unknown"
+    code_git_sha: str = "unknown"
+    schema_version: str = "paper-candidate-schema-v1"
+    schema_hash: str = "unknown"
+    allocator_mode: str = "safety-aware-v1"
 
 
 @dataclass(frozen=True)
@@ -102,6 +107,11 @@ def _prepare_task(
     """Resolve through T_plan, stopping before any assignment is chosen."""
     runtime_validate_candidate_task(candidate_task, snapshot)
     intent, trace = resolve_candidate_task(candidate_task, snapshot)
+    trace.policy_hash = policy.policy_hash
+    trace.code_git_sha = policy.code_git_sha
+    trace.schema_version = policy.schema_version
+    trace.schema_hash = policy.schema_hash
+    trace.allocator_mode = policy.allocator_mode
     safety = policy.resolve_safety(intent.safety_factor)
     if minimum_d_plan is not None and minimum_d_plan > safety.d_plan:
         safety = SafetyResolution(
@@ -201,13 +211,13 @@ def resolve_execution_parallel(
     snapshot: StateSnapshot,
     policy: LateResolutionPolicy,
     completion_mode: str,
-    group_d_plan: float,
+    group_d_plan: float | None = None,
 ) -> ResolvedParallelGroup:
     """
     Resolve one parallel group with a shared snapshot and joint safety horizon.
 
-    ``group_d_plan`` is deliberately supplied by the caller: aggregation of
-    task-specific planning margins is not frozen by this implementation.
+    The paper implementation freezes group planning margin aggregation to max.
+    The optional argument remains only as an assertion-compatible API.
     """
     if completion_mode not in ("independent", "synchronized"):
         raise LateResolutionError("invalid parallel completion_mode")
@@ -217,10 +227,12 @@ def resolve_execution_parallel(
         policy.resolve_safety(float(task["s"])).d_plan
         for task in candidate_tasks
     )
-    if group_d_plan < max(requested_d_plan):
+    frozen_group_d_plan = max(requested_d_plan)
+    if group_d_plan is not None and abs(group_d_plan - frozen_group_d_plan) > 1e-12:
         raise LateResolutionError(
-            "group_d_plan must cover every task planning margin"
+            "group_d_plan must equal the frozen max aggregation"
         )
+    group_d_plan = frozen_group_d_plan
     prepared = tuple(
         _prepare_task(task, snapshot, policy, group_d_plan)
         for task in candidate_tasks

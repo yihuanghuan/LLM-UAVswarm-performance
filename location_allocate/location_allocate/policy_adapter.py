@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from lfs_policy import LoadedPolicy, load_policy
+from lfs_policy import LoadedPolicy, load_paper_policy
 
 from .execution_profile_compiler import (
     ExecutionProfilePolicy,
@@ -15,6 +15,8 @@ from .timing_resolution import (
     ConfiguredMinimumJerkTimingPolicy,
     max_pairwise_distance_bound,
 )
+from .prompt_loader import load_paper_prompt_bundle
+from .reproducibility import code_git_sha
 
 
 def build_late_resolution_policy(config: LoadedPolicy) -> LateResolutionPolicy:
@@ -60,21 +62,30 @@ def build_late_resolution_policy(config: LoadedPolicy) -> LateResolutionPolicy:
     def resolve_safety(s_value: float) -> SafetyResolution:
         if not safety["s_min"] <= s_value <= safety["s_max"]:
             raise ValueError(
-                f"s={s_value} outside migration range "
+                f"s={s_value} outside configured range "
                 f"[{safety['s_min']}, {safety['s_max']}]"
+            )
+        if safety["mapping_type"] == "hard_anchored_linear":
+            def scaled(baseline):
+                return safety["d_hard"] + s_value * (
+                    safety[baseline] - safety["d_hard"]
+                )
+
+            d_plan = scaled("d_plan_base")
+            enter = scaled("iapf_enter_base")
+            exit_distance = scaled("iapf_exit_base")
+        else:
+            d_plan = safety["d_plan_base"] + safety["d_plan_margin"] * s_value
+            enter = safety["iapf_enter_base"] + safety["iapf_enter_margin"] * s_value
+            exit_distance = (
+                safety["iapf_exit_base"] + safety["iapf_exit_margin"] * s_value
             )
         return SafetyResolution(
             d_hard=safety["d_hard"],
-            d_plan=safety["d_plan_base"] + safety["d_plan_margin"] * s_value,
+            d_plan=d_plan,
             soft_iapf=SoftSafetyParameters(
-                enter_distance=(
-                    safety["iapf_enter_base"]
-                    + safety["iapf_enter_margin"] * s_value
-                ),
-                exit_distance=(
-                    safety["iapf_exit_base"]
-                    + safety["iapf_exit_margin"] * s_value
-                ),
+                enter_distance=enter,
+                exit_distance=exit_distance,
                 repulsion_scale=safety["repulsion_scale"],
             ),
         )
@@ -92,6 +103,7 @@ def build_late_resolution_policy(config: LoadedPolicy) -> LateResolutionPolicy:
             min_improvement=allocator["minimum_improvement"],
         )
 
+    prompt = load_paper_prompt_bundle()
     return LateResolutionPolicy(
         scale=scale_policy,
         timing=timing_policy,
@@ -100,9 +112,14 @@ def build_late_resolution_policy(config: LoadedPolicy) -> LateResolutionPolicy:
         planning_distance_bound=max_pairwise_distance_bound,
         timing_recheck_tolerance=timing["final_recheck_tolerance"],
         allocator_factory=allocator_factory,
+        policy_hash=config.policy_hash,
+        code_git_sha=code_git_sha(),
+        schema_version=prompt.schema_version,
+        schema_hash=prompt.schema_hash,
+        allocator_mode="safety-aware-v1",
     )
 
 
 def load_runtime_policy(path: str | Path):
-    config = load_policy(path, production=True)
+    config = load_paper_policy(path)
     return config, build_late_resolution_policy(config)

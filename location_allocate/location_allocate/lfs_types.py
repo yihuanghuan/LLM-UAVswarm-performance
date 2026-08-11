@@ -60,6 +60,12 @@ class ResolutionTrace:
     t_plan: Optional[float] = None
     t_exec: Optional[float] = None
     configuration_id: Optional[str] = None
+    policy_hash: Optional[str] = None
+    code_git_sha: Optional[str] = None
+    schema_version: Optional[str] = None
+    schema_hash: Optional[str] = None
+    geometry_version: Optional[str] = None
+    allocator_mode: Optional[str] = None
     corrections: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
     rejection_reason: Optional[str] = None

@@ -44,21 +44,21 @@ all_initial_positions = [
 ]
 
 
-def _default_migration_policy_path() -> str:
+def _default_paper_policy_path() -> str:
     try:
         from ament_index_python.packages import get_package_share_directory
 
         return str(
             Path(get_package_share_directory('lfs_policy'))
             / 'config'
-            / 'lfs_policy.migration.yaml'
+            / 'lfs_policy.paper_current.yaml'
         )
     except Exception:
         return str(
             Path(__file__).resolve().parents[2]
             / 'lfs_policy'
             / 'config'
-            / 'lfs_policy.migration.yaml'
+            / 'lfs_policy.paper_current.yaml'
         )
 
 # ====================== 1. 安全感知拓扑分配层 ======================
@@ -103,12 +103,14 @@ class UAVFormationNode(Node):
         if self.runtime_mode == 'candidate_v2':
             configured_path = self.get_parameter(
                 'lfs_policy_file').get_parameter_value().string_value
-            policy_path = configured_path or _default_migration_policy_path()
+            policy_path = configured_path or _default_paper_policy_path()
             self.policy_config, self.candidate_policy = load_runtime_policy(
                 policy_path)
             self.get_logger().info(
-            f"Paper Candidate runtime enabled with policy "
+                f"Paper Candidate runtime enabled with policy "
                 f"{self.policy_config.configuration_id}")
+            for warning in self.policy_config.warnings:
+                self.get_logger().warn(f"Paper policy audit: {warning}")
 
         # Legacy Point state remains independent from Candidate snapshots.
         self.uav_state_map: Dict[int, List[float]] = {}

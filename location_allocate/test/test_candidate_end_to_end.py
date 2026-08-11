@@ -17,11 +17,11 @@ from location_allocate.policy_adapter import load_runtime_policy
 from location_allocate.state_snapshot import FreshStateSnapshotManager
 
 
-MIGRATION = (
+PAPER_CURRENT = (
     Path(__file__).parents[2]
     / "lfs_policy"
     / "config"
-    / "lfs_policy.migration.yaml"
+    / "lfs_policy.paper_current.yaml"
 )
 
 
@@ -81,7 +81,7 @@ def parallel_snapshot(epoch=10.0):
 
 
 def test_natural_language_fixture_reaches_execution_commands_with_late_snapshot():
-    _config, policy = load_runtime_policy(MIGRATION)
+    _config, policy = load_runtime_policy(PAPER_CURRENT)
     payload = {"lfs_version": "2.0", "mission": {"nodes": [
         {"type": "task", "task": task(1)},
         {"type": "task", "task": task(2)},
@@ -116,12 +116,12 @@ def test_natural_language_fixture_reaches_execution_commands_with_late_snapshot(
         for command in task_commands
     )
     assert {command.profile.configuration_id for command in commands} == {
-        "migration-main-v1"
+        "paper-current-v1"
     }
 
 
 def test_parallel_group_uses_one_snapshot_and_builds_one_atomic_batch():
-    _config, policy = load_runtime_policy(MIGRATION)
+    _config, policy = load_runtime_policy(PAPER_CURRENT)
     first = {
         **task(1, {"mode": "absolute", "value": [0, 0, 2]}),
         "U": [1, 2],
@@ -151,7 +151,7 @@ def test_parallel_group_uses_one_snapshot_and_builds_one_atomic_batch():
         )
         assert len(batch) == 4
 
-    payload = {"mission": {"nodes": [{
+    payload = {"lfs_version": "2.0", "mission": {"nodes": [{
         "type": "parallel",
         "completion_mode": "independent",
         "tasks": [first, second],
@@ -166,7 +166,7 @@ def test_parallel_group_uses_one_snapshot_and_builds_one_atomic_batch():
 
 
 def test_parallel_resolution_failure_produces_zero_publishable_commands():
-    _config, policy = load_runtime_policy(MIGRATION)
+    _config, policy = load_runtime_policy(PAPER_CURRENT)
     good = {
         **task(1, {"mode": "absolute", "value": [0, 0, 2]}),
         "U": [1, 2],
