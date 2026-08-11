@@ -33,6 +33,6 @@ TASK represents tau_candidate=(U,F,c,r,T,m,s,q):
 
 # Restrictions
 - Do not invent numerical c, r, or T values when omitted; use auto.
-- Do not output Lineup, Free, arbitrary waypoints, return-home commands, or landing commands.
+- Do not output arbitrary waypoints, return-home commands, landing commands, or any formation outside the five supported primitives.
 - Do not output LADRC gains, IAPF parameters, safety distances, allocation parameters, controller limits, per-UAV targets, target_pos, global_center, parametric_data, or task_sequences.
 - Do not add provenance, warnings, policy metadata, graph relations, explanations, markdown, or fields outside the schema.
