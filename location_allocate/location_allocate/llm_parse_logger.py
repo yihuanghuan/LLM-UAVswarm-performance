@@ -15,6 +15,15 @@ LOG_COLUMNS = [
     "field_accuracy",
     "retry_count",
     "error_type",
+    "error_reason",
+    "prompt_version",
+    "prompt_hash",
+    "schema_version",
+    "schema_hash",
+    "model_name",
+    "temperature",
+    "top_p",
+    "runtime_mode",
 ]
 
 

@@ -4,6 +4,8 @@ from types import SimpleNamespace
 import pytest
 
 from location_allocate import no_location
+from location_allocate import paper_candidate_parser
+from location_allocate.prompt_loader import load_paper_prompt_bundle
 
 
 def candidate_payload():
@@ -48,19 +50,20 @@ class FakeClient:
         )
 
 
-def configure_fake(monkeypatch, payload):
+def configure_fake(monkeypatch, payload, module=paper_candidate_parser):
     FakeClient.payload = payload
-    monkeypatch.setattr(no_location, "API_KEY", "test-key")
-    monkeypatch.setattr(no_location, "OpenAI", FakeClient)
-    monkeypatch.setattr(no_location, "append_llm_parse_log", lambda _row: None)
-    monkeypatch.setattr(no_location.time, "sleep", lambda _seconds: None)
+    monkeypatch.setattr(module, "API_KEY", "test-key")
+    monkeypatch.setattr(module, "OpenAI", FakeClient)
+    monkeypatch.setattr(module, "append_llm_parse_log", lambda _row: None)
+    monkeypatch.setattr(module.time, "sleep", lambda _seconds: None)
 
 
 def test_candidate_parser_accepts_semantic_defaults(monkeypatch):
     configure_fake(monkeypatch, candidate_payload())
 
-    parsed = no_location.parse_candidate_mission(
-        "组成圆形", "当前可用无人机编号: [1,2,3]，总数: 3"
+    parsed = paper_candidate_parser.parse_candidate_mission(
+        "Form a circle.",
+        "Available UAV IDs: [1, 2, 3]\nTotal available UAVs: 3",
     )
 
     task = parsed["mission"]["nodes"][0]["task"]
@@ -70,9 +73,9 @@ def test_candidate_parser_accepts_semantic_defaults(monkeypatch):
 
 
 def test_candidate_prompt_forbids_numerical_and_control_defaults():
-    prompt = no_location.CANDIDATE_SYSTEM_PROMPT
+    prompt = load_paper_prompt_bundle().system_prompt
 
-    assert "Do not invent numeric c, r, or T" in prompt
+    assert "Do not invent numerical c, r, or T" in prompt
     assert "LADRC gains" in prompt
     assert "task_sequences" in prompt
     assert "[0.0, 0.0, 1.5]" not in prompt
@@ -81,8 +84,11 @@ def test_candidate_prompt_forbids_numerical_and_control_defaults():
 def test_candidate_parser_never_falls_back_to_legacy(monkeypatch):
     configure_fake(monkeypatch, {"task_sequences": []})
 
-    with pytest.raises(no_location.CandidateParseError, match="non-Candidate"):
-        no_location.parse_candidate_mission("组成圆形")
+    with pytest.raises(
+        paper_candidate_parser.CandidateParseError,
+        match="Candidate parsing failed",
+    ):
+        paper_candidate_parser.parse_candidate_mission("Form a circle.")
 
 
 def test_legacy_parser_remains_explicitly_available(monkeypatch):
@@ -100,7 +106,7 @@ def test_legacy_parser_remains_explicitly_available(monkeypatch):
             "q": "direct",
         }],
     }
-    configure_fake(monkeypatch, payload)
+    configure_fake(monkeypatch, payload, no_location)
 
     parsed = no_location.parse_legacy_uav_command(
         "legacy fixture", "当前可用无人机编号: [1,2,3]，总数: 3"
@@ -135,7 +141,7 @@ def test_candidate_parser_accepts_all_center_scale_time_semantics(
     payload["mission"]["nodes"][0]["task"].update(task_overrides)
     configure_fake(monkeypatch, payload)
 
-    assert no_location.parse_candidate_mission("fixture") == payload
+    assert paper_candidate_parser.parse_candidate_mission("fixture") == payload
 
 
 @pytest.mark.parametrize("completion_mode", ["independent", "synchronized"])
@@ -150,7 +156,7 @@ def test_candidate_parser_preserves_explicit_parallel_relation(
     }]}}
     configure_fake(monkeypatch, payload)
 
-    parsed = no_location.parse_candidate_mission("fixture")
+    parsed = paper_candidate_parser.parse_candidate_mission("fixture")
 
     assert parsed["mission"]["nodes"][0]["completion_mode"] == completion_mode
 
@@ -164,4 +170,14 @@ def test_candidate_parser_accepts_hover_wait_and_explicit_wait_node(monkeypatch)
     ]}}
     configure_fake(monkeypatch, payload)
 
-    assert no_location.parse_candidate_mission("fixture") == payload
+    assert paper_candidate_parser.parse_candidate_mission("fixture") == payload
+
+
+@pytest.mark.parametrize("formation", ["Lineup", "Free"])
+def test_paper_schema_rejects_legacy_only_formations(monkeypatch, formation):
+    payload = candidate_payload()
+    payload["mission"]["nodes"][0]["task"]["F"] = formation
+    configure_fake(monkeypatch, payload)
+
+    with pytest.raises(paper_candidate_parser.CandidateParseError):
+        paper_candidate_parser.parse_candidate_mission("fixture")

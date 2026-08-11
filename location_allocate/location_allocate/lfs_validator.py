@@ -81,6 +81,10 @@ def validate_candidate_schema(
     payload: Dict[str, Any], schema: Optional[Dict[str, Any]] = None
 ) -> None:
     """Early layer 1: structural checks that never require swarm state."""
+    if schema is None:
+        from .prompt_loader import load_paper_schema
+
+        schema = load_paper_schema()
     validate_schema(payload, schema)
     if not is_candidate_mission(payload):
         raise LFSValidationError("payload is not a Candidate Mission")

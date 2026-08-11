@@ -12,7 +12,7 @@ from nav_msgs.msg import Odometry
 from rclpy.qos import qos_profile_sensor_data
 from uav_swarm_interfaces.msg import UAVExecutionCommand, UAVStatus, UAVSwarmCommand
 # -------------------------------------------------------------------
-from .no_location import CandidateParseError, parse_uav_command
+from .paper_candidate_parser import CandidateParseError, parse_candidate_mission
 from .safety_aware_allocator import SafetyAwareTopologyAllocator
 from .execution_command_builder import (
     build_parallel_command_batch,
@@ -155,7 +155,7 @@ class UAVFormationNode(Node):
             self.policy_config, self.candidate_policy = load_runtime_policy(
                 policy_path)
             self.get_logger().info(
-                f"Candidate v2 enabled with policy "
+            f"Paper Candidate runtime enabled with policy "
                 f"{self.policy_config.configuration_id}")
 
         # Legacy Point state remains independent from Candidate snapshots.
@@ -841,7 +841,11 @@ def main():
     rclpy.init()
 
     node = UAVFormationNode()
-    test_ros = (
+    paper_ros = (
+        f"Available UAV IDs: {node.available_uav_ids}\n"
+        f"Total available UAVs: {len(node.available_uav_ids)}"
+    )
+    legacy_ros = (
         f"当前可用无人机编号: {node.available_uav_ids}，"
         f"总数: {len(node.available_uav_ids)}"
     )
@@ -864,8 +868,13 @@ def main():
             print("正在调用 LLM 解析指令...")
             # test_ros 仅用于让 LLM 判断可用 UAV 数量。
             try:
-                llm_result = parse_uav_command(
-                    user_command, test_ros, node.runtime_mode)
+                if node.runtime_mode == 'candidate_v2':
+                    llm_result = parse_candidate_mission(user_command, paper_ros)
+                else:
+                    from .no_location import parse_legacy_uav_command
+
+                    llm_result = parse_legacy_uav_command(
+                        user_command, legacy_ros)
             except CandidateParseError as exc:
                 node.get_logger().error(str(exc))
                 continue

@@ -156,6 +156,7 @@ def test_invalid_motion_style_raises():
 
 def test_candidate_mission_early_validation_and_graph_compilation():
     payload = {
+        "lfs_version": "2.0",
         "mission": {
             "nodes": [
                 {"type": "task", "task": candidate_task()},
@@ -181,6 +182,7 @@ def test_candidate_mission_early_validation_and_graph_compilation():
 
 def test_candidate_auto_center_and_scale_are_schema_valid():
     payload = {
+        "lfs_version": "2.0",
         "mission": {"nodes": [{
             "type": "task",
             "task": candidate_task(c={"mode": "auto"}, r={"mode": "auto"}),
@@ -191,10 +193,10 @@ def test_candidate_auto_center_and_scale_are_schema_valid():
 
 
 def test_candidate_wait_node_has_one_supported_runtime_semantic():
-    valid = {"mission": {"nodes": [
+    valid = {"lfs_version": "2.0", "mission": {"nodes": [
         {"type": "wait", "condition": "elapsed", "duration": 2.0}
     ]}}
-    invalid = {"mission": {"nodes": [
+    invalid = {"lfs_version": "2.0", "mission": {"nodes": [
         {"type": "wait", "condition": "external_event", "duration": 2.0}
     ]}}
 
@@ -205,6 +207,7 @@ def test_candidate_wait_node_has_one_supported_runtime_semantic():
 
 def test_candidate_parallel_overlap_is_rejected_early():
     payload = {
+        "lfs_version": "2.0",
         "mission": {
             "nodes": [{
                 "type": "parallel",
@@ -243,6 +246,7 @@ def test_candidate_non_finite_and_weak_safety_are_rejected():
 
 def test_candidate_requires_explicit_q_graph_policy():
     payload = {
+        "lfs_version": "2.0",
         "mission": {"nodes": [{
             "type": "task", "task": candidate_task(q="direct")
         }]}

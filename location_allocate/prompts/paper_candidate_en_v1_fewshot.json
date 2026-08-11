@@ -1,0 +1,17 @@
+[
+  {
+    "user": "Have UAVs 1 through 5 form a circle.",
+    "availability": "Available UAV IDs: [1, 2, 3, 4, 5]\nTotal available UAVs: 5",
+    "output": {"lfs_version":"2.0","mission":{"nodes":[{"type":"task","task":{"task_id":1,"U":[1,2,3,4,5],"F":"Circle","c":{"mode":"auto"},"r":{"mode":"auto"},"T":{"mode":"auto"},"m":"normal","s":1.0,"q":"direct"}}]}}
+  },
+  {
+    "user": "In parallel, UAVs 1 to 3 form a triangle centered at [2,3,4] with radius 2 m in 5 seconds, while UAVs 4 to 6 maintain their current centroid and form a compact circle. Both groups must finish together.",
+    "availability": "Available UAV IDs: [1, 2, 3, 4, 5, 6]\nTotal available UAVs: 6",
+    "output": {"lfs_version":"2.0","mission":{"nodes":[{"type":"parallel","completion_mode":"synchronized","tasks":[{"task_id":1,"U":[1,2,3],"F":"Triangle","c":{"mode":"absolute","value":[2,3,4]},"r":{"mode":"explicit","value":2},"T":{"mode":"explicit","value":5},"m":"normal","s":1.0,"q":"direct"},{"task_id":2,"U":[4,5,6],"F":"Circle","c":{"mode":"maintain_current_centroid"},"r":{"mode":"qualitative","value":"compact"},"T":{"mode":"auto"},"m":"normal","s":1.0,"q":"direct"}]}]}}
+  },
+  {
+    "user": "First form a circle. After it stabilizes, form a square two meters above the current centroid.",
+    "availability": "Available UAV IDs: [1, 2, 3, 4]\nTotal available UAVs: 4",
+    "output": {"lfs_version":"2.0","mission":{"nodes":[{"type":"task","task":{"task_id":1,"U":[1,2,3,4],"F":"Circle","c":{"mode":"auto"},"r":{"mode":"auto"},"T":{"mode":"auto"},"m":"normal","s":1.0,"q":"direct"}},{"type":"task","task":{"task_id":2,"U":[1,2,3,4],"F":"Polygon","c":{"mode":"relative","reference":"current_swarm_centroid","offset":[0,0,2],"frame":"world"},"r":{"mode":"auto"},"T":{"mode":"auto"},"m":"normal","s":1.0,"q":"direct"}}]}}
+  }
+]
