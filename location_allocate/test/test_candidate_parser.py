@@ -181,3 +181,19 @@ def test_paper_schema_rejects_legacy_only_formations(monkeypatch, formation):
 
     with pytest.raises(paper_candidate_parser.CandidateParseError):
         paper_candidate_parser.parse_candidate_mission("fixture")
+
+
+def test_paper_parse_log_contains_reproducibility_metadata(monkeypatch):
+    rows = []
+    configure_fake(monkeypatch, candidate_payload())
+    monkeypatch.setattr(
+        paper_candidate_parser, "append_llm_parse_log", rows.append
+    )
+
+    paper_candidate_parser.parse_candidate_mission("Form a circle.")
+
+    row = rows[-1]
+    assert row["prompt_version"] == "paper-candidate-en-v1"
+    assert row["schema_version"] == "paper-candidate-schema-v1"
+    assert len(row["prompt_hash"]) == len(row["schema_hash"]) == 64
+    assert row["runtime_mode"] == "paper_candidate"

@@ -203,3 +203,16 @@ def test_parallel_synchronized_uses_max_feasible_exec_duration():
     durations = [task.executable_lfs.duration for task in result.tasks]
     assert durations[0] == durations[1]
     assert durations[0] >= 4.0
+
+
+def test_parallel_group_rejects_non_max_margin_override():
+    tasks = (
+        _parallel_task(1, [1, 2], [-3.0, -1.0, 2.0], 2.0),
+        _parallel_task(2, [3, 4], [3.0, 1.0, 2.0], 4.0),
+    )
+
+    with pytest.raises(LateResolutionError, match="frozen max aggregation"):
+        resolve_execution_parallel(
+            tasks, _parallel_snapshot(), policy(), "independent",
+            group_d_plan=99.0,
+        )
