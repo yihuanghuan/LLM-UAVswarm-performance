@@ -4,6 +4,7 @@ from location_allocate.lfs_validator import (
     LFSValidationError,
     early_validate_candidate_mission,
     validate_and_compile_lfs,
+    validate_schema,
 )
 from location_allocate.mission_compiler import (
     MissionCompileError,
@@ -136,6 +137,14 @@ def test_legacy_task_sequences_remain_supported():
     assert compiled["task_sequences"][0]["uav_id"] == [1, 2, 3]
     assert compiled["task_sequences"][0]["trigger_condition"] == "direct_execution"
     assert compiled["task_sequences"][0]["parametric_data"]["formation_type"] == "Circle"
+
+
+@pytest.mark.parametrize("formation", ["Lineup", "Free"])
+def test_legacy_schema_keeps_historical_formation_vocabulary(formation):
+    payload = {"task_sequences": [legacy_task()]}
+    payload["task_sequences"][0]["parametric_data"]["formation_type"] = formation
+
+    validate_schema(payload)
 
 
 def test_missing_required_field_raises():

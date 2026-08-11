@@ -151,7 +151,7 @@
       "properties": {
         "task_id": {"type": "integer", "minimum": 1},
         "U": {"$ref": "#/$defs/uav_id_array"},
-        "F": {"$ref": "#/$defs/formation_type"},
+        "F": {"$ref": "#/$defs/paper_candidate_formation_type"},
         "c": {"$ref": "#/$defs/candidate_center"},
         "r": {"$ref": "#/$defs/candidate_radius"},
         "T": {"$ref": "#/$defs/candidate_time"},
@@ -228,7 +228,11 @@
       "minItems": 3,
       "maxItems": 3
     },
-    "formation_type": {
+    "paper_candidate_formation_type": {
+      "type": "string",
+      "enum": ["Circle", "Line", "Sphere", "Triangle", "Polygon"]
+    },
+    "legacy_formation_type": {
       "type": "string",
       "enum": ["Circle", "Line", "Sphere", "Free", "Triangle", "Polygon", "Lineup"]
     },
@@ -274,7 +278,7 @@
           "$ref": "#/$defs/uav_id_array"
         },
         "F": {
-          "$ref": "#/$defs/formation_type"
+          "$ref": "#/$defs/legacy_formation_type"
         },
         "c": {
           "$ref": "#/$defs/center"
@@ -370,7 +374,7 @@
           "required": ["formation_type", "formation_radius"],
           "properties": {
             "formation_type": {
-              "$ref": "#/$defs/formation_type"
+              "$ref": "#/$defs/legacy_formation_type"
             },
             "formation_radius": {
               "type": "number",

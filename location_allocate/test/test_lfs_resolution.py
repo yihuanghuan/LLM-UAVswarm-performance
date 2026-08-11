@@ -111,8 +111,11 @@ def test_unit_geometry_is_independent_of_center_and_scale():
 
     assert len(triangle.offsets) == 3
     assert len(polygon.offsets) == 4
-    assert triangle.geometry_version == "unit-v1"
+    assert triangle.geometry_version == "paper-unit-geometry-v1"
     assert triangle.delta_min == pytest.approx(math.sqrt(3.0))
+    assert triangle.offsets[0] == pytest.approx((1.0, 0.0, 0.0))
+    assert polygon.offsets[0] == pytest.approx((1.0, 0.0, 0.0))
+    assert polygon.offsets[1] == pytest.approx((0.0, 1.0, 0.0))
 
 
 @pytest.mark.parametrize("label", ["compact", "normal", "spacious"])
@@ -196,6 +199,6 @@ def test_workspace_never_shrinks_below_safety_lower_bound():
         )
 
 
-def test_candidate_free_is_pending_not_silently_reinterpreted():
-    with pytest.raises(GeometryError, match="pending confirmation"):
+def test_candidate_free_is_not_a_paper_formation():
+    with pytest.raises(GeometryError, match="unsupported paper formation"):
         build_unit_geometry("Free", 3)

@@ -69,18 +69,14 @@ def build_unit_geometry(formation: str, count: int) -> UnitGeometry:
             theta = golden_angle * index
             points.append((math.cos(theta) * radial, y_value,
                            math.sin(theta) * radial))
-    elif formation in ("Lineup", "Free"):
-        raise GeometryError(
-            f"{formation} Candidate geometry is pending confirmation"
-        )
     else:
-        raise GeometryError(f"unsupported formation: {formation}")
+        raise GeometryError(f"unsupported paper formation: {formation}")
     tuple_points = tuple(points)
     return UnitGeometry(
         formation=formation,
         offsets=tuple_points,
         delta_min=_minimum_distance(tuple_points),
-        geometry_version="unit-v1",
+        geometry_version="paper-unit-geometry-v1",
     )
 
 
