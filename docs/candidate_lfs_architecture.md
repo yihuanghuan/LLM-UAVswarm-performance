@@ -17,7 +17,7 @@ Candidate v2 路径（默认）：
 ```text
 Natural Language → LLM Semantic Parser → Candidate Mission / Candidate LFS
 → Early Schema Validation → Early Semantic Validation
-→ Mission / Task Graph Compiler → sequential / parallel / WaitNode → FSM
+→ Mission / Task Graph Compiler → sequential / parallel / internal WaitSpec → FSM
 → 即将执行的 task 或 parallel group
     → one fresh StateSnapshot
     → Runtime Validation
@@ -76,7 +76,7 @@ Allocator、Resolver 和 Compiler 是独立模块；没有共享一个含糊的�
 - 只要最终 T 与 planning T 存在实际可表示差异就只复评一次，不循环重优化；内部浮点 epsilon 只用于数值比较。
 - parallel 默认 `independent`；评估区间为 `[0,max(T_k)]`，提前完成者保持在 goal。只有显式 `synchronized` 才统一到最大可行 T。
 - `completion_mode` 只属于 `ParallelGroup`，不进入 LFS 八元组。
-- `q` 只由 Mission Graph Compiler 转成 completion event/WaitSpec；运行 FSM 使用编译结果，不重复解释 q。
+- `q` 是唯一 canonical task transition descriptor：`direct`、`continuous` 或带 duration 的 `hover-and-wait`。Paper JSON 不接受独立 WaitNode；Mission Graph Compiler 将 q 转成内部 completion event/WaitSpec，运行 FSM 不重复解释。
 - LLM 不输出 `omega_c`、`omega_o`、LADRC gain、控制限幅或 IAPF 增益。它们只由确定性 Execution Profile Compiler 生成。
 - 新消息优先于旧消息。新 profile 活跃时，旧 `UAVSwarmCommand` 不可覆盖它。
 
@@ -90,7 +90,7 @@ Allocator、Resolver 和 Compiler 是独立模块；没有共享一个含糊的�
 
 ## Paper formation vocabulary
 
-Paper schema `paper-candidate-schema-v1` 只支持 Circle、Line、Sphere、Triangle、Polygon。Lineup 与 Free 仅存在于 legacy schema 和历史 FormationGenerator。Triangle 是单位外接圆上的三个正三角形顶点；Polygon 是正 N 边形；首顶点均位于 world +X，按 XY 逆时针排序。
+Paper schema `paper-candidate-schema-v2` 将 F 定义为 descriptor，只支持 Circle、Line、Sphere、Triangle、Polygon。Polygon 必须携带 `sides>=4`，且 UAV 数量不少于 sides；目标沿正 sides 边形周长等距分布。Triangle 只允许 3 UAV。Circle 使用半采样相位的均匀圆周点，避免 3-UAV executable targets 与 +X 起始的 Triangle 完全相同。Lineup 与 Free 仅存在于 legacy schema 和历史 FormationGenerator。
 
 ## 关键实现文件
 

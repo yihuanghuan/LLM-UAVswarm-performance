@@ -50,6 +50,8 @@ Have UAVs 1 through 5 form a circle.
 
 未给出 center、scale、duration 时，Candidate 分别输出 `c:auto`、`r:auto`、`T:auto`，不会补 `[0,0,1.5]`、`1.5m` 或 `3s`。
 
+Paper Candidate `F` 是结构化 descriptor，例如 `{"type":"Circle"}` 或 `{"type":"Polygon","sides":4}`。`q` 也是唯一的结构化 transition descriptor；悬停等待写为 `{"mode":"hover-and-wait","duration":2}`，paper JSON 不输出独立 WaitNode。
+
 ## Policy 层级
 
 - `location_allocate/config/lfs_policy.template.yaml`：完整字段模板，允许 null/TBD，production loader 必须拒绝。

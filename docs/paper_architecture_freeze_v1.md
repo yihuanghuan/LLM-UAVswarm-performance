@@ -3,9 +3,9 @@
 ## Paper-frozen
 
 - Candidate and Executable tasks both use `tau=(U,F,c,r,T,m,s,q)`; trace and mission relations remain separate.
-- Candidate schema version is `paper-candidate-schema-v1`; supported formations are Circle, Line, Sphere, Triangle, and Polygon.
-- The English prompt is `paper-candidate-en-v1`; prompt and schema hashes are recorded for every parse.
-- Mission Graph Compiler exclusively interprets q and ParallelGroup completion mode.
+- Candidate schema version is `paper-candidate-schema-v2`; supported formation descriptors are Circle, Line, Sphere, Triangle, and Polygon with explicit sides.
+- The English prompt is `paper-candidate-en-v2`; prompt and schema hashes are recorded for every parse.
+- Mission Graph Compiler exclusively interprets structured q and ParallelGroup completion mode. Paper JSON has no standalone WaitNode; hover-and-wait duration compiles to an internal WaitSpec.
 - Sequential tasks resolve after predecessors complete; a ParallelGroup uses one immutable fresh `/uavN/swarm_state` snapshot.
 - State is `nav_msgs/Odometry`, world/global ENU position and velocity, with a valid source timestamp.
 - `current_swarm_centroid`, maintain, relative resolution and allocation starts use only the current task U.
@@ -15,7 +15,7 @@
 - Parallel completion defaults to independent; synchronized is explicit only.
 - New execution uses UAVExecutionCommand; Candidate failure never falls back to legacy.
 
-Geometry convention `paper-unit-geometry-v1`: Line is centered on world X in increasing order. Circle/Polygon/Triangle begin at world +X and proceed counter-clockwise in world XY. Triangle has exactly three vertices. Sphere retains deterministic golden-angle ordering.
+Geometry convention `paper-unit-geometry-v2`: Line is centered on world X in increasing order. Circle is uniformly sampled on a unit circumference using a half-sample phase. Triangle has exactly three vertices beginning at world +X. Polygon requires `sides>=4` and distributes all participating UAVs at equal arc length along the regular polygon perimeter; its r is the vertex circumradius. Sphere retains deterministic golden-angle ordering.
 
 ## Baseline-frozen but revisitable with semantic LADRC
 

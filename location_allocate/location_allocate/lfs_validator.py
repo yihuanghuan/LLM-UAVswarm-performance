@@ -70,10 +70,11 @@ def _assert_finite(value: Any, location: str) -> None:
 def early_validate_candidate_mission(
     payload: Dict[str, Any],
     schema: Optional[Dict[str, Any]] = None,
+    available_uav_ids: Optional[Sequence[int]] = None,
 ) -> Dict[str, Any]:
     """Run state-independent schema and semantic checks."""
     validate_candidate_schema(payload, schema)
-    early_validate_candidate_semantics(payload)
+    early_validate_candidate_semantics(payload, available_uav_ids)
     return copy.deepcopy(payload)
 
 
@@ -91,11 +92,21 @@ def validate_candidate_schema(
     _assert_finite(payload, "<root>")
 
 
-def early_validate_candidate_semantics(payload: Dict[str, Any]) -> None:
+def early_validate_candidate_semantics(
+    payload: Dict[str, Any],
+    available_uav_ids: Optional[Sequence[int]] = None,
+) -> None:
     """Early layer 2: state-independent Candidate Mission semantics."""
     if not is_candidate_mission(payload):
         raise LFSValidationError("payload is not a Candidate Mission")
 
+    if available_uav_ids is None:
+        raise LFSValidationError(
+            "static semantic validation requires available UAV IDs"
+        )
+    available = {int(uid) for uid in available_uav_ids}
+    if not available:
+        raise LFSValidationError("available UAV IDs must not be empty")
     seen_task_ids = set()
     for node_index, node in enumerate(payload["mission"]["nodes"]):
         tasks = node.get("tasks", []) if node["type"] == "parallel" else []
@@ -116,17 +127,35 @@ def early_validate_candidate_semantics(payload: Dict[str, Any]) -> None:
             if task_id in seen_task_ids:
                 raise LFSValidationError(f"duplicate task_id: {task_id}")
             seen_task_ids.add(task_id)
+            unknown = sorted(set(task["U"]) - available)
+            if unknown:
+                raise LFSValidationError(
+                    f"task {task_id} references unavailable UAV IDs: {unknown}"
+                )
+            count = len(task["U"])
+            descriptor = task["F"]
+            formation = descriptor["type"]
+            cardinality_valid = {
+                "Line": count >= 2,
+                "Circle": count >= 3,
+                "Sphere": count >= 2,
+                "Triangle": count == 3,
+                "Polygon": count >= int(descriptor.get("sides", count + 1)),
+            }[formation]
+            if not cardinality_valid:
+                raise LFSValidationError(
+                    f"task {task_id} has invalid {formation} cardinality: {count}"
+                )
             if float(task["s"]) < 1.0:
                 raise LFSValidationError(
                     f"task {task_id} safety factor s must be >= 1"
                 )
-            if task["q"] == "hover-and-wait" and task.get("wait_time") is None:
+            if (
+                task["q"]["mode"] == "continuous"
+                and node_index == len(payload["mission"]["nodes"]) - 1
+            ):
                 raise LFSValidationError(
-                    f"task {task_id} hover-and-wait requires wait_time"
-                )
-            if task["q"] != "hover-and-wait" and task.get("wait_time") is not None:
-                raise LFSValidationError(
-                    f"task {task_id} q={task['q']!r} does not permit wait_time"
+                    f"task {task_id} continuous transition requires a successor"
                 )
 
 

@@ -8,21 +8,27 @@ from location_allocate import paper_candidate_parser
 from location_allocate.prompt_loader import load_paper_prompt_bundle
 
 
+AVAILABILITY = (
+    "Available UAV IDs: [1, 2, 3, 4, 5, 6, 7]\n"
+    "Total available UAVs: 7"
+)
+
+
 def candidate_payload():
     return {
-        "lfs_version": "2.0",
+        "lfs_version": "2.1",
         "mission": {"nodes": [{
             "type": "task",
             "task": {
                 "task_id": 1,
                 "U": [1, 2, 3],
-                "F": "Circle",
+                "F": {"type": "Circle"},
                 "c": {"mode": "auto"},
                 "r": {"mode": "auto"},
                 "T": {"mode": "auto"},
                 "m": "normal",
                 "s": 1.0,
-                "q": "direct",
+                "q": {"mode": "direct"},
             },
         }]},
     }
@@ -75,10 +81,37 @@ def test_candidate_parser_accepts_semantic_defaults(monkeypatch):
 def test_candidate_prompt_forbids_numerical_and_control_defaults():
     prompt = load_paper_prompt_bundle().system_prompt
 
-    assert "Do not invent numerical c, r, or T" in prompt
+    assert "Do not invent numerical c, r, T, or s" in prompt
     assert "LADRC gains" in prompt
     assert "task_sequences" in prompt
     assert "[0.0, 0.0, 1.5]" not in prompt
+    assert "Line: adjacent UAV spacing" in prompt
+    assert "Polygon: circumradius" in prompt
+    assert "merely says safer" in prompt
+    assert "does not promise nonzero velocity" in prompt
+    assert "Do not output an independent WaitNode" in prompt
+
+
+def test_candidate_parser_requires_explicit_available_uav_ids():
+    with pytest.raises(
+        paper_candidate_parser.CandidateParseError,
+        match="requires explicit available UAV IDs",
+    ):
+        paper_candidate_parser.parse_candidate_mission("Form a circle.")
+
+
+def test_candidate_parser_passes_available_ids_to_static_validation(monkeypatch):
+    payload = candidate_payload()
+    payload["mission"]["nodes"][0]["task"]["U"] = [1, 2, 8]
+    configure_fake(monkeypatch, payload)
+
+    with pytest.raises(
+        paper_candidate_parser.CandidateParseError,
+        match="Candidate parsing failed",
+    ):
+        paper_candidate_parser.parse_candidate_mission(
+            "Form a circle with UAV 8.", AVAILABILITY
+        )
 
 
 def test_candidate_parser_never_falls_back_to_legacy(monkeypatch):
@@ -88,7 +121,9 @@ def test_candidate_parser_never_falls_back_to_legacy(monkeypatch):
         paper_candidate_parser.CandidateParseError,
         match="Candidate parsing failed",
     ):
-        paper_candidate_parser.parse_candidate_mission("Form a circle.")
+        paper_candidate_parser.parse_candidate_mission(
+            "Form a circle.", AVAILABILITY
+        )
 
 
 def test_legacy_parser_remains_explicitly_available(monkeypatch):
@@ -141,7 +176,9 @@ def test_candidate_parser_accepts_all_center_scale_time_semantics(
     payload["mission"]["nodes"][0]["task"].update(task_overrides)
     configure_fake(monkeypatch, payload)
 
-    assert paper_candidate_parser.parse_candidate_mission("fixture") == payload
+    assert paper_candidate_parser.parse_candidate_mission(
+        "fixture", AVAILABILITY
+    ) == payload
 
 
 @pytest.mark.parametrize("completion_mode", ["independent", "synchronized"])
@@ -149,38 +186,41 @@ def test_candidate_parser_preserves_explicit_parallel_relation(
         monkeypatch, completion_mode):
     first = candidate_payload()["mission"]["nodes"][0]["task"]
     second = {**first, "task_id": 2, "U": [4, 5, 6]}
-    payload = {"lfs_version": "2.0", "mission": {"nodes": [{
+    payload = {"lfs_version": "2.1", "mission": {"nodes": [{
         "type": "parallel",
         "completion_mode": completion_mode,
         "tasks": [first, second],
     }]}}
     configure_fake(monkeypatch, payload)
 
-    parsed = paper_candidate_parser.parse_candidate_mission("fixture")
+    parsed = paper_candidate_parser.parse_candidate_mission(
+        "fixture", AVAILABILITY
+    )
 
     assert parsed["mission"]["nodes"][0]["completion_mode"] == completion_mode
 
 
-def test_candidate_parser_accepts_hover_wait_and_explicit_wait_node(monkeypatch):
+def test_candidate_parser_accepts_only_canonical_task_wait(monkeypatch):
     first = candidate_payload()["mission"]["nodes"][0]["task"]
-    first.update(q="hover-and-wait", wait_time=2.0)
-    payload = {"lfs_version": "2.0", "mission": {"nodes": [
+    first.update(q={"mode": "hover-and-wait", "duration": 2.0})
+    payload = {"lfs_version": "2.1", "mission": {"nodes": [
         {"type": "task", "task": first},
-        {"type": "wait", "condition": "elapsed", "duration": 1.0},
     ]}}
     configure_fake(monkeypatch, payload)
 
-    assert paper_candidate_parser.parse_candidate_mission("fixture") == payload
+    assert paper_candidate_parser.parse_candidate_mission(
+        "fixture", AVAILABILITY
+    ) == payload
 
 
 @pytest.mark.parametrize("formation", ["Lineup", "Free"])
 def test_paper_schema_rejects_legacy_only_formations(monkeypatch, formation):
     payload = candidate_payload()
-    payload["mission"]["nodes"][0]["task"]["F"] = formation
+    payload["mission"]["nodes"][0]["task"]["F"] = {"type": formation}
     configure_fake(monkeypatch, payload)
 
     with pytest.raises(paper_candidate_parser.CandidateParseError):
-        paper_candidate_parser.parse_candidate_mission("fixture")
+        paper_candidate_parser.parse_candidate_mission("fixture", AVAILABILITY)
 
 
 def test_paper_parse_log_contains_reproducibility_metadata(monkeypatch):
@@ -190,10 +230,12 @@ def test_paper_parse_log_contains_reproducibility_metadata(monkeypatch):
         paper_candidate_parser, "append_llm_parse_log", rows.append
     )
 
-    paper_candidate_parser.parse_candidate_mission("Form a circle.")
+    paper_candidate_parser.parse_candidate_mission(
+        "Form a circle.", AVAILABILITY
+    )
 
     row = rows[-1]
-    assert row["prompt_version"] == "paper-candidate-en-v1"
-    assert row["schema_version"] == "paper-candidate-schema-v1"
+    assert row["prompt_version"] == "paper-candidate-en-v2"
+    assert row["schema_version"] == "paper-candidate-schema-v2"
     assert len(row["prompt_hash"]) == len(row["schema_hash"]) == 64
     assert row["runtime_mode"] == "paper_candidate"

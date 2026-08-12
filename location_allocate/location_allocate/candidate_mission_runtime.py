@@ -20,8 +20,12 @@ def candidate_relation_policy() -> QRelationPolicy:
     )
 
 
-def execute_candidate_payload(payload, callbacks: MissionRuntimeCallbacks):
-    validated = early_validate_candidate_mission(payload)
+def execute_candidate_payload(
+    payload, callbacks: MissionRuntimeCallbacks, available_uav_ids
+):
+    validated = early_validate_candidate_mission(
+        payload, available_uav_ids=available_uav_ids
+    )
     compiled = compile_candidate_mission(validated, candidate_relation_policy())
     execute_compiled_mission(compiled, callbacks)
     return compiled

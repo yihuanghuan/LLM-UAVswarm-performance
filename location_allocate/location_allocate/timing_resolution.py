@@ -167,11 +167,11 @@ def build_executable_lfs(
     """Build the formal tuple only after final timing is known."""
     return ExecutableLFS(
         uav_ids=intent.uav_ids,
-        formation=intent.formation,
+        formation=dict(intent.formation),
         center=intent.center,
         radius=float(radius),
         duration=float(t_exec),
         motion_style=intent.motion_style,
         safety_factor=intent.safety_factor,
-        trigger_semantics=intent.trigger_semantics,
+        trigger_semantics=dict(intent.trigger_semantics),
     )

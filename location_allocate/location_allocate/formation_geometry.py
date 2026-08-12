@@ -3,7 +3,7 @@
 import itertools
 import math
 from dataclasses import dataclass
-from typing import Mapping, Sequence, Tuple
+from typing import Any, Mapping, Sequence, Tuple
 
 from .lfs_types import ResolutionTrace, ResolvedTaskIntent, UnitGeometry, Vector3
 
@@ -34,16 +34,40 @@ def _minimum_distance(points: Sequence[Vector3]) -> float:
     return result
 
 
-def build_unit_geometry(formation: str, count: int) -> UnitGeometry:
+def _polygon_perimeter_points(sides: int, count: int):
+    vertices = [
+        (math.cos(2.0 * math.pi * index / sides),
+         math.sin(2.0 * math.pi * index / sides), 0.0)
+        for index in range(sides)
+    ]
+    points = []
+    for index in range(count):
+        coordinate = index * sides / count
+        edge = int(math.floor(coordinate)) % sides
+        fraction = coordinate - math.floor(coordinate)
+        first = vertices[edge]
+        second = vertices[(edge + 1) % sides]
+        points.append(tuple(
+            first[axis] + fraction * (second[axis] - first[axis])
+            for axis in range(3)
+        ))
+    return points
+
+
+def build_unit_geometry(
+    formation: Mapping[str, Any], count: int
+) -> UnitGeometry:
     """Build shape-only offsets; no center or scale is accepted here."""
     if count < 1:
         raise GeometryError("formation needs at least one UAV")
+    descriptor = dict(formation)
+    formation_type = descriptor.get("type")
     points = []
-    if formation == "Line":
+    if formation_type == "Line":
         if count < 2:
             raise GeometryError("Line unit geometry needs at least two UAVs")
         points = [(index - (count - 1) / 2.0, 0.0, 0.0) for index in range(count)]
-    elif formation == "Triangle":
+    elif formation_type == "Triangle":
         if count != 3:
             raise GeometryError("Triangle requires exactly three UAVs")
         points = [
@@ -51,15 +75,23 @@ def build_unit_geometry(formation: str, count: int) -> UnitGeometry:
              math.sin(2.0 * math.pi * index / 3.0), 0.0)
             for index in range(3)
         ]
-    elif formation in ("Circle", "Polygon"):
+    elif formation_type == "Circle":
         if count < 3:
-            raise GeometryError(f"{formation} requires at least three UAVs")
+            raise GeometryError("Circle requires at least three UAVs")
+        phase = math.pi / count
         points = [
-            (math.cos(2.0 * math.pi * index / count),
-             math.sin(2.0 * math.pi * index / count), 0.0)
+            (math.cos(phase + 2.0 * math.pi * index / count),
+             math.sin(phase + 2.0 * math.pi * index / count), 0.0)
             for index in range(count)
         ]
-    elif formation == "Sphere":
+    elif formation_type == "Polygon":
+        sides = descriptor.get("sides")
+        if not isinstance(sides, int) or isinstance(sides, bool) or sides < 4:
+            raise GeometryError("Polygon sides must be an integer >= 4")
+        if count < sides:
+            raise GeometryError("Polygon requires at least one UAV per side")
+        points = _polygon_perimeter_points(sides, count)
+    elif formation_type == "Sphere":
         if count < 2:
             raise GeometryError("Sphere requires at least two UAVs")
         golden_angle = math.pi * (3.0 - math.sqrt(5.0))
@@ -70,13 +102,13 @@ def build_unit_geometry(formation: str, count: int) -> UnitGeometry:
             points.append((math.cos(theta) * radial, y_value,
                            math.sin(theta) * radial))
     else:
-        raise GeometryError(f"unsupported paper formation: {formation}")
+        raise GeometryError(f"unsupported paper formation: {formation_type}")
     tuple_points = tuple(points)
     return UnitGeometry(
-        formation=formation,
+        formation=descriptor,
         offsets=tuple_points,
         delta_min=_minimum_distance(tuple_points),
-        geometry_version="paper-unit-geometry-v1",
+        geometry_version="paper-unit-geometry-v2",
     )
 
 

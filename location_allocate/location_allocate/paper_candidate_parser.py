@@ -17,7 +17,7 @@ except ModuleNotFoundError:
     OpenAI = None
 
 from .llm_parse_logger import append_llm_parse_log
-from .lfs_validator import early_validate_candidate_mission
+from .lfs_validator import early_validate_candidate_mission, parse_available_uav_ids
 from .prompt_loader import load_paper_prompt_bundle, load_paper_schema
 
 
@@ -73,6 +73,12 @@ def _log(command_id, command, attempt, response=None, **values):
 def parse_candidate_mission(user_command: str, ros_aux_info: str = ""):
     """Parse and early-validate one Candidate Mission without fallback."""
     command_id = uuid.uuid4().hex[:12]
+    available_uav_ids = parse_available_uav_ids(ros_aux_info)
+    if available_uav_ids is None:
+        reason = "Candidate parser requires explicit available UAV IDs"
+        _log(command_id, user_command, 0, error_type="missing_availability",
+             error_reason=reason)
+        raise CandidateParseError(reason)
     if not API_KEY or OpenAI is None:
         reason = "LLM client unavailable: install openai and configure LLM_API_KEY"
         _log(command_id, user_command, 0, error_type="missing_api_key",
@@ -106,7 +112,8 @@ def parse_candidate_mission(user_command: str, ros_aux_info: str = ""):
             payload = json.loads(_purify_json(response.choices[0].message.content))
             valid_json = True
             payload = early_validate_candidate_mission(
-                payload, schema=load_paper_schema()
+                payload, schema=load_paper_schema(),
+                available_uav_ids=available_uav_ids,
             )
             _log(
                 command_id, user_command, attempt, response,

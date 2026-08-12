@@ -64,13 +64,13 @@ def resolve_candidate_task(
     intent = ResolvedTaskIntent(
         task_id=int(task["task_id"]),
         uav_ids=uav_ids,
-        formation=task["F"],
+        formation=dict(task["F"]),
         center=center,  # type: ignore[arg-type]
         radius_request=dict(task["r"]),
         time_request=dict(task["T"]),
         motion_style=task["m"],
         safety_factor=safety_factor,
-        trigger_semantics=task["q"],
+        trigger_semantics=dict(task["q"]),
     )
     trace = ResolutionTrace(
         task_id=intent.task_id,

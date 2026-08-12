@@ -38,13 +38,13 @@ def resolved_intent(time_request, style="normal"):
     task = {
         "task_id": 1,
         "U": [1, 2],
-        "F": "Line",
+        "F": {"type": "Line"},
         "c": {"mode": "maintain_current_centroid"},
         "r": {"mode": "explicit", "value": 1.0},
         "T": time_request,
         "m": style,
         "s": 1.0,
-        "q": "direct",
+        "q": {"mode": "direct"},
     }
     return resolve_candidate_task(task, snapshot)
 

@@ -26,12 +26,12 @@ class QRelationPolicy:
 def _compile_task(
     task: Dict[str, Any], policy: QRelationPolicy
 ) -> CompiledTaskNode:
-    q_value = task["q"]
+    q_value = task["q"]["mode"]
     if q_value not in policy.completion_event_by_q:
         raise MissionCompileError(f"q={q_value!r} has no configured graph mapping")
     wait_condition = policy.wait_condition_by_q.get(q_value)
     wait = None
-    wait_time = task.get("wait_time")
+    wait_time = task["q"].get("duration")
     if wait_condition is not None:
         wait = WaitSpec(
             condition=wait_condition,
@@ -39,7 +39,7 @@ def _compile_task(
         )
     elif wait_time is not None:
         raise MissionCompileError(
-            f"q={q_value!r} does not permit a task-level wait_time"
+            f"q.mode={q_value!r} does not permit q.duration"
         )
     return CompiledTaskNode(
         task=dict(task),
@@ -64,18 +64,6 @@ def compile_candidate_mission(
                 CompiledParallelGroup(
                     tasks=tasks,
                     completion_mode=node.get("completion_mode", "independent"),
-                )
-            )
-            continue
-        if node_type == "wait":
-            nodes.append(
-                WaitSpec(
-                    condition=node["condition"],
-                    duration=(
-                        None
-                        if node.get("duration") is None
-                        else float(node["duration"])
-                    ),
                 )
             )
             continue

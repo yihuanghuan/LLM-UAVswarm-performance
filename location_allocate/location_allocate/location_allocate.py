@@ -691,7 +691,9 @@ class UAVFormationNode(Node):
             raise RuntimeError('Candidate runtime is not enabled')
         # Early validation is repeated at the execution boundary even though
         # the parser already validates its output.
-        validated = early_validate_candidate_mission(candidate_mission)
+        validated = early_validate_candidate_mission(
+            candidate_mission, available_uav_ids=self.available_uav_ids
+        )
         for node in validated['mission']['nodes']:
             tasks = node.get('tasks', [])
             if node['type'] == 'task':
@@ -743,6 +745,7 @@ class UAVFormationNode(Node):
                 execute_parallel=execute_parallel,
                 execute_wait=execute_wait,
             ),
+            available_uav_ids=self.available_uav_ids,
         )
         self.get_logger().info(
             f'Candidate mission {mission_id} completed')

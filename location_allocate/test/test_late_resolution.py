@@ -27,13 +27,13 @@ def candidate_task():
     return {
         "task_id": 1,
         "U": [1, 2, 3],
-        "F": "Triangle",
+        "F": {"type": "Triangle"},
         "c": {"mode": "maintain_current_centroid"},
         "r": {"mode": "qualitative", "value": "normal"},
         "T": {"mode": "auto"},
         "m": "normal",
         "s": 1.0,
-        "q": "direct",
+        "q": {"mode": "direct"},
     }
 
 
@@ -152,7 +152,7 @@ def _parallel_task(task_id, uav_ids, center, duration):
         {
             "task_id": task_id,
             "U": uav_ids,
-            "F": "Line",
+            "F": {"type": "Line"},
             "c": {"mode": "absolute", "value": center},
             "r": {"mode": "explicit", "value": 1.0},
             "T": {"mode": "explicit", "value": duration},

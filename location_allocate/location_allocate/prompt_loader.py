@@ -7,8 +7,8 @@ from pathlib import Path
 from typing import Any, Tuple
 
 
-PAPER_PROMPT_VERSION = "paper-candidate-en-v1"
-PAPER_SCHEMA_VERSION = "paper-candidate-schema-v1"
+PAPER_PROMPT_VERSION = "paper-candidate-en-v2"
+PAPER_SCHEMA_VERSION = "paper-candidate-schema-v2"
 
 
 @dataclass(frozen=True)
@@ -37,20 +37,20 @@ def _resource_paths() -> tuple[Path, Path, Path]:
 
         share = Path(get_package_share_directory("location_allocate"))
         prompt_dir = share / "prompts"
-        schema = share / "schemas" / "paper_candidate_schema_v1.json"
+        schema = share / "schemas" / "paper_candidate_schema_v2.json"
         if prompt_dir.is_dir() and schema.is_file():
             return (
-                prompt_dir / "paper_candidate_en_v1_system.txt",
-                prompt_dir / "paper_candidate_en_v1_fewshot.json",
+                prompt_dir / "paper_candidate_en_v2_system.txt",
+                prompt_dir / "paper_candidate_en_v2_fewshot.json",
                 schema,
             )
     except Exception:
         pass
     root = Path(__file__).resolve().parents[1]
     return (
-        root / "prompts" / "paper_candidate_en_v1_system.txt",
-        root / "prompts" / "paper_candidate_en_v1_fewshot.json",
-        root.parent / "schemas" / "paper_candidate_schema_v1.json",
+        root / "prompts" / "paper_candidate_en_v2_system.txt",
+        root / "prompts" / "paper_candidate_en_v2_fewshot.json",
+        root.parent / "schemas" / "paper_candidate_schema_v2.json",
     )
 
 

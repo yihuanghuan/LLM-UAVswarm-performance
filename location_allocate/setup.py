@@ -16,6 +16,8 @@ setup(
         ('share/' + package_name + '/schemas', ['../schemas/lfs_schema.json']),
         ('share/' + package_name + '/schemas',
          ['../schemas/paper_candidate_schema_v1.json']),
+        ('share/' + package_name + '/schemas',
+         ['../schemas/paper_candidate_schema_v2.json']),
         ('share/' + package_name + '/config', ['config/lfs_policy.template.yaml']),
         ('share/' + package_name + '/prompts', glob('prompts/*')),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),

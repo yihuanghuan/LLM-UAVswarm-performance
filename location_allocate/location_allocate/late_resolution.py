@@ -62,7 +62,7 @@ class LateResolutionPolicy:
     allocator_factory: Callable[[float], SafetyAwareTopologyAllocator]
     policy_hash: str = "unknown"
     code_git_sha: str = "unknown"
-    schema_version: str = "paper-candidate-schema-v1"
+    schema_version: str = "paper-candidate-schema-v2"
     schema_hash: str = "unknown"
     allocator_mode: str = "safety-aware-v1"
 

@@ -37,13 +37,13 @@ def task(task_id, center_mode=None):
     return {
         "task_id": task_id,
         "U": [1, 2, 3],
-        "F": "Triangle",
+        "F": {"type": "Triangle"},
         "c": center_mode or {"mode": "auto"},
         "r": {"mode": "auto"},
         "T": {"mode": "auto"},
         "m": "normal",
         "s": 1.0,
-        "q": "direct",
+        "q": {"mode": "direct"},
     }
 
 
@@ -82,7 +82,7 @@ def parallel_snapshot(epoch=10.0):
 
 def test_natural_language_fixture_reaches_execution_commands_with_late_snapshot():
     _config, policy = load_runtime_policy(PAPER_CURRENT)
-    payload = {"lfs_version": "2.0", "mission": {"nodes": [
+    payload = {"lfs_version": "2.1", "mission": {"nodes": [
         {"type": "task", "task": task(1)},
         {"type": "task", "task": task(2)},
     ]}}
@@ -100,6 +100,7 @@ def test_natural_language_fixture_reaches_execution_commands_with_late_snapshot(
     execute_candidate_payload(
         payload,
         MissionRuntimeCallbacks(execute_task, lambda *_args: None, lambda _wait: None),
+        available_uav_ids=[1, 2, 3],
     )
 
     assert len(commands) == 6
@@ -119,8 +120,8 @@ def test_natural_language_fixture_reaches_execution_commands_with_late_snapshot(
         "paper-current-v1"
     }
     assert len(resolved[0].trace.policy_hash) == 64
-    assert resolved[0].trace.schema_version == "paper-candidate-schema-v1"
-    assert resolved[0].trace.geometry_version == "paper-unit-geometry-v1"
+    assert resolved[0].trace.schema_version == "paper-candidate-schema-v2"
+    assert resolved[0].trace.geometry_version == "paper-unit-geometry-v2"
     assert resolved[0].trace.allocator_mode == "safety-aware-v1"
     assert resolved[0].trace.code_git_sha != ""
 
@@ -130,12 +131,12 @@ def test_parallel_group_uses_one_snapshot_and_builds_one_atomic_batch():
     first = {
         **task(1, {"mode": "absolute", "value": [0, 0, 2]}),
         "U": [1, 2],
-        "F": "Line",
+        "F": {"type": "Line"},
     }
     second = {
         **task(2, {"mode": "absolute", "value": [7, 0, 2]}),
         "U": [4, 5],
-        "F": "Line",
+        "F": {"type": "Line"},
         "s": 2.0,
     }
     shared = parallel_snapshot()
@@ -156,7 +157,7 @@ def test_parallel_group_uses_one_snapshot_and_builds_one_atomic_batch():
         )
         assert len(batch) == 4
 
-    payload = {"lfs_version": "2.0", "mission": {"nodes": [{
+    payload = {"lfs_version": "2.1", "mission": {"nodes": [{
         "type": "parallel",
         "completion_mode": "independent",
         "tasks": [first, second],
@@ -165,6 +166,7 @@ def test_parallel_group_uses_one_snapshot_and_builds_one_atomic_batch():
         payload,
         MissionRuntimeCallbacks(lambda _machine: None, execute_parallel,
                                 lambda _wait: None),
+        available_uav_ids=[1, 2, 3, 4, 5],
     )
 
     assert calls == [shared]
@@ -175,12 +177,12 @@ def test_parallel_resolution_failure_produces_zero_publishable_commands():
     good = {
         **task(1, {"mode": "absolute", "value": [0, 0, 2]}),
         "U": [1, 2],
-        "F": "Line",
+        "F": {"type": "Line"},
     }
     bad = {
         **task(2, {"mode": "absolute", "value": [100, 0, 2]}),
         "U": [4, 5],
-        "F": "Line",
+        "F": {"type": "Line"},
     }
     published = []
 

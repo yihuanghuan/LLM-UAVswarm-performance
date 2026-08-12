@@ -77,20 +77,20 @@ class ResolvedTaskIntent:
 
     task_id: int
     uav_ids: Tuple[int, ...]
-    formation: str
+    formation: Mapping[str, Any]
     center: Vector3
     radius_request: Mapping[str, Any]
     time_request: Mapping[str, Any]
     motion_style: str
     safety_factor: float
-    trigger_semantics: str
+    trigger_semantics: Mapping[str, Any]
 
 
 @dataclass(frozen=True)
 class UnitGeometry:
     """Formation shape independent of center and scale."""
 
-    formation: str
+    formation: Mapping[str, Any]
     offsets: Tuple[Vector3, ...]
     delta_min: float
     geometry_version: str
@@ -101,24 +101,24 @@ class ExecutableLFS:
     """The formal executable tuple tau=(U,F,c,r,T,m,s,q)."""
 
     uav_ids: Tuple[int, ...]
-    formation: str
+    formation: Mapping[str, Any]
     center: Vector3
     radius: float
     duration: float
     motion_style: str
     safety_factor: float
-    trigger_semantics: str
+    trigger_semantics: Mapping[str, Any]
 
     def as_dict(self) -> Dict[str, Any]:
         return {
             "U": list(self.uav_ids),
-            "F": self.formation,
+            "F": dict(self.formation),
             "c": list(self.center),
             "r": self.radius,
             "T": self.duration,
             "m": self.motion_style,
             "s": self.safety_factor,
-            "q": self.trigger_semantics,
+            "q": dict(self.trigger_semantics),
         }
 
 

@@ -136,6 +136,8 @@ ros2 run location_allocate location_allocate
 
 调度器默认使用英文 `candidate_v2` parser 和 `paper-current-v1` policy。只有历史实验/回归需要显式加入 `--ros-args -p lfs_runtime_mode:=legacy_v1`。Paper Candidate 失败不会 fallback 到旧 `task_sequences`。
 
+当前冻结接口版本为 `paper-candidate-en-v2` / `paper-candidate-schema-v2`。Formation 使用结构化 descriptor；Polygon 必须显式给出 sides。任务等待只通过结构化 q 表达，不接受独立 WaitNode。
+
 ## 指令示例
 
 ### 单一编队
