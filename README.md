@@ -18,7 +18,7 @@ Natural Language → LLM → Candidate Mission → Mission Graph / FSM
 → existing Minimum-Jerk + IAPF setpoint path → PX4
 ```
 
-这是论文实验的正式 paper Candidate path。旧 LFS → `UAVSwarmCommand` 仅作为显式 legacy compatibility path 保留。冻结边界见 [Paper Architecture Freeze](docs/paper_architecture_freeze_v1.md)，运行方法见 [Candidate LFS 接口说明](docs/candidate_lfs_migration.md)。
+这是论文实验的正式 paper Candidate path。旧 LFS → `UAVSwarmCommand` 仅作为显式 legacy compatibility path 保留。权威语义见 [Paper LFS Specification](docs/paper_lfs_spec.md)，运行方法见 [Paper Candidate Runtime](docs/paper_candidate_runtime.md)。
 
 ### 三层解耦
 

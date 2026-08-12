@@ -19,3 +19,14 @@
 | smoothing under semantic switching | `1.0` | user-confirmed neutral baseline | baseline-frozen, revisitable | switching-transient experiments | future semantic controller |
 
 No parameter in this table may be described as experimentally tuned or paper-final without a new calibrated policy and a changed configuration ID/hash.
+
+## Provenance boundary
+
+The current runnable values inherit existing controller/allocator baselines
+where an equivalent physical quantity existed. Workspace, freshness,
+qualitative scale, jerk, auto timing and semantic adaptation were introduced as
+explicitly documented integration baselines. The deleted
+`lfs_policy.migration.yaml` was never a runtime dependency of the Paper path;
+Git history retains it for historical audit. `lfs_policy.legacy.yaml` now serves
+only explicit legacy compatibility, while `lfs_policy.paper_current.yaml` is the
+sole default Paper policy.
