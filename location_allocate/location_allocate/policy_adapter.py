@@ -10,6 +10,7 @@ from .execution_profile_compiler import (
 )
 from .formation_geometry import ScalePolicy
 from .late_resolution import LateResolutionPolicy, SafetyResolution
+from .motion_limits import MotionLimits
 from .safety_aware_allocator import SafetyAwareTopologyAllocator
 from .timing_resolution import (
     ConfiguredMinimumJerkTimingPolicy,
@@ -25,6 +26,7 @@ def build_late_resolution_policy(config: LoadedPolicy) -> LateResolutionPolicy:
     timing = config.timing
     allocator = config.allocator
     profile = config.execution_profile
+    motion_limits = MotionLimits(**config.motion_limits)
 
     scale_policy = ScalePolicy(
         nominal_spacing=geometry["nominal_spacing"],
@@ -36,9 +38,7 @@ def build_late_resolution_policy(config: LoadedPolicy) -> LateResolutionPolicy:
         configuration_id=config.configuration_id,
     )
     timing_policy = ConfiguredMinimumJerkTimingPolicy(
-        velocity_limit=timing["velocity_limit"],
-        acceleration_limit=timing["acceleration_limit"],
-        jerk_limit=timing["jerk_limit"],
+        motion_limits=motion_limits,
         minimum_duration=timing["minimum_duration"],
         auto_style_factors=timing["auto_style_factors"],
         configuration_id=config.configuration_id,
@@ -53,9 +53,7 @@ def build_late_resolution_policy(config: LoadedPolicy) -> LateResolutionPolicy:
         task_gain_slope=None,
         task_gain_range=None,
         total_gain_range=(1.0, 1.0),
-        velocity_limit=profile["velocity_limit"],
-        acceleration_limit=profile["acceleration_limit"],
-        jerk_limit=profile["jerk_limit"],
+        motion_limits=motion_limits,
         configuration_id=config.configuration_id,
     )
 
@@ -90,17 +88,14 @@ def build_late_resolution_policy(config: LoadedPolicy) -> LateResolutionPolicy:
             ),
         )
 
-    def allocator_factory(d_plan: float) -> SafetyAwareTopologyAllocator:
+    def allocator_factory(
+        d_hard: float, d_plan: float
+    ) -> SafetyAwareTopologyAllocator:
         return SafetyAwareTopologyAllocator(
             sample_hz=allocator["sample_hz"],
-            d_safe=d_plan,
-            alpha=allocator["alpha"],
-            beta=None,
-            beta_xy=allocator["beta_xy"],
-            beta_prox=allocator["beta_proximity"],
-            gamma=allocator["gamma"],
-            epsilon=allocator["epsilon"],
-            min_improvement=allocator["minimum_improvement"],
+            d_hard=d_hard,
+            d_plan=d_plan,
+            comparison_tolerance=allocator["comparison_tolerance"],
         )
 
     prompt = load_paper_prompt_bundle()
@@ -116,7 +111,7 @@ def build_late_resolution_policy(config: LoadedPolicy) -> LateResolutionPolicy:
         code_git_sha=code_git_sha(),
         schema_version=prompt.schema_version,
         schema_hash=prompt.schema_hash,
-        allocator_mode="safety-aware-v1",
+        allocator_mode="lexicographic-safety-aware-v2",
     )
 
 

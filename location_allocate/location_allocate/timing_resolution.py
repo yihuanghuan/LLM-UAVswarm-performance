@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Callable, Mapping, Protocol, Sequence
 
 from .lfs_types import ExecutableLFS, ResolutionTrace, ResolvedTaskIntent
+from .motion_limits import MotionLimits
 
 
 class TimingError(ValueError):
@@ -27,20 +28,19 @@ class TimingPolicy(Protocol):
 class ConfiguredMinimumJerkTimingPolicy:
     """Selectable candidate policy; it is never constructed as a default."""
 
-    velocity_limit: float
-    acceleration_limit: float
-    jerk_limit: float
+    motion_limits: MotionLimits
     minimum_duration: float
     auto_style_factors: Mapping[str, float]
     configuration_id: str
 
     def __post_init__(self) -> None:
         values = (
-            self.velocity_limit,
-            self.acceleration_limit,
-            self.jerk_limit,
             self.minimum_duration,
         )
+        try:
+            self.motion_limits.validate()
+        except ValueError as exc:
+            raise TimingError(str(exc)) from exc
         if not all(math.isfinite(value) and value > 0.0 for value in values):
             raise TimingError("timing limits must be finite and positive")
         if not self.auto_style_factors:
@@ -54,11 +54,12 @@ class ConfiguredMinimumJerkTimingPolicy:
     def feasible_duration(self, distance: float) -> float:
         if not math.isfinite(distance) or distance < 0.0:
             raise TimingError("distance must be finite and non-negative")
-        velocity_time = 1.875 * distance / self.velocity_limit
+        velocity_time = 1.875 * distance / self.motion_limits.velocity
         acceleration_time = math.sqrt(
-            (10.0 / math.sqrt(3.0)) * distance / self.acceleration_limit
+            (10.0 / math.sqrt(3.0)) * distance
+            / self.motion_limits.acceleration
         )
-        jerk_time = (60.0 * distance / self.jerk_limit) ** (1.0 / 3.0)
+        jerk_time = (60.0 * distance / self.motion_limits.jerk) ** (1.0 / 3.0)
         return max(
             self.minimum_duration,
             velocity_time,

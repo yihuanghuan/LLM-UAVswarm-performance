@@ -66,6 +66,13 @@ class ResolutionTrace:
     schema_hash: Optional[str] = None
     geometry_version: Optional[str] = None
     allocator_mode: Optional[str] = None
+    allocator_version: Optional[str] = None
+    assignment_mode: Optional[str] = None
+    hungarian_initial_assignment: List[int] = field(default_factory=list)
+    final_assignment: List[int] = field(default_factory=list)
+    planning_assignment_metrics: Dict[str, Any] = field(default_factory=dict)
+    final_assignment_metrics: Dict[str, Any] = field(default_factory=dict)
+    per_uav_dynamics: List[Dict[str, Any]] = field(default_factory=list)
     corrections: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
     rejection_reason: Optional[str] = None

@@ -1,3 +1,5 @@
+from dataclasses import asdict
+import json
 from types import SimpleNamespace
 
 import pytest
@@ -16,6 +18,7 @@ from location_allocate.late_resolution import (
     resolve_execution_parallel,
 )
 from location_allocate.safety_aware_allocator import SafetyAwareTopologyAllocator
+from location_allocate.motion_limits import MotionLimits
 from location_allocate.state_snapshot import FreshStateSnapshotManager
 from location_allocate.timing_resolution import (
     ConfiguredMinimumJerkTimingPolicy,
@@ -69,9 +72,7 @@ def policy(safety_resolver=None, tolerance=0.0):
             configuration_id="test-only",
         ),
         timing=ConfiguredMinimumJerkTimingPolicy(
-            velocity_limit=2.0,
-            acceleration_limit=1.5,
-            jerk_limit=3.0,
+            motion_limits=MotionLimits(2.0, 1.5, 3.0),
             minimum_duration=0.5,
             auto_style_factors={"normal": 1.1},
             configuration_id="test-only",
@@ -86,16 +87,14 @@ def policy(safety_resolver=None, tolerance=0.0):
             task_gain_slope=0.2,
             task_gain_range=(0.7, 1.3),
             total_gain_range=(0.5, 1.8),
-            velocity_limit=2.0,
-            acceleration_limit=1.5,
-            jerk_limit=3.0,
+            motion_limits=MotionLimits(2.0, 1.5, 3.0),
             configuration_id="test-only",
         ),
         resolve_safety=safety_resolver,
         planning_distance_bound=max_pairwise_distance_bound,
         timing_recheck_tolerance=tolerance,
-        allocator_factory=lambda d_plan: SafetyAwareTopologyAllocator(
-            sample_hz=20.0, d_safe=d_plan
+        allocator_factory=lambda d_hard, d_plan: SafetyAwareTopologyAllocator(
+            sample_hz=20.0, d_hard=d_hard, d_plan=d_plan
         ),
     )
 
@@ -113,6 +112,14 @@ def test_candidate_to_executable_pipeline_has_one_duration_source():
     assert result.trace.r_safe == pytest.approx(
         result.trace.d_plan / result.trace.delta_min
     )
+    assert result.trace.allocator_version == "lexicographic-safety-aware-v2"
+    assert result.trace.hungarian_initial_assignment
+    assert result.trace.final_assignment
+    assert result.trace.planning_assignment_metrics.keys() == {
+        "N_hard", "J_margin", "J_distance", "min_3d_distance", "xy_crossings"
+    }
+    assert len(result.trace.per_uav_dynamics) == 3
+    json.dumps(asdict(result.trace), allow_nan=False)
 
 
 def test_timing_difference_causes_only_one_final_recheck():

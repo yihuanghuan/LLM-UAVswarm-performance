@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Mapping, Optional, Sequence, Tuple
 
 from .lfs_types import ExecutableLFS, ExecutionProfile, Vector3
+from .motion_limits import MotionLimits, MinimumJerkPeaks, minimum_jerk_peaks
 
 
 class ProfileCompileError(ValueError):
@@ -24,9 +25,7 @@ class ExecutionProfilePolicy:
     task_gain_slope: Optional[float]
     task_gain_range: Optional[Tuple[float, float]]
     total_gain_range: Tuple[float, float]
-    velocity_limit: float
-    acceleration_limit: float
-    jerk_limit: float
+    motion_limits: MotionLimits
     configuration_id: str
 
     def validate(self) -> None:
@@ -35,12 +34,13 @@ class ExecutionProfilePolicy:
             *self.base_omega_o,
             *self.style_gains.values(),
             *self.total_gain_range,
-            self.velocity_limit,
-            self.acceleration_limit,
-            self.jerk_limit,
         )
         if not all(math.isfinite(value) and value > 0.0 for value in numeric):
             raise ProfileCompileError("profile policy values must be finite and positive")
+        try:
+            self.motion_limits.validate()
+        except ValueError as exc:
+            raise ProfileCompileError(str(exc)) from exc
         if self.task_adaptation_type == "identity":
             pass
         elif self.task_adaptation_type == "linear_speed":
@@ -107,6 +107,20 @@ def compile_execution_profiles(
     for start, target in zip(initial, assigned_targets):
         distance = math.dist(start, target)
         average_speed = distance / executable.duration
+        try:
+            peaks = minimum_jerk_peaks(distance, executable.duration)
+        except ValueError as exc:
+            raise ProfileCompileError(str(exc)) from exc
+        limits = policy.motion_limits
+        tolerance = 1e-12
+        if (
+            peaks.velocity > limits.velocity + tolerance
+            or peaks.acceleration > limits.acceleration + tolerance
+            or peaks.jerk > limits.jerk + tolerance
+        ):
+            raise ProfileCompileError(
+                "final Minimum-Jerk profile violates shared motion limits"
+            )
         if policy.task_adaptation_type == "identity":
             task_gain = 1.0
         else:
@@ -121,9 +135,9 @@ def compile_execution_profiles(
                 style=executable.motion_style,
                 omega_c=tuple(value * total_gain for value in policy.base_omega_c),
                 omega_o=tuple(value * total_gain for value in policy.base_omega_o),
-                velocity_limit=policy.velocity_limit,
-                acceleration_limit=policy.acceleration_limit,
-                jerk_limit=policy.jerk_limit,
+                velocity_limit=limits.velocity,
+                acceleration_limit=limits.acceleration,
+                jerk_limit=limits.jerk,
                 iapf_enter_distance=soft_safety.enter_distance,
                 iapf_exit_distance=soft_safety.exit_distance,
                 iapf_repulsion_scale=soft_safety.repulsion_scale,
@@ -150,9 +164,9 @@ def compile_legacy_baseline_profile(
         style="legacy-baseline",
         omega_c=policy.base_omega_c,
         omega_o=policy.base_omega_o,
-        velocity_limit=policy.velocity_limit,
-        acceleration_limit=policy.acceleration_limit,
-        jerk_limit=policy.jerk_limit,
+        velocity_limit=policy.motion_limits.velocity,
+        acceleration_limit=policy.motion_limits.acceleration,
+        jerk_limit=policy.motion_limits.jerk,
         iapf_enter_distance=soft_safety.enter_distance,
         iapf_exit_distance=soft_safety.exit_distance,
         iapf_repulsion_scale=soft_safety.repulsion_scale,
@@ -160,3 +174,20 @@ def compile_legacy_baseline_profile(
         style_gain=1.0,
         task_gain=1.0,
     )
+
+
+def predict_profile_peaks(
+    initial: Sequence[Sequence[float]],
+    assigned_targets: Sequence[Sequence[float]],
+    duration: float,
+) -> Tuple[MinimumJerkPeaks, ...]:
+    """Expose the compiler's analytic post-condition inputs for audit traces."""
+    if len(initial) != len(assigned_targets):
+        raise ProfileCompileError("peak prediction inputs must align")
+    try:
+        return tuple(
+            minimum_jerk_peaks(math.dist(start, target), duration)
+            for start, target in zip(initial, assigned_targets)
+        )
+    except ValueError as exc:
+        raise ProfileCompileError(str(exc)) from exc

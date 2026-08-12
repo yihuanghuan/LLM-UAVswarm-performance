@@ -33,11 +33,13 @@ safety:
   s_min: null
   s_max: null
 
+motion_limits:
+  velocity: null
+  acceleration: null
+  jerk: null
+
 timing:
   policy_type: null
-  velocity_limit: null
-  acceleration_limit: null
-  jerk_limit: null
   minimum_duration: null
   auto_style_factors:
     smooth: null
@@ -48,12 +50,7 @@ timing:
 
 allocator:
   sample_hz: null
-  alpha: null
-  beta_xy: null
-  beta_proximity: null
-  gamma: null
-  epsilon: null
-  minimum_improvement: null
+  comparison_tolerance: null
   parallel_d_plan_aggregation: null
 
 execution_profile:
@@ -66,9 +63,6 @@ execution_profile:
     aggressive: null
   # Required only by a future non-identity task_adaptation_type.
   task_adaptation_parameters: null
-  velocity_limit: null
-  acceleration_limit: null
-  jerk_limit: null
 
 controller_hard_clamps:
   smoothing_alpha: null

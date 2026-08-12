@@ -9,6 +9,7 @@ from location_allocate.execution_profile_compiler import (
     compile_legacy_baseline_profile,
 )
 from location_allocate.lfs_types import ExecutableLFS
+from location_allocate.motion_limits import MotionLimits
 
 
 def policy():
@@ -22,9 +23,7 @@ def policy():
         task_gain_slope=0.2,
         task_gain_range=(0.7, 1.3),
         total_gain_range=(0.5, 1.8),
-        velocity_limit=2.0,
-        acceleration_limit=1.5,
-        jerk_limit=3.0,
+        motion_limits=MotionLimits(2.0, 1.5, 3.0),
         configuration_id="test-only",
     )
 
@@ -89,7 +88,7 @@ def test_identity_task_adaptation_never_invents_semantic_gain():
     )
 
     profiles = compile_execution_profiles(
-        executable(style="aggressive"),
+        executable(style="aggressive", duration=12.0),
         [[0, 0, 0], [0, 1, 0]],
         [[1, 0, 0], [10, 1, 0]],
         identity,
@@ -102,7 +101,9 @@ def test_identity_task_adaptation_never_invents_semantic_gain():
 
 
 def test_profile_rejects_non_finite_or_inconsistent_values():
-    bad_policy = dataclasses.replace(policy(), velocity_limit=float("nan"))
+    bad_policy = dataclasses.replace(
+        policy(), motion_limits=MotionLimits(float("nan"), 1.5, 3.0)
+    )
     bad_safety = SoftSafetyParameters(2.0, 1.0, 1.0)
 
     with pytest.raises(ProfileCompileError, match="finite and positive"):
@@ -131,3 +132,14 @@ def test_soft_safety_does_not_expose_hard_violation_threshold():
     assert "hard" not in " ".join(
         field.name for field in dataclasses.fields(SoftSafetyParameters)
     )
+
+
+def test_profile_compiler_fails_fast_when_final_t_is_dynamically_infeasible():
+    with pytest.raises(ProfileCompileError, match="violates shared motion limits"):
+        compile_execution_profiles(
+            executable(duration=0.5),
+            [[0, 0, 0], [0, 1, 0]],
+            [[10, 0, 0], [10, 1, 0]],
+            policy(),
+            safety(),
+        )

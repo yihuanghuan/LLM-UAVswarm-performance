@@ -117,12 +117,12 @@ def test_natural_language_fixture_reaches_execution_commands_with_late_snapshot(
         for command in task_commands
     )
     assert {command.profile.configuration_id for command in commands} == {
-        "paper-current-v1"
+        "paper-current-v2"
     }
     assert len(resolved[0].trace.policy_hash) == 64
     assert resolved[0].trace.schema_version == "paper-candidate-schema-v2"
     assert resolved[0].trace.geometry_version == "paper-unit-geometry-v3"
-    assert resolved[0].trace.allocator_mode == "safety-aware-v1"
+    assert resolved[0].trace.allocator_mode == "lexicographic-safety-aware-v2"
     assert resolved[0].trace.code_git_sha != ""
 
 

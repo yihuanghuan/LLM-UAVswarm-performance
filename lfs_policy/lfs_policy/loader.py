@@ -111,6 +111,7 @@ class LoadedPolicy:
     state: StatePolicy
     geometry: Mapping[str, Any]
     safety: Mapping[str, Any]
+    motion_limits: Mapping[str, float]
     timing: Mapping[str, Any]
     allocator: Mapping[str, Any]
     execution_profile: Mapping[str, Any]
@@ -205,18 +206,51 @@ def _validate_policy(
     if not safety["d_hard"] <= d_plan_min or not safety["d_hard"] < enter_min < exit_min:
         raise PolicyLoadError("safety ordering or IAPF hysteresis is invalid")
 
+    paper_policy = status.startswith("paper_")
+    if paper_policy:
+        limits_raw = _mapping(
+            _required(data, "motion_limits", "policy"), "motion_limits"
+        )
+        motion_limits = {
+            key: _positive(
+                _required(limits_raw, key, "motion_limits"),
+                f"motion_limits.{key}",
+            )
+            for key in ("velocity", "acceleration", "jerk")
+        }
+    else:
+        motion_limits = {}
+
     timing = dict(_mapping(_required(data, "timing", "policy"), "timing"))
     if _required(timing, "policy_type", "timing") != "minimum_jerk":
         raise PolicyLoadError("unsupported timing.policy_type")
-    for key in ("velocity_limit", "acceleration_limit", "jerk_limit", "minimum_duration"):
-        timing[key] = _positive(_required(timing, key, "timing"), f"timing.{key}")
+    timing["minimum_duration"] = _positive(
+        _required(timing, "minimum_duration", "timing"),
+        "timing.minimum_duration",
+    )
+    if not paper_policy:
+        for key in ("velocity_limit", "acceleration_limit", "jerk_limit"):
+            timing[key] = _positive(
+                _required(timing, key, "timing"), f"timing.{key}"
+            )
+        motion_limits = {
+            "velocity": timing["velocity_limit"],
+            "acceleration": timing["acceleration_limit"],
+            "jerk": timing["jerk_limit"],
+        }
     timing["auto_style_factors"] = _labels(_mapping(_required(timing, "auto_style_factors", "timing"), "timing.auto_style_factors"), "timing.auto_style_factors")
     if _required(timing, "planning_distance_bound_type", "timing") != "max_pairwise":
         raise PolicyLoadError("unsupported planning distance bound")
     timing["final_recheck_tolerance"] = _number(_required(timing, "final_recheck_tolerance", "timing"), "timing.final_recheck_tolerance", minimum=0.0)
 
     allocator = dict(_mapping(_required(data, "allocator", "policy"), "allocator"))
-    for key in ("sample_hz", "alpha", "beta_xy", "beta_proximity", "gamma", "epsilon", "minimum_improvement"):
+    allocator_keys = (
+        ("sample_hz", "comparison_tolerance")
+        if paper_policy else
+        ("sample_hz", "alpha", "beta_xy", "beta_proximity", "gamma",
+         "epsilon", "minimum_improvement")
+    )
+    for key in allocator_keys:
         allocator[key] = _positive(_required(allocator, key, "allocator"), f"allocator.{key}")
     if _required(allocator, "parallel_d_plan_aggregation", "allocator") != "max":
         raise PolicyLoadError("parallel_d_plan_aggregation must be max")
@@ -227,8 +261,25 @@ def _validate_policy(
     profile["baseline_omega_c"] = _vector(_required(profile, "baseline_omega_c", "execution_profile"), "execution_profile.baseline_omega_c")
     profile["baseline_omega_o"] = _vector(_required(profile, "baseline_omega_o", "execution_profile"), "execution_profile.baseline_omega_o")
     profile["style_gains"] = _labels(_mapping(_required(profile, "style_gains", "execution_profile"), "execution_profile.style_gains"), "execution_profile.style_gains")
-    for key in ("velocity_limit", "acceleration_limit", "jerk_limit"):
-        profile[key] = _positive(_required(profile, key, "execution_profile"), f"execution_profile.{key}")
+    if not paper_policy:
+        legacy_profile_limits = {
+            "velocity": _positive(
+                _required(profile, "velocity_limit", "execution_profile"),
+                "execution_profile.velocity_limit",
+            ),
+            "acceleration": _positive(
+                _required(profile, "acceleration_limit", "execution_profile"),
+                "execution_profile.acceleration_limit",
+            ),
+            "jerk": _positive(
+                _required(profile, "jerk_limit", "execution_profile"),
+                "execution_profile.jerk_limit",
+            ),
+        }
+        if legacy_profile_limits != motion_limits:
+            raise PolicyLoadError(
+                "legacy timing and execution_profile motion limits must match"
+            )
 
     hard = _mapping(_required(data, "controller_hard_clamps", "policy"), "controller_hard_clamps")
     controller = ControllerHardClamps(
@@ -249,8 +300,12 @@ def _validate_policy(
             raise PolicyLoadError("invalid omega_o clamps")
     if controller.iapf_enter_min > enter_min or controller.iapf_enter_max < max_enter or controller.iapf_exit_max < max_exit:
         raise PolicyLoadError("controller IAPF clamps do not cover safety mapping")
-    if controller.velocity_max < profile["velocity_limit"] or controller.acceleration_max < profile["acceleration_limit"] or controller.jerk_max < profile["jerk_limit"]:
-        raise PolicyLoadError("controller dynamics clamps do not cover profile")
+    if (
+        controller.velocity_max < motion_limits["velocity"]
+        or controller.acceleration_max < motion_limits["acceleration"]
+        or controller.jerk_max < motion_limits["jerk"]
+    ):
+        raise PolicyLoadError("controller dynamics clamps do not cover motion limits")
 
     provenance_raw = _mapping(_required(data, "provenance", "policy"), "provenance")
     provenance = {str(key): str(value) for key, value in provenance_raw.items() if str(value).strip()}
@@ -294,8 +349,9 @@ def _validate_policy(
             f"{qualitative_spacing}"
         )
     return LoadedPolicy(
-        configuration_id, status, state, geometry, safety, timing, allocator,
-        profile, controller, provenance, policy_hash, parameter_status,
+        configuration_id, status, state, geometry, safety, motion_limits,
+        timing, allocator, profile, controller, provenance, policy_hash,
+        parameter_status,
         tuple(warnings),
     )
 

@@ -84,6 +84,8 @@ if(BUILD_TESTING)
   target_link_libraries(test_iapf_core ladrc_lib)
   ament_add_gtest(
     test_execution_profile_guard test/test_execution_profile_guard.cpp)
+  ament_add_gtest(
+    test_minimum_jerk_trajectory test/test_minimum_jerk_trajectory.cpp)
   ament_add_gtest(test_swarm_state_builder test/test_swarm_state_builder.cpp)
   ament_target_dependencies(
     test_swarm_state_builder nav_msgs px4_msgs builtin_interfaces)

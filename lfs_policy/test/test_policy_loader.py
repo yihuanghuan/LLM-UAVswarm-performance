@@ -37,7 +37,7 @@ def test_template_is_not_a_production_policy():
 def test_paper_current_has_hash_status_and_explicit_clamp_warning():
     policy = load_paper_policy(PAPER)
 
-    assert policy.configuration_id == "paper-current-v1"
+    assert policy.configuration_id == "paper-current-v2"
     assert policy.status == "paper_current"
     assert len(policy.policy_hash) == 64
     assert policy.parameter_status["architecture_rules"] == "paper-frozen"
@@ -53,10 +53,16 @@ def test_paper_runtime_rejects_legacy_policy():
     "mutate, message",
     [
         (lambda data: data.pop("configuration_id"), "missing key"),
-        (lambda data: data["timing"].update(jerk_limit=None), "null"),
-        (lambda data: data["timing"].update(jerk_limit=float("nan")), "finite"),
+        (lambda data: data["motion_limits"].update(jerk=None), "null"),
+        (lambda data: data["motion_limits"].update(jerk=float("nan")), "finite"),
         (lambda data: data["safety"].update(iapf_exit_base=1.1), "hysteresis"),
         (lambda data: data["controller_hard_clamps"].update(iapf_enter_max=1.6), "cover"),
+        (
+            lambda data: data["controller_hard_clamps"].update(
+                velocity_max=4.0
+            ),
+            "cover motion limits",
+        ),
     ],
 )
 def test_invalid_production_policy_fails_fast(tmp_path, mutate, message):

@@ -1,6 +1,6 @@
 # Paper Parameter Calibration Manifest
 
-`paper-current-v1` is runnable but is not a paper-final calibrated policy.
+`paper-current-v2` is runnable but is not a paper-final calibrated policy.
 
 | Parameter | Current value | Current provenance | Status | Required calibration | Affects experiments |
 |---|---:|---|---|---|---|
@@ -8,9 +8,9 @@
 | state timeout/skew/wait | `0.5/0.15/2.0 s` | Candidate integration baseline | provisional | Measure message age and inter-UAV skew distributions | late-resolution availability |
 | v/a/j limits | `5/5/10` | current controller velocity/acceleration values; jerk newly architectural | provisional | PX4 limits plus single-UAV trajectory sweep | timing and trajectory metrics |
 | d_hard | `1.0 m` | `iapf_violation_distance` | provisional | vehicle geometry + localization/tracking error + reserve | all safety metrics |
-| nominal spacing | `2.0 m` | existing allocator d_safe baseline | provisional | formation tracking and downwash study | formation scale |
+| nominal spacing | `2.0 m` | current formation policy baseline | provisional | formation tracking and downwash study | formation scale |
 | qualitative multipliers | `0.8/1/1.25` | current Candidate policy | provisional | perception study and safety-floor interaction | language-scale experiments |
-| d_plan base | `2.0 m` at s=1 | existing allocator d_safe | provisional | development scenarios independent of final tests | assignment safety |
+| d_plan base | `2.0 m` at s=1 | current planning-margin baseline | provisional | development scenarios independent of final tests | assignment safety |
 | IAPF enter/exit | `1.5/1.65 m` at s=1 | controller baseline | provisional | collision-avoidance sweeps | avoidance activation |
 | s_max | `2.0` | current policy coverage | provisional | validate feasible workspace and controller clamp coverage | safety-factor experiments |
 | allocator weights/rate | `1,10,10,1; 20 Hz` | allocator constructor defaults | provisional | tune on separate calibration scenarios, then lock before test set | assignment comparison |

@@ -6,7 +6,7 @@ import rclpy
 from uav_swarm_interfaces.msg import UAVSwarmCommand
 
 from .scheduler_v1 import FormationGenerator
-from ..safety_aware_allocator import SafetyAwareTopologyAllocator
+from .weighted_sum_allocator import LegacyWeightedSumAllocator
 
 
 ALL_UAV_IDS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -18,7 +18,7 @@ ALL_INITIAL_POSITIONS = [
 ]
 
 
-class LegacyTopologyAllocator(SafetyAwareTopologyAllocator):
+class LegacyTopologyAllocator(LegacyWeightedSumAllocator):
     def allocate(self, initial, target, cross_penalty=10.0, duration=3.0):
         del cross_penalty
         return super().allocate(initial, target, duration=duration)

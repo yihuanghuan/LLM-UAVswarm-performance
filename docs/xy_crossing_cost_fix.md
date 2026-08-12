@@ -1,5 +1,9 @@
 # XY Crossing Cost Fix
 
+> Historical note: this weighted-sum behavior is now legacy-only. The Paper
+> Candidate allocator records XY crossings as diagnostics and does not include
+> them in its lexicographic objective.
+
 ## Summary
 
 This update fixes the safety-aware topology assignment cost so measured XY

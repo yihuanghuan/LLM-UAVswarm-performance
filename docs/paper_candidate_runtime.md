@@ -55,7 +55,7 @@ Paper Candidate `F` 是结构化 descriptor，例如 `{"type":"Circle"}` 或 `{"
 ## Policy 层级
 
 - `location_allocate/config/lfs_policy.template.yaml`：完整字段模板，允许 null/TBD，production loader 必须拒绝。
-- `lfs_policy/config/lfs_policy.paper_current.yaml`：当前论文主路径，`configuration_id=paper-current-v1`；包含 provisional 数值。
+- `lfs_policy/config/lfs_policy.paper_current.yaml`：当前论文主路径，`configuration_id=paper-current-v2`；包含 provisional 数值。
 - `lfs_policy/config/lfs_policy.legacy.yaml`：只供显式历史兼容。
 - 未来 `lfs_policy_experiment_*.yaml`：实验冻结后另建，本轮不存在 paper-final policy。
 

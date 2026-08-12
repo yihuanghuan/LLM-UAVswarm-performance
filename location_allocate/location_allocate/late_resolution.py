@@ -1,12 +1,14 @@
 """Composition root for one late-bound Candidate LFS task."""
 
 from dataclasses import dataclass
+import math
 from typing import Callable, Sequence, Tuple
 
 from .execution_profile_compiler import (
     ExecutionProfilePolicy,
     SoftSafetyParameters,
     compile_execution_profiles,
+    predict_profile_peaks,
 )
 from .formation_geometry import (
     ScalePolicy,
@@ -59,12 +61,12 @@ class LateResolutionPolicy:
         [Sequence[Sequence[float]], Sequence[Sequence[float]]], float
     ]
     timing_recheck_tolerance: float
-    allocator_factory: Callable[[float], SafetyAwareTopologyAllocator]
+    allocator_factory: Callable[[float, float], SafetyAwareTopologyAllocator]
     policy_hash: str = "unknown"
     code_git_sha: str = "unknown"
     schema_version: str = "paper-candidate-schema-v2"
     schema_hash: str = "unknown"
-    allocator_mode: str = "safety-aware-v1"
+    allocator_mode: str = "lexicographic-safety-aware-v2"
 
 
 @dataclass(frozen=True)
@@ -96,6 +98,52 @@ class _PreparedTask:
     initial: Tuple[Vector3, ...]
     targets: Tuple[Vector3, ...]
     t_plan: float
+
+
+def _metrics_payload(metrics: AssignmentMetrics) -> dict:
+    return {
+        "N_hard": metrics.hard_violations,
+        "J_margin": metrics.margin_cost,
+        "J_distance": metrics.distance,
+        "min_3d_distance": metrics.min_distance,
+        "xy_crossings": metrics.xy_crossings,
+    }
+
+
+def _record_allocation_trace(
+    trace: ResolutionTrace,
+    allocator: SafetyAwareTopologyAllocator,
+    planning_metrics: AssignmentMetrics,
+    final_metrics: AssignmentMetrics,
+) -> None:
+    trace.allocator_version = allocator.VERSION
+    trace.assignment_mode = "safety_aware"
+    trace.hungarian_initial_assignment = list(allocator.last_initial_assignment)
+    trace.final_assignment = list(allocator.last_assignment)
+    trace.planning_assignment_metrics = _metrics_payload(planning_metrics)
+    trace.final_assignment_metrics = _metrics_payload(final_metrics)
+
+
+def _record_profile_trace(
+    trace: ResolutionTrace,
+    uav_ids: Sequence[int],
+    initial: Sequence[Sequence[float]],
+    assigned: Sequence[Sequence[float]],
+    duration: float,
+) -> None:
+    peaks = predict_profile_peaks(initial, assigned, duration)
+    trace.per_uav_dynamics = [
+        {
+            "uav_id": int(uav_id),
+            "distance": float(math.dist(start, target)),
+            "predicted_v_peak": peak.velocity,
+            "predicted_a_peak": peak.acceleration,
+            "predicted_j_peak": peak.jerk,
+        }
+        for uav_id, start, target, peak in zip(
+            uav_ids, initial, assigned, peaks
+        )
+    ]
 
 
 def _prepare_task(
@@ -170,7 +218,7 @@ def resolve_execution_task(
     targets = prepared.targets
     t_plan = prepared.t_plan
 
-    allocator = policy.allocator_factory(safety.d_plan)
+    allocator = policy.allocator_factory(safety.d_hard, safety.d_plan)
     assigned, planning_metrics = allocator.allocate_with_metrics(
         initial, targets, duration=t_plan
     )
@@ -196,6 +244,8 @@ def resolve_execution_task(
     profiles = compile_execution_profiles(
         executable, initial, assigned, policy.profile, safety.soft_iapf
     )
+    _record_allocation_trace(trace, allocator, planning_metrics, final_metrics)
+    _record_profile_trace(trace, intent.uav_ids, initial, assigned, t_exec)
     return ResolvedExecutionTask(
         executable_lfs=executable,
         assigned_targets=tuple(tuple(value for value in target) for target in assigned),
@@ -249,7 +299,8 @@ def resolve_execution_parallel(
         }
         for item in prepared
     ]
-    allocator = policy.allocator_factory(group_d_plan)
+    group_d_hard = hard_values.pop()
+    allocator = policy.allocator_factory(group_d_hard, group_d_plan)
     assigned_groups, planning_metrics = allocator.allocate_grouped(
         groups, durations=[item.t_plan for item in prepared]
     )
@@ -288,12 +339,20 @@ def resolve_execution_parallel(
             for item, duration in zip(prepared, t_exec_values)
             for _ in item.intent.uav_ids
         ]
-        final_metrics = allocator.evaluate_variable(
-            flat_initial,
-            flat_assigned,
-            list(range(len(flat_assigned))),
-            uav_durations,
-        )
+        if max(uav_durations) - min(uav_durations) <= 1e-12:
+            final_metrics = allocator.evaluate(
+                flat_initial,
+                flat_assigned,
+                list(range(len(flat_assigned))),
+                uav_durations[0],
+            )
+        else:
+            final_metrics = allocator.evaluate_variable(
+                flat_initial,
+                flat_assigned,
+                list(range(len(flat_assigned))),
+                uav_durations,
+            )
         for item in prepared:
             item.trace.corrections.append(
                 "parallel assignment safety re-evaluated once"
@@ -320,6 +379,16 @@ def resolve_execution_parallel(
             assigned,
             policy.profile,
             item.safety.soft_iapf,
+        )
+        _record_allocation_trace(
+            item.trace, allocator, planning_metrics, final_metrics
+        )
+        _record_profile_trace(
+            item.trace,
+            item.intent.uav_ids,
+            item.initial,
+            assigned,
+            t_exec,
         )
         resolved_tasks.append(
             ResolvedExecutionTask(

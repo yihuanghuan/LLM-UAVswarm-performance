@@ -10,6 +10,7 @@ from location_allocate.timing_resolution import (
     resolve_final_duration,
     timing_requires_recheck,
 )
+from location_allocate.motion_limits import MotionLimits
 
 
 STYLES = ("smooth", "normal", "aggressive")
@@ -17,9 +18,7 @@ STYLES = ("smooth", "normal", "aggressive")
 
 def policy():
     return ConfiguredMinimumJerkTimingPolicy(
-        velocity_limit=2.0,
-        acceleration_limit=1.5,
-        jerk_limit=3.0,
+        motion_limits=MotionLimits(2.0, 1.5, 3.0),
         minimum_duration=0.5,
         auto_style_factors={
             "smooth": 1.3,

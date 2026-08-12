@@ -20,7 +20,9 @@ PACKAGE_SRC = REPO_ROOT / "location_allocate"
 if str(PACKAGE_SRC) not in sys.path:
     sys.path.insert(0, str(PACKAGE_SRC))
 
-from location_allocate.safety_aware_allocator import SafetyAwareTopologyAllocator  # noqa: E402
+from location_allocate.legacy.weighted_sum_allocator import (  # noqa: E402
+    LegacyWeightedSumAllocator,
+)
 
 
 RESULT_FIELDS = [
@@ -159,7 +161,7 @@ def evaluate_method(
     targets: np.ndarray,
     duration: float,
     rng: np.random.Generator,
-    allocator_factory: Callable[[], SafetyAwareTopologyAllocator],
+    allocator_factory: Callable[[], LegacyWeightedSumAllocator],
 ) -> tuple[List[int], object, float]:
     start = time.perf_counter()
     allocator = allocator_factory()
@@ -195,8 +197,10 @@ def main() -> int:
     master_rng = np.random.default_rng(args.seed)
     scenarios = ["small", "medium", "large", "dense", "crossing-prone"]
 
-    def allocator_factory() -> SafetyAwareTopologyAllocator:
-        return SafetyAwareTopologyAllocator(sample_hz=20.0, d_safe=args.safety_distance)
+    def allocator_factory() -> LegacyWeightedSumAllocator:
+        return LegacyWeightedSumAllocator(
+            sample_hz=20.0, d_safe=args.safety_distance
+        )
 
     rows: List[Dict[str, object]] = []
     for scenario in scenarios:

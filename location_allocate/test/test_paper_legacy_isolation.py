@@ -50,6 +50,11 @@ def test_paper_policy_freezes_parallel_max_and_neutral_profile():
     config, policy = load_runtime_policy(PAPER_POLICY)
 
     assert config.allocator["parallel_d_plan_aggregation"] == "max"
+    assert set(config.allocator) == {
+        "sample_hz",
+        "comparison_tolerance",
+        "parallel_d_plan_aggregation",
+    }
     assert config.timing["final_recheck_tolerance"] == 0.0
     assert set(policy.profile.style_gains.values()) == {1.0}
     assert policy.profile.task_adaptation_type == "identity"
