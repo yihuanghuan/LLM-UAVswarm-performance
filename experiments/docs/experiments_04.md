@@ -33,9 +33,17 @@
 | --- | --- |
 | Random | 随机分配 |
 | Nearest Neighbor | 贪心最近目标 |
-| Hungarian-Distance | 当前版本 |
-| Ours: Hungarian + crossing penalty |  |
-| Ours: Hungarian + safety-aware local swap | 完整版本 |
+| Hungarian-Distance | 仅按总距离进行 Hungarian 分配 |
+| Legacy Weighted-Sum Safety-Aware | 历史 weighted-sum allocator，仅用于复现实验 |
+| Ours: Lexicographic Safety-Aware Assignment | Hungarian-Distance 初始化，加 pairwise target-swap local refinement |
+
+当前 Ours 按以下三元组进行严格的 lexicographic 最小化：
+
+```text
+(N_hard, J_margin, J_distance)
+```
+
+其中 XY crossing 只作为 diagnostic 记录，不是当前 Ours 的优化项。
 
 ---
 

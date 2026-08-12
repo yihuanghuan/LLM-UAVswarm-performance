@@ -6,6 +6,7 @@
 
 - `commands/`：LLM 指令模板，字段为 `id/type/command/ros_aux_info`。
 - `scripts/`：实验评估、日志分析和绘图脚本。
+- `legacy/`：仅用于历史算法复现的离线评估脚本。
 - `logs/`：仿真或 rosbag 原始记录目录。
 - `results/`：固定字段 CSV 结果目录。
 - `figures/`：论文图输出目录。
@@ -44,13 +45,14 @@ python3 experiments/scripts/eval_lfs_compiler.py \
 
 输出：`experiments/results/lfs_compiler_results.csv`。
 
-### eval_assignment_offline.py
+### legacy/eval_assignment_weighted_sum_v1.py
 
-离线比较 `random`、`nearest_neighbor`、`hungarian_distance`、`safety_aware_hungarian` 分配策略。
+用冻结的 `LegacyWeightedSumAllocator` 离线复现 `random`、`nearest_neighbor`、`hungarian_distance`、`safety_aware_hungarian` 分配策略。
+该脚本不是当前 Paper lexicographic allocator 的评估入口。
 自动生成 `small`、`medium`、`large`、`dense`、`crossing-prone` 五类场景。
 
 ```bash
-python3 experiments/scripts/eval_assignment_offline.py \
+python3 experiments/legacy/eval_assignment_weighted_sum_v1.py \
   --trials 50 \
   --output experiments/results/assignment_results.csv
 ```

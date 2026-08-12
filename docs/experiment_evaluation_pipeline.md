@@ -6,7 +6,7 @@
 
 ## 新增能力
 
-- 新增 `eval_assignment_offline.py`，离线比较 random、nearest_neighbor、hungarian_distance、safety_aware_hungarian 四种分配策略。
+- 新增历史 weighted-sum assignment 离线评估脚本（现归档为 `experiments/legacy/eval_assignment_weighted_sum_v1.py`），比较 random、nearest_neighbor、hungarian_distance、safety_aware_hungarian 四种历史分配策略。
 - 新增 `eval_trajectory_profiles.py`，生成 step、linear、trapezoidal、minimum_jerk 的轨迹时序和指标。
 - 重构 `analyze_pairwise_distance.py`，固定输入为 `timestamp,uav_id,x,y,z`，固定输出两两距离时序和安全汇总。
 - 新增 `eval_iapf.py`，按四种 IAPF 配置汇总安全、轨迹和任务结果。
@@ -17,7 +17,7 @@
 
 ## 验证记录
 
-- `eval_assignment_offline.py --trials 2` 已验证可生成固定字段分配结果。
+- `eval_assignment_weighted_sum_v1.py --trials 2` 已验证可生成固定字段分配结果。
 - `eval_trajectory_profiles.py` 已验证可生成 summary 和 timeseries CSV。
 - `analyze_pairwise_distance.py` 已用临时 odom CSV 验证固定输入输出。
 - `eval_semantic_control.py` 已用 `logs/control_adaptation_log.csv` 验证分组统计。

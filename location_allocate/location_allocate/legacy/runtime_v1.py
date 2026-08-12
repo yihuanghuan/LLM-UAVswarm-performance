@@ -18,12 +18,6 @@ ALL_INITIAL_POSITIONS = [
 ]
 
 
-class LegacyTopologyAllocator(LegacyWeightedSumAllocator):
-    def allocate(self, initial, target, cross_penalty=10.0, duration=3.0):
-        del cross_penalty
-        return super().allocate(initial, target, duration=duration)
-
-
 class LegacyMissionRuntime:
     """Preserve historical geometry, grouping heuristic, and wire protocol."""
 
@@ -111,7 +105,7 @@ class LegacyMissionRuntime:
             rclpy.spin_once(self.node, timeout_sec=0.05)
         initial = [self.state_map[uid].copy() for uid in uav_ids]
         _, targets = self._targets(task)
-        allocator = LegacyTopologyAllocator()
+        allocator = LegacyWeightedSumAllocator()
         duration = float(task.get("duration_seconds", 3.0))
         mode = self.node.get_parameter(
             "assignment_mode"
@@ -154,7 +148,7 @@ class LegacyMissionRuntime:
         mode = self.node.get_parameter(
             "assignment_mode"
         ).get_parameter_value().string_value
-        allocator = LegacyTopologyAllocator()
+        allocator = LegacyWeightedSumAllocator()
         groups, metrics = allocator.allocate_grouped(
             grouped_inputs, duration=durations[0], mode=mode
         )

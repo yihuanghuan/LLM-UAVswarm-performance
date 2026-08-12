@@ -13,12 +13,21 @@
 | d_plan base | `2.0 m` at s=1 | current planning-margin baseline | provisional | development scenarios independent of final tests | assignment safety |
 | IAPF enter/exit | `1.5/1.65 m` at s=1 | controller baseline | provisional | collision-avoidance sweeps | avoidance activation |
 | s_max | `2.0` | current policy coverage | provisional | validate feasible workspace and controller clamp coverage | safety-factor experiments |
-| allocator weights/rate | `1,10,10,1; 20 Hz` | allocator constructor defaults | provisional | tune on separate calibration scenarios, then lock before test set | assignment comparison |
+| allocator comparison tolerance | `1e-6` | Paper policy `comparison_tolerance` | provisional | verify numerical stability on separate calibration scenarios, then lock before test set | floating-point lexicographic comparison only |
+| variable-duration numerical sample rate | `20 Hz` | Paper policy `sample_hz` | provisional | validate numerical closest-approach resolution on separate calibration scenarios, then lock before test set | variable-duration ParallelGroup assignment comparison |
 | minimum duration / auto style | `0.5 s / all 1` | Candidate timing baseline | provisional | PX4 trajectory sweep | completion-time results |
 | style/task/omega adaptation | identity | neutral baseline | baseline-frozen, revisitable | dedicated semantic LADRC redesign | future third contribution |
 | smoothing under semantic switching | `1.0` | user-confirmed neutral baseline | baseline-frozen, revisitable | switching-transient experiments | future semantic controller |
 
 No parameter in this table may be described as experimentally tuned or paper-final without a new calibrated policy and a changed configuration ID/hash.
+
+The Paper allocator has no `alpha`/`beta`/`gamma` weighted-sum weights.
+`comparison_tolerance` is only the floating-point tolerance used while comparing
+the lexicographic score; it does not change that score's mathematical
+definition. `sample_hz` only controls the numerical closest-approach evaluation
+for variable-duration ParallelGroup motions. Equal-progress motions use the
+analytic synchronized 3-D closest approach and are therefore independent of
+`sample_hz`.
 
 ## Provenance boundary
 

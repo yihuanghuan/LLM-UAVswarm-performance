@@ -10,7 +10,7 @@ from location_allocate import formation_geometry
 from location_allocate import paper_candidate_parser
 from location_allocate import paper_lfs_validator
 from location_allocate import paper_runtime
-from location_allocate.legacy_scheduler import FormationGenerator
+from location_allocate.legacy.scheduler_v1 import FormationGenerator
 from location_allocate.policy_adapter import load_runtime_policy
 from location_allocate.prompt_loader import load_paper_prompt_bundle
 
@@ -35,6 +35,8 @@ def test_paper_modules_do_not_import_legacy_parser_or_geometry():
     )
     assert "legacy_parser" not in paper_source
     assert "legacy_scheduler" not in paper_source
+    assert "weighted_sum_allocator" not in paper_source
+    assert "location_allocate.legacy" not in paper_source
     assert "FormationGenerator" not in paper_source
     assert "task_sequences" not in paper_source
 
@@ -44,6 +46,31 @@ def test_legacy_generator_keeps_historical_circle_reuse(formation):
     generator = FormationGenerator([0.0, 0.0, 2.0], 2.0)
 
     assert generator.generate(formation, 4) == generator.generate_circle(4)
+
+
+def test_legacy_runtime_uses_explicit_legacy_components():
+    root = Path(__file__).parents[1] / "location_allocate" / "legacy"
+    dispatch_source = (root.parent / "location_allocate.py").read_text(
+        encoding="utf-8"
+    )
+    runtime_source = (root / "runtime_v1.py").read_text(encoding="utf-8")
+    allocator_source = (root / "weighted_sum_allocator.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "from .legacy.parser_v1 import parse_legacy_uav_command" in (
+        dispatch_source
+    )
+    assert "from .legacy.runtime_v1 import LegacyMissionRuntime" in (
+        dispatch_source
+    )
+    assert "from .scheduler_v1 import FormationGenerator" in runtime_source
+    assert (
+        "from .weighted_sum_allocator import LegacyWeightedSumAllocator"
+        in runtime_source
+    )
+    assert "LegacyTopologyAllocator" not in runtime_source
+    assert "safety_aware_allocator" not in allocator_source
 
 
 def test_paper_policy_freezes_parallel_max_and_neutral_profile():

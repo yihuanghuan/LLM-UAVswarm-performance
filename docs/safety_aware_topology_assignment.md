@@ -18,7 +18,10 @@ max(0, (d_plan - d_min) / d_plan)^2
 for `0 < d_hard <= d_plan`. Equal-progress Minimum-Jerk motions use an analytic
 3-D closest-approach solution. Independent-duration ParallelGroup motions use
 numerical Minimum-Jerk evaluation on a shared clock, with completed vehicles
-held at their targets.
+held at their targets. The Paper policy's `sample_hz` affects only that
+variable-duration numerical evaluation; equal-progress analytic closest
+approach is independent of the sampling rate. `comparison_tolerance` is only a
+floating-point tolerance for lexicographic comparison, not an objective weight.
 
 XY segment crossings remain available as diagnostics, but are not part of the
 Paper optimization objective. The historical weighted-sum implementation is
