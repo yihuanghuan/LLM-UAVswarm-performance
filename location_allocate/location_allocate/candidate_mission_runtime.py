@@ -1,6 +1,6 @@
 """Pure Candidate validation → graph compilation → FSM composition root."""
 
-from .lfs_validator import early_validate_candidate_mission
+from .paper_lfs_validator import early_validate_candidate_mission
 from .mission_compiler import QRelationPolicy, compile_candidate_mission
 from .mission_executor import MissionRuntimeCallbacks, execute_compiled_mission
 

@@ -17,8 +17,9 @@ except ModuleNotFoundError:
     OpenAI = None
 
 from .llm_parse_logger import append_llm_parse_log
-from .lfs_validator import early_validate_candidate_mission, parse_available_uav_ids
+from .paper_lfs_validator import early_validate_candidate_mission
 from .prompt_loader import load_paper_prompt_bundle, load_paper_schema
+from .validation_common import parse_available_uav_ids
 
 
 API_KEY = os.getenv("LLM_API_KEY") or os.getenv("MINIMAX_API_KEY")

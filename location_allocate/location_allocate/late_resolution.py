@@ -15,7 +15,7 @@ from .formation_geometry import (
     resolve_scale,
 )
 from .lfs_resolver import resolve_candidate_task
-from .lfs_validator import runtime_validate_candidate_task
+from .paper_lfs_validator import runtime_validate_candidate_task
 from .lfs_types import (
     ExecutableLFS,
     ExecutionProfile,

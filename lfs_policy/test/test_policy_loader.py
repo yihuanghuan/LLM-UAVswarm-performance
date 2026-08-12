@@ -6,27 +6,27 @@ import yaml
 from lfs_policy import PolicyLoadError, load_paper_policy, load_policy
 
 
-MIGRATION = Path(__file__).parents[1] / "config" / "lfs_policy.migration.yaml"
+LEGACY = Path(__file__).parents[1] / "config" / "lfs_policy.legacy.yaml"
 TEMPLATE = Path(__file__).parents[2] / "location_allocate" / "config" / "lfs_policy.template.yaml"
 PAPER = Path(__file__).parents[1] / "config" / "lfs_policy.paper_current.yaml"
 
 
 def write_policy(tmp_path, mutate):
-    data = yaml.safe_load(MIGRATION.read_text(encoding="utf-8"))
+    data = yaml.safe_load(PAPER.read_text(encoding="utf-8"))
     mutate(data)
     path = tmp_path / "policy.yaml"
     path.write_text(yaml.safe_dump(data), encoding="utf-8")
     return path
 
 
-def test_migration_policy_loads_and_exposes_controller_parameters():
-    policy = load_policy(MIGRATION)
+def test_legacy_policy_loads_and_exposes_controller_parameters():
+    policy = load_policy(LEGACY)
 
-    assert policy.configuration_id == "migration-main-v1"
+    assert policy.configuration_id == "legacy-main-v1"
     assert policy.state.require_velocity is True
     assert policy.state.allow_receive_time_fallback is False
     assert policy.controller.ros_parameters()["enable_execution_profiles"] is True
-    assert policy.provenance["d_hard"].endswith("iapf_violation_distance")
+    assert policy.provenance["legacy_baseline"] == "historical runtime defaults"
 
 
 def test_template_is_not_a_production_policy():
@@ -44,9 +44,9 @@ def test_paper_current_has_hash_status_and_explicit_clamp_warning():
     assert "safety-clamped" in policy.warnings[0]
 
 
-def test_paper_runtime_rejects_migration_policy():
+def test_paper_runtime_rejects_legacy_policy():
     with pytest.raises(PolicyLoadError, match="paper_current"):
-        load_paper_policy(MIGRATION)
+        load_paper_policy(LEGACY)
 
 
 @pytest.mark.parametrize(
@@ -55,7 +55,7 @@ def test_paper_runtime_rejects_migration_policy():
         (lambda data: data.pop("configuration_id"), "missing key"),
         (lambda data: data["timing"].update(jerk_limit=None), "null"),
         (lambda data: data["timing"].update(jerk_limit=float("nan")), "finite"),
-        (lambda data: data["safety"].update(iapf_exit_margin=0.1), "hysteresis"),
+        (lambda data: data["safety"].update(iapf_exit_base=1.1), "hysteresis"),
         (lambda data: data["controller_hard_clamps"].update(iapf_enter_max=1.6), "cover"),
     ],
 )
