@@ -160,11 +160,11 @@ First form a smooth line with 4-meter spacing centered at [10,0,5] in 10 seconds
 
 ### 运动风格
 
-- `smooth`（平滑）：低参考速度和平稳优先的基础带宽
-- `normal`（标准）：中等参考速度的默认带宽
-- `aggressive`（激进）：高参考速度和快速响应优先的基础带宽
+- `smooth`（平滑）、`normal`（标准）、`aggressive`（激进）是冻结的任务语义标签。
+- 当前 `paper-current-v1` policy 对三种 style 使用 neutral identity baseline：`auto_style_factors` 和 `style_gains` 均为 `1.0`，不会仅因 style 不同而改变基础时长因子或 LADRC 带宽。
+- style-dependent timing、LADRC gain 和 task-intensity adaptation 的非恒等映射仍属 provisional，须经后续实验标定后通过显式 policy 配置启用。
 
-新路径不允许 LLM 输出 LADRC gain。`m`、assignment 后的 `D_i` 和唯一的 `T_exec` 由中央 Execution Profile Compiler 映射为控制参数；具体映射及数值仍为 provisional，必须通过显式配置注入。旧消息中的 motion style 仅记录，控制器使用 YAML baseline。
+新路径不允许 LLM 输出 LADRC gain。Execution Profile Compiler 以 `m`、assignment 后的 `D_i` 和唯一的 `T_exec` 为确定性输入，但当前 Paper policy 对 style/task adaptation 保持恒等映射。未来的非恒等映射及数值仍为 provisional，必须通过显式配置注入。旧消息中的 motion style 仅记录，控制器使用 YAML baseline。
 
 控制适应数据可通过 topic 和 CSV 查看：
 
@@ -205,9 +205,18 @@ LLM_swarm_ws/
 │   │       └── ControlAdaptationLog.msg # LADRC 控制适应日志
 │   ├── location_allocate/             # Python 调度层
 │   │   └── location_allocate/
-│   │       ├── location_allocate.py   # 匈牙利分配 + ROS2 节点
-│   │       ├── no_location.py         # LLM API 解析
+│   │       ├── location_allocate.py   # ROS 2 wiring + 显式 Paper/Legacy mode dispatch
+│   │       ├── paper_candidate_parser.py # 正式 Paper Candidate LLM parser
+│   │       ├── paper_lfs_validator.py # Paper static/runtime validation
+│   │       ├── paper_runtime.py       # Paper late-resolution 执行链
+│   │       ├── mission_compiler.py    # Candidate Mission → Mission Graph/FSM
+│   │       ├── mission_executor.py    # ready task/group 调度
+│   │       ├── legacy/                # v1 parser/runtime/scheduler/validator 兼容层
+│   │       ├── no_location.py         # legacy parser public-entry compatibility shim
 │   │       └── visualize_goals.py     # 可视化工具
+│   ├── schemas/
+│   │   ├── paper_candidate_schema_v2.json # Paper research interface
+│   │   └── legacy/lfs_schema_v1.json       # legacy compatibility schema
 │   ├── lfs_policy/                    # typed paper-current/legacy policy loader
 │   ├── minisnap_LADRC/
 │   │   └── ladrc_controller/          # C++ 执行层
@@ -338,7 +347,7 @@ UAVStatus + /uav{N}/swarm_state (nav_msgs/Odometry, world ENU)
 
 1. **Z 轴收敛速度**：PX4 下降速率受限（约 1.5 m/s），Z 轴向上过冲后收敛较慢（~0.3m 稳态误差），由放宽后的悬停阈值（0.3m）覆盖。
 2. **Gazebo Classic 性能**：10 机时 RTF 可能低于 1.0，建议 5-8 机确保实时仿真。
-3. **LLM API 依赖**：需网络连接和有效 API Key（`no_location.py` 中配置）。
+3. **LLM API 依赖**：Paper parser 需网络连接及通过环境变量提供的有效 `LLM_API_KEY`（兼容 `MINIMAX_API_KEY`）；入口为 `paper_candidate_parser.py`。
 4. **多机 spawn 偏移**：`sitl_multiple_run.sh` 默认沿 Y 轴排列（间隔 3m），调度器已自动补偿。
 
 ## 排障指南
