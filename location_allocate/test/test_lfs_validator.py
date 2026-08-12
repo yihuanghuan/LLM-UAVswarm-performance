@@ -62,7 +62,7 @@ def candidate_task(**overrides):
     task = {
         "task_id": 1,
         "U": [1, 2, 3],
-        "F": {"type": "Circle"},
+        "F": {"type": "Triangle"},
         "c": {"mode": "maintain_current_centroid"},
         "r": {"mode": "qualitative", "value": "normal"},
         "T": {"mode": "auto"},
@@ -295,7 +295,7 @@ def test_candidate_cannot_be_eagerly_flattened_to_legacy_tasks():
     "formation,uav_ids",
     [
         ({"type": "Line"}, [1]),
-        ({"type": "Circle"}, [1, 2]),
+        ({"type": "Circle"}, [1, 2, 3]),
         ({"type": "Sphere"}, [1]),
         ({"type": "Triangle"}, [1, 2, 3, 4]),
         ({"type": "Polygon", "sides": 5}, [1, 2, 3, 4]),
@@ -347,4 +347,45 @@ def test_static_validator_requires_availability_and_continuous_successor():
     with pytest.raises(LFSValidationError, match="requires a successor"):
         early_validate_candidate_mission(
             continuous, available_uav_ids=AVAILABLE_UAV_IDS
+        )
+
+
+def test_static_validator_accepts_nonterminal_top_level_continuous():
+    payload = {"lfs_version": "2.1", "mission": {"nodes": [
+        {
+            "type": "task",
+            "task": candidate_task(q={"mode": "continuous"}),
+        },
+        {
+            "type": "task",
+            "task": candidate_task(task_id=2, q={"mode": "direct"}),
+        },
+    ]}}
+
+    assert early_validate_candidate_mission(
+        payload, available_uav_ids=AVAILABLE_UAV_IDS
+    ) == payload
+
+
+def test_static_validator_rejects_continuous_inside_parallel_group():
+    payload = {"lfs_version": "2.1", "mission": {"nodes": [{
+        "type": "parallel",
+        "completion_mode": "independent",
+        "tasks": [
+            candidate_task(
+                task_id=1, U=[1, 2], F={"type": "Line"},
+                q={"mode": "continuous"},
+            ),
+            candidate_task(
+                task_id=2, U=[3, 4], F={"type": "Line"},
+            ),
+        ],
+    }, {
+        "type": "task",
+        "task": candidate_task(task_id=3),
+    }]}}
+
+    with pytest.raises(LFSValidationError, match="ParallelGroup"):
+        early_validate_candidate_mission(
+            payload, available_uav_ids=AVAILABLE_UAV_IDS
         )

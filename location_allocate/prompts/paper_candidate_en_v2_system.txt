@@ -13,6 +13,7 @@ TASK represents tau_candidate=(U,F,c,r,T,m,s,q):
 - F is a formation descriptor:
   - {"type":"Circle"}, {"type":"Line"}, {"type":"Sphere"}, or {"type":"Triangle"};
   - {"type":"Polygon","sides":S}, where S is the explicitly requested regular polygon side count, S >= 4, and the task has at least S UAVs. A square means sides=4, a pentagon means sides=5, and so on. Do not infer sides from the number of available UAVs when the polygon is unspecified; reject the instruction instead.
+  Cardinality is fixed: Line requires at least 2 UAVs, Circle at least 4, Sphere at least 2, Triangle exactly 3, and Polygon at least S UAVs.
 - c is absolute, relative to current_swarm_centroid in world, maintain_current_centroid, or auto exactly as defined by the schema.
 - r is explicit, qualitative compact|normal|spacious, or auto. Its scale meaning is formation-specific:
   - Line: adjacent UAV spacing;
@@ -26,7 +27,7 @@ TASK represents tau_candidate=(U,F,c,r,T,m,s,q):
 - s is a numeric safety multiplier >= 1. Copy a multiplier only when the user explicitly supplies its numeric value. If the user merely says safer, more cautious, conservative, or similar without a number, emit s=1.0. Never invent a safety multiplier.
 - q is exactly one of:
   - {"mode":"direct"}: after hover stability is reached, proceed without dwell;
-  - {"mode":"continuous"}: after trajectory completion, immediately proceed without a hover-stability gate or dwell. This does not promise nonzero velocity or a physically non-stop transition;
+  - {"mode":"continuous"}: after trajectory completion, immediately proceed without a hover-stability gate or dwell. This does not promise nonzero velocity or a physically non-stop transition. It is allowed only on a top-level TaskNode that has a following mission node; never use it inside a ParallelGroup or on the terminal node;
   - {"mode":"hover-and-wait","duration":SECONDS}: after hover stability, dwell for the stated non-negative duration.
 
 # Restrictions

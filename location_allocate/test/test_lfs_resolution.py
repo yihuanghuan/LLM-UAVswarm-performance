@@ -17,7 +17,7 @@ def candidate_task(**overrides):
     task = {
         "task_id": 1,
         "U": [1, 2, 3],
-        "F": {"type": "Circle"},
+        "F": {"type": "Triangle"},
         "c": {"mode": "maintain_current_centroid"},
         "r": {"mode": "qualitative", "value": "normal"},
         "T": {"mode": "auto"},
@@ -111,7 +111,7 @@ def test_unit_geometry_is_independent_of_center_and_scale():
 
     assert len(triangle.offsets) == 3
     assert len(polygon.offsets) == 4
-    assert triangle.geometry_version == "paper-unit-geometry-v2"
+    assert triangle.geometry_version == "paper-unit-geometry-v3"
     assert triangle.delta_min == pytest.approx(math.sqrt(3.0))
     assert triangle.offsets[0] == pytest.approx((1.0, 0.0, 0.0))
     assert polygon.offsets[0] == pytest.approx((1.0, 0.0, 0.0))
@@ -119,18 +119,21 @@ def test_unit_geometry_is_independent_of_center_and_scale():
 
 
 def test_circle_triangle_and_polygon_have_distinct_geometry_semantics():
-    circle = build_unit_geometry({"type": "Circle"}, 3)
+    circle = build_unit_geometry({"type": "Circle"}, 4)
     triangle = build_unit_geometry({"type": "Triangle"}, 3)
     square = build_unit_geometry({"type": "Polygon", "sides": 4}, 8)
 
-    assert circle.offsets != triangle.offsets
-    assert circle.offsets[0] != pytest.approx((1.0, 0.0, 0.0))
+    assert len(circle.offsets) == 4
+    assert circle.offsets[0] == pytest.approx((1.0, 0.0, 0.0))
+    assert circle.offsets[1] == pytest.approx((0.0, 1.0, 0.0))
     assert triangle.offsets[0] == pytest.approx((1.0, 0.0, 0.0))
     assert len(square.offsets) == 8
     assert square.offsets[1] == pytest.approx((0.5, 0.5, 0.0))
 
 
 def test_polygon_descriptor_rejects_missing_or_impossible_sides():
+    with pytest.raises(GeometryError, match="at least four"):
+        build_unit_geometry({"type": "Circle"}, 3)
     with pytest.raises(GeometryError, match="sides"):
         build_unit_geometry({"type": "Polygon"}, 4)
     with pytest.raises(GeometryError, match="one UAV per side"):
@@ -147,7 +150,7 @@ def test_qualitative_scale_uses_injected_multiplier(label):
         ),
         snapshot,
     )
-    unit = build_unit_geometry({"type": "Circle"}, 3)
+    unit = build_unit_geometry({"type": "Triangle"}, 3)
     policy = scale_policy()
 
     radius = resolve_scale(intent, unit, d_plan=1.0, policy=policy, trace=trace)
@@ -170,7 +173,7 @@ def test_r_safe_uses_d_plan_not_d_hard():
         ),
         snapshot,
     )
-    unit = build_unit_geometry({"type": "Circle"}, 3)
+    unit = build_unit_geometry({"type": "Triangle"}, 3)
 
     radius = resolve_scale(
         intent, unit, d_plan=2.4, policy=scale_policy(), trace=trace
@@ -190,7 +193,7 @@ def test_auto_scale_uses_nominal_formation_scale():
         ),
         snapshot,
     )
-    unit = build_unit_geometry({"type": "Circle"}, 3)
+    unit = build_unit_geometry({"type": "Triangle"}, 3)
     radius = resolve_scale(
         intent, unit, d_plan=1.0, policy=scale_policy(), trace=trace
     )
@@ -211,7 +214,7 @@ def test_workspace_never_shrinks_below_safety_lower_bound():
     with pytest.raises(GeometryError, match="workspace scale limit conflicts"):
         resolve_scale(
             intent,
-            build_unit_geometry({"type": "Circle"}, 3),
+            build_unit_geometry({"type": "Triangle"}, 3),
             d_plan=2.0,
             policy=scale_policy(),
             trace=trace,

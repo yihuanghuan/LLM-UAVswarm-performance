@@ -21,7 +21,7 @@ def candidate_payload():
             "type": "task",
             "task": {
                 "task_id": 1,
-                "U": [1, 2, 3],
+                "U": [1, 2, 3, 4],
                 "F": {"type": "Circle"},
                 "c": {"mode": "auto"},
                 "r": {"mode": "auto"},
@@ -69,7 +69,7 @@ def test_candidate_parser_accepts_semantic_defaults(monkeypatch):
 
     parsed = paper_candidate_parser.parse_candidate_mission(
         "Form a circle.",
-        "Available UAV IDs: [1, 2, 3]\nTotal available UAVs: 3",
+        "Available UAV IDs: [1, 2, 3, 4]\nTotal available UAVs: 4",
     )
 
     task = parsed["mission"]["nodes"][0]["task"]
@@ -185,7 +185,12 @@ def test_candidate_parser_accepts_all_center_scale_time_semantics(
 def test_candidate_parser_preserves_explicit_parallel_relation(
         monkeypatch, completion_mode):
     first = candidate_payload()["mission"]["nodes"][0]["task"]
-    second = {**first, "task_id": 2, "U": [4, 5, 6]}
+    second = {
+        **first,
+        "task_id": 2,
+        "U": [5, 6, 7],
+        "F": {"type": "Triangle"},
+    }
     payload = {"lfs_version": "2.1", "mission": {"nodes": [{
         "type": "parallel",
         "completion_mode": completion_mode,

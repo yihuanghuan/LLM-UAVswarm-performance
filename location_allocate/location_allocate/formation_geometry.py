@@ -76,12 +76,11 @@ def build_unit_geometry(
             for index in range(3)
         ]
     elif formation_type == "Circle":
-        if count < 3:
-            raise GeometryError("Circle requires at least three UAVs")
-        phase = math.pi / count
+        if count < 4:
+            raise GeometryError("Circle requires at least four UAVs")
         points = [
-            (math.cos(phase + 2.0 * math.pi * index / count),
-             math.sin(phase + 2.0 * math.pi * index / count), 0.0)
+            (math.cos(2.0 * math.pi * index / count),
+             math.sin(2.0 * math.pi * index / count), 0.0)
             for index in range(count)
         ]
     elif formation_type == "Polygon":
@@ -108,7 +107,7 @@ def build_unit_geometry(
         formation=descriptor,
         offsets=tuple_points,
         delta_min=_minimum_distance(tuple_points),
-        geometry_version="paper-unit-geometry-v2",
+        geometry_version="paper-unit-geometry-v3",
     )
 
 

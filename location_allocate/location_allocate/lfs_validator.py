@@ -137,7 +137,7 @@ def early_validate_candidate_semantics(
             formation = descriptor["type"]
             cardinality_valid = {
                 "Line": count >= 2,
-                "Circle": count >= 3,
+                "Circle": count >= 4,
                 "Sphere": count >= 2,
                 "Triangle": count == 3,
                 "Polygon": count >= int(descriptor.get("sides", count + 1)),
@@ -150,13 +150,16 @@ def early_validate_candidate_semantics(
                 raise LFSValidationError(
                     f"task {task_id} safety factor s must be >= 1"
                 )
-            if (
-                task["q"]["mode"] == "continuous"
-                and node_index == len(payload["mission"]["nodes"]) - 1
-            ):
-                raise LFSValidationError(
-                    f"task {task_id} continuous transition requires a successor"
-                )
+            if task["q"]["mode"] == "continuous":
+                if node["type"] == "parallel":
+                    raise LFSValidationError(
+                        f"task {task_id} continuous transition is not allowed "
+                        "inside a ParallelGroup"
+                    )
+                if node_index == len(payload["mission"]["nodes"]) - 1:
+                    raise LFSValidationError(
+                        f"task {task_id} continuous transition requires a successor"
+                    )
 
 
 def runtime_validate_candidate_task(
