@@ -82,6 +82,9 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   ament_add_gtest(test_iapf_core test/test_iapf_core.cpp)
   target_link_libraries(test_iapf_core ladrc_lib)
+  ament_add_gtest(test_control_setpoint test/test_control_setpoint.cpp)
+  ament_target_dependencies(test_control_setpoint px4_msgs)
+  target_link_libraries(test_control_setpoint ladrc_lib)
   ament_add_gtest(
     test_execution_profile_guard test/test_execution_profile_guard.cpp)
   ament_add_gtest(

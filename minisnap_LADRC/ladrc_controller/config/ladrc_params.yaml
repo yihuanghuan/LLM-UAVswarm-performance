@@ -3,6 +3,11 @@
     # Control frequency (Hz)
     control_frequency: 50.0
 
+    # 外部平动控制模式：ladrc_acceleration / px4_position
+    control_mode: "ladrc_acceleration"
+    # 尚未收到任务时，悬停 IAPF 使用的安全系数
+    idle_hover_safety_factor: 1.0
+
     # X-axis LADRC parameters
     # omega_o: observer bandwidth (3-5x omega_c for proper disturbance estimation)
     # omega_c: controller bandwidth (settling time ≈ 4/omega_c)

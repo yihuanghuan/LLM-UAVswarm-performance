@@ -36,6 +36,7 @@ def generate_launch_description():
         ids = [int(x.strip()) for x in ids_str.strip('[]').split(',') if x.strip()]
         avoidance_mode = LaunchConfiguration(
             'avoidance_mode').perform(context).strip()
+        control_mode = LaunchConfiguration('control_mode').perform(context).strip()
         escape_mode = LaunchConfiguration('iapf_escape_mode').perform(context)
         legacy_value = LaunchConfiguration(
             'enable_iapf_accel_feedforward').perform(context).strip().lower()
@@ -82,6 +83,7 @@ def generate_launch_description():
             experiment_parameters = {
                 'neighbor_uav_ids': ids,
                 'iapf_escape_mode': escape_mode,
+                'control_mode': control_mode,
             }
             if avoidance_mode != 'unset':
                 experiment_parameters['avoidance_mode'] = avoidance_mode
@@ -119,6 +121,10 @@ def generate_launch_description():
             'uav_ids',
             default_value='[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]',
             description='要启动的 UAV ID 列表'),
+        DeclareLaunchArgument(
+            'control_mode',
+            default_value='ladrc_acceleration',
+            description='ladrc_acceleration/px4_position'),
         DeclareLaunchArgument(
             'avoidance_mode',
             default_value='unset',

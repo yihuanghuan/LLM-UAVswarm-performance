@@ -27,6 +27,7 @@ def generate_launch_description():
             parameters=[
                 LaunchConfiguration('params_file'),
                 {
+                    'control_mode': LaunchConfiguration('control_mode'),
                     'avoidance_mode': LaunchConfiguration('avoidance_mode'),
                     'iapf_escape_mode': LaunchConfiguration('iapf_escape_mode'),
                     'iapf_enter_distance': ParameterValue(
@@ -61,6 +62,12 @@ def generate_launch_description():
             'namespace',
             default_value='',
             description='Namespace for this UAV node (e.g. /uav1)'
+        ),
+
+        DeclareLaunchArgument(
+            'control_mode',
+            default_value='ladrc_acceleration',
+            description='ladrc_acceleration/px4_position'
         ),
 
         DeclareLaunchArgument(

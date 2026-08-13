@@ -10,9 +10,11 @@
 #include <uav_swarm_interfaces/msg/trajectory_metrics.hpp>
 #include <uav_swarm_interfaces/msg/control_adaptation_log.hpp>
 #include <uav_swarm_interfaces/msg/iapf_debug.hpp>
+#include <uav_swarm_interfaces/msg/control_tracking_debug.hpp>
 #include <geometry_msgs/msg/point.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 #include "ladrc_controller/ladrc_core.hpp"
+#include "ladrc_controller/control_setpoint.hpp"
 #include "ladrc_controller/iapf_core.hpp"
 #include "ladrc_controller/minimum_jerk_trajectory.hpp"
 #include "ladrc_controller/execution_profile_guard.hpp"
@@ -56,6 +58,8 @@ public:
   {
     // 声明参数
     this->declare_parameter("control_frequency", 50.0);
+    this->declare_parameter("control_mode", "ladrc_acceleration");
+    this->declare_parameter("idle_hover_safety_factor", 1.0);
     this->declare_parameter("omega_o_x", 15.0);
     this->declare_parameter("omega_o_y", 15.0);
     this->declare_parameter("omega_o_z", 15.0);
@@ -157,6 +161,15 @@ public:
     // 获取参数
     double control_freq = this->get_parameter("control_frequency").as_double();
     dt_ = 1.0 / control_freq;
+    control_mode_ = ladrc_controller::parseControlMode(
+      this->get_parameter("control_mode").as_string());
+    const double idle_hover_safety_factor =
+      this->get_parameter("idle_hover_safety_factor").as_double();
+    if (!std::isfinite(idle_hover_safety_factor) || idle_hover_safety_factor < 0.0)
+    {
+      throw std::invalid_argument(
+        "idle_hover_safety_factor must be finite and non-negative");
+    }
 
     // 初始化 LADRC 控制器
     initializeControllers();
@@ -243,6 +256,9 @@ public:
     iapf_debug_pub_ =
         this->create_publisher<uav_swarm_interfaces::msg::IAPFDebug>(
             "iapf_debug", 10);
+    control_tracking_debug_pub_ =
+        this->create_publisher<uav_swarm_interfaces::msg::ControlTrackingDebug>(
+            "control_tracking_debug", rclcpp::SensorDataQoS());
 
     // Publishers — [Phase 1] 使用相对话题以支持命名空间
     // 必须使用 SensorDataQoS (Best Effort)，PX4 XRCE-DDS 桥接器默认使用 Best Effort 订阅
@@ -278,6 +294,8 @@ public:
         this->get_parameter("enu_offset_y").as_double(),
         this->get_parameter("enu_offset_z").as_double());
     RCLCPP_INFO(this->get_logger(), "等待 swarm_command 和 vehicle_odometry 消息...");
+    RCLCPP_INFO(this->get_logger(), "控制模式: %s",
+        ladrc_controller::toString(control_mode_));
   }
 
 private:
@@ -701,7 +719,12 @@ private:
       odom_pub_->publish(odom_msg);
     }
 
-    // 若无命令，发布首次测量位置作为固定悬停保持 setpoint
+    // 2. 生成标称参考。无任务时锁定首次测量位置，仍然执行完整闭环。
+    double elapsed = 0.0;
+    bool all_finished = false;
+    Eigen::Vector3d nominal_reference;
+    Eigen::Vector3d nominal_velocity = Eigen::Vector3d::Zero();
+    Eigen::Vector3d nominal_acceleration = Eigen::Vector3d::Zero();
     if (!has_command_)
     {
       if (!hover_hold_set_)
@@ -710,58 +733,50 @@ private:
         hover_hold_y_ = y_meas;
         hover_hold_z_ = z_meas;
         hover_hold_set_ = true;
+        ladrc_x_->setObserverInitialState(
+          x_meas, current_odom_.velocity[1], 0.0);
+        ladrc_y_->setObserverInitialState(
+          y_meas, current_odom_.velocity[0], 0.0);
+        ladrc_z_->setObserverInitialState(
+          z_meas, -current_odom_.velocity[2], 0.0);
         RCLCPP_INFO(this->get_logger(),
             "UAV%d 悬停保持锁定: [%.2f, %.2f, %.2f]", self_uav_id_, x_meas, y_meas, z_meas);
       }
-      publishTrajectorySetpoint(hover_hold_x_, hover_hold_y_, hover_hold_z_,
-                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-      // 悬停保持时也定期输出位置（10s 节流）
-      RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 10000,
-          "UAV%d 悬停保持 Pos[%.2f,%.2f,%.2f]", self_uav_id_, x_meas, y_meas, z_meas);
-      return;
+      nominal_reference = Eigen::Vector3d(
+        hover_hold_x_, hover_hold_y_, hover_hold_z_);
     }
-    hover_hold_set_ = false;  // 收到命令，清除悬停保持
-
-    // 2. 计算已用时间并从轨迹生成器获取参考值
-    double elapsed = (this->now() - command_start_time_).seconds();
-    bool x_finished = traj_x_.isFinished(elapsed);
-    bool y_finished = traj_y_.isFinished(elapsed);
-    bool z_finished = traj_z_.isFinished(elapsed);
-    (void)x_finished; (void)y_finished; (void)z_finished;
-
-    auto ref_x = traj_x_.evaluate(elapsed);
-    auto ref_y = traj_y_.evaluate(elapsed);
-    auto ref_z = traj_z_.evaluate(elapsed);
-
-    double x_ref = ref_x.position;
-    double y_ref = ref_y.position;
-    double z_ref = ref_z.position;
-    double vx_ref = ref_x.velocity;
-    double vy_ref = ref_y.velocity;
-    double vz_ref = ref_z.velocity;
-    double ax_ref = ref_x.acceleration;
-    double ay_ref = ref_y.acceleration;
-    double az_ref = ref_z.acceleration;
-
-    updateControlAdaptationRuntimeMetrics(
-        elapsed, x_ref, y_ref, z_ref, x_meas, y_meas, z_meas);
-
-    // [Phase 3] 悬停稳定检测
-    bool all_finished = x_finished && y_finished && z_finished;
-    if (all_finished)
+    else
     {
-      double pos_err = std::sqrt(
-          (x_ref - x_meas) * (x_ref - x_meas) +
-          (y_ref - y_meas) * (y_ref - y_meas) +
-          (z_ref - z_meas) * (z_ref - z_meas));
-      double vel_mag = std::sqrt(
+      hover_hold_set_ = false;
+      elapsed = (this->now() - command_start_time_).seconds();
+      all_finished =
+        traj_x_.isFinished(elapsed) &&
+        traj_y_.isFinished(elapsed) &&
+        traj_z_.isFinished(elapsed);
+      const auto ref_x = traj_x_.evaluate(elapsed);
+      const auto ref_y = traj_y_.evaluate(elapsed);
+      const auto ref_z = traj_z_.evaluate(elapsed);
+      nominal_reference = Eigen::Vector3d(
+        ref_x.position, ref_y.position, ref_z.position);
+      nominal_velocity = Eigen::Vector3d(
+        ref_x.velocity, ref_y.velocity, ref_z.velocity);
+      nominal_acceleration = Eigen::Vector3d(
+        ref_x.acceleration, ref_y.acceleration, ref_z.acceleration);
+
+      updateControlAdaptationRuntimeMetrics(
+        elapsed, nominal_reference.x(), nominal_reference.y(), nominal_reference.z(),
+        x_meas, y_meas, z_meas);
+
+      // 轨迹结束后 Minimum Jerk 返回终点、零速度和零加速度，继续位置调节。
+      if (all_finished)
+      {
+        const double pos_err = (nominal_reference -
+          Eigen::Vector3d(x_meas, y_meas, z_meas)).norm();
+        const double vel_mag = std::sqrt(
           current_odom_.velocity[0] * current_odom_.velocity[0] +
           current_odom_.velocity[1] * current_odom_.velocity[1] +
           current_odom_.velocity[2] * current_odom_.velocity[2]);
-
-      if (pos_err < 0.3 && vel_mag < 0.3)
-      {
-        if (!is_hover_stable_)
+        if (pos_err < 0.3 && vel_mag < 0.3 && !is_hover_stable_)
         {
           is_hover_stable_ = true;
           if (!arrival_time_recorded_)
@@ -776,60 +791,80 @@ private:
               pos_err, vel_mag);
         }
       }
+
+      if (++trajectory_metrics_pub_counter_ >= 5)
+      {
+        trajectory_metrics_pub_counter_ = 0;
+        publishTrajectoryMetrics(elapsed, x_meas, y_meas, z_meas, all_finished);
+        publishControlAdaptationLog();
+      }
     }
 
-    if (++trajectory_metrics_pub_counter_ >= 5)
-    {
-      trajectory_metrics_pub_counter_ = 0;
-      publishTrajectoryMetrics(elapsed, x_meas, y_meas, z_meas, all_finished);
-      publishControlAdaptationLog();
-    }
-
-    // 3. LADRC 观测器静默运行（状态估计，供监控）
-    double ax_cmd = ladrc_x_->update(x_ref, vx_ref, ax_ref, x_meas);
-    double ay_cmd = ladrc_y_->update(y_ref, vy_ref, ay_ref, y_meas);
-    double az_cmd = ladrc_z_->update(z_ref, vz_ref, az_ref, z_meas);
-
-    const Eigen::Vector3d nominal_reference(x_ref, y_ref, z_ref);
-    const Eigen::Vector3d nominal_acceleration(ax_ref, ay_ref, az_ref);
-    const auto iapf = computeAvoidance(x_meas, y_meas, z_meas);
-
-    // 4. 发布 UAVStatus
-    publishUAVStatus();
-
-    // 5. 发布轨迹设定点：位置+加速度 + IAPF 斥力
-    const Eigen::Vector3d modulated_reference =
+    // 3. IAPF 先修正参考，再由 LADRC 计算唯一的最终加速度指令。
+    const double active_safety_factor = has_command_ ? safety_factor_ :
+      this->get_parameter("idle_hover_safety_factor").as_double();
+    const auto iapf = computeAvoidance(
+      x_meas, y_meas, z_meas, active_safety_factor);
+    const Eigen::Vector3d safe_reference =
       nominal_reference + iapf.position_offset;
-    const Eigen::Vector3d modulated_acceleration =
+    const Eigen::Vector3d safe_acceleration =
       nominal_acceleration + iapf.acceleration_offset;
-    const bool publish_acceleration =
-      currentAvoidanceMode() == ladrc_controller::AvoidanceMode::IAPF_DUAL;
+    const Eigen::Vector3d ladrc_output(
+      ladrc_x_->update(
+        safe_reference.x(), nominal_velocity.x(), safe_acceleration.x(), x_meas),
+      ladrc_y_->update(
+        safe_reference.y(), nominal_velocity.y(), safe_acceleration.y(), y_meas),
+      ladrc_z_->update(
+        safe_reference.z(), nominal_velocity.z(), safe_acceleration.z(), z_meas));
 
-    publishTrajectorySetpoint(
-        modulated_reference.x(),
-        modulated_reference.y(),
-        modulated_reference.z(),
-        vx_ref, vy_ref, vz_ref,
-        modulated_acceleration.x(),
-        modulated_acceleration.y(),
-        modulated_acceleration.z(),
-        0.0,
-        publish_acceleration);
+    const Eigen::Vector3d actual_position(x_meas, y_meas, z_meas);
+    const Eigen::Vector3d actual_velocity(
+      current_odom_.velocity[1], current_odom_.velocity[0],
+      -current_odom_.velocity[2]);
+    if (!nominal_reference.allFinite() || !nominal_velocity.allFinite() ||
+      !safe_reference.allFinite() || !safe_acceleration.allFinite() ||
+      !ladrc_output.allFinite() || !actual_position.allFinite() ||
+      !actual_velocity.allFinite())
+    {
+      RCLCPP_ERROR_THROTTLE(this->get_logger(), *this->get_clock(), 1000,
+        "检测到非有限控制量，已阻止 TrajectorySetpoint 发布");
+      return;
+    }
+
+    // 4. position 基线发布安全位置；LADRC 模式只发布 LADRC 加速度。
+    publishUAVStatus();
+    const bool position_mode_acceleration_feedforward =
+      currentAvoidanceMode() == ladrc_controller::AvoidanceMode::IAPF_DUAL;
+    const Eigen::Vector3d published_acceleration =
+      control_mode_ == ladrc_controller::ControlMode::LADRC_ACCELERATION ?
+      ladrc_output : safe_acceleration;
+    const auto px4_setpoint = publishTrajectorySetpoint(
+      safe_reference.x(), safe_reference.y(), safe_reference.z(),
+      published_acceleration.x(), published_acceleration.y(),
+      published_acceleration.z(), 0.0,
+      position_mode_acceleration_feedforward);
     const Eigen::Vector3d global_offset(
       this->get_parameter("enu_offset_x").as_double(),
       this->get_parameter("enu_offset_y").as_double(),
       this->get_parameter("enu_offset_z").as_double());
     publishIAPFDebug(
       iapf, nominal_reference + global_offset,
-      modulated_reference + global_offset,
-      nominal_acceleration, modulated_acceleration);
+      safe_reference + global_offset,
+      nominal_acceleration, safe_acceleration);
+    publishControlTrackingDebug(
+      nominal_reference, safe_reference, nominal_velocity,
+      nominal_acceleration, safe_acceleration, ladrc_output,
+      actual_position, actual_velocity, px4_setpoint);
 
-    // 日志（当 IAPF 激活时附加 "!IAPF!" 标记）
+    // 日志中的 Cmd 即 LADRC 输出；加速度模式下与发布值完全一致。
     RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 1000,
-        "UAV%d Ref[%.1f,%.1f,%.1f] Pos[%.2f,%.2f,%.2f] Cmd[%.1f,%.1f,%.1f]%s",
-        uav_id_, x_ref, y_ref, z_ref,
+        "UAV%d mode=%s Ref[%.1f,%.1f,%.1f] Safe[%.1f,%.1f,%.1f] "
+        "Pos[%.2f,%.2f,%.2f] Cmd[%.1f,%.1f,%.1f]%s",
+        self_uav_id_, ladrc_controller::toString(control_mode_),
+        nominal_reference.x(), nominal_reference.y(), nominal_reference.z(),
+        safe_reference.x(), safe_reference.y(), safe_reference.z(),
         x_meas, y_meas, z_meas,
-        ax_cmd, ay_cmd, az_cmd,
+        ladrc_output.x(), ladrc_output.y(), ladrc_output.z(),
         (iapf.active ? " !IAPF!" : ""));
   }
 
@@ -865,7 +900,8 @@ private:
   }
 
   ladrc_controller::IAPFResult computeAvoidance(
-      double x_meas, double y_meas, double z_meas)
+      double x_meas, double y_meas, double z_meas,
+      double active_safety_factor)
   {
     ladrc_controller::IAPFParameters parameters;
     parameters.violation_distance =
@@ -929,7 +965,7 @@ private:
       pos_own, velocity_own, self_uav_id_, neighbors, currentAvoidanceMode(),
       ladrc_controller::parseEscapeMode(
         this->get_parameter("iapf_escape_mode").as_string()),
-      parameters, safety_factor_);
+      parameters, active_safety_factor);
 
     for (auto & item : neighbor_states_)
     {
@@ -1032,6 +1068,59 @@ private:
     setVector3(msg.nominal_acceleration, nominal_acceleration);
     setVector3(msg.modulated_acceleration, modulated_acceleration);
     iapf_debug_pub_->publish(msg);
+  }
+
+  static void setArrayVector3(
+      geometry_msgs::msg::Vector3 & output,
+      const std::array<float, 3> & value)
+  {
+    output.x = value[0];
+    output.y = value[1];
+    output.z = value[2];
+  }
+
+  void publishControlTrackingDebug(
+      const Eigen::Vector3d & nominal_reference,
+      const Eigen::Vector3d & safe_reference,
+      const Eigen::Vector3d & nominal_velocity,
+      const Eigen::Vector3d & nominal_acceleration,
+      const Eigen::Vector3d & safe_acceleration,
+      const Eigen::Vector3d & ladrc_output,
+      const Eigen::Vector3d & actual_position,
+      const Eigen::Vector3d & actual_velocity,
+      const px4_msgs::msg::TrajectorySetpoint & px4_setpoint)
+  {
+    uav_swarm_interfaces::msg::ControlTrackingDebug msg;
+    msg.header.stamp = this->now();
+    msg.header.frame_id = "local_enu";
+    msg.mission_id = mission_id_;
+    msg.uav_id = self_uav_id_;
+    msg.control_mode = ladrc_controller::toString(control_mode_);
+    msg.has_command = has_command_;
+    setPoint(msg.nominal_position, nominal_reference);
+    setPoint(msg.safe_position, safe_reference);
+    setVector3(msg.nominal_velocity, nominal_velocity);
+    setVector3(msg.nominal_acceleration, nominal_acceleration);
+    setVector3(msg.safe_acceleration, safe_acceleration);
+    setVector3(msg.ladrc_output, ladrc_output);
+
+    const auto states_x = ladrc_x_->getEstimatedStates();
+    const auto states_y = ladrc_y_->getEstimatedStates();
+    const auto states_z = ladrc_z_->getEstimatedStates();
+    setVector3(msg.leso_z1, Eigen::Vector3d(
+      states_x[0], states_y[0], states_z[0]));
+    setVector3(msg.leso_z2, Eigen::Vector3d(
+      states_x[1], states_y[1], states_z[1]));
+    setVector3(msg.leso_z3, Eigen::Vector3d(
+      states_x[2], states_y[2], states_z[2]));
+
+    setPoint(msg.actual_position, actual_position);
+    setVector3(msg.actual_velocity, actual_velocity);
+    setVector3(msg.tracking_error, safe_reference - actual_position);
+    setArrayVector3(msg.px4_position_setpoint, px4_setpoint.position);
+    setArrayVector3(msg.px4_velocity_setpoint, px4_setpoint.velocity);
+    setArrayVector3(msg.px4_acceleration_setpoint, px4_setpoint.acceleration);
+    control_tracking_debug_pub_->publish(msg);
   }
 
   // --- [Phase 1] 新增 UAVStatus 发布 ---
@@ -1315,53 +1404,24 @@ private:
 
   void publishOffboardControlMode()
   {
-    px4_msgs::msg::OffboardControlMode msg{};
-    msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
-    msg.position = true;
-    msg.velocity = false;
-    msg.acceleration = false;
-    msg.attitude = false;
-    msg.body_rate = false;
-
+    const auto msg = ladrc_controller::makeOffboardControlMode(
+      control_mode_, this->get_clock()->now().nanoseconds() / 1000);
     offboard_mode_pub_->publish(msg);
   }
 
-  void publishTrajectorySetpoint(double px_enu, double py_enu, double pz_enu,
-                                  double vx_enu, double vy_enu, double vz_enu,
+  px4_msgs::msg::TrajectorySetpoint publishTrajectorySetpoint(
+                                  double px_enu, double py_enu, double pz_enu,
                                   double ax_enu, double ay_enu, double az_enu,
                                   double yaw_ref,
                                   bool publish_accel_feedforward = false)
   {
-    px4_msgs::msg::TrajectorySetpoint msg{};
-    msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
-
-    // 位置参考 (ENU → NED)：纯位置模式，PX4 位置控制器独立完成轨迹跟踪
-    msg.position = {
-        static_cast<float>(py_enu),      // NED North = ENU y
-        static_cast<float>(px_enu),      // NED East = ENU x
-        static_cast<float>(-pz_enu)};    // NED Down = -ENU z
-
-    (void)vx_enu;
-    (void)vy_enu;
-    (void)vz_enu;
-
-    // 速度留空 (NaN)，仅在参数开启时注入加速度前馈。
-    msg.velocity = {NAN, NAN, NAN};
-    if (publish_accel_feedforward)
-    {
-      msg.acceleration = {
-          static_cast<float>(ay_enu),      // NED North = ENU y
-          static_cast<float>(ax_enu),      // NED East = ENU x
-          static_cast<float>(-az_enu)};    // NED Down = -ENU z
-    }
-    else
-    {
-      msg.acceleration = {NAN, NAN, NAN};
-    }
-
-    msg.yaw = static_cast<float>(yaw_ref);
-
+    const auto msg = ladrc_controller::makeTrajectorySetpoint(
+      control_mode_, px_enu, py_enu, pz_enu,
+      ax_enu, ay_enu, az_enu, yaw_ref,
+      publish_accel_feedforward,
+      this->get_clock()->now().nanoseconds() / 1000);
     trajectory_pub_->publish(msg);
+    return msg;
   }
 
   // Member variables
@@ -1383,6 +1443,8 @@ private:
       control_adaptation_pub_;
   rclcpp::Publisher<uav_swarm_interfaces::msg::IAPFDebug>::SharedPtr
       iapf_debug_pub_;
+  rclcpp::Publisher<uav_swarm_interfaces::msg::ControlTrackingDebug>::SharedPtr
+      control_tracking_debug_pub_;
 
   rclcpp::Publisher<px4_msgs::msg::OffboardControlMode>::SharedPtr offboard_mode_pub_;
   rclcpp::Publisher<px4_msgs::msg::TrajectorySetpoint>::SharedPtr trajectory_pub_;
@@ -1404,6 +1466,8 @@ private:
   std::string motion_style_ = "normal";
   double safety_factor_ = 0.0;
   bool has_command_ = false;
+  ladrc_controller::ControlMode control_mode_{
+    ladrc_controller::ControlMode::LADRC_ACCELERATION};
   bool active_new_profile_ = false;
   bool profile_soft_safety_active_ = false;
   double profile_iapf_enter_distance_ = 0.0;

@@ -6,7 +6,7 @@
 [![C++](https://img.shields.io/badge/C++-17-blue.svg)](https://en.cppreference.com/w/cpp/17)
 [![Python](https://img.shields.io/badge/Python-3.10-yellow.svg)](https://www.python.org/)
 
-基于大型语言模型 (LLM) 和 ROS 2 的多无人机集群编队系统。操作员输入自然语言指令，系统通过 Candidate Mission、确定性 late resolution 和安全感知分配生成复合执行消息。当前 PX4 主 setpoint 仍使用既有 Minimum-Jerk/IAPF 路径；LADRC 输出接入 PX4 的最终合成将在后续单独重构。
+基于大型语言模型 (LLM) 和 ROS 2 的多无人机集群编队系统。操作员输入自然语言指令，系统通过 Candidate Mission、确定性 late resolution 和安全感知分配生成复合执行消息。执行层默认由 LADRC 生成平动加速度并通过 PX4 acceleration-level Offboard 接口闭环跟踪。
 
 ## 系统架构
 
@@ -26,13 +26,13 @@ Natural Language → LLM → Candidate Mission → Mission Graph / FSM
 |------|--------|------|
 | **认知层** | Python + LLM API | 自然语言 → 规范 JSON 蓝图（编队类型、参数、时间、运动风格） |
 | **调度层** | Python ROS 2 (`location_allocate`) | 坐标生成、匈牙利算法防交叉分配、状态闭环、多任务编排 |
-| **执行层** | C++ ROS 2 (`ladrc_controller`) | profile 检查与 LADRC runtime、Minimum Jerk 轨迹、IAPF 分布式避障；LADRC→PX4 合成待后续完成 |
+| **执行层** | C++ ROS 2 (`ladrc_controller`) | profile 检查、Minimum Jerk 轨迹、IAPF 分布式避障和 LADRC acceleration-level 外环 |
 
 ## 核心特性
 
 - **自然语言控制**：支持单一/复合/并行编队指令，如"1到5号机组成圆形，6到8号机组成直线"
 - **匈牙利防交叉分配**：全局最优目标分配，避免飞行轨迹交叉
-- **LADRC profile 边界**：新路径由中央 Execution Profile Compiler 确定性生成参数；控制器校验、硬限幅和平滑应用，但当前 LADRC 输出尚未进入 PX4 主 setpoint
+- **LADRC profile 边界**：新路径由中央 Execution Profile Compiler 确定性生成参数；控制器校验、硬限幅和平滑应用，LADRC 输出直接进入 PX4 acceleration setpoint
 - **IAPF 分布式避障**：基于相对速度、滞回和平滑的双通道斥力，使用确定性成对垂直逃逸方向缓解局部极小值
 - **多机命名空间隔离**：自动话题重映射，兼容 PX4 多实例 Gazebo 仿真
 - **闭环状态反馈**：基于真实悬停检测推进任务序列
@@ -244,6 +244,10 @@ LLM_swarm_ws/
 ## 关键参数 (`ladrc_params.yaml`)
 
 ```yaml
+# 外部平动控制模式（默认使用 LADRC 加速度外环）
+control_mode: "ladrc_acceleration"  # 或 "px4_position"
+idle_hover_safety_factor: 1.0       # 首次任务前悬停避障系数
+
 # X/Y 轴 LADRC
 omega_o_x: 10.0    # 观测器带宽
 omega_c_x: 3.0     # 控制器带宽
@@ -264,6 +268,18 @@ iapf_enter_distance: 1.5     # 进入避障阈值 (m)
 iapf_exit_distance: 1.65     # 退出避障阈值 (m)
 iapf_filter_alpha: 0.2       # 偏移低通滤波系数
 iapf_repulsion_gain: 20.0    # 斥力增益
+```
+
+两种控制模式：
+
+- `ladrc_acceleration`：Minimum Jerk → IAPF 安全参考 → LADRC → `TrajectorySetpoint.acceleration`。PX4 继续执行姿态、角速度和电机内环。
+- `px4_position`：保留 Minimum Jerk + IAPF + PX4 位置控制器路径，用于论文基线对照。
+
+可在启动时切换，例如：
+
+```bash
+ros2 launch ladrc_controller swarm_launch.py \
+  uav_ids:=[1,2,3] control_mode:=px4_position
 ```
 
 ## 数据协议
@@ -313,6 +329,15 @@ float32 settling_time
 float32 tracking_rmse
 ```
 
+### ControlTrackingDebug
+
+`/uav{N}/control_tracking_debug` 以控制频率发布结构化数据，包含标称/安全位置、速度和加速度参考、LADRC 输出、LESO `z1/z2/z3`、实际位置/速度、跟踪误差，以及实际写入 PX4 的 NED setpoint。实验时可直接记录：
+
+```bash
+ros2 bag record /uav1/control_tracking_debug \
+  /px4_1/fmu/in/offboard_control_mode /px4_1/fmu/in/trajectory_setpoint
+```
+
 ### UAVStatus
 
 ```text
@@ -331,9 +356,9 @@ Executable LFS + ResolutionTrace → Execution Profile Compiler
     ↓
 UAVExecutionCommand → /uav{N}/execution_command
     ↓
-MinimumJerkTrajectory + profile-checked LADRC runtime + IAPF
+Minimum Jerk nominal reference → IAPF safe reference → LADRC tracking
     ↓
-现有 PX4 Offboard 位置/Minimum-Jerk/IAPF setpoint 路径（NED 坐标）
+PX4 Offboard acceleration setpoint（ENU → NED）→ PX4 inner loops
     ↓
 Gazebo 物理仿真
     ↓
@@ -341,7 +366,7 @@ UAVStatus + /uav{N}/swarm_state (nav_msgs/Odometry, world ENU)
 → Candidate 调度器闭环反馈
 ```
 
-注意：当前 LADRC `update()` 输出尚未接入 PX4 acceleration/setpoint 主通道；本轮也没有实现 profile velocity/jerk 的 controller runtime enforcement。旧 `/uavN/odom : geometry_msgs/Point` 继续供 legacy scheduler 使用。
+默认 `ladrc_acceleration` 模式下，PX4 setpoint 的 position/velocity 字段为 NaN，acceleration 字段为 LADRC 输出经 ENU→NED 转换后的结果。无任务时锁定当前位置，任务结束后保持最终目标，并持续运行 IAPF 与 LADRC。`px4_position` 参数保留原位置控制基线。旧 `/uavN/odom : geometry_msgs/Point` 继续供 legacy scheduler 使用。
 
 ## 已知限制
 
