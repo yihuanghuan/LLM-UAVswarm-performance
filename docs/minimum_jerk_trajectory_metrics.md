@@ -1,10 +1,12 @@
 # Minimum Jerk Trajectory Metrics
 
-## 修改内容
+## Current runtime interface
 
-执行层现在会在每架无人机收到新的 `swarm_command` 后计算 Minimum Jerk 三维轨迹指标，并持续发布最近一次任务的指标。
+执行层会在每架无人机收到新的 `UAVExecutionCommand`（或显式 legacy
+`UAVSwarmCommand`）后计算 Minimum Jerk 三维轨迹指标，并持续发布最近一次
+任务的指标。Candidate 新路径的时长只来自 `profile.duration=T_exec`。
 
-新增 ROS 2 topic：
+ROS 2 topic：
 
 ```text
 /uav{N}/trajectory_metrics
@@ -76,7 +78,7 @@ integrated_squared_jerk = 720 * d^2 / T^5
 - `is_finished`：Minimum Jerk 时间参数是否到达末端。
 - `is_hover_stable`：复用原有悬停稳定判定结果。
 
-## 验证方式
+## Runtime inspection
 
 构建验证：
 
@@ -100,7 +102,7 @@ ros2 topic echo /uav1/trajectory_metrics
 
 ## 实验后处理工具
 
-新增 `tools/trajectory_metrics/`，用于把运行时 topic 数据整理成可复现实验结果。
+`tools/trajectory_metrics/` 用于把运行时 topic 数据整理成可复现实验结果。
 
 ### 快速 CSV 落盘
 

@@ -354,8 +354,41 @@ def _validate_policy(
             )
         if timing["final_recheck_tolerance"] != 0.0:
             raise PolicyLoadError("paper final_recheck_tolerance must be zero")
-        if any(value != 1.0 for value in profile["style_gains"].values()):
-            raise PolicyLoadError("paper-current style gains must be neutral")
+        style_gains = profile["style_gains"]
+        if not (
+            style_gains["smooth"] < style_gains["normal"] == 1.0
+            < style_gains["aggressive"]
+        ):
+            raise PolicyLoadError(
+                "paper motion style gains must satisfy smooth < normal == 1 "
+                "< aggressive"
+            )
+        auto_factors = timing["auto_style_factors"]
+        if not (
+            auto_factors["smooth"] >= auto_factors["normal"]
+            >= auto_factors["aggressive"] >= 1.0
+        ):
+            raise PolicyLoadError(
+                "paper auto timing factors must satisfy smooth >= normal >= "
+                "aggressive >= 1"
+            )
+        for label, gain in style_gains.items():
+            compiled_c = tuple(value * gain for value in profile["baseline_omega_c"])
+            compiled_o = tuple(value * gain for value in profile["baseline_omega_o"])
+            if any(
+                value < low or value > high
+                for value, low, high in zip(
+                    compiled_c, controller.omega_c_min, controller.omega_c_max
+                )
+            ) or any(
+                value < low or value > high
+                for value, low, high in zip(
+                    compiled_o, controller.omega_o_min, controller.omega_o_max
+                )
+            ):
+                raise PolicyLoadError(
+                    f"paper {label} execution profile must be within controller clamps"
+                )
         if controller.smoothing_alpha != 1.0:
             raise PolicyLoadError("paper-current smoothing_alpha must be 1.0")
         if mapping_type != "hard_anchored_linear":

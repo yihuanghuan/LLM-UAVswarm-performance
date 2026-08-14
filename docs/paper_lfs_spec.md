@@ -114,10 +114,11 @@ separation, late binding, validation layers, ordered sequential/parallel
 missions, task-U centroid, versioned English prompt/hash and fail-closed Paper
 execution.
 
-`lfs_policy.paper_current.yaml` remains runnable but its physical environment,
-algorithm-calibration and future semantic-controller values retain their current
-provisional/baseline status. See `paper_parameter_calibration.md`; no number is
-made paper-final by this semantic freeze.
+`lfs_policy.paper_current.yaml` remains runnable, and the semantic-controller
+interface is enabled. Its physical-environment, algorithm and motion-style
+multipliers retain provisional calibration status. See
+`paper_parameter_calibration.md`; no number is made paper-final by this
+architecture freeze.
 
 Legacy is entered only through `lfs_runtime_mode=legacy_v1`. Its implementation
 lives under `location_allocate/legacy/`; compatibility shims preserve historical
@@ -127,6 +128,10 @@ FormationGenerator behavior, Lineup/Free, `/uavN/odom`, UAVSwarmCommand and its
 automatic disjoint-U grouping. Paper runtime imports none of these and Candidate
 failure never falls back to legacy.
 
-This specification does not claim that LADRC output drives the final PX4
-setpoint, does not add velocity/jerk controller enforcement, and does not alter
-Minimum-Jerk/LADRC/IAPF control synthesis.
+The current execution implementation applies the compiled `omega_c/omega_o`
+to LSEF/LESO. In explicit `ladrc_acceleration` mode, the resulting LADRC output
+is converted from ENU to NED and is the only finite field in the PX4
+`TrajectorySetpoint.acceleration` channel. The default launch mode remains the
+`px4_position` comparison baseline. This semantic-style enablement does not add
+velocity/jerk controller enforcement and does not alter Minimum-Jerk, LADRC, or
+IAPF mathematics.

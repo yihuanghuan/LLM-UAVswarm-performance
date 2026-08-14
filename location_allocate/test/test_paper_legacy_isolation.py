@@ -73,7 +73,7 @@ def test_legacy_runtime_uses_explicit_legacy_components():
     assert "safety_aware_allocator" not in allocator_source
 
 
-def test_paper_policy_freezes_parallel_max_and_neutral_profile():
+def test_paper_policy_freezes_parallel_max_and_enables_style_only_profile():
     config, policy = load_runtime_policy(PAPER_POLICY)
 
     assert config.allocator["parallel_d_plan_aggregation"] == "max"
@@ -83,7 +83,11 @@ def test_paper_policy_freezes_parallel_max_and_neutral_profile():
         "parallel_d_plan_aggregation",
     }
     assert config.timing["final_recheck_tolerance"] == 0.0
-    assert set(policy.profile.style_gains.values()) == {1.0}
+    assert policy.profile.style_gains == {
+        "smooth": 0.8,
+        "normal": 1.0,
+        "aggressive": 1.1,
+    }
     assert policy.profile.task_adaptation_type == "identity"
     assert config.controller.smoothing_alpha == 1.0
 

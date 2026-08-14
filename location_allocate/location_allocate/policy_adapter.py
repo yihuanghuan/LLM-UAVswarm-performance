@@ -26,6 +26,7 @@ def build_late_resolution_policy(config: LoadedPolicy) -> LateResolutionPolicy:
     timing = config.timing
     allocator = config.allocator
     profile = config.execution_profile
+    controller = config.controller
     motion_limits = MotionLimits(**config.motion_limits)
 
     scale_policy = ScalePolicy(
@@ -43,6 +44,37 @@ def build_late_resolution_policy(config: LoadedPolicy) -> LateResolutionPolicy:
         auto_style_factors=timing["auto_style_factors"],
         configuration_id=config.configuration_id,
     )
+    # Derive the compiler's scalar gain envelope from the controller's
+    # per-axis hard clamps. The semantic policy selects a value inside this
+    # envelope; the envelope itself remains only an abnormal-profile guard.
+    minimum_gain = max(
+        *(
+            low / baseline
+            for low, baseline in zip(
+                controller.omega_c_min, profile["baseline_omega_c"]
+            )
+        ),
+        *(
+            low / baseline
+            for low, baseline in zip(
+                controller.omega_o_min, profile["baseline_omega_o"]
+            )
+        ),
+    )
+    maximum_gain = min(
+        *(
+            high / baseline
+            for high, baseline in zip(
+                controller.omega_c_max, profile["baseline_omega_c"]
+            )
+        ),
+        *(
+            high / baseline
+            for high, baseline in zip(
+                controller.omega_o_max, profile["baseline_omega_o"]
+            )
+        ),
+    )
     profile_policy = ExecutionProfilePolicy(
         base_omega_c=profile["baseline_omega_c"],
         base_omega_o=profile["baseline_omega_o"],
@@ -52,7 +84,7 @@ def build_late_resolution_policy(config: LoadedPolicy) -> LateResolutionPolicy:
         task_gain_intercept=None,
         task_gain_slope=None,
         task_gain_range=None,
-        total_gain_range=(1.0, 1.0),
+        total_gain_range=(minimum_gain, maximum_gain),
         motion_limits=motion_limits,
         configuration_id=config.configuration_id,
     )

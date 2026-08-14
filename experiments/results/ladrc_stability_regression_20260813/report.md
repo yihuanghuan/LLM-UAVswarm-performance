@@ -102,7 +102,10 @@
 - `experiments/results/ladrc_stability_regression_20260813/report.md`
 - `experiments/results/ladrc_stability_regression_20260813/rosbags/`
 
-`px4_position` 默认模式和控制路径未修改；此前当前 main 上的 8 UAV full-chain baseline 证据保留在 `experiments/system_8uav/reports/2026-08-13_3_p0_fix_acceptance.md`。本轮没有覆盖任何历史报告或 `experiments_10` 数据。
+`px4_position` 默认模式和控制路径未修改；当前 command-to-control full-chain
+baseline 的正式结论见
+`experiments/results/freeze_command_to_control_v1_20260814/acceptance_report.md`。
+本报告保留的是 LADRC 稳定性参数的唯一复现实验证据。
 
 ## 9. 最终判断
 

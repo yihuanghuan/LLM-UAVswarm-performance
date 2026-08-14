@@ -1,104 +1,77 @@
-# LADRC Control Adaptation Logging
+# Execution Profile and Control Adaptation Logging
 
-## 修改内容
+The Paper Candidate path compiles motion style centrally. The controller does
+not infer gains from distance or average speed.
 
-本次修改将执行层的 `motion_style → gain_multiplier` 固定映射改为任务条件化带宽计算，并增加控制适应日志。
-
-调度器现在会把 `task_sequence_id` 写入 `UAVSwarmCommand.mission_id`，执行层据此把多架无人机的同一子任务日志对齐。
-
-新增 ROS 2 topic：
+## Current profile policy
 
 ```text
-/uav{N}/control_adaptation
+task_adaptation_type = identity
+task_gain = 1.0
+total_gain = style_gain
+omega_c = baseline_omega_c * total_gain
+omega_o = baseline_omega_o * total_gain
 ```
 
-消息类型：
+The current `paper-current-v6` development values are:
+
+| style | style gain | omega_c | omega_o |
+|---|---:|---|---|
+| smooth | 0.8 | `[1.2,1.2,1.4]` | `[4,4,6]` |
+| normal | 1.0 | `[1.5,1.5,1.75]` | `[5,5,7.5]` |
+| aggressive | 1.1 | `[1.65,1.65,1.925]` | `[5.5,5.5,8.25]` |
+
+All values remain inside the independent 0.75x–1.25x controller hard-clamp
+envelope. These multipliers are provisional, not paper-final.
+
+## Application path
+
+`UAVExecutionCommand.profile` carries duration, style, compiled bandwidths,
+motion limits, soft IAPF values, configuration ID, style gain, and task gain.
+The controller rejects incomplete/non-finite values, clamps against injected
+hard limits, and applies the accepted bandwidths to LSEF and LESO. Current
+`smoothing_alpha=1.0` means immediate guarded application.
+
+Legacy `UAVSwarmCommand.motion_style` remains record-only and restores the YAML
+baseline; it never enters this semantic profile path.
+
+## Runtime topics
+
+`/uav{N}/control_adaptation` publishes
+`uav_swarm_interfaces/msg/ControlAdaptationLog` with:
 
 ```text
-uav_swarm_interfaces/msg/ControlAdaptationLog
+mission_id, uav_id, motion_style
+target_distance, duration, average_speed
+gain_multiplier
+omega_o_x/y/z, omega_c_x/y/z
+peak_velocity, peak_acceleration
+settling_time, tracking_rmse
 ```
 
-新增 CSV：
+The topic is published at the low-frequency metrics cadence. A CSV row is
+written when the task first reaches stable hover, or before a later command
+replaces it:
 
 ```text
 logs/control_adaptation_log.csv
 ```
 
-## 带宽计算
+`/uav{N}/control_tracking_debug` provides control-rate nominal/safe references,
+LADRC output, LESO z1/z2/z3, tracking error, position-derived velocity, and the
+actual PX4 setpoint. `/uav{N}/trajectory_metrics` provides the analytic
+Minimum-Jerk peaks and final task state.
 
-执行层新增函数：
-
-```cpp
-double computeSemanticTaskGain(
-    const std::string& motion_style,
-    double target_distance,
-    double duration);
-```
-
-计算方式：
-
-```text
-average_speed = target_distance / max(duration, 1e-3)
-kappa = clamp(style_base * (0.75 + 0.25 * average_speed / style_v_ref), 0.5, 2.0)
-omega_o_new = kappa * omega_o_base
-omega_c_new = kappa * omega_c_base
-```
-
-默认参数：
-
-```text
-smooth     style_base=0.75  style_v_ref=1.0 m/s
-normal     style_base=1.00  style_v_ref=1.8 m/s
-aggressive style_base=1.30  style_v_ref=2.6 m/s
-```
-
-未知 `motion_style` 按 `normal` 处理并输出 warning。
-
-## 日志字段
-
-`ControlAdaptationLog` 和 CSV 均记录：
-
-```text
-mission_id
-uav_id
-motion_style
-target_distance
-duration
-average_speed
-gain_multiplier
-omega_o_x
-omega_o_y
-omega_o_z
-omega_c_x
-omega_c_y
-omega_c_z
-peak_velocity
-peak_acceleration
-settling_time
-tracking_rmse
-```
-
-topic 按控制节点低频指标节奏持续发布。CSV 在任务首次稳定悬停时写入一行汇总；如果任务被新命令覆盖，则先写入旧任务当前汇总。
-
-## 验证方式
-
-构建验证：
-
-```bash
-cd ~/learning/LLM_swarm_ws
-source /opt/ros/humble/setup.bash
-source install/setup.bash
-colcon build --symlink-install \
-  --paths src/LLM-UAVswarm-performance/uav_swarm_interfaces \
-          src/LLM-UAVswarm-performance/minisnap_LADRC/ladrc_controller \
-          src/LLM-UAVswarm-performance/location_allocate \
-  --packages-select uav_swarm_interfaces ladrc_controller location_allocate \
-  --allow-overriding uav_swarm_interfaces ladrc_controller location_allocate
-```
-
-仿真中查看：
+## Verification
 
 ```bash
 ros2 topic echo /uav1/control_adaptation
-tail -f src/LLM-UAVswarm-performance/logs/control_adaptation_log.csv
+ros2 topic echo /uav1/control_tracking_debug
+tail -f logs/control_adaptation_log.csv
 ```
+
+For reproducible analysis, record all three topics plus
+`/uav{N}/execution_command`; the semantic motion-style validation scripts under
+`experiments/system_motion_style/` extract compiled/applied omega equality,
+saturation, LESO peaks, tracking metrics, and LADRC→PX4 acceleration-link
+consistency.

@@ -117,7 +117,7 @@ def test_natural_language_fixture_reaches_execution_commands_with_late_snapshot(
         for command in task_commands
     )
     assert {command.profile.configuration_id for command in commands} == {
-        "paper-current-v3"
+        "paper-current-v6"
     }
     assert len(resolved[0].trace.policy_hash) == 64
     assert resolved[0].trace.schema_version == "paper-candidate-schema-v2"

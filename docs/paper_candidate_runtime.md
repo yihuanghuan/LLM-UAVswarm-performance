@@ -55,7 +55,7 @@ Paper Candidate `F` 是结构化 descriptor，例如 `{"type":"Circle"}` 或 `{"
 ## Policy 层级
 
 - `location_allocate/config/lfs_policy.template.yaml`：完整字段模板，允许 null/TBD，production loader 必须拒绝。
-- `lfs_policy/config/lfs_policy.paper_current.yaml`：当前论文主路径，`configuration_id=paper-current-v2`；包含 provisional 数值。
+- `lfs_policy/config/lfs_policy.paper_current.yaml`：当前论文主路径，`configuration_id=paper-current-v6`；包含 provisional 数值。
 - `lfs_policy/config/lfs_policy.legacy.yaml`：只供显式历史兼容。
 - 未来 `lfs_policy_experiment_*.yaml`：实验冻结后另建，本轮不存在 paper-final policy。
 
@@ -105,7 +105,12 @@ Point target_pos
 ExecutionProfile profile
 ```
 
-`profile.duration` 来自最终 `T_exec`，是新路径唯一 duration。Profile 的 style/task gain 在 paper-current policy 中恒为 1，LADRC 使用现有 baseline。velocity/acceleration/jerk limits 当前用于 timing、完整性检查和审计；controller 没有新增 velocity/jerk runtime enforcement。
+`profile.duration` 来自最终 `T_exec`，是新路径唯一 duration。当前
+paper-current policy 只启用 motion style：`style_gain` 为
+`0.8/1.0/1.1`，`task_adaptation_type=identity` 且 `task_gain=1.0`。
+Compiler 将总 gain 同时作用于 `omega_c/omega_o`。velocity、acceleration、
+jerk limits 用于 timing、完整性检查和审计；controller 没有新增
+velocity/jerk runtime enforcement。
 
 控制器收到新命令后会进行 finite、hard clamp 和 smooth apply，并发布本任务代际的 `is_hover_stable=false`。Scheduler 只有看到该 false 后才接受后续 true，避免上一任务状态误判。
 
@@ -119,10 +124,15 @@ ExecutionProfile profile
 
 记录 Candidate、configuration ID、snapshot source/receive timestamp、center/scale/timing 来源、correction、fallback warning和 rejection reason。它与 Executable LFS 八元组分离，不写入或覆盖历史 `experiments/results`。
 
-## 当前明确未完成的控制工作
+## 当前控制边界
 
-- LADRC `update()` 输出尚未接入 PX4 acceleration/setpoint 主通道。
-- semantic LADRC style/task adaptation 尚未重新实验设计和冻结。
-- profile velocity/jerk limit 尚未成为 controller runtime enforcement。
-- Minimum-Jerk、LADRC 与 IAPF 的最终合成公式本轮未改变。
-- Lineup/Free 已从 paper Candidate vocabulary 删除；legacy 行为不变。
+- 显式 `T` 在动态可行时保持不变；style 只改变 controller profile。
+- `T=auto` 使用 provisional factor：smooth/normal/aggressive 为
+  `1.30/1.15/1.10`，且始终不小于 `T_min`。
+- Controller 先做 finite check 和 hard clamp，再原子应用 profile；当前
+  `smoothing_alpha=1.0`，不做跨周期渐变。
+- `ladrc_acceleration` 模式中，LADRC `update()` 输出已接入 PX4
+  acceleration setpoint；默认 `px4_position` 仍是对照基线。
+- task-dependent adaptation 尚未启用；profile velocity/jerk limit 尚未成为
+  controller runtime enforcement。
+- Minimum-Jerk、LADRC 与 IAPF 的数学未改变。Lineup/Free 只属于 legacy。

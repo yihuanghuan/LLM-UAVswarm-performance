@@ -1,80 +1,44 @@
-# IAPF acceleration feedforward update
+# IAPF Position and Acceleration Integration
 
-## Summary
-
-This change makes the IAPF repulsion vector affect both the position and
-acceleration parts of the PX4 `TrajectorySetpoint`:
+IAPF modifies the frozen Minimum-Jerk reference before LADRC:
 
 ```text
-p_ref_new = p_ref + iapf_position_gain * F_rep
-a_ref_new = a_ref + iapf_accel_gain * F_rep
+p_safe = p_MJ + clamp(iapf_position_gain * F_rep, position_limit)
+a_safe = a_MJ + clamp(iapf_accel_gain * F_rep, acceleration_limit)
+LADRC(p_safe, v_MJ, a_safe, measurement) -> acceleration command
 ```
 
-The acceleration contribution is bounded before it is published, so the
-repulsion force cannot directly produce an excessive acceleration setpoint.
+Both offsets pass through the configured first-order filter. Acceleration
+offset is present only in `iapf_dual`; other active modes use the position
+offset alone.
 
-## Changed files
+## Current modes
 
-- `minisnap_LADRC/ladrc_controller/src/ladrc_position_controller_node.cpp`
-  - Added ROS parameters for acceleration feedforward enablement, position
-    gain, acceleration gain, and acceleration limit.
-  - Replaced the hard-coded IAPF position gain with `iapf_position_gain`.
-  - Added `iapf_accel_gain * F_rep` to the minimum-jerk acceleration reference.
-  - Clamped the IAPF acceleration contribution to `iapf_accel_limit`.
-  - Publishes acceleration in PX4 NED coordinates when
-    `enable_iapf_accel_feedforward` is true:
-    `NED.x = ENU.y`, `NED.y = ENU.x`, `NED.z = -ENU.z`.
-- `minisnap_LADRC/ladrc_controller/config/ladrc_params.yaml`
-  - Added defaults:
-    - `enable_iapf_accel_feedforward: true`
-    - `iapf_position_gain: 0.05`
-    - `iapf_accel_gain: 0.3`
-    - `iapf_accel_limit: 2.0`
+`avoidance_mode` is the authoritative launch/runtime selector:
 
-## Compatibility notes
+| mode | position offset | acceleration offset | velocity-aware escape |
+|---|---|---|---|
+| `off` | no | no | no |
+| `classic_position` | yes | no | no |
+| `iapf_position` | yes | no | yes |
+| `iapf_dual` | yes | yes | yes |
 
-- When `enable_iapf_accel_feedforward` is false, acceleration remains
-  `{NAN, NAN, NAN}` as before, preserving the original position-only PX4
-  behavior.
-- Hover-hold setpoints still use the default position-only path.
-- `safety_factor <= 0.0` still disables IAPF by returning a zero repulsion
-  vector.
+The compatibility parameter `enable_iapf_accel_feedforward` is deprecated and
+must not be set together with `avoidance_mode`.
 
-## Verification
+## Controller-mode boundary
 
-- Built the affected package:
+In `ladrc_acceleration` control mode, LADRC is the unique final translational
+acceleration command; its finite ENU output is converted to NED and published
+through `TrajectorySetpoint.acceleration`. In the `px4_position` comparison
+mode, the safe position reference is published and acceleration feedforward is
+included only for `iapf_dual`.
 
-```bash
-source /opt/ros/humble/setup.bash
-source /home/yihuang/learning/LLM_swarm_ws/install/setup.bash
-colcon build --symlink-install --packages-select ladrc_controller
-```
+Current YAML defaults include `iapf_position_gain=0.05`,
+`iapf_position_limit=0.50`, `iapf_accel_gain=0.30`, and
+`iapf_accel_limit=2.00`. Candidate Execution Profile supplies the current soft
+enter/exit distances and repulsion scale; controller hard safety parameters
+remain independent guards.
 
-Result: `ladrc_controller` finished successfully. Colcon also reported the
-known workspace-local `llm_env` NumPy example package-identification errors
-while scanning the workspace, but they did not prevent the selected package
-from building.
-
-- Ran a PX4 Gazebo Classic single-vehicle simulation:
-
-```bash
-MicroXRCEAgent udp4 -p 8888
-cd /home/yihuang/PX4-Autopilot
-make px4_sitl gazebo-classic
-```
-
-The single PX4 instance exposed `/fmu/...` ROS 2 topics, so the controller was
-started under `/uav1` with explicit single-instance remaps to `/fmu/...`.
-
-The README single-vehicle command was then published to `/uav1/swarm_command`
-with target `[3.0, 0.0, 3.0]`, duration `5.0`, and `safety_factor: 0.0`.
-
-Observed result:
-
-- The controller received odometry and entered `RUNNING_TRAJECTORY`.
-- PX4 armed from the external command and detected takeoff.
-- The controller received the swarm command and generated the minimum-jerk
-  reference.
-- `/fmu/in/trajectory_setpoint` contained finite acceleration values instead of
-  `{NAN, NAN, NAN}`.
-- `/uav1/status` reported `is_hover_stable: true` after reaching the target.
+This document describes the existing IAPF interface. The semantic motion-style
+enablement does not change IAPF equations, modes, gains, or thresholds.

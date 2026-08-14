@@ -37,7 +37,7 @@ def test_template_is_not_a_production_policy():
 def test_paper_current_has_hash_status_and_explicit_clamp_warning():
     policy = load_paper_policy(PAPER)
 
-    assert policy.configuration_id == "paper-current-v3"
+    assert policy.configuration_id == "paper-current-v6"
     assert policy.status == "paper_current"
     assert len(policy.policy_hash) == 64
     assert policy.parameter_status["architecture_rules"] == "paper-frozen"
@@ -49,6 +49,42 @@ def test_paper_current_has_hash_status_and_explicit_clamp_warning():
     assert [parameters[f"omega_o_{axis}"] for axis in "xyz"] == [
         5.0, 5.0, 7.5
     ]
+    assert policy.execution_profile["style_gains"] == {
+        "smooth": 0.8,
+        "normal": 1.0,
+        "aggressive": 1.1,
+    }
+    assert policy.timing["auto_style_factors"] == {
+        "smooth": 1.3,
+        "normal": 1.15,
+        "aggressive": 1.1,
+    }
+    assert policy.controller.omega_c_min == (1.125, 1.125, 1.3125)
+    assert policy.controller.omega_c_max == (1.875, 1.875, 2.1875)
+
+
+@pytest.mark.parametrize("family", ["omega_c", "omega_o"])
+def test_all_paper_style_profiles_are_ordered_and_inside_hard_clamps(family):
+    policy = load_paper_policy(PAPER)
+    baseline = policy.execution_profile[f"baseline_{family}"]
+    gains = policy.execution_profile["style_gains"]
+    compiled = {
+        style: tuple(value * gains[style] for value in baseline)
+        for style in ("smooth", "normal", "aggressive")
+    }
+    lower = getattr(policy.controller, f"{family}_min")
+    upper = getattr(policy.controller, f"{family}_max")
+
+    for axis in range(3):
+        assert (
+            compiled["smooth"][axis]
+            < compiled["normal"][axis]
+            < compiled["aggressive"][axis]
+        )
+        assert all(
+            lower[axis] <= values[axis] <= upper[axis]
+            for values in compiled.values()
+        )
 
 
 def test_paper_runtime_rejects_legacy_policy():
@@ -72,9 +108,27 @@ def test_paper_runtime_rejects_legacy_policy():
         ),
         (
             lambda data: data["execution_profile"].update(
-                baseline_omega_c=[1.5, 1.5, 1.8]
+                baseline_omega_c=[2.0, 1.5, 1.75]
             ),
             "baseline_omega_c",
+        ),
+        (
+            lambda data: data["execution_profile"]["style_gains"].update(
+                aggressive=1.0
+            ),
+            "smooth < normal",
+        ),
+        (
+            lambda data: data["timing"]["auto_style_factors"].update(
+                aggressive=0.9
+            ),
+            "aggressive >= 1",
+        ),
+        (
+            lambda data: data["controller_hard_clamps"].update(
+                omega_c_max=[1.6, 1.6, 1.9]
+            ),
+            "aggressive execution profile",
         ),
     ],
 )

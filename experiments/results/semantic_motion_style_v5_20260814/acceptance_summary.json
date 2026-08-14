@@ -1,0 +1,129 @@
+{
+  "trial_count_by_style": {
+    "aggressive": 1
+  },
+  "candidate_completed_all": true,
+  "readiness_4_of_4_all": true,
+  "segment_count": 8,
+  "motion_style_matches_manifest_all": true,
+  "task3_received_4_of_4_all": true,
+  "profile": {
+    "aggressive": {
+      "style_gain": 1.2000000476837158,
+      "task_gain": 1.0,
+      "omega_c": [
+        1.7999999523162842,
+        1.7999999523162842,
+        2.0999999046325684
+      ],
+      "omega_o": [
+        6.0,
+        6.0,
+        9.0
+      ]
+    }
+  },
+  "configuration_ids": [
+    "paper-current-v5"
+  ],
+  "profile_application_max_abs_error": 0.0,
+  "explicit_t_all_8_s": true,
+  "auto_duration_order": [],
+  "auto_duration_strict_order_all": false,
+  "auto_feasibility": [
+    {
+      "style": "aggressive",
+      "trial": 1,
+      "task_id": 2,
+      "t_exec_s": 4.0026984214782715,
+      "t_min_s": 3.6388167415529695,
+      "ratio": 1.1000000015856817
+    },
+    {
+      "style": "aggressive",
+      "trial": 1,
+      "task_id": 3,
+      "t_exec_s": 3.0838379859924316,
+      "t_min_s": 2.80348913725162,
+      "ratio": 1.0999999768201882
+    }
+  ],
+  "auto_t_at_or_above_t_min_all": true,
+  "predicted_motion_limits_respected_all": true,
+  "finished_all": true,
+  "hard_safety_violation_count": 0,
+  "minimum_neighbor_distance_m": 1.6597820520401,
+  "iapf_active_fraction_max": 0,
+  "px4_acceleration_link_max_error": 2.32158802419691e-07,
+  "metrics_by_style_task": {
+    "aggressive:task1": {
+      "uav_segments": 2,
+      "t_exec_mean_s": 8.0,
+      "tracking_rmse_mean_m": 0.022395985670330534,
+      "tracking_rmse_max_m": 0.027198952781088113,
+      "peak_tracking_error_max_m": 0.05188212751857861,
+      "final_position_error_max_m": 0.030804695561528206,
+      "speed_peak_max_mps": 1.2708137434981235,
+      "saturation_fraction_mean": 0,
+      "saturation_fraction_max": 0,
+      "leso_z2_peak_max": 1.3696457753499183,
+      "leso_z3_peak_max": 0.9833036316732204,
+      "overshoot_max_m": 0.028822345722589546,
+      "settling_time_mean_s": 9.031009435653687,
+      "settling_time_max_s": 9.040044784545898,
+      "switch_first_0_5s_peak_error_max_m": 0.01985279248915868,
+      "switch_first_0_5s_saturation_fraction_max": 0,
+      "measured_acceleration_p99_max_mps2": 3.1157317833607614,
+      "measured_jerk_p99_max_mps3": 65.48071215474383,
+      "predicted_peak_velocity_max_mps": 1.270735502243042,
+      "predicted_peak_acceleration_max_mps2": 0.48910629749298096,
+      "predicted_peak_jerk_max_mps3": 0.635367751121521
+    },
+    "aggressive:task2": {
+      "uav_segments": 2,
+      "t_exec_mean_s": 4.0026984214782715,
+      "tracking_rmse_mean_m": 0.1363627885613956,
+      "tracking_rmse_max_m": 0.14416767424255633,
+      "peak_tracking_error_max_m": 0.326946782962817,
+      "final_position_error_max_m": 0.09984140843153,
+      "speed_peak_max_mps": 3.759895225613645,
+      "saturation_fraction_mean": 0.09479553903345725,
+      "saturation_fraction_max": 0.10408921933085502,
+      "leso_z2_peak_max": 4.16585438291106,
+      "leso_z3_peak_max": 1.7964596622264766,
+      "overshoot_max_m": 0.10831543342733166,
+      "settling_time_mean_s": 5.367722034454346,
+      "settling_time_max_s": 5.376758098602295,
+      "switch_first_0_5s_peak_error_max_m": 0.0793218940314427,
+      "switch_first_0_5s_saturation_fraction_max": 0,
+      "measured_acceleration_p99_max_mps2": 4.893360698879228,
+      "measured_jerk_p99_max_mps3": 84.99984434303003,
+      "predicted_peak_velocity_max_mps": 3.761643886566162,
+      "predicted_peak_acceleration_max_mps2": 2.8937628269195557,
+      "predicted_peak_jerk_max_mps3": 7.513147830963135
+    },
+    "aggressive:task3": {
+      "uav_segments": 4,
+      "t_exec_mean_s": 3.0838379859924316,
+      "tracking_rmse_mean_m": 0.10954833058835067,
+      "tracking_rmse_max_m": 0.14759904762220957,
+      "peak_tracking_error_max_m": 0.24377990423112494,
+      "final_position_error_max_m": 0.12659354507923126,
+      "speed_peak_max_mps": 2.262102460054382,
+      "saturation_fraction_mean": 0,
+      "saturation_fraction_max": 0,
+      "leso_z2_peak_max": 2.571674392679139,
+      "leso_z3_peak_max": 1.4173505897515557,
+      "overshoot_max_m": 0.1449289444396617,
+      "settling_time_mean_s": 4.176031708717346,
+      "settling_time_max_s": 4.236250877380371,
+      "switch_first_0_5s_peak_error_max_m": 0.0924209321266614,
+      "switch_first_0_5s_saturation_fraction_max": 0,
+      "measured_acceleration_p99_max_mps2": 4.661026204991215,
+      "measured_jerk_p99_max_mps3": 80.7511131578609,
+      "predicted_peak_velocity_max_mps": 2.2328271865844727,
+      "predicted_peak_acceleration_max_mps2": 2.2294700145721436,
+      "predicted_peak_jerk_max_mps3": 7.513148307800293
+    }
+  }
+}

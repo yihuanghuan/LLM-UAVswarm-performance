@@ -1,0 +1,544 @@
+[
+  {
+    "manifest": {
+      "candidate_completed": true,
+      "cold_start": true,
+      "command": "First, have UAVs 1 and 2 form a line centered at [4, 4.5, 3] with radius 1 meter in exactly 8 seconds using aggressive motion and safety factor 1.0. After they are stable, have UAVs 1 and 2 form a line centered at [-4, 4.5, 3] with radius 1 meter with automatic duration, still using aggressive motion and safety factor 1.0. After that is stable, have UAVs 1 through 4 form a circle centered at [0, 7.5, 3] with radius 3 meters with automatic duration, using aggressive motion and safety factor 1.0.",
+      "control_mode": "ladrc_acceleration",
+      "finished_utc": "2026-08-14T09:09:03.781422+00:00",
+      "readiness": true,
+      "scheduler_returncode": 0,
+      "started_utc": "2026-08-14T09:06:30.777259+00:00",
+      "style": "aggressive",
+      "trial": 1,
+      "uav_ids": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "segments": [
+      {
+        "task_id": 1,
+        "uav_id": 1,
+        "motion_style": "aggressive",
+        "configuration_id": "paper-current-v5",
+        "style_gain": 1.2000000476837158,
+        "task_gain": 1.0,
+        "omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "applied_gain_multiplier": 1.2000000476837158,
+        "applied_omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "applied_omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "t_exec_s": 8.0,
+        "target_world": [
+          3.0,
+          4.5,
+          3.0
+        ],
+        "start_world": [
+          0.011343364603817463,
+          3.007880948483944,
+          1.5073055028915405
+        ],
+        "path_length_m": 3.65877366065979,
+        "predicted_peak_velocity_mps": 0.8575250506401062,
+        "predicted_peak_acceleration_mps2": 0.33006155490875244,
+        "predicted_peak_jerk_mps3": 0.4287625253200531,
+        "tracking_rmse_m": 0.017593018559572956,
+        "peak_tracking_error_m": 0.02849631575224354,
+        "switch_first_0_5s_peak_error_m": 0.01985279248915868,
+        "switch_first_0_5s_saturation_fraction": 0,
+        "settling_time_s": 9.040044784545898,
+        "overshoot_m": 0.015668273578977154,
+        "ladrc_saturation_fraction": 0,
+        "leso_z2_peak": 0.9020220129485147,
+        "leso_z3_peak": 0.5788755338229608,
+        "final_position_error_m": 0.00959594827145338,
+        "position_derived_speed_peak_mps": 0.8498123609184186,
+        "actual_velocity_peak_mps": 0.8443053697741574,
+        "actual_acceleration_p99_mps2": 1.7230166220892098,
+        "actual_jerk_p99_mps3": 40.158520506134515,
+        "px4_acceleration_link_max_error": 5.725534559738858e-08,
+        "iapf_active_fraction": 0,
+        "minimum_neighbor_distance_m": 1.6597820520401,
+        "hard_safety_violation": false,
+        "finished": true,
+        "hover_stable": false,
+        "debug_samples": 452
+      },
+      {
+        "task_id": 1,
+        "uav_id": 2,
+        "motion_style": "aggressive",
+        "configuration_id": "paper-current-v5",
+        "style_gain": 1.2000000476837158,
+        "task_gain": 1.0,
+        "omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "applied_gain_multiplier": 1.2000000476837158,
+        "applied_omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "applied_omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "t_exec_s": 8.0,
+        "target_world": [
+          5.0,
+          4.5,
+          3.0
+        ],
+        "start_world": [
+          0.01254072692245245,
+          6.012381298467517,
+          1.5053702592849731
+        ],
+        "path_length_m": 5.421804428100586,
+        "predicted_peak_velocity_mps": 1.270735502243042,
+        "predicted_peak_acceleration_mps2": 0.48910629749298096,
+        "predicted_peak_jerk_mps3": 0.635367751121521,
+        "tracking_rmse_m": 0.027198952781088113,
+        "peak_tracking_error_m": 0.05188212751857861,
+        "switch_first_0_5s_peak_error_m": 0.01798478050035147,
+        "switch_first_0_5s_saturation_fraction": 0,
+        "settling_time_s": 9.021974086761475,
+        "overshoot_m": 0.028822345722589546,
+        "ladrc_saturation_fraction": 0,
+        "leso_z2_peak": 1.3696457753499183,
+        "leso_z3_peak": 0.9833036316732204,
+        "final_position_error_m": 0.030804695561528206,
+        "position_derived_speed_peak_mps": 1.2708137434981235,
+        "actual_velocity_peak_mps": 1.317943951681322,
+        "actual_acceleration_p99_mps2": 3.1157317833607614,
+        "actual_jerk_p99_mps3": 65.48071215474383,
+        "px4_acceleration_link_max_error": 1.1002658676852905e-07,
+        "iapf_active_fraction": 0,
+        "minimum_neighbor_distance_m": 1.6597820520401,
+        "hard_safety_violation": false,
+        "finished": true,
+        "hover_stable": false,
+        "debug_samples": 453
+      },
+      {
+        "task_id": 2,
+        "uav_id": 1,
+        "motion_style": "aggressive",
+        "configuration_id": "paper-current-v5",
+        "style_gain": 1.2000000476837158,
+        "task_gain": 1.0,
+        "omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "applied_gain_multiplier": 1.2000000476837158,
+        "applied_omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "applied_omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "t_exec_s": 4.0026984214782715,
+        "target_world": [
+          -5.0,
+          4.5,
+          3.0
+        ],
+        "start_world": [
+          3.005141496658325,
+          4.507978439331055,
+          3.001936912536621
+        ],
+        "path_length_m": 8.005146026611328,
+        "predicted_peak_velocity_mps": 3.749882459640503,
+        "predicted_peak_acceleration_mps2": 2.8847148418426514,
+        "predicted_peak_jerk_mps3": 7.4896559715271,
+        "tracking_rmse_m": 0.14416767424255633,
+        "peak_tracking_error_m": 0.326946782962817,
+        "switch_first_0_5s_peak_error_m": 0.0793218940314427,
+        "switch_first_0_5s_saturation_fraction": 0,
+        "settling_time_s": 5.376758098602295,
+        "overshoot_m": 0.10366959047010929,
+        "ladrc_saturation_fraction": 0.10408921933085502,
+        "leso_z2_peak": 4.16585438291106,
+        "leso_z3_peak": 1.7964596622264766,
+        "final_position_error_m": 0.09984140843153,
+        "position_derived_speed_peak_mps": 3.759895225613645,
+        "actual_velocity_peak_mps": 4.341410341725989,
+        "actual_acceleration_p99_mps2": 4.893360698879228,
+        "actual_jerk_p99_mps3": 84.99984434303003,
+        "px4_acceleration_link_max_error": 2.2867101513348074e-07,
+        "iapf_active_fraction": 0,
+        "minimum_neighbor_distance_m": 1.943360686302185,
+        "hard_safety_violation": false,
+        "finished": true,
+        "hover_stable": false,
+        "debug_samples": 269
+      },
+      {
+        "task_id": 2,
+        "uav_id": 2,
+        "motion_style": "aggressive",
+        "configuration_id": "paper-current-v5",
+        "style_gain": 1.2000000476837158,
+        "task_gain": 1.0,
+        "omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "applied_gain_multiplier": 1.2000000476837158,
+        "applied_omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "applied_omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "t_exec_s": 4.0026984214782715,
+        "target_world": [
+          -3.0,
+          4.5,
+          3.0
+        ],
+        "start_world": [
+          5.030252933502197,
+          4.502115607261658,
+          3.0038673877716064
+        ],
+        "path_length_m": 8.030254364013672,
+        "predicted_peak_velocity_mps": 3.761643886566162,
+        "predicted_peak_acceleration_mps2": 2.8937628269195557,
+        "predicted_peak_jerk_mps3": 7.513147830963135,
+        "tracking_rmse_m": 0.1285579028802349,
+        "peak_tracking_error_m": 0.2860201115938636,
+        "switch_first_0_5s_peak_error_m": 0.07867898907487574,
+        "switch_first_0_5s_saturation_fraction": 0,
+        "settling_time_s": 5.3586859703063965,
+        "overshoot_m": 0.10831543342733166,
+        "ladrc_saturation_fraction": 0.08550185873605948,
+        "leso_z2_peak": 4.136645714041374,
+        "leso_z3_peak": 1.651763217165553,
+        "final_position_error_m": 0.09201303869485855,
+        "position_derived_speed_peak_mps": 3.7135918003299153,
+        "actual_velocity_peak_mps": 4.304959655720228,
+        "actual_acceleration_p99_mps2": 4.67074574039861,
+        "actual_jerk_p99_mps3": 82.33896514683607,
+        "px4_acceleration_link_max_error": 2.32158802419691e-07,
+        "iapf_active_fraction": 0,
+        "minimum_neighbor_distance_m": 1.943360686302185,
+        "hard_safety_violation": false,
+        "finished": true,
+        "hover_stable": false,
+        "debug_samples": 269
+      },
+      {
+        "task_id": 3,
+        "uav_id": 1,
+        "motion_style": "aggressive",
+        "configuration_id": "paper-current-v5",
+        "style_gain": 1.2000000476837158,
+        "task_gain": 1.0,
+        "omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "applied_gain_multiplier": 1.2000000476837158,
+        "applied_omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "applied_omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "t_exec_s": 3.0838379859924316,
+        "target_world": [
+          -3.0,
+          7.5,
+          3.0
+        ],
+        "start_world": [
+          -5.103703022003174,
+          4.5311959981918335,
+          3.0017879009246826
+        ],
+        "path_length_m": 3.638594150543213,
+        "predicted_peak_velocity_mps": 2.212296485900879,
+        "predicted_peak_acceleration_mps2": 2.208970308303833,
+        "predicted_peak_jerk_mps3": 7.444065570831299,
+        "tracking_rmse_m": 0.14759904762220957,
+        "peak_tracking_error_m": 0.24377990423112494,
+        "switch_first_0_5s_peak_error_m": 0.0924209321266614,
+        "switch_first_0_5s_saturation_fraction": 0,
+        "settling_time_s": 4.154426097869873,
+        "overshoot_m": 0.1449289444396617,
+        "ladrc_saturation_fraction": 0,
+        "leso_z2_peak": 2.571674392679139,
+        "leso_z3_peak": 1.4173505897515557,
+        "final_position_error_m": 0.12659354507923126,
+        "position_derived_speed_peak_mps": 2.262102460054382,
+        "actual_velocity_peak_mps": 2.89333870605539,
+        "actual_acceleration_p99_mps2": 4.661026204991215,
+        "actual_jerk_p99_mps3": 80.7511131578609,
+        "px4_acceleration_link_max_error": 1.6111266613680914e-07,
+        "iapf_active_fraction": 0,
+        "minimum_neighbor_distance_m": 1.9851768016815186,
+        "hard_safety_violation": false,
+        "finished": true,
+        "hover_stable": true,
+        "debug_samples": 228
+      },
+      {
+        "task_id": 3,
+        "uav_id": 2,
+        "motion_style": "aggressive",
+        "configuration_id": "paper-current-v5",
+        "style_gain": 1.2000000476837158,
+        "task_gain": 1.0,
+        "omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "applied_gain_multiplier": 1.2000000476837158,
+        "applied_omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "applied_omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "t_exec_s": 3.0838379859924316,
+        "target_world": [
+          -5.51091059616309e-16,
+          4.5,
+          3.0
+        ],
+        "start_world": [
+          -3.1083145141601562,
+          4.49453604221344,
+          3.0017223358154297
+        ],
+        "path_length_m": 3.1083197593688965,
+        "predicted_peak_velocity_mps": 1.8898851871490479,
+        "predicted_peak_acceleration_mps2": 1.8870437145233154,
+        "predicted_peak_jerk_mps3": 6.35919713973999,
+        "tracking_rmse_m": 0.10179922433382843,
+        "peak_tracking_error_m": 0.1730160987889694,
+        "switch_first_0_5s_peak_error_m": 0.0747916803561719,
+        "switch_first_0_5s_saturation_fraction": 0,
+        "settling_time_s": 4.136326789855957,
+        "overshoot_m": 0.10061381247703804,
+        "ladrc_saturation_fraction": 0,
+        "leso_z2_peak": 2.117296914405203,
+        "leso_z3_peak": 1.0372924636075358,
+        "final_position_error_m": 0.08658115565776825,
+        "position_derived_speed_peak_mps": 1.8900662479261698,
+        "actual_velocity_peak_mps": 2.360278830081843,
+        "actual_acceleration_p99_mps2": 4.086305270553039,
+        "actual_jerk_p99_mps3": 71.82416427597609,
+        "px4_acceleration_link_max_error": 1.188385610508483e-07,
+        "iapf_active_fraction": 0,
+        "minimum_neighbor_distance_m": 1.9851768016815186,
+        "hard_safety_violation": false,
+        "finished": true,
+        "hover_stable": true,
+        "debug_samples": 228
+      },
+      {
+        "task_id": 3,
+        "uav_id": 3,
+        "motion_style": "aggressive",
+        "configuration_id": "paper-current-v5",
+        "style_gain": 1.2000000476837158,
+        "task_gain": 1.0,
+        "omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "applied_gain_multiplier": 1.2000000476837158,
+        "applied_omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "applied_omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "t_exec_s": 3.0838379859924316,
+        "target_world": [
+          3.0,
+          7.5,
+          3.0
+        ],
+        "start_world": [
+          0.006078800652176142,
+          9.003670985577628,
+          1.4961230754852295
+        ],
+        "path_length_m": 3.672361135482788,
+        "predicted_peak_velocity_mps": 2.2328271865844727,
+        "predicted_peak_acceleration_mps2": 2.2294700145721436,
+        "predicted_peak_jerk_mps3": 7.513148307800293,
+        "tracking_rmse_m": 0.1301997258854596,
+        "peak_tracking_error_m": 0.1888591038514377,
+        "switch_first_0_5s_peak_error_m": 0.06599762501202674,
+        "switch_first_0_5s_saturation_fraction": 0,
+        "settling_time_s": 4.236250877380371,
+        "overshoot_m": 0.08477204779837728,
+        "ladrc_saturation_fraction": 0,
+        "leso_z2_peak": 2.479634277529754,
+        "leso_z3_peak": 1.156725712552369,
+        "final_position_error_m": 0.07646659016609192,
+        "position_derived_speed_peak_mps": 2.1520373609404064,
+        "actual_velocity_peak_mps": 2.7155630527164663,
+        "actual_acceleration_p99_mps2": 3.9292198484841574,
+        "actual_jerk_p99_mps3": 70.04837240627938,
+        "px4_acceleration_link_max_error": 1.5307174013508806e-07,
+        "iapf_active_fraction": 0,
+        "minimum_neighbor_distance_m": 3.0028998851776123,
+        "hard_safety_violation": false,
+        "finished": true,
+        "hover_stable": true,
+        "debug_samples": 228
+      },
+      {
+        "task_id": 3,
+        "uav_id": 4,
+        "motion_style": "aggressive",
+        "configuration_id": "paper-current-v5",
+        "style_gain": 1.2000000476837158,
+        "task_gain": 1.0,
+        "omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "applied_gain_multiplier": 1.2000000476837158,
+        "applied_omega_c": [
+          1.7999999523162842,
+          1.7999999523162842,
+          2.0999999046325684
+        ],
+        "applied_omega_o": [
+          6.0,
+          6.0,
+          9.0
+        ],
+        "t_exec_s": 3.0838379859924316,
+        "target_world": [
+          1.8369701987210297e-16,
+          10.5,
+          3.0
+        ],
+        "start_world": [
+          0.0021351163741201162,
+          12.011465665884316,
+          1.5044196844100952
+        ],
+        "path_length_m": 2.126333236694336,
+        "predicted_peak_velocity_mps": 1.292828917503357,
+        "predicted_peak_acceleration_mps2": 1.2908852100372314,
+        "predicted_peak_jerk_mps3": 4.350187301635742,
+        "tracking_rmse_m": 0.058595324511905106,
+        "peak_tracking_error_m": 0.08721202444211383,
+        "switch_first_0_5s_peak_error_m": 0.02991363595349401,
+        "switch_first_0_5s_saturation_fraction": 0,
+        "settling_time_s": 4.177123069763184,
+        "overshoot_m": 0.03348450564874385,
+        "ladrc_saturation_fraction": 0,
+        "leso_z2_peak": 1.3881032095491213,
+        "leso_z3_peak": 0.7132938034722796,
+        "final_position_error_m": 0.04204695299267769,
+        "position_derived_speed_peak_mps": 1.1973071982907795,
+        "actual_velocity_peak_mps": 1.4290825657175723,
+        "actual_acceleration_p99_mps2": 2.3942743008399967,
+        "actual_jerk_p99_mps3": 46.95664328908008,
+        "px4_acceleration_link_max_error": 6.505816294597553e-08,
+        "iapf_active_fraction": 0,
+        "minimum_neighbor_distance_m": 3.0028998851776123,
+        "hard_safety_violation": false,
+        "finished": true,
+        "hover_stable": true,
+        "debug_samples": 228
+      }
+    ]
+  }
+]

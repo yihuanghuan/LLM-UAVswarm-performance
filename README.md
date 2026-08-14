@@ -6,7 +6,7 @@
 [![C++](https://img.shields.io/badge/C++-17-blue.svg)](https://en.cppreference.com/w/cpp/17)
 [![Python](https://img.shields.io/badge/Python-3.10-yellow.svg)](https://www.python.org/)
 
-基于大型语言模型 (LLM) 和 ROS 2 的多无人机集群编队系统。操作员输入自然语言指令，系统通过 Candidate Mission、确定性 late resolution 和安全感知分配生成复合执行消息。执行层默认由 LADRC 生成平动加速度并通过 PX4 acceleration-level Offboard 接口闭环跟踪。
+基于大型语言模型 (LLM) 和 ROS 2 的多无人机集群编队系统。操作员输入自然语言指令，系统通过 Candidate Mission、确定性 late resolution 和安全感知分配生成复合执行消息。执行层支持 `px4_position` 对照基线和显式 `ladrc_acceleration` 模式；后者由 LADRC 生成平动加速度并通过 PX4 acceleration-level Offboard 接口闭环跟踪。当前 launch 默认仍为 `px4_position`。
 
 ## 系统架构
 
@@ -18,7 +18,7 @@ Natural Language → LLM → Candidate Mission → Mission Graph / FSM
 → existing Minimum-Jerk + IAPF setpoint path → PX4
 ```
 
-这是论文实验的正式 paper Candidate path。旧 LFS → `UAVSwarmCommand` 仅作为显式 legacy compatibility path 保留。权威语义见 [Paper LFS Specification](docs/paper_lfs_spec.md)，运行方法见 [Paper Candidate Runtime](docs/paper_candidate_runtime.md)。
+这是论文实验的正式 paper Candidate path。旧 LFS → `UAVSwarmCommand` 仅作为显式 legacy compatibility path 保留。当前总入口见 [Command-to-Control Architecture](docs/paper_command_to_control_architecture.md)，权威语义见 [Paper LFS Specification](docs/paper_lfs_spec.md)，运行方法见 [Paper Candidate Runtime](docs/paper_candidate_runtime.md)。
 
 ### 三层解耦
 
@@ -124,9 +124,9 @@ cd ~/PX4-Autopilot
 source ~/learning/LLM_swarm_ws/install/setup.bash
 ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1,2,3,4,5]
 
-# IAPF 加速度前馈对比实验可直接覆盖开关
-ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1,2,3,4,5] enable_iapf_accel_feedforward:=false
-ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1,2,3,4,5] enable_iapf_accel_feedforward:=true
+# IAPF 对比实验使用当前 avoidance_mode 接口
+ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1,2,3,4,5] avoidance_mode:=iapf_position
+ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1,2,3,4,5] avoidance_mode:=iapf_dual
 
 # 终端 4: LLM 调度器
 source ~/learning/LLM_swarm_ws/install/setup.bash
@@ -134,7 +134,7 @@ export LLM_API_KEY='<your-key>'
 ros2 run location_allocate location_allocate
 ```
 
-调度器默认使用英文 `candidate_v2` parser 和 `paper-current-v1` policy。只有历史实验/回归需要显式加入 `--ros-args -p lfs_runtime_mode:=legacy_v1`。Paper Candidate 失败不会 fallback 到旧 `task_sequences`。
+调度器默认使用英文 `candidate_v2` parser 和 `paper-current-v6` policy。只有历史实验/回归需要显式加入 `--ros-args -p lfs_runtime_mode:=legacy_v1`。Paper Candidate 失败不会 fallback 到旧 `task_sequences`。
 
 当前冻结接口版本为 `paper-candidate-en-v2` / `paper-candidate-schema-v2`。Formation 使用结构化 descriptor；Polygon 必须显式给出 sides。任务等待只通过结构化 q 表达，不接受独立 WaitNode。
 
@@ -161,10 +161,11 @@ First form a smooth line with 4-meter spacing centered at [10,0,5] in 10 seconds
 ### 运动风格
 
 - `smooth`（平滑）、`normal`（标准）、`aggressive`（激进）是冻结的任务语义标签。
-- 当前 `paper-current-v1` policy 对三种 style 使用 neutral identity baseline：`auto_style_factors` 和 `style_gains` 均为 `1.0`，不会仅因 style 不同而改变基础时长因子或 LADRC 带宽。
-- style-dependent timing、LADRC gain 和 task-intensity adaptation 的非恒等映射仍属 provisional，须经后续实验标定后通过显式 policy 配置启用。
+- 当前 `paper-current-v6` 已启用 style：controller gain 为 `0.8/1.0/1.1`，auto-T factor 为 `1.30/1.15/1.10`（smooth/normal/aggressive）。
+- 显式可行 `T` 不受 style 修改；auto T 始终满足 `T_exec>=T_min`。
+- 这些是 development values，不是 paper-final；`task_adaptation_type=identity` 且 `task_gain=1.0`。
 
-新路径不允许 LLM 输出 LADRC gain。Execution Profile Compiler 以 `m`、assignment 后的 `D_i` 和唯一的 `T_exec` 为确定性输入，但当前 Paper policy 对 style/task adaptation 保持恒等映射。未来的非恒等映射及数值仍为 provisional，必须通过显式配置注入。旧消息中的 motion style 仅记录，控制器使用 YAML baseline。
+新路径不允许 LLM 输出 LADRC gain。Execution Profile Compiler 以 `m` 和唯一的 `T_exec` 为确定性输入，从 policy 读取 style gain；任务强度适应保持 identity。旧消息中的 motion style 仅记录，控制器使用 YAML baseline。
 
 控制适应数据可通过 topic 和 CSV 查看：
 
@@ -248,14 +249,14 @@ LLM_swarm_ws/
 control_mode: "px4_position"  # 可显式切换为 "ladrc_acceleration"
 idle_hover_safety_factor: 1.0       # 首次任务前悬停避障系数
 
-# X/Y 轴 LADRC
-omega_o_x: 10.0    # 观测器带宽
-omega_c_x: 3.0     # 控制器带宽
+# X/Y 轴 paper-current LADRC baseline
+omega_o_x: 5.0     # 观测器带宽
+omega_c_x: 1.5     # 控制器带宽
 b0_x: 1.0          # 控制增益估计
 
 # Z 轴 LADRC（更高带宽应对重力）
-omega_o_z: 15.0
-omega_c_z: 3.5
+omega_o_z: 7.5
+omega_c_z: 1.75
 b0_z: 1.0
 
 # 加速度限制
@@ -380,7 +381,7 @@ UAVStatus + /uav{N}/swarm_state (nav_msgs/Odometry, world ENU)
 | 问题 | 原因 | 解决 |
 |------|------|------|
 | C++ 节点收不到里程计 | QoS 不匹配 | 确保发布/订阅均使用 `SensorDataQoS()` |
-| 无人机不响应指令 | `target_system` 错误 | 已改为 0 (广播) |
+| 无人机不响应指令 | `target_system` 映射错误 | 检查 `px4_target_system=uav_id+1` 与 SITL instance 对应关系 |
 | IAPF 不触发 | `safety_factor=0` | LLM 默认设为 1.0 |
 | 调度器跳过子任务 | 旧悬停状态残留 | 已修复：入口处重置 + 2s 排空 |
 | `ros2 run` 找不到 openai | 系统 Python | 用 `python3 -m` 模块方式运行 |

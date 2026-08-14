@@ -128,6 +128,24 @@ bash experiments/scripts/collect_rosbag_topics.sh exp001
 
 默认输出目录：`experiments/logs/rosbags/exp001`。
 
+### system_motion_style
+
+`system_motion_style/run_cold_start_trial.py` 运行 semantic motion-style 的
+explicit-T、auto-T 和 4 UAV 端到端组合验证；每个 trial 都会独立冷启动
+PX4/Gazebo、4 个 LADRC controller 和 Candidate scheduler。分析入口为：
+
+```bash
+python3 experiments/system_motion_style/analyze_trials.py \
+  experiments/results/semantic_motion_style_v6_20260814
+```
+
+`--scenario explicit-isolation` 运行独立的 3 UAV Triangle explicit-T
+isolation；默认 `full` 运行 auto-T 与 4 UAV Circle E2E 组合任务。
+
+输出 `trial_metrics.json` 和 `acceptance_summary.json`。正式结论以同目录
+`acceptance_report.md` 为准；rosbag 用于复核，不把 position-derived
+finite-difference jerk 当作 frozen Minimum-Jerk 可行性判据。
+
 ### plot_all.py
 
 读取 `experiments/results/*.csv`，生成 PNG 和 PDF 图。
