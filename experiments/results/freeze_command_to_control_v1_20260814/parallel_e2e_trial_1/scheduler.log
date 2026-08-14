@@ -1,0 +1,125 @@
+[INFO] [1786691121.767977569] [location_allocate]: Paper Candidate runtime enabled with policy paper-current-v3
+[WARN] [1786691121.768287000] [location_allocate]: Paper policy audit: qualitative scale ordering is safety-clamped at s=1: {'compact': 2.0, 'normal': 2.0, 'spacious': 2.5}
+
+请输入无人机编队指令: [INFO] [1786691208.025012831] [location_allocate]: Candidate mission 1 completed
+{
+  "lfs_version": "2.1",
+  "mission": {
+    "nodes": [
+      {
+        "type": "parallel",
+        "completion_mode": "synchronized",
+        "tasks": [
+          {
+            "task_id": 1,
+            "U": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "F": {
+              "type": "Line"
+            },
+            "c": {
+              "mode": "absolute",
+              "value": [
+                -5,
+                13.5,
+                3
+              ]
+            },
+            "r": {
+              "mode": "explicit",
+              "value": 2
+            },
+            "T": {
+              "mode": "explicit",
+              "value": 10
+            },
+            "m": "normal",
+            "s": 1.0,
+            "q": {
+              "mode": "direct"
+            }
+          },
+          {
+            "task_id": 2,
+            "U": [
+              5,
+              6,
+              7,
+              8
+            ],
+            "F": {
+              "type": "Line"
+            },
+            "c": {
+              "mode": "absolute",
+              "value": [
+                5,
+                13.5,
+                3
+              ]
+            },
+            "r": {
+              "mode": "explicit",
+              "value": 2
+            },
+            "T": {
+              "mode": "explicit",
+              "value": 10
+            },
+            "m": "normal",
+            "s": 1.0,
+            "q": {
+              "mode": "direct"
+            }
+          }
+        ]
+      },
+      {
+        "type": "task",
+        "task": {
+          "task_id": 3,
+          "U": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "F": {
+            "type": "Circle"
+          },
+          "c": {
+            "mode": "absolute",
+            "value": [
+              0,
+              13.5,
+              3
+            ]
+          },
+          "r": {
+            "mode": "explicit",
+            "value": 4
+          },
+          "T": {
+            "mode": "explicit",
+            "value": 12
+          },
+          "m": "normal",
+          "s": 1.0,
+          "q": {
+            "mode": "direct"
+          }
+        }
+      }
+    ]
+  }
+}
+
+请输入无人机编队指令:

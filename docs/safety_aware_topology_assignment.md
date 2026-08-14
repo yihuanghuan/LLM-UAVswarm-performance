@@ -23,6 +23,15 @@ variable-duration numerical evaluation; equal-progress analytic closest
 approach is independent of the sampling rate. `comparison_tolerance` is only a
 floating-point tolerance for lexicographic comparison, not an objective weight.
 
+Single-task and ParallelGroup late resolution use the same final feasibility
+semantics. Only `d_min < d_hard` rejects an assignment. A hard-feasible result
+inside the preferred planning margin (`d_hard <= d_min < d_plan`) remains
+executable with positive `J_margin`; its trace records
+`residual_planning_risk`, `margin_intrusion_m`, `hard_feasible`, and
+`planning_margin_met`. Reaching `d_plan` makes `J_margin` and the intrusion
+zero. Residual risk is left to the existing runtime IAPF layer rather than
+turning `d_plan` into a second hard constraint.
+
 XY segment crossings remain available as diagnostics, but are not part of the
 Paper optimization objective. The historical weighted-sum implementation is
 isolated in `location_allocate.legacy.weighted_sum_allocator` for explicit

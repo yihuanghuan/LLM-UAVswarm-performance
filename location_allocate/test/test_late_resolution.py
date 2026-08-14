@@ -200,6 +200,68 @@ def _parallel_threshold_case(separation):
     return tasks, manager.snapshot([1, 2, 3, 4], 10.0), threshold_policy
 
 
+def _single_threshold_case(separation):
+    task = _parallel_task(1, [1, 2], [0.0, 0.0, 2.0], 2.0)
+    manager = FreshStateSnapshotManager(1.0, 0.1)
+    manager.update(1, [-separation / 2.0, 0.0, 2.0], 10.0)
+    manager.update(2, [separation / 2.0, 0.0, 2.0], 10.0)
+    threshold_policy = policy(lambda _s: SafetyResolution(
+        d_hard=1.0,
+        d_plan=2.0,
+        soft_iapf=SoftSafetyParameters(1.5, 1.7, 1.0),
+    ), tolerance=100.0)
+    return task, manager.snapshot([1, 2], 10.0), threshold_policy
+
+
+def test_single_final_gate_rejects_below_d_hard():
+    task, state, threshold_policy = _single_threshold_case(0.5)
+
+    with pytest.raises(LateResolutionError) as caught:
+        resolve_execution_task(task, state, threshold_policy)
+
+    assert caught.value.code == "single_nominal_trajectory_d_hard_violation"
+    assert caught.value.diagnostics["final_metrics"]["N_hard"] > 0
+    assert caught.value.diagnostics["final_metrics"]["hard_feasible"] is False
+
+
+def test_single_final_gate_accepts_residual_planning_risk():
+    task, state, threshold_policy = _single_threshold_case(1.5)
+
+    result = resolve_execution_task(task, state, threshold_policy)
+
+    assert result.final_metrics.min_distance == pytest.approx(1.5)
+    assert result.final_metrics.hard_violations == 0
+    assert result.final_metrics.margin_cost > 0.0
+    metrics = result.trace.final_assignment_metrics
+    assert metrics["hard_feasible"] is True
+    assert metrics["planning_margin_met"] is False
+    assert metrics["residual_planning_risk"] is True
+    assert metrics["margin_intrusion_m"] == pytest.approx(0.5)
+    assert any(
+        warning.startswith("residual planning risk accepted")
+        for warning in result.trace.warnings
+    )
+
+
+def test_single_final_gate_accepts_full_planning_margin():
+    task, state, threshold_policy = _single_threshold_case(2.5)
+
+    result = resolve_execution_task(task, state, threshold_policy)
+
+    assert result.final_metrics.min_distance == pytest.approx(2.0)
+    assert result.final_metrics.hard_violations == 0
+    assert result.final_metrics.margin_cost == pytest.approx(0.0)
+    metrics = result.trace.final_assignment_metrics
+    assert metrics["hard_feasible"] is True
+    assert metrics["planning_margin_met"] is True
+    assert metrics["residual_planning_risk"] is False
+    assert metrics["margin_intrusion_m"] == pytest.approx(0.0)
+    assert not any(
+        warning.startswith("residual planning risk accepted")
+        for warning in result.trace.warnings
+    )
+
+
 def test_parallel_final_gate_rejects_below_d_hard():
     tasks, state, threshold_policy = _parallel_threshold_case(0.5)
 

@@ -1,0 +1,78 @@
+{
+  "acceptance": "passed",
+  "date": "2026-08-14",
+  "tested_base_commit": "8a81b9062cf4b83e352da885a73f41bea693e166",
+  "tested_source_patch_sha256": "71a9f194cadc75018a9cf832684e1ccd0bc7928fdd3d2f24479888733e10bce1",
+  "control_mode": "px4_position",
+  "cold_start_ready": {
+    "ready_uavs": 8,
+    "expected_uavs": 8,
+    "all_armed": true,
+    "all_offboard": true,
+    "all_system_ready": true,
+    "any_failsafe": false
+  },
+  "candidate": {
+    "valid": true,
+    "parallel_completion_mode": "synchronized",
+    "parallel_tasks": [
+      {"task_id": 1, "uav_ids": [1, 2, 3, 4], "formation": "Line"},
+      {"task_id": 2, "uav_ids": [5, 6, 7, 8], "formation": "Line"}
+    ],
+    "subsequent_task": {"task_id": 3, "uav_ids": [1, 2, 3, 4, 5, 6, 7, 8], "formation": "Circle"}
+  },
+  "parallel_resolution": {
+    "allocator": "lexicographic-safety-aware-v2",
+    "final_assignment": [1, 3, 0, 2, 5, 7, 4, 6],
+    "d_hard_m": 1.0,
+    "d_plan_m": 2.0,
+    "predicted_min_distance_m": 1.8969282310338895,
+    "N_hard": 0,
+    "J_margin": 0.011594962945398118,
+    "J_distance": 67.51109594250916,
+    "hard_feasible": true,
+    "planning_margin_met": false,
+    "residual_planning_risk": true,
+    "margin_intrusion_m": 0.10307176896611048,
+    "rejected_for_d_plan": false
+  },
+  "dispatch_and_scheduler": {
+    "all_uavs_received_parallel_command": true,
+    "parallel_task_1_uavs": [1, 2, 3, 4],
+    "parallel_task_2_uavs": [5, 6, 7, 8],
+    "all_uavs_received_subsequent_task_3": true,
+    "commands_per_uav": 2,
+    "parallel_to_sequential_elapsed_s": 12.230766773223877,
+    "candidate_mission_completed": true
+  },
+  "runtime_safety": {
+    "actual_min_pairwise_distance_m": 1.8425240044448494,
+    "actual_min_pair": [6, 8],
+    "parallel_stage_min_pairwise_distance_m": 1.8425240044448494,
+    "sequential_stage_min_pairwise_distance_m": 1.916579045900931,
+    "d_hard_respected": true,
+    "iapf_any_activation": false,
+    "iapf_active_samples": 0,
+    "iapf_mission_samples": 10216,
+    "iapf_observed_min_neighbor_distance_m": 1.848028302192688
+  },
+  "completion": {
+    "stable_uavs": 8,
+    "expected_uavs": 8,
+    "all_stability_state_confirmed": true,
+    "final_position_error_range_m": [0.18806542456150055, 0.21961049735546112],
+    "final_position_derived_speed_range_mps": [0.03918023034930229, 0.0664294883608818],
+    "final_raw_ekf_speed_range_mps": [0.2836971580982208, 0.30504876375198364],
+    "all_armed": true,
+    "all_offboard": true,
+    "any_failsafe": false
+  },
+  "artifacts": {
+    "trial_directory": "parallel_e2e_trial_1",
+    "manifest": "parallel_e2e_trial_1/manifest.json",
+    "readiness_log": "parallel_e2e_trial_1/readiness.log",
+    "scheduler_log": "parallel_e2e_trial_1/scheduler.log",
+    "resolution_trace": "parallel_e2e_trial_1/resolution_trace.jsonl",
+    "rosbag": "parallel_e2e_trial_1/rosbag"
+  }
+}

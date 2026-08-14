@@ -175,6 +175,25 @@ def _record_profile_trace(
     ]
 
 
+def _record_residual_planning_risk(
+    traces: Sequence[ResolutionTrace],
+    metrics: AssignmentMetrics,
+    d_hard: float,
+    d_plan: float,
+) -> None:
+    if metrics.min_distance + 1e-9 >= d_plan:
+        return
+    intrusion = d_plan - metrics.min_distance
+    warning = (
+        "residual planning risk accepted: nominal minimum distance "
+        f"{metrics.min_distance:.6f}m is {intrusion:.6f}m inside "
+        f"d_plan={d_plan:.6f}m but remains above "
+        f"d_hard={d_hard:.6f}m"
+    )
+    for trace in traces:
+        trace.warnings.append(warning)
+
+
 def _prepare_task(
     candidate_task: dict,
     snapshot: StateSnapshot,
@@ -265,9 +284,29 @@ def resolve_execution_task(
             duration=t_exec,
         )
         trace.corrections.append("final assignment safety re-evaluated once")
-    if final_metrics.min_distance + 1e-9 < safety.d_plan:
-        trace.rejection_reason = "final assignment violates d_plan(s)"
-        raise LateResolutionError(trace.rejection_reason)
+    if final_metrics.min_distance + 1e-9 < safety.d_hard:
+        error_code = "single_nominal_trajectory_d_hard_violation"
+        trace.rejection_reason = error_code
+        raise LateResolutionError(
+            "single-task nominal trajectory violates d_hard",
+            code=error_code,
+            diagnostics={
+                "error_code": error_code,
+                "classification": "hard_safety_boundary_violation",
+                "task_id": intent.task_id,
+                "uav_ids": list(intent.uav_ids),
+                "planning_metrics": _metrics_payload(
+                    planning_metrics, safety.d_hard, safety.d_plan
+                ),
+                "final_metrics": _metrics_payload(
+                    final_metrics, safety.d_hard, safety.d_plan
+                ),
+            },
+        )
+
+    _record_residual_planning_risk(
+        (trace,), final_metrics, safety.d_hard, safety.d_plan
+    )
 
     executable = build_executable_lfs(intent, prepared.radius, t_exec)
     profiles = compile_execution_profiles(
@@ -424,16 +463,12 @@ def resolve_execution_parallel(
             diagnostics=diagnostics,
         )
 
-    if final_metrics.min_distance + 1e-9 < group_d_plan:
-        intrusion = group_d_plan - final_metrics.min_distance
-        warning = (
-            "residual planning risk accepted: nominal minimum distance "
-            f"{final_metrics.min_distance:.6f}m is {intrusion:.6f}m inside "
-            f"d_plan={group_d_plan:.6f}m but remains above "
-            f"d_hard={group_d_hard:.6f}m"
-        )
-        for item in prepared:
-            item.trace.warnings.append(warning)
+    _record_residual_planning_risk(
+        tuple(item.trace for item in prepared),
+        final_metrics,
+        group_d_hard,
+        group_d_plan,
+    )
 
     resolved_tasks = []
     for item, assigned, t_exec in zip(
