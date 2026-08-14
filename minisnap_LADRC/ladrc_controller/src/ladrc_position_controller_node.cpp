@@ -3,10 +3,11 @@
 #include <px4_msgs/msg/offboard_control_mode.hpp>
 #include <px4_msgs/msg/trajectory_setpoint.hpp>
 #include <px4_msgs/msg/vehicle_command.hpp>
-#include <px4_msgs/msg/vehicle_control_mode.hpp>
+#include <px4_msgs/msg/vehicle_status.hpp>
 #include <uav_swarm_interfaces/msg/uav_swarm_command.hpp>
 #include <uav_swarm_interfaces/msg/uav_execution_command.hpp>
 #include <uav_swarm_interfaces/msg/uav_status.hpp>
+#include <uav_swarm_interfaces/msg/startup_event.hpp>
 #include <uav_swarm_interfaces/msg/trajectory_metrics.hpp>
 #include <uav_swarm_interfaces/msg/control_adaptation_log.hpp>
 #include <uav_swarm_interfaces/msg/iapf_debug.hpp>
@@ -19,6 +20,9 @@
 #include "ladrc_controller/minimum_jerk_trajectory.hpp"
 #include "ladrc_controller/execution_profile_guard.hpp"
 #include "ladrc_controller/swarm_state_builder.hpp"
+#include "ladrc_controller/startup_state_machine.hpp"
+#include "ladrc_controller/hover_stability.hpp"
+#include "ladrc_controller/position_velocity_filter.hpp"
 #include <cmath>
 #include <chrono>
 #include <atomic>
@@ -34,14 +38,6 @@
 using namespace std::chrono_literals;
 
 // 自动起飞状态机
-enum class FlightState
-{
-  INIT,
-  ARMING,
-  SETTING_OFFBOARD,
-  RUNNING_TRAJECTORY
-};
-
 class LADRCPositionControllerNode : public rclcpp::Node
 {
   struct NeighborState
@@ -58,14 +54,14 @@ public:
   {
     // 声明参数
     this->declare_parameter("control_frequency", 50.0);
-    this->declare_parameter("control_mode", "ladrc_acceleration");
+    this->declare_parameter("control_mode", "px4_position");
     this->declare_parameter("idle_hover_safety_factor", 1.0);
-    this->declare_parameter("omega_o_x", 15.0);
-    this->declare_parameter("omega_o_y", 15.0);
-    this->declare_parameter("omega_o_z", 15.0);
-    this->declare_parameter("omega_c_x", 8.0);
-    this->declare_parameter("omega_c_y", 8.0);
-    this->declare_parameter("omega_c_z", 8.0);
+    this->declare_parameter<double>("omega_o_x");
+    this->declare_parameter<double>("omega_o_y");
+    this->declare_parameter<double>("omega_o_z");
+    this->declare_parameter<double>("omega_c_x");
+    this->declare_parameter<double>("omega_c_y");
+    this->declare_parameter<double>("omega_c_z");
     this->declare_parameter("b0_x", 1.0);
     this->declare_parameter("b0_y", 1.0);
     this->declare_parameter("b0_z", 1.0);
@@ -73,6 +69,24 @@ public:
     this->declare_parameter("max_acceleration_x", 3.0);
     this->declare_parameter("max_acceleration_y", 3.0);
     this->declare_parameter("max_acceleration_z", 3.0);
+    this->declare_parameter("hover_position_enter_tolerance", 0.40);
+    this->declare_parameter("hover_velocity_enter_tolerance", 0.30);
+    this->declare_parameter("hover_position_exit_tolerance", 0.50);
+    this->declare_parameter("hover_velocity_exit_tolerance", 0.40);
+    this->declare_parameter("hover_stable_hold_time", 1.0);
+    this->declare_parameter("hover_velocity_filter_tau", 0.5);
+    this->declare_parameter("startup_settle_time", 10.0);
+    this->declare_parameter("startup_speed_tolerance", 0.15);
+    this->declare_parameter("startup_odom_timeout", 0.5);
+    this->declare_parameter("startup_status_timeout", 2.0);
+    this->declare_parameter("startup_prestream_time", 1.5);
+    this->declare_parameter("startup_command_retry_interval", 1.0);
+    this->declare_parameter("startup_takeoff_altitude", 1.5);
+    this->declare_parameter("startup_takeoff_position_tolerance", 0.25);
+    this->declare_parameter("startup_takeoff_hold_time", 0.5);
+    this->declare_parameter("startup_runtime_fault_debounce", 0.5);
+    this->declare_parameter("startup_total_timeout", 60.0);
+    this->declare_parameter("startup_max_request_attempts", 20);
     this->declare_parameter("enable_execution_profiles", false);
     this->declare_parameter("execution_profile_smoothing_alpha", -1.0);
     this->declare_parameter("execution_profile_omega_c_min", std::vector<double>{});
@@ -189,6 +203,11 @@ public:
         "fmu/out/vehicle_odometry",
         rclcpp::SensorDataQoS(),
         std::bind(&LADRCPositionControllerNode::odomCallback, this, std::placeholders::_1));
+    vehicle_status_sub_ = this->create_subscription<px4_msgs::msg::VehicleStatus>(
+        "fmu/out/vehicle_status", rclcpp::SensorDataQoS(),
+        std::bind(
+          &LADRCPositionControllerNode::vehicleStatusCallback,
+          this, std::placeholders::_1));
 
     // 从命名空间提取自身 UAV ID（例如 /uav3 → 3）
     std::string ns = this->get_namespace();
@@ -239,6 +258,9 @@ public:
     // --- [Phase 1] 新增状态发布器 ---
     status_pub_ = this->create_publisher<uav_swarm_interfaces::msg::UAVStatus>(
         "status", 10);
+    startup_event_pub_ =
+      this->create_publisher<uav_swarm_interfaces::msg::StartupEvent>(
+        "startup_event", rclcpp::QoS(20).transient_local());
 
     // 低频 ENU 位置发布器（供调度层获取真实坐标）
     odom_pub_ = this->create_publisher<geometry_msgs::msg::Point>("odom", 10);
@@ -283,10 +305,24 @@ public:
     command_timer_ = this->create_wall_timer(
         command_timer_period,
         std::bind(&LADRCPositionControllerNode::stateMachine, this));
-
-    // 初始化状态
-    flight_state_ = FlightState::INIT;
-    offboard_setpoint_counter_ = 0;
+    position_velocity_filter_.setTimeConstant(
+      this->get_parameter("hover_velocity_filter_tau").as_double());
+    ladrc_controller::StartupConfig startup_config;
+    startup_config.estimator_settle_s =
+      this->get_parameter("startup_settle_time").as_double();
+    startup_config.prestream_s =
+      this->get_parameter("startup_prestream_time").as_double();
+    startup_config.request_retry_s =
+      this->get_parameter("startup_command_retry_interval").as_double();
+    startup_config.takeoff_hold_s =
+      this->get_parameter("startup_takeoff_hold_time").as_double();
+    startup_config.runtime_fault_debounce_s =
+      this->get_parameter("startup_runtime_fault_debounce").as_double();
+    startup_config.total_timeout_s =
+      this->get_parameter("startup_total_timeout").as_double();
+    startup_config.max_request_attempts = static_cast<int>(
+      this->get_parameter("startup_max_request_attempts").as_int());
+    startup_ = ladrc_controller::StartupStateMachine(startup_config);
 
     RCLCPP_INFO(this->get_logger(), "LADRC 集群执行节点已初始化 (命名空间: %s), ENU偏移=[%.1f, %.1f, %.1f]",
         this->get_namespace(),
@@ -344,13 +380,13 @@ private:
 
   bool readyForCommand(uint8_t message_uav_id)
   {
-    if (flight_state_.load() == FlightState::RUNNING_TRAJECTORY && has_odom_)
+    if (startup_.state() == ladrc_controller::StartupState::READY && odomFresh())
     {
       return true;
     }
     RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
-        "UAV%d 尚未就绪（状态=%d, odom=%d），忽略命令", message_uav_id,
-        (int)flight_state_.load(), has_odom_);
+        "UAV%d 尚未就绪（状态=%d, odom=%d），缓存最新合法命令", message_uav_id,
+        static_cast<int>(startup_.state()), has_odom_);
     return false;
   }
 
@@ -423,11 +459,12 @@ private:
     traj_z_.initialize(p0_z, target_pos_z_, target_duration_);
     initializeTrajectoryMetrics(
       p0_x, p0_y, p0_z, global_x, global_y, global_z);
-    ladrc_x_->setObserverInitialState(p0_x, 0.0, 0.0);
-    ladrc_y_->setObserverInitialState(p0_y, 0.0, 0.0);
-    ladrc_z_->setObserverInitialState(p0_z, 0.0, 0.0);
     command_start_time_ = this->now();
     is_hover_stable_ = false;
+    hover_stability_.reset();
+    latest_position_error_ = std::numeric_limits<double>::infinity();
+    latest_raw_ekf_speed_ = std::numeric_limits<double>::infinity();
+    latest_position_derived_speed_ = std::numeric_limits<double>::infinity();
     arrival_time_recorded_ = false;
     arrival_time_error_ = std::numeric_limits<double>::quiet_NaN();
     resetControlAdaptationRuntimeMetrics();
@@ -458,10 +495,27 @@ private:
         "UAV%d swarm_cmd 回调触发 (目标=[%.1f,%.1f,%.1f])",
         self_uav_id_, msg->target_pos.x, msg->target_pos.y, msg->target_pos.z);
 
-    if (!readyForCommand(msg->uav_id))
+    if (msg->uav_id != static_cast<uint8_t>(self_uav_id_) ||
+      !std::isfinite(msg->target_pos.x) ||
+      !std::isfinite(msg->target_pos.y) ||
+      !std::isfinite(msg->target_pos.z) ||
+      !std::isfinite(msg->duration) || msg->duration <= 0.0)
     {
+      RCLCPP_ERROR(this->get_logger(), "拒绝非法 legacy command，未缓存");
       return;
     }
+    if (!readyForCommand(msg->uav_id)) {
+      pending_legacy_command_ = msg;
+      pending_execution_command_.reset();
+      publishStartupEvent("pending_command_received");
+      return;
+    }
+    applyLegacyCommand(msg);
+  }
+
+  void applyLegacyCommand(
+      const uav_swarm_interfaces::msg::UAVSwarmCommand::SharedPtr msg)
+  {
     if (active_new_profile_)
     {
       RCLCPP_WARN(this->get_logger(),
@@ -514,6 +568,8 @@ private:
         msg->target_pos.x, msg->target_pos.y, msg->target_pos.z,
         target_pos_x_, target_pos_y_, target_pos_z_,
         target_duration_, motion_style_.c_str());
+    publishStartupEvent("command_accepted");
+    publishStartupEvent("mission_trajectory_started");
   }
 
   void executionCommandCallback(
@@ -525,7 +581,44 @@ private:
         "收到 UAVExecutionCommand，但 enable_execution_profiles=false");
       return;
     }
-    if (!readyForCommand(msg->uav_id)) return;
+    ladrc_controller::ExecutionProfileLimits limits;
+    ladrc_controller::ExecutionProfileValues values{
+      msg->profile.duration,
+      {msg->profile.omega_c[0], msg->profile.omega_c[1], msg->profile.omega_c[2]},
+      {msg->profile.omega_o[0], msg->profile.omega_o[1], msg->profile.omega_o[2]},
+      msg->profile.velocity_limit, msg->profile.acceleration_limit,
+      msg->profile.jerk_limit, msg->profile.iapf_enter_distance,
+      msg->profile.iapf_exit_distance, msg->profile.iapf_repulsion_scale,
+      msg->profile.style_gain, msg->profile.task_gain};
+    std::string validation_error;
+    const bool valid =
+      msg->uav_id == static_cast<uint8_t>(self_uav_id_) &&
+      std::isfinite(msg->target_pos.x) &&
+      std::isfinite(msg->target_pos.y) &&
+      std::isfinite(msg->target_pos.z) &&
+      !msg->profile.style.empty() &&
+      !msg->profile.configuration_id.empty() &&
+      loadExecutionProfileLimits(limits) &&
+      ladrc_controller::validateAndClampExecutionProfile(
+        values, limits, &validation_error);
+    if (!valid) {
+      RCLCPP_ERROR(
+        this->get_logger(), "拒绝非法 Execution Profile，未缓存: %s",
+        validation_error.c_str());
+      return;
+    }
+    if (!readyForCommand(msg->uav_id)) {
+      pending_execution_command_ = msg;
+      pending_legacy_command_.reset();
+      publishStartupEvent("pending_command_received");
+      return;
+    }
+    applyExecutionCommand(msg);
+  }
+
+  void applyExecutionCommand(
+      const uav_swarm_interfaces::msg::UAVExecutionCommand::SharedPtr msg)
+  {
 
     ladrc_controller::ExecutionProfileLimits limits;
     if (!loadExecutionProfileLimits(limits))
@@ -609,13 +702,30 @@ private:
       "应用 Execution Profile mission=%u task=%u config=%s T_exec=%.3f",
       msg->mission_id, msg->task_id,
       active_profile_configuration_id_.c_str(), target_duration_);
+    publishStartupEvent("command_accepted");
+    publishStartupEvent("mission_trajectory_started");
   }
 
   void odomCallback(const px4_msgs::msg::VehicleOdometry::SharedPtr msg)
   {
     RCLCPP_INFO_ONCE(this->get_logger(), "已接收到 vehicle_odometry 消息");
+    const bool first_valid_odom = !has_odom_;
     current_odom_ = *msg;
     has_odom_ = true;
+    last_odom_receive_time_s_ = this->now().seconds();
+    const Eigen::Vector3d position_enu(
+      msg->position[1], msg->position[0], -msg->position[2]);
+    position_velocity_filter_.update(
+      static_cast<double>(msg->timestamp_sample) * 1e-6,
+      msg->reset_counter, position_enu);
+    if (first_valid_odom) {
+      ladrc_x_->setObserverInitialState(
+        msg->position[1], msg->velocity[1], 0.0);
+      ladrc_y_->setObserverInitialState(
+        msg->position[0], msg->velocity[0], 0.0);
+      ladrc_z_->setObserverInitialState(
+        -msg->position[2], -msg->velocity[2], 0.0);
+    }
 
     // Standardized Candidate planning state. PX4 timestamps are boot-clock
     // microseconds, so the normalization boundary stamps the received sample
@@ -626,6 +736,70 @@ private:
       this->get_parameter("enu_offset_y").as_double(),
       this->get_parameter("enu_offset_z").as_double());
     swarm_state_pub_->publish(state);
+  }
+
+  void vehicleStatusCallback(const px4_msgs::msg::VehicleStatus::SharedPtr msg)
+  {
+    current_vehicle_status_ = *msg;
+    has_vehicle_status_ = true;
+    last_vehicle_status_receive_time_s_ = this->now().seconds();
+    px4_armed_ =
+      msg->arming_state == px4_msgs::msg::VehicleStatus::ARMING_STATE_ARMED;
+    px4_offboard_ =
+      msg->nav_state == px4_msgs::msg::VehicleStatus::NAVIGATION_STATE_OFFBOARD;
+  }
+
+  bool odomFresh() const
+  {
+    return has_odom_ &&
+      this->now().seconds() - last_odom_receive_time_s_ <=
+      this->get_parameter("startup_odom_timeout").as_double();
+  }
+
+  bool vehicleStatusFresh() const
+  {
+    return has_vehicle_status_ &&
+      this->now().seconds() - last_vehicle_status_receive_time_s_ <=
+      this->get_parameter("startup_status_timeout").as_double();
+  }
+
+  bool estimatorReady() const
+  {
+    return odomFresh() && vehicleStatusFresh() &&
+      !current_vehicle_status_.failsafe &&
+      current_vehicle_status_.pre_flight_checks_pass &&
+      position_velocity_filter_.valid() &&
+      position_velocity_filter_.speed() <=
+      this->get_parameter("startup_speed_tolerance").as_double();
+  }
+
+  bool runtimeHealthy() const
+  {
+    return feedbackHealthy() && px4_armed_ && px4_offboard_;
+  }
+
+  bool feedbackHealthy() const
+  {
+    return odomFresh() && vehicleStatusFresh() &&
+      !current_vehicle_status_.failsafe;
+  }
+
+  bool takeoffStable() const
+  {
+    if (!odomFresh() || !takeoff_reference_set_ ||
+      !position_velocity_filter_.valid())
+    {
+      return false;
+    }
+    const Eigen::Vector3d position(
+      current_odom_.position[1], current_odom_.position[0],
+      -current_odom_.position[2]);
+    const Eigen::Vector3d reference(
+      hover_hold_x_, hover_hold_y_, hover_hold_z_);
+    return (reference - position).norm() <=
+      this->get_parameter("startup_takeoff_position_tolerance").as_double() &&
+      position_velocity_filter_.speed() <=
+      this->get_parameter("startup_speed_tolerance").as_double();
   }
 
   // --- 状态机逻辑 ---
@@ -646,43 +820,115 @@ private:
     vehicle_command_pub_->publish(msg);
   }
 
+  void activatePendingCommand()
+  {
+    if (pending_execution_command_) {
+      auto command = pending_execution_command_;
+      pending_execution_command_.reset();
+      applyExecutionCommand(command);
+    } else if (pending_legacy_command_) {
+      auto command = pending_legacy_command_;
+      pending_legacy_command_.reset();
+      applyLegacyCommand(command);
+    }
+  }
+
+  void publishStartupEvent(const std::string & event)
+  {
+    uav_swarm_interfaces::msg::StartupEvent msg;
+    msg.header.stamp = this->now();
+    msg.header.frame_id = "local_enu";
+    msg.uav_id = self_uav_id_;
+    msg.mission_id = mission_id_;
+    msg.event = event;
+    msg.startup_state = static_cast<uint8_t>(startup_.state());
+    msg.system_ready =
+      startup_.state() == ladrc_controller::StartupState::READY;
+    msg.armed = px4_armed_;
+    msg.offboard = px4_offboard_;
+    msg.failsafe = has_vehicle_status_ && current_vehicle_status_.failsafe;
+    msg.pre_flight_checks_pass = has_vehicle_status_ &&
+      current_vehicle_status_.pre_flight_checks_pass;
+    msg.altitude = has_odom_ ? static_cast<float>(-current_odom_.position[2]) :
+      std::numeric_limits<float>::quiet_NaN();
+    msg.position_derived_speed = position_velocity_filter_.valid() ?
+      static_cast<float>(position_velocity_filter_.speed()) :
+      std::numeric_limits<float>::quiet_NaN();
+    msg.has_pending_command =
+      static_cast<bool>(pending_execution_command_) ||
+      static_cast<bool>(pending_legacy_command_);
+    startup_event_pub_->publish(msg);
+  }
+
   void stateMachine()
   {
-    switch (flight_state_.load())
-    {
-    case FlightState::INIT:
-      if (++offboard_setpoint_counter_ * 100 > 10000)
-      {
-        RCLCPP_INFO(this->get_logger(), "系统稳定，开始解锁 (Arming)...");
-        publishVehicleCommand(px4_msgs::msg::VehicleCommand::VEHICLE_CMD_COMPONENT_ARM_DISARM, 1.0);
-        flight_state_ = FlightState::ARMING;
-        offboard_setpoint_counter_ = 0;
-      }
-      break;
-
-    case FlightState::ARMING:
-      if (++offboard_setpoint_counter_ * 100 > 2000)
-      {
-        RCLCPP_INFO(this->get_logger(), "解锁成功。切换到 Offboard 模式...");
-        publishVehicleCommand(px4_msgs::msg::VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1.0, 6.0);
-        flight_state_ = FlightState::SETTING_OFFBOARD;
-        offboard_setpoint_counter_ = 0;
-      }
-      break;
-
-    case FlightState::SETTING_OFFBOARD:
-      if (++offboard_setpoint_counter_ * 100 > 1000)
-      {
-        RCLCPP_INFO(this->get_logger(), "Offboard 模式已激活。LADRC 控制器接管。");
-        flight_state_ = FlightState::RUNNING_TRAJECTORY;
-        command_timer_->cancel();
-      }
-      break;
-
-    case FlightState::RUNNING_TRAJECTORY:
-      command_timer_->cancel();
-      break;
+    const auto previous_state = startup_.state();
+    const ladrc_controller::StartupInputs inputs{
+      estimatorReady(), px4_armed_, px4_offboard_, takeoffStable(),
+      feedbackHealthy(), runtimeHealthy()};
+    const auto actions = startup_.update(this->now().seconds(), inputs);
+    if (actions.capture_ground_hold && odomFresh()) {
+      hover_hold_x_ = current_odom_.position[1];
+      hover_hold_y_ = current_odom_.position[0];
+      hover_hold_z_ = -current_odom_.position[2];
+      hover_hold_set_ = true;
+      publishStartupEvent("estimator_ready");
+      publishStartupEvent("prestream_started");
     }
+    if (actions.capture_takeoff_reference && odomFresh()) {
+      hover_hold_x_ = current_odom_.position[1];
+      hover_hold_y_ = current_odom_.position[0];
+      hover_hold_z_ =
+        this->get_parameter("startup_takeoff_altitude").as_double();
+      hover_hold_set_ = true;
+      takeoff_reference_set_ = true;
+      publishStartupEvent("offboard_confirmed");
+      publishStartupEvent("takeoff_started");
+    }
+    if (actions.send_arm) {
+      RCLCPP_INFO(this->get_logger(), "请求 ARM（第 %d 次）", startup_.armAttempts());
+      publishVehicleCommand(
+        px4_msgs::msg::VehicleCommand::VEHICLE_CMD_COMPONENT_ARM_DISARM, 1.0);
+      publishStartupEvent("arm_requested");
+    }
+    if (actions.send_offboard) {
+      RCLCPP_INFO(this->get_logger(), "请求 OFFBOARD（第 %d 次）", startup_.offboardAttempts());
+      publishVehicleCommand(
+        px4_msgs::msg::VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1.0, 6.0);
+      publishStartupEvent("offboard_requested");
+    }
+    if (actions.became_ready) {
+      RCLCPP_INFO(
+        this->get_logger(),
+        "自动起飞稳定保持完成，进入 READY");
+      publishStartupEvent("takeoff_stable");
+      publishStartupEvent("system_ready");
+      activatePendingCommand();
+    }
+    if (actions.became_failed) {
+      has_command_ = false;
+      pending_execution_command_.reset();
+      pending_legacy_command_.reset();
+      is_hover_stable_ = false;
+      if (has_odom_) {
+        hover_hold_x_ = current_odom_.position[1];
+        hover_hold_y_ = current_odom_.position[0];
+        hover_hold_z_ = -current_odom_.position[2];
+        hover_hold_set_ = true;
+      }
+      RCLCPP_ERROR(
+        this->get_logger(),
+        "STARTUP_FAILED 已锁止；不会自动 DISARM、重新 ARM 或重新进入 Offboard "
+        "(armed=%d offboard=%d arm_attempts=%d offboard_attempts=%d)",
+        px4_armed_, px4_offboard_, startup_.armAttempts(),
+        startup_.offboardAttempts());
+      publishStartupEvent("startup_failed_latched");
+    } else if (actions.state_changed && previous_state != startup_.state()) {
+      if (startup_.state() == ladrc_controller::StartupState::SETTING_OFFBOARD) {
+        publishStartupEvent("arm_confirmed");
+      }
+    }
+    publishUAVStatus();
   }
 
   void controlLoop()
@@ -690,16 +936,13 @@ private:
     // 持续发布 offboard 模式
     publishOffboardControlMode();
 
-    // 状态机未完成或未收到里程计：不发 setpoint，等待
-    if (flight_state_.load() != FlightState::RUNNING_TRAJECTORY || !has_odom_)
+    if (!odomFresh())
     {
-      if (flight_state_.load() != FlightState::RUNNING_TRAJECTORY) {
-           RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
-             "等待状态机进入 RUNNING_TRAJECTORY... (当前: %d)", (int)flight_state_.load());
-      } else {
-           RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
-             "等待 vehicle_odometry 消息...");
-      }
+      publishUAVStatus();
+      RCLCPP_WARN_THROTTLE(
+        this->get_logger(), *this->get_clock(), 5000,
+        "等待新鲜 VehicleOdometry（startup=%s armed=%d offboard=%d）",
+        ladrc_controller::toString(startup_.state()), px4_armed_, px4_offboard_);
       return;
     }
 
@@ -719,6 +962,27 @@ private:
       odom_pub_->publish(odom_msg);
     }
 
+    // Prestream/arming/offboard confirmation uses a frozen, valid setpoint.
+    // Once TAKING_OFF starts, the reference below is executed by the selected
+    // backend: PX4 position mode or the unchanged LADRC acceleration pipeline.
+    if (startup_.state() == ladrc_controller::StartupState::WAIT_ESTIMATOR_READY ||
+      startup_.state() == ladrc_controller::StartupState::PRESTREAM ||
+      startup_.state() == ladrc_controller::StartupState::ARMING ||
+      startup_.state() == ladrc_controller::StartupState::SETTING_OFFBOARD)
+    {
+      if (!hover_hold_set_) {
+        hover_hold_x_ = x_meas;
+        hover_hold_y_ = y_meas;
+        hover_hold_z_ = z_meas;
+        hover_hold_set_ = true;
+      }
+      publishTrajectorySetpoint(
+        hover_hold_x_, hover_hold_y_, hover_hold_z_,
+        0.0, 0.0, 0.0, 0.0);
+      publishUAVStatus();
+      return;
+    }
+
     // 2. 生成标称参考。无任务时锁定首次测量位置，仍然执行完整闭环。
     double elapsed = 0.0;
     bool all_finished = false;
@@ -733,12 +997,6 @@ private:
         hover_hold_y_ = y_meas;
         hover_hold_z_ = z_meas;
         hover_hold_set_ = true;
-        ladrc_x_->setObserverInitialState(
-          x_meas, current_odom_.velocity[1], 0.0);
-        ladrc_y_->setObserverInitialState(
-          y_meas, current_odom_.velocity[0], 0.0);
-        ladrc_z_->setObserverInitialState(
-          z_meas, -current_odom_.velocity[2], 0.0);
         RCLCPP_INFO(this->get_logger(),
             "UAV%d 悬停保持锁定: [%.2f, %.2f, %.2f]", self_uav_id_, x_meas, y_meas, z_meas);
       }
@@ -772,13 +1030,34 @@ private:
       {
         const double pos_err = (nominal_reference -
           Eigen::Vector3d(x_meas, y_meas, z_meas)).norm();
-        const double vel_mag = std::sqrt(
+        const double raw_ekf_speed = std::sqrt(
           current_odom_.velocity[0] * current_odom_.velocity[0] +
           current_odom_.velocity[1] * current_odom_.velocity[1] +
           current_odom_.velocity[2] * current_odom_.velocity[2]);
-        if (pos_err < 0.3 && vel_mag < 0.3 && !is_hover_stable_)
+        const double position_derived_speed = position_velocity_filter_.valid()
+          ? position_velocity_filter_.speed()
+          : std::numeric_limits<double>::infinity();
+        latest_position_error_ = pos_err;
+        latest_raw_ekf_speed_ = raw_ekf_speed;
+        latest_position_derived_speed_ = position_derived_speed;
+        const bool was_confirmed = hover_stability_.confirmed();
+        ladrc_controller::updateHoverStability(
+          hover_stability_, pos_err, position_derived_speed,
+          this->now().seconds(),
+          {
+            this->get_parameter(
+              "hover_position_enter_tolerance").as_double(),
+            this->get_parameter(
+              "hover_velocity_enter_tolerance").as_double(),
+            this->get_parameter(
+              "hover_position_exit_tolerance").as_double(),
+            this->get_parameter(
+              "hover_velocity_exit_tolerance").as_double(),
+            this->get_parameter("hover_stable_hold_time").as_double()
+          });
+        is_hover_stable_ = hover_stability_.confirmed();
+        if (!was_confirmed && is_hover_stable_)
         {
-          is_hover_stable_ = true;
           if (!arrival_time_recorded_)
           {
             arrival_time_error_ = elapsed - target_duration_;
@@ -787,8 +1066,9 @@ private:
           settling_time_ = elapsed;
           writeControlAdaptationCsvRow();
           RCLCPP_INFO(this->get_logger(),
-              "悬停稳定! pos_err=%.2fm, vel=%.2fm/s → is_hover_stable=true",
-              pos_err, vel_mag);
+              "悬停稳定确认! pos_err=%.2fm, pos_vel=%.2fm/s, "
+              "raw_ekf_vel=%.2fm/s → is_hover_stable=true",
+              pos_err, position_derived_speed, raw_ekf_speed);
         }
       }
 
@@ -1116,6 +1396,18 @@ private:
 
     setPoint(msg.actual_position, actual_position);
     setVector3(msg.actual_velocity, actual_velocity);
+    const Eigen::Vector3d position_derived_velocity =
+      position_velocity_filter_.valid()
+      ? position_velocity_filter_.velocity()
+      : Eigen::Vector3d::Constant(
+        std::numeric_limits<double>::quiet_NaN());
+    setVector3(msg.position_derived_velocity, position_derived_velocity);
+    msg.raw_ekf_speed = actual_velocity.norm();
+    msg.position_derived_speed = position_velocity_filter_.valid()
+      ? position_velocity_filter_.speed()
+      : std::numeric_limits<double>::quiet_NaN();
+    msg.leso_z2_speed = Eigen::Vector3d(
+      states_x[1], states_y[1], states_z[1]).norm();
     setVector3(msg.tracking_error, safe_reference - actual_position);
     setArrayVector3(msg.px4_position_setpoint, px4_setpoint.position);
     setArrayVector3(msg.px4_velocity_setpoint, px4_setpoint.velocity);
@@ -1127,8 +1419,31 @@ private:
   void publishUAVStatus()
   {
     uav_swarm_interfaces::msg::UAVStatus msg;
-    msg.uav_id = uav_id_;
+    msg.header.stamp = this->now();
+    msg.header.frame_id = "local_enu";
+    msg.uav_id = self_uav_id_;
+    msg.mission_id = mission_id_;
+    msg.system_ready =
+      startup_.state() == ladrc_controller::StartupState::READY;
     msg.is_hover_stable = is_hover_stable_;
+    msg.stability_state = hover_stability_.state;
+    msg.position_error = static_cast<float>(latest_position_error_);
+    msg.speed = position_velocity_filter_.valid() ?
+      static_cast<float>(position_velocity_filter_.speed()) :
+      std::numeric_limits<float>::infinity();
+    msg.raw_ekf_speed = has_odom_ ? static_cast<float>(std::sqrt(
+      current_odom_.velocity[0] * current_odom_.velocity[0] +
+      current_odom_.velocity[1] * current_odom_.velocity[1] +
+      current_odom_.velocity[2] * current_odom_.velocity[2])) :
+      std::numeric_limits<float>::infinity();
+    msg.startup_state = static_cast<uint8_t>(startup_.state());
+    msg.armed = px4_armed_;
+    msg.offboard = px4_offboard_;
+    msg.failsafe = has_vehicle_status_ && current_vehicle_status_.failsafe;
+    msg.pre_flight_checks_pass = has_vehicle_status_ &&
+      current_vehicle_status_.pre_flight_checks_pass;
+    msg.altitude = has_odom_ ? static_cast<float>(-current_odom_.position[2]) :
+      std::numeric_limits<float>::quiet_NaN();
     status_pub_->publish(msg);
   }
 
@@ -1434,7 +1749,10 @@ private:
   rclcpp::Subscription<uav_swarm_interfaces::msg::UAVExecutionCommand>::SharedPtr
       execution_command_sub_;
   rclcpp::Subscription<px4_msgs::msg::VehicleOdometry>::SharedPtr odom_sub_;
+  rclcpp::Subscription<px4_msgs::msg::VehicleStatus>::SharedPtr vehicle_status_sub_;
   rclcpp::Publisher<uav_swarm_interfaces::msg::UAVStatus>::SharedPtr status_pub_;
+  rclcpp::Publisher<uav_swarm_interfaces::msg::StartupEvent>::SharedPtr
+      startup_event_pub_;
   rclcpp::Publisher<geometry_msgs::msg::Point>::SharedPtr odom_pub_;
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr swarm_state_pub_;
   rclcpp::Publisher<uav_swarm_interfaces::msg::TrajectoryMetrics>::SharedPtr
@@ -1467,7 +1785,7 @@ private:
   double safety_factor_ = 0.0;
   bool has_command_ = false;
   ladrc_controller::ControlMode control_mode_{
-    ladrc_controller::ControlMode::LADRC_ACCELERATION};
+    ladrc_controller::ControlMode::PX4_POSITION};
   bool active_new_profile_ = false;
   bool profile_soft_safety_active_ = false;
   double profile_iapf_enter_distance_ = 0.0;
@@ -1517,9 +1835,26 @@ private:
   // Odom 数据
   px4_msgs::msg::VehicleOdometry current_odom_;
   bool has_odom_ = false;
+  double last_odom_receive_time_s_ =
+    -std::numeric_limits<double>::infinity();
+  ladrc_controller::PositionVelocityFilter position_velocity_filter_{0.5};
+  px4_msgs::msg::VehicleStatus current_vehicle_status_;
+  bool has_vehicle_status_ = false;
+  double last_vehicle_status_receive_time_s_ =
+    -std::numeric_limits<double>::infinity();
+  bool px4_armed_ = false;
+  bool px4_offboard_ = false;
+  bool takeoff_reference_set_ = false;
+  uav_swarm_interfaces::msg::UAVSwarmCommand::SharedPtr pending_legacy_command_;
+  uav_swarm_interfaces::msg::UAVExecutionCommand::SharedPtr pending_execution_command_;
 
   // [Phase 3 预置] 悬停状态（Phase 1 默认为 false，Phase 3 完整实现）
   bool is_hover_stable_ = false;
+  ladrc_controller::HoverStabilityState hover_stability_;
+  double latest_position_error_ = std::numeric_limits<double>::infinity();
+  double latest_raw_ekf_speed_ = std::numeric_limits<double>::infinity();
+  double latest_position_derived_speed_ =
+    std::numeric_limits<double>::infinity();
 
   // Odom 发布计数器 (~10Hz throttle)
   int odom_pub_counter_ = 0;
@@ -1533,9 +1868,8 @@ private:
   std::unordered_map<uint8_t, NeighborState> neighbor_states_;
   std::vector<rclcpp::Subscription<px4_msgs::msg::VehicleOdometry>::SharedPtr> neighbor_subs_;
 
-  // 状态机
-  std::atomic<FlightState> flight_state_;
-  std::atomic<uint64_t> offboard_setpoint_counter_;
+  // PX4 feedback-driven startup state machine
+  ladrc_controller::StartupStateMachine startup_;
 
   double dt_;
 };

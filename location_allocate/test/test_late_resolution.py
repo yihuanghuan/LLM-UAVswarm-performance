@@ -116,7 +116,10 @@ def test_candidate_to_executable_pipeline_has_one_duration_source():
     assert result.trace.hungarian_initial_assignment
     assert result.trace.final_assignment
     assert result.trace.planning_assignment_metrics.keys() == {
-        "N_hard", "J_margin", "J_distance", "min_3d_distance", "xy_crossings"
+        "N_hard", "J_margin", "J_distance", "min_3d_distance",
+        "xy_crossings", "d_hard", "d_plan", "hard_feasible",
+        "planning_margin_met", "residual_planning_risk",
+        "margin_intrusion_m",
     }
     assert len(result.trace.per_uav_dynamics) == 3
     json.dumps(asdict(result.trace), allow_nan=False)
@@ -175,6 +178,81 @@ def _parallel_snapshot():
     manager.update(3, [2.0, 2.0, 2.0], 10.0)
     manager.update(4, [4.0, 2.0, 2.0], 10.0)
     return manager.snapshot([1, 2, 3, 4], 10.0)
+
+
+def _parallel_threshold_case(separation):
+    centers = ([0.0, 0.0, 2.0], [0.0, separation, 2.0])
+    tasks = (
+        _parallel_task(1, [1, 2], centers[0], 2.0),
+        _parallel_task(2, [3, 4], centers[1], 2.0),
+    )
+    manager = FreshStateSnapshotManager(1.0, 0.1)
+    for uav_id, position in enumerate((
+        [-1.0, 0.0, 2.0], [1.0, 0.0, 2.0],
+        [-1.0, separation, 2.0], [1.0, separation, 2.0],
+    ), start=1):
+        manager.update(uav_id, position, 10.0)
+    threshold_policy = policy(lambda _s: SafetyResolution(
+        d_hard=1.0,
+        d_plan=2.0,
+        soft_iapf=SoftSafetyParameters(1.5, 1.7, 1.0),
+    ), tolerance=100.0)
+    return tasks, manager.snapshot([1, 2, 3, 4], 10.0), threshold_policy
+
+
+def test_parallel_final_gate_rejects_below_d_hard():
+    tasks, state, threshold_policy = _parallel_threshold_case(0.5)
+
+    with pytest.raises(LateResolutionError) as caught:
+        resolve_execution_parallel(
+            tasks, state, threshold_policy, "synchronized",
+            group_d_plan=2.0,
+        )
+
+    assert caught.value.code == "parallel_nominal_trajectory_d_hard_violation"
+    assert caught.value.diagnostics["final_metrics"]["N_hard"] > 0
+    assert caught.value.diagnostics["final_metrics"]["hard_feasible"] is False
+
+
+def test_parallel_final_gate_accepts_residual_planning_risk():
+    tasks, state, threshold_policy = _parallel_threshold_case(1.5)
+
+    result = resolve_execution_parallel(
+        tasks, state, threshold_policy, "synchronized",
+        group_d_plan=2.0,
+    )
+
+    assert result.final_metrics.min_distance == pytest.approx(1.5)
+    assert result.final_metrics.hard_violations == 0
+    assert result.final_metrics.margin_cost > 0.0
+    metrics = result.tasks[0].trace.final_assignment_metrics
+    assert metrics["hard_feasible"] is True
+    assert metrics["planning_margin_met"] is False
+    assert metrics["residual_planning_risk"] is True
+    assert metrics["margin_intrusion_m"] == pytest.approx(0.5)
+    assert result.tasks[0].trace.warnings
+
+
+def test_parallel_final_gate_accepts_full_planning_margin():
+    tasks, state, threshold_policy = _parallel_threshold_case(2.5)
+
+    result = resolve_execution_parallel(
+        tasks, state, threshold_policy, "synchronized",
+        group_d_plan=2.0,
+    )
+
+    assert result.final_metrics.min_distance == pytest.approx(2.0)
+    assert result.final_metrics.hard_violations == 0
+    assert result.final_metrics.margin_cost == pytest.approx(0.0)
+    metrics = result.tasks[0].trace.final_assignment_metrics
+    assert metrics["hard_feasible"] is True
+    assert metrics["planning_margin_met"] is True
+    assert metrics["residual_planning_risk"] is False
+    assert metrics["margin_intrusion_m"] == pytest.approx(0.0)
+    assert not any(
+        warning.startswith("residual planning risk accepted")
+        for warning in result.tasks[0].trace.warnings
+    )
 
 
 def test_parallel_independent_preserves_distinct_exec_durations():

@@ -39,6 +39,11 @@ from .timing_resolution import (
 class LateResolutionError(RuntimeError):
     """Raised when a task fails a deterministic late-resolution gate."""
 
+    def __init__(self, message, *, code="late_resolution_error", diagnostics=None):
+        super().__init__(message)
+        self.code = str(code)
+        self.diagnostics = dict(diagnostics or {})
+
 
 @dataclass(frozen=True)
 class SafetyResolution:
@@ -100,14 +105,34 @@ class _PreparedTask:
     t_plan: float
 
 
-def _metrics_payload(metrics: AssignmentMetrics) -> dict:
-    return {
+def _metrics_payload(
+    metrics: AssignmentMetrics,
+    d_hard: float | None = None,
+    d_plan: float | None = None,
+) -> dict:
+    payload = {
         "N_hard": metrics.hard_violations,
         "J_margin": metrics.margin_cost,
         "J_distance": metrics.distance,
         "min_3d_distance": metrics.min_distance,
         "xy_crossings": metrics.xy_crossings,
     }
+    if d_hard is not None and d_plan is not None:
+        hard_feasible = metrics.min_distance + 1e-9 >= d_hard
+        planning_margin_met = metrics.min_distance + 1e-9 >= d_plan
+        payload.update({
+            "d_hard": d_hard,
+            "d_plan": d_plan,
+            "hard_feasible": hard_feasible,
+            "planning_margin_met": planning_margin_met,
+            "residual_planning_risk": (
+                hard_feasible and not planning_margin_met
+            ),
+            "margin_intrusion_m": max(
+                0.0, d_plan - metrics.min_distance
+            ),
+        })
+    return payload
 
 
 def _record_allocation_trace(
@@ -120,8 +145,12 @@ def _record_allocation_trace(
     trace.assignment_mode = "safety_aware"
     trace.hungarian_initial_assignment = list(allocator.last_initial_assignment)
     trace.final_assignment = list(allocator.last_assignment)
-    trace.planning_assignment_metrics = _metrics_payload(planning_metrics)
-    trace.final_assignment_metrics = _metrics_payload(final_metrics)
+    trace.planning_assignment_metrics = _metrics_payload(
+        planning_metrics, allocator.d_hard, allocator.d_plan
+    )
+    trace.final_assignment_metrics = _metrics_payload(
+        final_metrics, allocator.d_hard, allocator.d_plan
+    )
 
 
 def _record_profile_trace(
@@ -357,14 +386,54 @@ def resolve_execution_parallel(
             item.trace.corrections.append(
                 "parallel assignment safety re-evaluated once"
             )
-    if final_metrics.min_distance + 1e-9 < group_d_plan:
+    if final_metrics.min_distance + 1e-9 < group_d_hard:
+        diagnostics = dict(allocator.last_diagnostics)
+        diagnostics.update({
+            "error_code": "parallel_nominal_trajectory_d_hard_violation",
+            "classification": "hard_safety_boundary_violation",
+            "completion_mode": completion_mode,
+            "planning_metrics": _metrics_payload(
+                planning_metrics, group_d_hard, group_d_plan
+            ),
+            "final_metrics": _metrics_payload(
+                final_metrics, group_d_hard, group_d_plan
+            ),
+            "groups": [
+                {
+                    "group_index": index,
+                    "uav_ids": list(item.intent.uav_ids),
+                    "initial_positions": [list(value) for value in item.initial],
+                    "resolved_center": list(item.intent.center),
+                    "formation": item.intent.formation,
+                    "resolved_radius": item.radius,
+                    "generated_targets": [list(value) for value in item.targets],
+                    "individual_d_plan": item.safety.d_plan,
+                    "t_plan": item.t_plan,
+                    "t_exec": t_exec,
+                }
+                for index, (item, t_exec) in enumerate(
+                    zip(prepared, t_exec_values)
+                )
+            ],
+        })
         for item in prepared:
-            item.trace.rejection_reason = (
-                "parallel assignment violates explicit group_d_plan"
-            )
+            item.trace.rejection_reason = diagnostics["error_code"]
         raise LateResolutionError(
-            "parallel assignment violates explicit group_d_plan"
+            "parallel nominal trajectory violates d_hard",
+            code=diagnostics["error_code"],
+            diagnostics=diagnostics,
         )
+
+    if final_metrics.min_distance + 1e-9 < group_d_plan:
+        intrusion = group_d_plan - final_metrics.min_distance
+        warning = (
+            "residual planning risk accepted: nominal minimum distance "
+            f"{final_metrics.min_distance:.6f}m is {intrusion:.6f}m inside "
+            f"d_plan={group_d_plan:.6f}m but remains above "
+            f"d_hard={group_d_hard:.6f}m"
+        )
+        for item in prepared:
+            item.trace.warnings.append(warning)
 
     resolved_tasks = []
     for item, assigned, t_exec in zip(

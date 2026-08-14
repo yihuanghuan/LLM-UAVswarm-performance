@@ -24,6 +24,7 @@ from location_allocate.no_location import parse_uav_command  # noqa: E402
 RESULT_FIELDS = [
     "command_id",
     "command_type",
+    "format_compliant",
     "valid_json",
     "schema_valid",
     "compiled_success",
@@ -128,6 +129,7 @@ def summarize_log_rows(rows: Iterable[Dict[str, str]], command_text: str) -> Dic
             error_type = row["error_type"]
             break
     return {
+        "format_compliant": bool_text(last.get("format_compliant")),
         "valid_json": bool_text(last.get("valid_json")),
         "schema_valid": bool_text(last.get("schema_valid")),
         "field_accuracy": float_value(last.get("field_accuracy")),
@@ -165,6 +167,7 @@ def evaluate_command(item: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "command_id": item["id"],
         "command_type": item["type"],
+        "format_compliant": log_summary.get("format_compliant", "false"),
         "valid_json": log_summary.get("valid_json", bool_text(compiled_success)),
         "schema_valid": log_summary.get("schema_valid", bool_text(compiled_success)),
         "compiled_success": bool_text(compiled_success),

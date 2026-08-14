@@ -52,6 +52,7 @@ class SafetyAwareTopologyAllocator:
         self.last_iterations = 0
         self.last_initial_assignment: List[int] = []
         self.last_assignment: List[int] = []
+        self.last_diagnostics: Dict[str, Any] = {}
 
     @staticmethod
     def _positions(
@@ -124,6 +125,95 @@ class SafetyAwareTopologyAllocator:
                 np.clip(-np.dot(a, b) / denominator, 0.0, 1.0)
             )
         return float(np.linalg.norm(a + progress * b))
+
+    @staticmethod
+    def _equal_progress_closest_approach_details(
+        first_start, first_target, second_start, second_target
+    ) -> tuple[float, float]:
+        first_start_np = np.asarray(first_start, dtype=float)
+        first_target_np = np.asarray(first_target, dtype=float)
+        second_start_np = np.asarray(second_start, dtype=float)
+        second_target_np = np.asarray(second_target, dtype=float)
+        a = first_start_np - second_start_np
+        b = ((first_target_np - first_start_np)
+             - (second_target_np - second_start_np))
+        denominator = float(np.dot(b, b))
+        progress = 0.0 if denominator <= np.finfo(float).eps else float(
+            np.clip(-np.dot(a, b) / denominator, 0.0, 1.0)
+        )
+        return float(np.linalg.norm(a + progress * b)), progress
+
+    @classmethod
+    def _minimum_jerk_inverse(cls, progress: float) -> float:
+        low, high = 0.0, 1.0
+        for _ in range(60):
+            middle = (low + high) / 2.0
+            value = float(cls._minimum_jerk_progress(np.asarray(middle)))
+            if value < progress:
+                low = middle
+            else:
+                high = middle
+        return (low + high) / 2.0
+
+    def closest_approach_diagnostic(
+        self, initial, assigned_targets, durations, uav_ids, group_indices
+    ) -> Dict[str, Any]:
+        initial_np, targets_np = self._positions(initial, assigned_targets)
+        durations_np = np.asarray(durations, dtype=float)
+        best = None
+        synchronized = float(durations_np.max() - durations_np.min()) <= 1e-12
+        if synchronized:
+            for i, j in itertools.combinations(range(len(initial_np)), 2):
+                distance, progress = self._equal_progress_closest_approach_details(
+                    initial_np[i], targets_np[i], initial_np[j], targets_np[j]
+                )
+                normalized_time = self._minimum_jerk_inverse(progress)
+                item = (distance, i, j, progress,
+                        normalized_time * float(durations_np[0]))
+                if best is None or item < best:
+                    best = item
+        else:
+            trajectories = self.sample_nominal_trajectories_variable(
+                initial_np, targets_np, durations_np
+            )
+            horizon = float(durations_np.max())
+            times = np.linspace(0.0, horizon, trajectories.shape[1])
+            for i, j in itertools.combinations(range(len(initial_np)), 2):
+                distances = np.linalg.norm(
+                    trajectories[i] - trajectories[j], axis=1
+                )
+                sample = int(np.argmin(distances))
+                elapsed = float(times[sample])
+                progress = float(self._minimum_jerk_progress(np.asarray(
+                    min(elapsed / durations_np[i], 1.0)
+                )))
+                item = (float(distances[sample]), i, j, progress, elapsed)
+                if best is None or item < best:
+                    best = item
+        target_min = float("inf")
+        target_pair = None
+        for i, j in itertools.combinations(range(len(targets_np)), 2):
+            distance = float(np.linalg.norm(targets_np[i] - targets_np[j]))
+            if distance < target_min:
+                target_min, target_pair = distance, (i, j)
+        if best is None:
+            return {}
+        distance, first, second, progress, elapsed = best
+        return {
+            "min_predicted_distance": distance,
+            "offending_pair_indices": [first, second],
+            "offending_uav_pair": [int(uav_ids[first]), int(uav_ids[second])],
+            "offending_pair_groups": [
+                int(group_indices[first]), int(group_indices[second])
+            ],
+            "closest_approach_progress": progress,
+            "closest_approach_time_s": elapsed,
+            "target_min_distance": target_min,
+            "target_min_pair": (
+                [] if target_pair is None else
+                [int(uav_ids[target_pair[0]]), int(uav_ids[target_pair[1]])]
+            ),
+        }
 
     @staticmethod
     def _orientation(a: np.ndarray, b: np.ndarray, c: np.ndarray) -> float:
@@ -357,8 +447,11 @@ class SafetyAwareTopologyAllocator:
                 "durations must contain one finite positive value per group"
             )
         initial, targets, uav_durations, ranges = [], [], [], []
+        flat_uav_ids, flat_group_indices = [], []
         seen, cursor = set(), 0
-        for group, group_duration in zip(groups, group_durations):
+        for group_index, (group, group_duration) in enumerate(
+            zip(groups, group_durations)
+        ):
             ids = [int(value) for value in group.get("uav_ids", [])]
             starts, goals = group.get("initial", []), group.get("targets", [])
             if len(ids) != len(starts) or len(ids) != len(goals):
@@ -374,6 +467,8 @@ class SafetyAwareTopologyAllocator:
             initial.extend(starts)
             targets.extend(goals)
             uav_durations.extend([group_duration] * len(ids))
+            flat_uav_ids.extend(ids)
+            flat_group_indices.extend([group_index] * len(ids))
             ranges.append(range(cursor, cursor + len(ids)))
             cursor += len(ids)
         assignment = list(range(len(initial)))
@@ -398,12 +493,103 @@ class SafetyAwareTopologyAllocator:
                 )
         if mode == "safety_aware":
             assignment, metrics = self._refine(assignment, evaluator, ranges)
+            local_assignment = list(assignment)
+            candidate_count = math.prod(
+                math.factorial(len(item)) for item in ranges
+            )
+            exhaustive_checked = 0
+            feasible_assignment = None
+            feasible_metrics = None
+            exhaustive_best_assignment = list(assignment)
+            exhaustive_best_metrics = metrics
+            best_min_distance = metrics.min_distance
+            best_min_assignment = list(assignment)
+            if metrics.min_distance + 1e-9 < self.d_plan and candidate_count <= 100000:
+                permutations = [
+                    list(itertools.permutations(list(item))) for item in ranges
+                ]
+                for choices in itertools.product(*permutations):
+                    candidate = list(range(len(initial)))
+                    for group_range, targets_choice in zip(ranges, choices):
+                        for row, target in zip(group_range, targets_choice):
+                            candidate[row] = target
+                    candidate_metrics = evaluator(candidate)
+                    exhaustive_checked += 1
+                    if self.lexicographically_better(
+                        candidate_metrics, exhaustive_best_metrics
+                    ):
+                        exhaustive_best_assignment = list(candidate)
+                        exhaustive_best_metrics = candidate_metrics
+                    if candidate_metrics.min_distance > best_min_distance:
+                        best_min_distance = candidate_metrics.min_distance
+                        best_min_assignment = list(candidate)
+                    if candidate_metrics.min_distance + 1e-9 >= self.d_plan and (
+                        feasible_metrics is None or self.lexicographically_better(
+                            candidate_metrics, feasible_metrics
+                        )
+                    ):
+                        feasible_assignment = list(candidate)
+                        feasible_metrics = candidate_metrics
+                assignment = exhaustive_best_assignment
+                metrics = exhaustive_best_metrics
+                self.last_assignment = list(assignment)
+                self.last_metrics = metrics
+            assigned_for_diagnostic = np.asarray(
+                targets, dtype=float
+            )[assignment].tolist()
+            self.last_diagnostics = self.closest_approach_diagnostic(
+                initial, assigned_for_diagnostic, uav_durations,
+                flat_uav_ids, flat_group_indices,
+            )
+            self.last_diagnostics.update({
+                "group_d_plan": self.d_plan,
+                "d_hard": self.d_hard,
+                "hard_feasible": (
+                    metrics.min_distance + 1e-9 >= self.d_hard
+                ),
+                "planning_margin_met": (
+                    metrics.min_distance + 1e-9 >= self.d_plan
+                ),
+                "residual_planning_risk": (
+                    metrics.min_distance + 1e-9 >= self.d_hard
+                    and metrics.min_distance + 1e-9 < self.d_plan
+                ),
+                "margin_intrusion_m": max(
+                    0.0, self.d_plan - metrics.min_distance
+                ),
+                "local_search_assignment": local_assignment,
+                "final_assignment": list(assignment),
+                "exhaustive_candidate_count": candidate_count,
+                "exhaustive_checked": exhaustive_checked,
+                "exhaustive_best_assignment": exhaustive_best_assignment,
+                "exhaustive_best_metrics": {
+                    "N_hard": exhaustive_best_metrics.hard_violations,
+                    "J_margin": exhaustive_best_metrics.margin_cost,
+                    "J_distance": exhaustive_best_metrics.distance,
+                    "min_3d_distance": exhaustive_best_metrics.min_distance,
+                },
+                "feasible_group_local_assignment_found": (
+                    feasible_assignment is not None
+                ),
+                "planning_margin_satisfying_assignment_found": (
+                    feasible_assignment is not None
+                ),
+                "best_group_local_min_distance": best_min_distance,
+                "best_group_local_assignment": best_min_assignment,
+            })
         elif mode in ("fixed", "distance_hungarian"):
             metrics = evaluator(assignment)
             self.last_initial_assignment = self.last_assignment = list(
                 assignment
             )
             self.last_metrics, self.last_iterations = metrics, 0
+            assigned_for_diagnostic = np.asarray(
+                targets, dtype=float
+            )[assignment].tolist()
+            self.last_diagnostics = self.closest_approach_diagnostic(
+                initial, assigned_for_diagnostic, uav_durations,
+                flat_uav_ids, flat_group_indices,
+            )
         else:
             raise ValueError(
                 "assignment_mode must be fixed, distance_hungarian, "
@@ -417,6 +603,14 @@ class SafetyAwareTopologyAllocator:
 
     def metrics_dict(self) -> Dict[str, Any]:
         metrics = self.last_metrics
+        hard_feasible = (
+            None if metrics is None else
+            metrics.min_distance + 1e-9 >= self.d_hard
+        )
+        planning_margin_met = (
+            None if metrics is None else
+            metrics.min_distance + 1e-9 >= self.d_plan
+        )
         return {
             "allocator_version": self.VERSION,
             "hard_violations": (
@@ -426,6 +620,18 @@ class SafetyAwareTopologyAllocator:
             "distance": None if metrics is None else metrics.distance,
             "min_distance": None if metrics is None else metrics.min_distance,
             "xy_crossings": None if metrics is None else metrics.xy_crossings,
+            "d_hard": self.d_hard,
+            "d_plan": self.d_plan,
+            "hard_feasible": hard_feasible,
+            "planning_margin_met": planning_margin_met,
+            "residual_planning_risk": (
+                None if metrics is None else
+                hard_feasible and not planning_margin_met
+            ),
+            "margin_intrusion_m": (
+                None if metrics is None else
+                max(0.0, self.d_plan - metrics.min_distance)
+            ),
             "hungarian_initial_assignment": list(self.last_initial_assignment),
             "final_assignment": list(self.last_assignment),
             "iterations": self.last_iterations,

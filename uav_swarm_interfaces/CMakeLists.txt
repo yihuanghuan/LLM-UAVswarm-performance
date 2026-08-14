@@ -15,6 +15,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/UAVExecutionCommand.msg"
   "msg/UAVSwarmCommand.msg"
   "msg/UAVStatus.msg"
+  "msg/StartupEvent.msg"
   "msg/TrajectoryMetrics.msg"
   "msg/ControlAdaptationLog.msg"
   "msg/IAPFDebug.msg"

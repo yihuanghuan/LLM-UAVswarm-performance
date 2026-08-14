@@ -39,9 +39,13 @@ class FakeCompletions:
         self.payload = payload
 
     def create(self, **_kwargs):
+        content = (
+            self.payload if isinstance(self.payload, str)
+            else json.dumps(self.payload)
+        )
         return SimpleNamespace(
             choices=[SimpleNamespace(
-                message=SimpleNamespace(content=json.dumps(self.payload))
+                message=SimpleNamespace(content=content)
             )],
             usage=SimpleNamespace(prompt_tokens=1, completion_tokens=1),
         )
@@ -61,6 +65,8 @@ def configure_fake(monkeypatch, payload, module=paper_candidate_parser):
     monkeypatch.setattr(module, "API_KEY", "test-key")
     monkeypatch.setattr(module, "OpenAI", FakeClient)
     monkeypatch.setattr(module, "append_llm_parse_log", lambda _row: None)
+    if hasattr(module, "append_raw_response_log"):
+        monkeypatch.setattr(module, "append_raw_response_log", lambda *_args: None)
     monkeypatch.setattr(module.time, "sleep", lambda _seconds: None)
 
 
@@ -90,6 +96,67 @@ def test_candidate_prompt_forbids_numerical_and_control_defaults():
     assert "merely says safer" in prompt
     assert "does not promise nonzero velocity" in prompt
     assert "Do not output an independent WaitNode" in prompt
+    assert "Output exactly ONE JSON object" in prompt
+    assert "Do NOT output `<think>` tags" in prompt
+
+
+def test_candidate_parser_accepts_think_wrapper(monkeypatch):
+    raw = "<think>reasoning</think>\n" + json.dumps(candidate_payload())
+    configure_fake(monkeypatch, raw)
+    assert paper_candidate_parser.parse_candidate_mission(
+        "fixture", AVAILABILITY
+    ) == candidate_payload()
+
+
+def test_candidate_parser_accepts_whole_json_fence(monkeypatch):
+    raw = "```json\n" + json.dumps(candidate_payload()) + "\n```"
+    configure_fake(monkeypatch, raw)
+    assert paper_candidate_parser.parse_candidate_mission(
+        "fixture", AVAILABILITY
+    ) == candidate_payload()
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        lambda payload: "Explanation: " + json.dumps(payload),
+        lambda payload: json.dumps(payload) + "\n" + json.dumps(payload),
+    ],
+)
+def test_candidate_parser_rejects_non_wrapper_text_and_multiple_objects(
+        monkeypatch, raw):
+    configure_fake(monkeypatch, raw(candidate_payload()))
+    with pytest.raises(paper_candidate_parser.CandidateParseError):
+        paper_candidate_parser.parse_candidate_mission("fixture", AVAILABILITY)
+
+
+def test_think_fake_json_does_not_contaminate_final_json(monkeypatch):
+    raw = (
+        '<think>{"fake":true}</think>\n'
+        + json.dumps(candidate_payload())
+    )
+    configure_fake(monkeypatch, raw)
+    assert paper_candidate_parser.parse_candidate_mission(
+        "fixture", AVAILABILITY
+    ) == candidate_payload()
+
+
+@pytest.mark.parametrize(
+    "raw, expected_compliance",
+    [
+        (lambda payload: json.dumps(payload), True),
+        (lambda payload: "<think>x</think>" + json.dumps(payload), False),
+        (lambda payload: "```json\n" + json.dumps(payload) + "\n```", False),
+    ],
+)
+def test_format_compliance_is_raw_protocol_metric(
+        monkeypatch, raw, expected_compliance):
+    rows = []
+    configure_fake(monkeypatch, raw(candidate_payload()))
+    monkeypatch.setattr(paper_candidate_parser, "append_llm_parse_log", rows.append)
+    paper_candidate_parser.parse_candidate_mission("fixture", AVAILABILITY)
+    assert rows[-1]["format_compliant"] is expected_compliance
+    assert rows[-1]["valid_json"] is True
 
 
 def test_candidate_parser_requires_explicit_available_uav_ids():

@@ -1,5 +1,5 @@
 policy_status: paper_current
-configuration_id: paper-current-v2
+configuration_id: paper-current-v3
 
 state_snapshot:
   state_timeout: 0.5
@@ -44,16 +44,16 @@ allocator:
 
 execution_profile:
   task_adaptation_type: identity
-  baseline_omega_c: [3.0, 3.0, 3.5]
-  baseline_omega_o: [10.0, 10.0, 15.0]
+  baseline_omega_c: [1.5, 1.5, 1.75]
+  baseline_omega_o: [5.0, 5.0, 7.5]
   style_gains: {smooth: 1.0, normal: 1.0, aggressive: 1.0}
 
 controller_hard_clamps:
   smoothing_alpha: 1.0
-  omega_c_min: [3.0, 3.0, 3.5]
-  omega_c_max: [3.0, 3.0, 3.5]
-  omega_o_min: [10.0, 10.0, 15.0]
-  omega_o_max: [10.0, 10.0, 15.0]
+  omega_c_min: [1.5, 1.5, 1.75]
+  omega_c_max: [1.5, 1.5, 1.75]
+  omega_o_min: [5.0, 5.0, 7.5]
+  omega_o_max: [5.0, 5.0, 7.5]
   velocity_max: 5.0
   acceleration_max: 5.0
   jerk_max: 10.0
@@ -72,7 +72,7 @@ provenance:
   d_hard: ladrc_controller/config/ladrc_params.yaml:iapf_violation_distance
   d_plan_s1: location_allocate/safety_aware_allocator.py:d_plan
   iapf_soft: ladrc_controller/config/ladrc_params.yaml:iapf_enter_distance,iapf_exit_distance
-  ladrc_baseline: ladrc_controller/config/ladrc_params.yaml:omega_c_*,omega_o_*
+  ladrc_baseline: execution_profile.baseline_omega_c,execution_profile.baseline_omega_o
   dynamics: motion_limits
   allocator: location_allocate/safety_aware_allocator.py:lexicographic-score
   paper_rules: paper-path freeze + legacy isolation.md

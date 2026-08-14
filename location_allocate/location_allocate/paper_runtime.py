@@ -93,7 +93,7 @@ class PaperMissionRuntime:
 
     def _failure(self, task, stage, error, mission_id, group_id=0):
         try:
-            append_resolution_trace({
+            record = {
                 "mission_id": mission_id,
                 "group_id": group_id,
                 "task_id": int(task.get("task_id", 0)),
@@ -101,7 +101,14 @@ class PaperMissionRuntime:
                 "configuration_id": self.policy_config.configuration_id,
                 "rejection_stage": stage,
                 "rejection_reason": str(error),
-            })
+            }
+            error_code = getattr(error, "code", None)
+            diagnostics = getattr(error, "diagnostics", None)
+            if error_code is not None:
+                record["error_code"] = error_code
+            if diagnostics:
+                record["diagnostics"] = diagnostics
+            append_resolution_trace(record)
         except Exception as trace_error:
             self.node.get_logger().error(
                 f"failed to write Candidate rejection trace: {trace_error}"

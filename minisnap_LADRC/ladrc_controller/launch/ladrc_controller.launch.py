@@ -66,7 +66,7 @@ def generate_launch_description():
 
         DeclareLaunchArgument(
             'control_mode',
-            default_value='ladrc_acceleration',
+            default_value='px4_position',
             description='ladrc_acceleration/px4_position'
         ),
 

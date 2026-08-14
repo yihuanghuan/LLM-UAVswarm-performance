@@ -1,8 +1,6 @@
 """Versioned English parser for the paper Candidate Mission path."""
 
-import json
 import os
-import re
 import time
 import uuid
 
@@ -19,6 +17,8 @@ except ModuleNotFoundError:
 from .llm_parse_logger import append_llm_parse_log
 from .paper_lfs_validator import early_validate_candidate_mission
 from .prompt_loader import load_paper_prompt_bundle, load_paper_schema
+from .raw_response_logger import append_raw_response_log
+from .strict_json_normalizer import normalize_provider_json, strict_json_object
 from .validation_common import parse_available_uav_ids
 
 
@@ -37,9 +37,8 @@ class CandidateParseError(RuntimeError):
 
 
 def _purify_json(raw_content: str) -> str:
-    cleaned = re.sub(r"```json|```", "", raw_content).strip()
-    match = re.search(r"\{.*\}", cleaned, re.DOTALL)
-    return match.group(0) if match else cleaned
+    """Compatibility name for strict provider-wrapper normalization."""
+    return normalize_provider_json(raw_content)
 
 
 def _tokens(response, name: str) -> int:
@@ -54,6 +53,7 @@ def _log(command_id, command, attempt, response=None, **values):
         "prompt_tokens": _tokens(response, "prompt_tokens") if response else 0,
         "completion_tokens": _tokens(response, "completion_tokens") if response else 0,
         "latency_ms": values.get("latency_ms", 0),
+        "format_compliant": values.get("format_compliant", False),
         "valid_json": values.get("valid_json", False),
         "schema_valid": values.get("schema_valid", False),
         "field_accuracy": values.get("field_accuracy", 0.0),
@@ -89,7 +89,9 @@ def parse_candidate_mission(user_command: str, ros_aux_info: str = ""):
     full_prompt = (
         PROMPT.system_prompt + "\n\n" + PROMPT.render_examples() + "\n\n"
         "Availability information:\n" + ros_aux_info + "\n\n"
-        "User instruction:\n" + user_command + "\n\nOutput:\n"
+        "User instruction:\n" + user_command + "\n\n"
+        "Reminder: output exactly one JSON object and no other text.\n"
+        "Output:\n"
     )
     options = {"api_key": API_KEY, "base_url": BASE_URL}
     if httpx is not None:
@@ -98,8 +100,10 @@ def parse_candidate_mission(user_command: str, ros_aux_info: str = ""):
 
     for attempt in range(3):
         response = None
+        raw_content = ""
         started = time.time()
         valid_json = False
+        format_compliant = False
         try:
             response = client.chat.completions.create(
                 model=MODEL_NAME,
@@ -110,7 +114,8 @@ def parse_candidate_mission(user_command: str, ros_aux_info: str = ""):
                 response_format={"type": "json_object"},
                 timeout=60,
             )
-            payload = json.loads(_purify_json(response.choices[0].message.content))
+            raw_content = response.choices[0].message.content
+            payload, format_compliant = strict_json_object(raw_content)
             valid_json = True
             payload = early_validate_candidate_mission(
                 payload, schema=load_paper_schema(),
@@ -120,17 +125,35 @@ def parse_candidate_mission(user_command: str, ros_aux_info: str = ""):
                 command_id, user_command, attempt, response,
                 command_type="paper_candidate",
                 latency_ms=int((time.time() - started) * 1000),
+                format_compliant=format_compliant,
                 valid_json=True, schema_valid=True, field_accuracy=1.0,
             )
+            append_raw_response_log(
+                command_id, attempt, raw_content, MODEL_NAME,
+                PROMPT.prompt_hash, PROMPT.schema_hash,
+                int((time.time() - started) * 1000),
+                _tokens(response, "prompt_tokens"),
+                _tokens(response, "completion_tokens"),
+                format_compliant, True, True, "", "paper_candidate")
             return payload
         except Exception as exc:
             reason = f"Candidate parse validation failed: {exc}"
             _log(
                 command_id, user_command, attempt, response,
                 latency_ms=int((time.time() - started) * 1000),
+                format_compliant=format_compliant,
                 valid_json=valid_json, error_type=type(exc).__name__,
                 error_reason=reason,
             )
+            if response is not None:
+                append_raw_response_log(
+                    command_id, attempt, raw_content, MODEL_NAME,
+                    PROMPT.prompt_hash, PROMPT.schema_hash,
+                    int((time.time() - started) * 1000),
+                    _tokens(response, "prompt_tokens"),
+                    _tokens(response, "completion_tokens"),
+                    format_compliant, valid_json, False,
+                    type(exc).__name__, "paper_candidate")
             if attempt == 2:
                 raise CandidateParseError(
                     f"Candidate parsing failed after 3 attempts: {exc}"

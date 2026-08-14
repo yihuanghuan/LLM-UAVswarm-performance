@@ -73,6 +73,8 @@ class StatePolicy:
 
 @dataclass(frozen=True)
 class ControllerHardClamps:
+    baseline_omega_c: Vector3
+    baseline_omega_o: Vector3
     smoothing_alpha: float
     omega_c_min: Vector3
     omega_c_max: Vector3
@@ -89,6 +91,12 @@ class ControllerHardClamps:
     def ros_parameters(self) -> Dict[str, Any]:
         return {
             "enable_execution_profiles": True,
+            "omega_c_x": self.baseline_omega_c[0],
+            "omega_c_y": self.baseline_omega_c[1],
+            "omega_c_z": self.baseline_omega_c[2],
+            "omega_o_x": self.baseline_omega_o[0],
+            "omega_o_y": self.baseline_omega_o[1],
+            "omega_o_z": self.baseline_omega_o[2],
             "execution_profile_smoothing_alpha": self.smoothing_alpha,
             "execution_profile_omega_c_min": list(self.omega_c_min),
             "execution_profile_omega_c_max": list(self.omega_c_max),
@@ -283,6 +291,8 @@ def _validate_policy(
 
     hard = _mapping(_required(data, "controller_hard_clamps", "policy"), "controller_hard_clamps")
     controller = ControllerHardClamps(
+        profile["baseline_omega_c"],
+        profile["baseline_omega_o"],
         _number(_required(hard, "smoothing_alpha", "controller_hard_clamps"), "controller_hard_clamps.smoothing_alpha"),
         _vector(_required(hard, "omega_c_min", "controller_hard_clamps"), "controller_hard_clamps.omega_c_min"),
         _vector(_required(hard, "omega_c_max", "controller_hard_clamps"), "controller_hard_clamps.omega_c_max"),
@@ -298,6 +308,24 @@ def _validate_policy(
     for low, high in zip(controller.omega_o_min, controller.omega_o_max):
         if low <= 0.0 or high < low:
             raise PolicyLoadError("invalid omega_o clamps")
+    if any(
+        value < low or value > high
+        for value, low, high in zip(
+            controller.baseline_omega_c,
+            controller.omega_c_min,
+            controller.omega_c_max,
+        )
+    ):
+        raise PolicyLoadError("baseline_omega_c must be within controller clamps")
+    if any(
+        value < low or value > high
+        for value, low, high in zip(
+            controller.baseline_omega_o,
+            controller.omega_o_min,
+            controller.omega_o_max,
+        )
+    ):
+        raise PolicyLoadError("baseline_omega_o must be within controller clamps")
     if controller.iapf_enter_min > enter_min or controller.iapf_enter_max < max_enter or controller.iapf_exit_max < max_exit:
         raise PolicyLoadError("controller IAPF clamps do not cover safety mapping")
     if (

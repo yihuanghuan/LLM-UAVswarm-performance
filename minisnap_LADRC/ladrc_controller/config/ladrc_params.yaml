@@ -4,26 +4,16 @@
     control_frequency: 50.0
 
     # 外部平动控制模式：ladrc_acceleration / px4_position
-    control_mode: "ladrc_acceleration"
+    control_mode: "px4_position"
     # 尚未收到任务时，悬停 IAPF 使用的安全系数
     idle_hover_safety_factor: 1.0
 
-    # X-axis LADRC parameters
-    # omega_o: observer bandwidth (3-5x omega_c for proper disturbance estimation)
-    # omega_c: controller bandwidth (settling time ≈ 4/omega_c)
-    # b0: control gain estimate (1.0 = nominal 1:1 mapping)
-    omega_o_x: 10.0
-    omega_c_x: 3.0
+    # omega_c/omega_o are supplied by the selected LFS policy. Keeping one
+    # authoritative baseline prevents launch/config drift.
     b0_x: 1.0
 
-    # Y-axis LADRC parameters
-    omega_o_y: 10.0
-    omega_c_y: 3.0
     b0_y: 1.0
 
-    # Z-axis LADRC parameters (higher bandwidth for vertical dynamics)
-    omega_o_z: 15.0
-    omega_c_z: 3.5
     b0_z: 1.0
 
     # Limits
@@ -31,6 +21,29 @@
     max_acceleration_x: 5.0    # m/s^2 (multicopter horizontal limit at ~35° tilt)
     max_acceleration_y: 5.0    # m/s^2
     max_acceleration_z: 8.0    # m/s^2 (vertical needs headroom for gravity + climb)
+
+    # Hover completion uses filtered position-derived velocity, not raw EKF velocity.
+    hover_position_enter_tolerance: 0.40
+    hover_velocity_enter_tolerance: 0.30
+    hover_position_exit_tolerance: 0.50
+    hover_velocity_exit_tolerance: 0.40
+    hover_stable_hold_time: 1.0
+    hover_velocity_filter_tau: 0.5
+
+    # Feedback-driven startup: estimator settle -> prestream -> arm ->
+    # offboard -> automatic takeoff -> READY. Runtime state loss is latched.
+    startup_settle_time: 10.0
+    startup_speed_tolerance: 0.15
+    startup_odom_timeout: 0.5
+    startup_status_timeout: 2.0
+    startup_prestream_time: 1.5
+    startup_command_retry_interval: 1.0
+    startup_takeoff_altitude: 1.5
+    startup_takeoff_position_tolerance: 0.25
+    startup_takeoff_hold_time: 0.5
+    startup_runtime_fault_debounce: 0.5
+    startup_total_timeout: 60.0
+    startup_max_request_attempts: 20
 
     # IAPF 避障参数 (Phase 5)
     avoidance_mode: "iapf_dual"

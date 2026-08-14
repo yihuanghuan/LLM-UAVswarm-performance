@@ -86,6 +86,12 @@ if(BUILD_TESTING)
   ament_target_dependencies(test_control_setpoint px4_msgs)
   target_link_libraries(test_control_setpoint ladrc_lib)
   ament_add_gtest(
+    test_startup_state_machine test/test_startup_state_machine.cpp)
+  ament_add_gtest(test_hover_stability test/test_hover_stability.cpp)
+  ament_add_gtest(
+    test_position_velocity_filter test/test_position_velocity_filter.cpp)
+  target_link_libraries(test_position_velocity_filter Eigen3::Eigen)
+  ament_add_gtest(
     test_execution_profile_guard test/test_execution_profile_guard.cpp)
   ament_add_gtest(
     test_minimum_jerk_trajectory test/test_minimum_jerk_trajectory.cpp)

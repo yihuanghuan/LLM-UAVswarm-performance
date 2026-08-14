@@ -1,0 +1,69 @@
+{
+  "evaluation_date": "2026-08-13",
+  "git_commit": "e550e15feecc9b183ae373de9a3e7a6522c011f3",
+  "uav_count": 8,
+  "simulator": "Gazebo Classic 11 + PX4 SITL iris",
+  "policy": "paper-current-v2",
+  "configured_default_control_mode": "ladrc_acceleration",
+  "natural_language_trials": {
+    "commands": 4,
+    "llm_attempts": 12,
+    "valid_json_attempts": 0,
+    "schema_valid_attempts": 0,
+    "aggregate_llm_latency_ms": 280796,
+    "mean_attempt_latency_ms": 23400,
+    "result": "blocked_at_parser"
+  },
+  "simulator_trials": [
+    {
+      "id": "ladrc_circle_cold_start_1",
+      "control_mode": "ladrc_acceleration",
+      "formation": "Circle",
+      "duration_request_s": 12,
+      "completion_timeout_s": 120,
+      "result": "failed",
+      "pending_uavs": [1, 2, 3, 4, 5, 6, 7, 8]
+    },
+    {
+      "id": "px4_circle_cold_start",
+      "control_mode": "px4_position",
+      "formation": "Circle",
+      "duration_request_s": 12,
+      "completion_timeout_s": 45,
+      "result": "boundary_timeout_then_stable",
+      "pending_uavs_at_timeout": [1, 2, 8],
+      "all_stable_about_s_after_timeout": 3
+    },
+    {
+      "id": "px4_circle_to_line",
+      "control_mode": "px4_position",
+      "formation": "Line",
+      "duration_request_s": 12,
+      "completion_timeout_s": 70,
+      "observed_completion_s": 14.01,
+      "result": "completed"
+    },
+    {
+      "id": "px4_line_to_circle",
+      "control_mode": "px4_position",
+      "formation": "Circle",
+      "duration_request_s": 12,
+      "completion_timeout_s": 70,
+      "observed_completion_s": 13.96,
+      "result": "completed"
+    },
+    {
+      "id": "ladrc_circle_cold_start_2",
+      "control_mode": "ladrc_acceleration",
+      "formation": "Circle",
+      "duration_request_s": 12,
+      "completion_timeout_s": 45,
+      "result": "failed",
+      "pending_uavs": [2, 3, 7],
+      "uav7_tracking_error_m": [2.753, -4.719, 6.367]
+    }
+  ],
+  "successful_formation_transitions": 2,
+  "successful_natural_language_to_completion_trials": 0,
+  "assessment": "not_ready_for_unattended_full-chain_operation"
+}

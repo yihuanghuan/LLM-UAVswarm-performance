@@ -244,8 +244,8 @@ LLM_swarm_ws/
 ## 关键参数 (`ladrc_params.yaml`)
 
 ```yaml
-# 外部平动控制模式（默认使用 LADRC 加速度外环）
-control_mode: "ladrc_acceleration"  # 或 "px4_position"
+# 外部平动控制模式（稳定演示默认使用 PX4 位置基线）
+control_mode: "px4_position"  # 可显式切换为 "ladrc_acceleration"
 idle_hover_safety_factor: 1.0       # 首次任务前悬停避障系数
 
 # X/Y 轴 LADRC
@@ -366,7 +366,7 @@ UAVStatus + /uav{N}/swarm_state (nav_msgs/Odometry, world ENU)
 → Candidate 调度器闭环反馈
 ```
 
-默认 `ladrc_acceleration` 模式下，PX4 setpoint 的 position/velocity 字段为 NaN，acceleration 字段为 LADRC 输出经 ENU→NED 转换后的结果。无任务时锁定当前位置，任务结束后保持最终目标，并持续运行 IAPF 与 LADRC。`px4_position` 参数保留原位置控制基线。旧 `/uavN/odom : geometry_msgs/Point` 继续供 legacy scheduler 使用。
+稳定演示暂以 `px4_position` 为默认模式。显式选择 `ladrc_acceleration` 时，PX4 setpoint 的 position/velocity 字段为 NaN，acceleration 字段为 LADRC 输出经 ENU→NED 转换后的结果。无任务时锁定当前位置，任务结束后保持最终目标，并持续运行 IAPF 与 LADRC。旧 `/uavN/odom : geometry_msgs/Point` 继续供 legacy scheduler 使用。
 
 ## 已知限制
 

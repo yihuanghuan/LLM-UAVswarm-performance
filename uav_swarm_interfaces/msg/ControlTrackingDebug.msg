@@ -19,7 +19,11 @@ geometry_msgs/Vector3 leso_z2
 geometry_msgs/Vector3 leso_z3
 
 geometry_msgs/Point actual_position
-geometry_msgs/Vector3 actual_velocity
+geometry_msgs/Vector3 actual_velocity       # raw PX4 EKF velocity (local ENU)
+geometry_msgs/Vector3 position_derived_velocity
+float64 raw_ekf_speed
+float64 position_derived_speed
+float64 leso_z2_speed
 geometry_msgs/Vector3 tracking_error
 
 # 实际写入 PX4 TrajectorySetpoint 的 NED 字段，未启用字段保持 NaN

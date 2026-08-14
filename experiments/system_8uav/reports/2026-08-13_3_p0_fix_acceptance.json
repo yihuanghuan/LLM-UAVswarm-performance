@@ -1,0 +1,52 @@
+{
+  "date": "2026-08-13",
+  "base_commit": "e550e15feecc9b183ae373de9a3e7a6522c011f3",
+  "build": "passed",
+  "tests": {"total": 179, "failures": 0, "errors": 0, "skipped": 1},
+  "llm_online": {
+    "commands": 4,
+    "format_compliant": 0,
+    "valid_json": 4,
+    "schema_valid": 4,
+    "compiled_success": 4,
+    "retry_total": 0,
+    "field_accuracy_note": "Existing binary schema/semantic-completeness proxy, not gold-field accuracy",
+    "trials": [
+      {"id": "C1", "format_compliant": false, "valid_json": true, "schema_valid": true, "field_accuracy": 1.0, "latency_ms": 14188, "prompt_tokens": 1812, "completion_tokens": 863, "retry_count": 0, "error_type": ""},
+      {"id": "C2", "format_compliant": false, "valid_json": true, "schema_valid": true, "field_accuracy": 1.0, "latency_ms": 33019, "prompt_tokens": 1832, "completion_tokens": 1957, "retry_count": 0, "error_type": ""},
+      {"id": "C3", "format_compliant": false, "valid_json": true, "schema_valid": true, "field_accuracy": 1.0, "latency_ms": 32054, "prompt_tokens": 1847, "completion_tokens": 2019, "retry_count": 0, "error_type": ""},
+      {"id": "C4", "format_compliant": false, "valid_json": true, "schema_valid": true, "field_accuracy": 1.0, "latency_ms": 32753, "prompt_tokens": 1875, "completion_tokens": 2056, "retry_count": 0, "error_type": ""}
+    ]
+  },
+  "startup": {
+    "prestream_seconds": 1.5,
+    "retry_interval_seconds": 1.0,
+    "max_attempts_per_command": 5,
+    "total_timeout_seconds": 30.0,
+    "single_uav_cold_start": {"successes": 3, "trials": 3},
+    "eight_uav_cold_start": {"successes": 3, "trials": 3, "confirmed_uavs_per_success": 8}
+  },
+  "px4_position_full_chain": {
+    "success": true,
+    "uavs": 8,
+    "formation": "Circle",
+    "requested_duration_seconds": 12.0,
+    "llm_latency_ms": 17366,
+    "execution_to_completion_seconds_approx": 15.7,
+    "total_seconds_approx": 33.0
+  },
+  "ladrc_acceleration": {
+    "gate": "3/3 required to advance",
+    "single_uav": {"successes": 0, "trials": 3},
+    "advanced_to_2_uav": false,
+    "advanced_to_4_uav": false,
+    "advanced_to_8_uav": false,
+    "trials": [
+      {"id": "L1", "startup": "confirmed", "completed": false, "max_position_error_m": 0.4507, "max_speed_mps": 1.8131, "saturation_fraction": 0.7095, "last10_mean_position_error_m": 0.2044, "last10_mean_speed_mps": 1.1141, "final_position_error_m": 0.2212, "final_speed_mps": 0.8834},
+      {"id": "L2", "startup": "confirmed", "completed": false, "max_position_error_m": 0.8295, "max_speed_mps": 2.63, "saturation_fraction": 0.0252, "last10_mean_position_error_m": 0.0387, "last10_mean_speed_mps": 0.4416, "final_position_error_m": 0.0231, "final_speed_mps": 0.4403},
+      {"id": "L3", "startup": "failed_after_five_arm_attempts", "offboard_confirmed": true, "armed_confirmed": false, "completed": false}
+    ],
+    "blocker": true
+  },
+  "recommended_default": "px4_position"
+}

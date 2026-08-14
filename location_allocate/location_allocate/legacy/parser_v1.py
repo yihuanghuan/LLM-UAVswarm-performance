@@ -16,7 +16,6 @@
 # test_cmd 为准备谢幕表演的复合指令。
 # 输出两任务（悬停+直接执行），10 个 UAV 耗时约 25s。
 # 原来的指令:准备谢幕表演：首先用 3 秒钟聚拢成一个最紧凑的球形编队；稳定悬停 2 秒钟后；全体向外发散，各自用 4 秒时间飞回初始起飞点降落,ai通过断句会把悬停判给第二个任务
-import re
 import json
 import time
 import os
@@ -32,6 +31,8 @@ except ModuleNotFoundError:  # Allows schema/parser unit tests without SDK.
     OpenAI = None
 
 from ..llm_parse_logger import append_llm_parse_log
+from ..raw_response_logger import append_raw_response_log
+from ..strict_json_normalizer import normalize_provider_json, strict_json_object
 from ..validation_common import (
     LFSValidationError,
     is_candidate_mission,
@@ -204,9 +205,7 @@ ROS信息：当前可用无人机编号: [1,2,3,4,5,6,7,8,9,10]，总数: 10
 
 # ====================== 工具函数 ======================
 def purify_json_content(raw_content: str) -> str:
-    raw_content = re.sub(r"```json|```", "", raw_content).strip()
-    match = re.search(r"\{.*\}", raw_content, re.DOTALL)
-    return match.group(0) if match else raw_content
+    return normalize_provider_json(raw_content)
 
 
 def classify_command_type(llm_output: dict) -> str:
@@ -245,6 +244,7 @@ def _log_parse_attempt(command_id: str, raw_command: str, retry_count: int, **kw
         "prompt_tokens": kwargs.get("prompt_tokens", 0),
         "completion_tokens": kwargs.get("completion_tokens", 0),
         "latency_ms": kwargs.get("latency_ms", 0),
+        "format_compliant": kwargs.get("format_compliant", False),
         "valid_json": kwargs.get("valid_json", False),
         "schema_valid": kwargs.get("schema_valid", False),
         "field_accuracy": kwargs.get("field_accuracy", 0.0),
@@ -307,6 +307,7 @@ def parse_uav_command(
         response = None
         start_time = time.time()
         valid_json = False
+        format_compliant = False
         schema_valid = False
         field_accuracy = 0.0
         try:
@@ -323,8 +324,7 @@ def parse_uav_command(
             latency_ms = int((time.time() - start_time) * 1000)
 
             raw_result = response.choices[0].message.content
-            pure_json_str = purify_json_content(raw_result)
-            cfr_result = json.loads(pure_json_str)
+            cfr_result, format_compliant = strict_json_object(raw_result)
             valid_json = True
             field_accuracy = estimate_field_accuracy(cfr_result)
             if is_candidate_mission(cfr_result):
@@ -345,10 +345,17 @@ def parse_uav_command(
                 prompt_tokens=_usage_tokens(response, "prompt_tokens"),
                 completion_tokens=_usage_tokens(response, "completion_tokens"),
                 latency_ms=latency_ms,
+                format_compliant=format_compliant,
                 valid_json=valid_json,
                 schema_valid=schema_valid,
                 field_accuracy=field_accuracy,
             )
+            append_raw_response_log(
+                command_id, attempt, raw_result, MODEL_NAME,
+                "legacy-v1", "legacy-v1", latency_ms,
+                _usage_tokens(response, "prompt_tokens"),
+                _usage_tokens(response, "completion_tokens"),
+                format_compliant, valid_json, schema_valid, "", "legacy_v1")
             print(" 解析结果校验通过！")
             return cfr_result
 
@@ -361,11 +368,20 @@ def parse_uav_command(
                 prompt_tokens=_usage_tokens(response, "prompt_tokens") if response else 0,
                 completion_tokens=_usage_tokens(response, "completion_tokens") if response else 0,
                 latency_ms=latency_ms,
+                format_compliant=format_compliant,
                 valid_json=valid_json,
                 schema_valid=schema_valid,
                 field_accuracy=field_accuracy,
                 error_type=type(e).__name__,
             )
+            if response is not None:
+                append_raw_response_log(
+                    command_id, attempt, response.choices[0].message.content,
+                    MODEL_NAME, "legacy-v1", "legacy-v1", latency_ms,
+                    _usage_tokens(response, "prompt_tokens"),
+                    _usage_tokens(response, "completion_tokens"),
+                    format_compliant, valid_json, schema_valid,
+                    type(e).__name__, "legacy_v1")
             print(f" 第{attempt + 1}次解析失败：{str(e)}")
             if attempt == max_retries - 1:
                 return {

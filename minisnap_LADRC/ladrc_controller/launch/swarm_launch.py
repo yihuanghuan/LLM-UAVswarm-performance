@@ -55,6 +55,7 @@ def generate_launch_description():
             # 使用绝对路径 (命名空间展开后的路径) 作为 from，确保 remap 正确匹配
             remappings = [
                 (f'/uav{uid}/fmu/out/vehicle_odometry', px4_topic(px4_ns, 'fmu/out/vehicle_odometry')),
+                (f'/uav{uid}/fmu/out/vehicle_status', px4_topic(px4_ns, 'fmu/out/vehicle_status')),
                 (f'/uav{uid}/fmu/in/offboard_control_mode', px4_topic(px4_ns, 'fmu/in/offboard_control_mode')),
                 (f'/uav{uid}/fmu/in/trajectory_setpoint', px4_topic(px4_ns, 'fmu/in/trajectory_setpoint')),
                 (f'/uav{uid}/fmu/in/vehicle_command', px4_topic(px4_ns, 'fmu/in/vehicle_command')),
@@ -123,7 +124,7 @@ def generate_launch_description():
             description='要启动的 UAV ID 列表'),
         DeclareLaunchArgument(
             'control_mode',
-            default_value='ladrc_acceleration',
+            default_value='px4_position',
             description='ladrc_acceleration/px4_position'),
         DeclareLaunchArgument(
             'avoidance_mode',

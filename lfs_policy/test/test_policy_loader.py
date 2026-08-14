@@ -37,11 +37,18 @@ def test_template_is_not_a_production_policy():
 def test_paper_current_has_hash_status_and_explicit_clamp_warning():
     policy = load_paper_policy(PAPER)
 
-    assert policy.configuration_id == "paper-current-v2"
+    assert policy.configuration_id == "paper-current-v3"
     assert policy.status == "paper_current"
     assert len(policy.policy_hash) == 64
     assert policy.parameter_status["architecture_rules"] == "paper-frozen"
     assert "safety-clamped" in policy.warnings[0]
+    parameters = policy.controller.ros_parameters()
+    assert [parameters[f"omega_c_{axis}"] for axis in "xyz"] == [
+        1.5, 1.5, 1.75
+    ]
+    assert [parameters[f"omega_o_{axis}"] for axis in "xyz"] == [
+        5.0, 5.0, 7.5
+    ]
 
 
 def test_paper_runtime_rejects_legacy_policy():
@@ -62,6 +69,12 @@ def test_paper_runtime_rejects_legacy_policy():
                 velocity_max=4.0
             ),
             "cover motion limits",
+        ),
+        (
+            lambda data: data["execution_profile"].update(
+                baseline_omega_c=[1.5, 1.5, 1.8]
+            ),
+            "baseline_omega_c",
         ),
     ],
 )
