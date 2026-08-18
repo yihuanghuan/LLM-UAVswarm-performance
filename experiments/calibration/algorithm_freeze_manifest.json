@@ -1,0 +1,138 @@
+{
+  "manifest_version": 1,
+  "generated_at": "2026-08-18T10:32:00+08:00",
+  "hash_algorithm": "sha256",
+  "freeze_tag": "paper-algorithm-freeze-v1",
+  "freeze_commit": "56e8d2c8e59fc3513769e21910b7a20b2b43088d",
+  "freeze_tree": "764588a636cb2adc91ff37485f18532371dd9dcc",
+  "paper_policy_configuration_id": "paper-current-v7",
+  "purpose": "Detect algorithm-logic drift during C0 calibration. Parameter-only changes are expected on paper/calibration; changes to the files below require an algorithm-freeze audit.",
+  "algorithm_components": {
+    "candidate_parser_schema": [
+      {
+        "path": "schemas/paper_candidate_schema_v2.json",
+        "sha256": "be6063a533f05b8d0b6e87353a40fb294975261fa1514cd5d34ced19ce2bffe7"
+      },
+      {
+        "path": "location_allocate/prompts/paper_candidate_en_v2_system.txt",
+        "sha256": "ed9e83e971d05f034065f82298599463d9d3e20f6b79e508f68233da79b0c4da"
+      },
+      {
+        "path": "location_allocate/prompts/paper_candidate_en_v2_fewshot.json",
+        "sha256": "385ab2d0d99bc51c3862c289e28a9a95fa0bd5df1436b68bd0ebf30bb5a83958"
+      },
+      {
+        "path": "location_allocate/location_allocate/paper_candidate_parser.py",
+        "sha256": "f3be633ba9f7f13cd9acb5fbcd3425e88aa1d951a8fb16f333fa104b967f6fd5"
+      }
+    ],
+    "validator_resolver": [
+      {
+        "path": "location_allocate/location_allocate/paper_lfs_validator.py",
+        "sha256": "d166b785b49af8ad91329790a9c8e17239dbe56a4372d565bdf083319041dc08"
+      },
+      {
+        "path": "location_allocate/location_allocate/lfs_resolver.py",
+        "sha256": "b03fb205ffd189c8b3d9fb1314ace910fca48385936bc24c9a1d4d5fa0b5aac9"
+      },
+      {
+        "path": "location_allocate/location_allocate/late_resolution.py",
+        "sha256": "702958a12fa8e4c3e5d99e3978fee86700b553962a5cc8aeb23cec4cf3d18e66"
+      }
+    ],
+    "geometry": [
+      {
+        "path": "location_allocate/location_allocate/formation_geometry.py",
+        "sha256": "4312014bbb4fbd988a218a2f68e5d54fff895eaeab60c2a0a11f2564f7c06912"
+      }
+    ],
+    "allocator": [
+      {
+        "path": "location_allocate/location_allocate/safety_aware_allocator.py",
+        "sha256": "dd42b3ae96425b72dcd30a218131153201df9d0d63efcd223e2625aa569631d6"
+      }
+    ],
+    "execution_profile_safety_compiler": [
+      {
+        "path": "location_allocate/location_allocate/policy_adapter.py",
+        "sha256": "fc9dc5597550d5734f20c4ca474ef153dc25e7b396f6e00e719f5c6b37694f0a"
+      },
+      {
+        "path": "location_allocate/location_allocate/execution_profile_compiler.py",
+        "sha256": "e925a364c01a7d02deca3c4605d3bca08dcc58a683cf5c82dd77f900b54c9925"
+      },
+      {
+        "path": "location_allocate/location_allocate/lfs_types.py",
+        "sha256": "7108dc5a88b3b3bcf1f278040dc661027c182a4de3415aa1ac646f097014d232"
+      },
+      {
+        "path": "location_allocate/location_allocate/execution_command_builder.py",
+        "sha256": "9ba82302bd7d5ff2e83e6afaa3d3d26f43d710a393af8c3c49eb2ff13c5abbd2"
+      },
+      {
+        "path": "minisnap_LADRC/ladrc_controller/include/ladrc_controller/execution_profile_guard.hpp",
+        "sha256": "e294f1c297d5076ea18e4cc913f80292fd49d17878d3b6375dd69e85c0b0c4de"
+      }
+    ],
+    "minimum_jerk": [
+      {
+        "path": "location_allocate/location_allocate/motion_limits.py",
+        "sha256": "9cfd4c56c2990a6c9023d1c1847895c797bca30eabf9a4444592558b5152f6cb"
+      },
+      {
+        "path": "location_allocate/location_allocate/timing_resolution.py",
+        "sha256": "ab101c720a002568b887d6ee6b07379d5eae3f1b47b8fc46fea6033bdc7ea4e3"
+      },
+      {
+        "path": "minisnap_LADRC/ladrc_controller/include/ladrc_controller/minimum_jerk_trajectory.hpp",
+        "sha256": "5f8f155bc456875e416abd19c6b469c9111b4841dfa0469cc19af1317e3f0ae0"
+      }
+    ],
+    "ladrc": [
+      {
+        "path": "minisnap_LADRC/ladrc_controller/include/ladrc_controller/ladrc_core.hpp",
+        "sha256": "e27901b8e82cc83018b222b21831fcc49682240cdfefdf0b30b374c60be8f990"
+      },
+      {
+        "path": "minisnap_LADRC/ladrc_controller/src/ladrc_core.cpp",
+        "sha256": "15f0c434e5478b5233668eca17f0a78e005d7f2a04b087f7169e162dfd7fc9e4"
+      },
+      {
+        "path": "minisnap_LADRC/ladrc_controller/src/leso.cpp",
+        "sha256": "33aa48b96b28dfc9fccd8e2da2f7d06044000a33e6f51a95691cafb56d1835c5"
+      },
+      {
+        "path": "minisnap_LADRC/ladrc_controller/src/lsef.cpp",
+        "sha256": "47a14c6388df90d0fd2e2e9ab46ca2db3ac405c7b8b5e707a05f0448c56c8e4f"
+      },
+      {
+        "path": "minisnap_LADRC/ladrc_controller/include/ladrc_controller/control_setpoint.hpp",
+        "sha256": "fae7e69d45e9760277660dfb620bc41f96f04ff6460ffe41624a33752cf36b26"
+      },
+      {
+        "path": "minisnap_LADRC/ladrc_controller/src/ladrc_position_controller_node.cpp",
+        "sha256": "cc7a3b1c36126555749504d03b504c1c6c01e210ffb829b473d8980a87973dfa"
+      }
+    ],
+    "iapf": [
+      {
+        "path": "minisnap_LADRC/ladrc_controller/include/ladrc_controller/iapf_core.hpp",
+        "sha256": "fdd49d3e3468ab43f75fbcdf91c87831626893aaf6df3f1cb6e67232382a7f4d"
+      },
+      {
+        "path": "minisnap_LADRC/ladrc_controller/src/iapf_core.cpp",
+        "sha256": "eabbf8e77d7854cda548f665c0f0c4319c88d4c2af512fa448cd0ecfd628bea2"
+      }
+    ],
+    "paper_policy": [
+      {
+        "path": "lfs_policy/config/lfs_policy.paper_current.yaml",
+        "sha256": "5b2d9e73b076e950a975ffb33596817ac4824926ed1598c7f2009c06ba014c11"
+      },
+      {
+        "path": "minisnap_LADRC/ladrc_controller/config/ladrc_params.yaml",
+        "sha256": "d3546709533b9470d88502406be136e1c7afbf7dfd9c23a1dfad81cd5c49d556"
+      }
+    ]
+  }
+}

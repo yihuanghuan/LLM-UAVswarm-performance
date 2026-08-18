@@ -1,0 +1,81 @@
+# Paper parameter freeze ledger
+
+This ledger is the authoritative write-ownership inventory for the
+`paper/calibration` line. It was initialized from
+`docs/paper_parameter_calibration.md`,
+`lfs_policy/config/lfs_policy.paper_current.yaml`, and
+`minisnap_LADRC/ladrc_controller/config/ladrc_params.yaml` at algorithm commit
+`56e8d2c8e59fc3513769e21910b7a20b2b43088d`.
+
+`PROVISIONAL` means runnable development value, not paper-final evidence. Its
+freeze commit and tag remain blank until its owning C0 completes. An
+`ARCHITECTURE_FROZEN` item is part of the algorithm contract and has no C0
+write owner. A later C0 must not modify a row already marked `FROZEN`.
+
+## Provisional parameter ownership
+
+| Parameter / group | Current value | Status | Owner calibration | Freeze commit | Freeze tag | Provenance | Notes |
+|---|---|---|---|---|---|---|---|
+| LADRC baseline `omega_c` (x/y/z) | `[1.5, 1.5, 1.75] rad/s` | `PROVISIONAL` | C0-A | — | — | Paper policy `execution_profile.baseline_omega_c` | Establish with `normal`, whose style gain is fixed at 1.0. |
+| LADRC baseline `omega_o` (x/y/z) | `[5.0, 5.0, 7.5] rad/s` | `PROVISIONAL` | C0-A | — | — | Paper policy `execution_profile.baseline_omega_o` | LESO/LSEF mathematics remain frozen. |
+| Motion limits `v/a/j` | `5 m/s`, `5 m/s²`, `10 m/s³` | `PROVISIONAL` | C0-A | — | — | Paper policy `motion_limits` | Shared timing/compiler limits. |
+| Minimum executable duration | `0.5 s` | `PROVISIONAL` | C0-A | — | — | Paper policy `timing.minimum_duration` | Explicit requests are raised to the frozen feasibility floor. |
+| Omega hard-clamp envelope | `omega_c=[1.125,1.125,1.3125]..[1.875,1.875,2.1875]`; `omega_o=[3.75,3.75,5.625]..[6.25,6.25,9.375]` | `PROVISIONAL` | C0-A | — | — | Paper policy `controller_hard_clamps.omega_*` | Current 0.75x–1.25x development envelope; abnormal-profile guard only. |
+| Motion hard clamps | `velocity/acceleration/jerk_max=5/5/10` | `PROVISIONAL` | C0-A | — | — | Paper policy `controller_hard_clamps.*_max` | Must cover, and normally equal, selected shared motion limits. |
+| Physical controller caps | `max_velocity=5`; `max_acceleration_x/y/z=5/5/8` | `PROVISIONAL` | C0-A | — | — | Controller YAML | Accepted Candidate profiles currently reset LADRC output limits to the scalar profile acceleration limit. |
+| Candidate state freshness | timeout/skew/wait `0.5/0.15/2.0 s` | `PROVISIONAL` | C0-B | — | — | Paper policy `state_snapshot` | State age, inter-UAV skew and wait budget. |
+| Controller neighbor freshness | `0.20 s` | `PROVISIONAL` | C0-B | — | — | Controller YAML `neighbor_timeout` | Availability only; IAPF equations remain C0-E-invariant. |
+| Workspace AABB | lower `[-15,-10,0.5] m`; upper `[15,35,15] m` | `PROVISIONAL` | C0-C | — | — | Paper policy `geometry.workspace_bounds` | Must reflect the usable calibration environment. |
+| Nominal formation spacing | `2.0 m` | `PROVISIONAL` | C0-C | — | — | Paper policy `geometry.nominal_spacing` | Geometry equations remain frozen. |
+| Qualitative scale multipliers | compact/normal/spacious `0.8/1.0/1.25` | `PROVISIONAL` | C0-C | — | — | Paper policy `geometry.qualitative_multipliers` | Label semantics/order are frozen; numeric scale remains provisional. |
+| Allocator comparison tolerance | `1e-6` | `PROVISIONAL` | C0-G | — | — | Paper policy `allocator.comparison_tolerance` | Floating-point lexicographic comparison only. |
+| Variable-duration closest-approach sample rate | `20 Hz` | `PROVISIONAL` | C0-G | — | — | Paper policy `allocator.sample_hz` | Equal-progress analytic closest approach is independent of it. |
+| `d_hard` / violation distance | `1.0 m` | `PROVISIONAL` | C0-D | — | — | Paper policy `safety.d_hard`; injected as controller `iapf_violation_distance` | System hard-risk threshold; does not scale with `s`. |
+| `d_plan` baseline at `s=1` | `2.0 m` | `PROVISIONAL` | C0-D | — | — | Paper policy `safety.d_plan_base` | Formula structure is frozen. |
+| Maximum safety preference | `s_max=2.0` | `PROVISIONAL` | C0-D | — | — | Paper policy `safety.s_max` | C0-D owns only the numerical upper bound. |
+| IAPF enter/exit baselines at `s=1` | `1.50/1.65 m` | `PROVISIONAL` | C0-E | — | — | Paper policy `safety.iapf_enter_base/exit_base` | Closing-speed gate and hysteresis logic are frozen. |
+| IAPF repulsion mapping coefficients | base `1.0`; margin `0.25` in `1+0.25(s-1)` | `PROVISIONAL` | C0-E | — | — | Paper policy `safety.iapf_repulsion_base/margin` | The linear mapping structure and single application point are frozen. |
+| IAPF Safety Profile hard clamps | enter min/max `1.5/2.0 m`; exit max `2.3 m`; repulsion max `1.5` | `PROVISIONAL` | C0-E | — | — | Paper policy `controller_hard_clamps.iapf_*` | Must cover the complete C0-D/C0-E selected mapping. |
+| IAPF smoothing | filter alpha `0.20` | `PROVISIONAL` | C0-E | — | — | Controller YAML `iapf_filter_alpha` | First-order filter mathematics remain frozen. |
+| IAPF force and escape numerics | repulsion gain `25.0`; escape gain `0.05`; distance epsilon `0.10 m` | `PROVISIONAL` | C0-E | — | — | Controller YAML `iapf_repulsion_gain/escape_gain/distance_epsilon` | Escape mode and formula are immutable. |
+| IAPF position offset gain/clamp | `0.05 / 0.50 m` | `PROVISIONAL` | C0-E | — | — | Controller YAML `iapf_position_gain/position_limit` | Bounded reference modulation only. |
+| IAPF acceleration offset gain/clamp | `0.30 / 2.00 m/s²` | `PROVISIONAL` | C0-E | — | — | Controller YAML `iapf_accel_gain/accel_limit` | Bounded reference modulation only. |
+| Auto-duration style factors | smooth/normal/aggressive `1.30/1.15/1.10` | `PROVISIONAL` | C0-F | — | — | Paper policy `timing.auto_style_factors` | Explicit feasible `T` bypasses these factors. |
+| Style-conditioned LADRC gains | smooth/aggressive `0.8/1.1`; normal `1.0` | `PROVISIONAL` (non-normal values) | C0-F | — | — | Paper policy `execution_profile.style_gains` | Normal `1.0` is the frozen identity baseline; C0-F selects only non-normal multipliers subject to ordering. |
+| Profile-application smoothing | `smoothing_alpha=1.0` | `PROVISIONAL` | C0-F | — | — | Paper policy `controller_hard_clamps.smoothing_alpha` | Current paper loader admits only `1.0`; under this algorithm freeze C0-F may validate and freeze the singleton value, not change loader logic. |
+
+## Architecture-frozen values and structures
+
+| Parameter / group | Current value | Status | Owner calibration | Freeze commit | Freeze tag | Provenance | Notes |
+|---|---|---|---|---|---|---|---|
+| Candidate/schema version and LFS semantics | schema v2, `lfs_version=2.1` | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | Schema, prompt and parser hashes in algorithm manifest | No C0 may change fields or meanings. |
+| Validator/resolver/geometry algorithms | current freeze implementation | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | Algorithm manifest | Numeric C0-C policy inputs do not authorize equation changes. |
+| Timing and Minimum-Jerk structure | quintic zero-end-derivative trajectory; max-pairwise planning bound; final recheck tolerance `0` | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | Timing policy, motion-limit peak equations and C++ trajectory | C0-A changes limits/duration only. |
+| Allocator objective/search and aggregation | lexicographic `(N_hard,J_margin,J_distance)`; parallel `d_plan=max` | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | `safety_aware_allocator.py`, paper policy | C0-G changes only declared numerical precision controls. |
+| Safety mapping type and lower semantic anchor | `hard_anchored_linear`; `s_min=1.0` | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | Paper policy and `policy_adapter.py` | `s` meaning and mapping structure cannot be recalibrated. |
+| Task adaptation | `identity`; `task_gain=1.0` | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | Execution Profile Compiler and paper policy | Explicitly excluded from C0-F. |
+| Normal style identity | `style_gain(normal)=1.0` | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | Paper loader invariant | C0-A therefore observes the unscaled baseline. |
+| LADRC/LESO/LSEF mathematics | current freeze implementation | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | LADRC hashes in algorithm manifest | C0-A owns numeric baseline/envelope only. |
+| LADRC discretization/input normalization | `control_frequency=50 Hz`; `b0_x/y/z=1.0/1.0/1.0` | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | Controller YAML and LADRC implementation | Not declared provisional by the calibration manifest; fixed input to C0-A. |
+| Completion and takeoff semantics/numerics | hover position enter/exit `0.40/0.50 m`; speed enter/exit `0.30/0.40 m/s`; hold `1.0 s`; filter tau `0.5 s`; startup speed `0.15 m/s`; takeoff `1.5 m`, position `0.25 m`, hold `0.5 s` | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | Controller YAML, hover and startup state machines | Used as C0-A acceptance inputs, never sweep variables. |
+| Startup orchestration numerics | settle `10 s`; odom/status timeout `0.5/2.0 s`; prestream `1.5 s`; retry `1.0 s`; runtime debounce `0.5 s`; total timeout `60 s`; max attempts `20` | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | Controller YAML and startup state machine | Operational orchestration was not declared provisional; C0-B calibrates Candidate/neighbor freshness only. |
+| IAPF equations and logic | closing-speed gate, hysteresis, escape direction, bounded dual-channel modulation | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | IAPF hashes in algorithm manifest | C0-E owns numeric coefficients only. |
+| Safety/IAPF operational modes | `avoidance_mode=iapf_dual`; `escape_mode=id_order` for Full Method | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | Controller config and IAPF mode parser | Formal Full Method may not switch these as tuning. |
+| State validity semantics | receive-time fallback `false`; velocity required `true` | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | Paper policy `state_snapshot` | C0-B owns time thresholds, not validity semantics. |
+| PX4 control interface for C0-A / Full Method | explicit `control_mode:=ladrc_acceleration` | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | Architecture documentation and acceleration setpoint path | Launch default `px4_position` remains a comparison baseline; C0-A must override it explicitly. |
+
+## Ownership audit
+
+The ledger contains no unowned `PROVISIONAL` row and no row with multiple C0
+owners. The only implementation constraint needing later attention is
+profile-application smoothing: documentation calls it provisional, while the
+frozen paper-policy loader requires `smoothing_alpha == 1.0`. It is assigned
+only to C0-F; C0-F may freeze `1.0` after validation, but choosing another
+value would require a new algorithm version and is outside this calibration
+line.
+
+When a C0 completes, update only its rows from `PROVISIONAL` to `FROZEN`, fill
+the exact parameter-freeze commit and checkpoint tag, and replace development
+provenance with protocol/result/raw-data hashes. Do not reuse the algorithm
+freeze commit/tag in those blank cells: it froze the architecture, not the
+provisional values.
