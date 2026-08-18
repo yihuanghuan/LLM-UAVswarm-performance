@@ -55,13 +55,18 @@ Paper Candidate `F` 是结构化 descriptor，例如 `{"type":"Circle"}` 或 `{"
 ## Policy 层级
 
 - `location_allocate/config/lfs_policy.template.yaml`：完整字段模板，允许 null/TBD，production loader 必须拒绝。
-- `lfs_policy/config/lfs_policy.paper_current.yaml`：当前论文主路径，`configuration_id=paper-current-v6`；包含 provisional 数值。
+- `lfs_policy/config/lfs_policy.paper_current.yaml`：当前论文主路径，`configuration_id=paper-current-v7`；包含 provisional 数值。
 - `lfs_policy/config/lfs_policy.legacy.yaml`：只供显式历史兼容。
 - 未来 `lfs_policy_experiment_*.yaml`：实验冻结后另建，本轮不存在 paper-final policy。
 
 paper-current 不等于 paper-final。完整参数状态见 [paper_parameter_calibration.md](paper_parameter_calibration.md)。
 
-启动时 typed loader 会一次性检查 missing/null、NaN/Inf、workspace 顺序、安全 ordering、IAPF hysteresis、controller clamp 覆盖、configuration ID 和 provenance。任何不完整 policy 都在发布 UAV command 前 fail fast。
+启动时 typed loader 会一次性检查 missing/null、NaN/Inf、workspace 顺序、`s` 范围、安全 ordering、IAPF hysteresis、repulsion 非负、controller clamp 覆盖、configuration ID 和 provenance。任何不完整 policy 都在发布 UAV command 前 fail fast。
+
+Safety Compiler 在 late resolution 中将 Candidate `s` 一次性编译为
+allocator `d_plan` 与 Execution Profile 的 IAPF enter/exit/repulsion scale；
+controller 和 IAPF core 不再解释 `s`。完整约定见
+[paper_safety_factor.md](paper_safety_factor.md)。
 
 ## 状态接口
 

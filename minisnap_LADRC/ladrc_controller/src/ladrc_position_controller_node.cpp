@@ -139,6 +139,8 @@ public:
       parameter_overrides.count("iapf_safe_distance") > 0;
     const bool enter_distance_overridden =
       parameter_overrides.count("iapf_enter_distance") > 0;
+    const bool idle_safety_overridden =
+      parameter_overrides.count("idle_hover_safety_factor") > 0;
     enter_distance_from_legacy_ =
       safe_distance_overridden && !enter_distance_overridden;
     avoidance_mode_from_legacy_ = legacy_overridden && !avoidance_overridden;
@@ -168,6 +170,13 @@ public:
         this->get_logger(),
         "iapf_safe_distance 已弃用；请改用 iapf_enter_distance");
     }
+    if (idle_safety_overridden)
+    {
+      RCLCPP_WARN(
+        this->get_logger(),
+        "idle_hover_safety_factor 已弃用且不再参与 IAPF 计算；"
+        "请使用 avoidance_mode 和已编译的 Execution Profile");
+    }
     (void)currentAvoidanceMode();
     (void)ladrc_controller::parseEscapeMode(
       this->get_parameter("iapf_escape_mode").as_string());
@@ -177,14 +186,6 @@ public:
     dt_ = 1.0 / control_freq;
     control_mode_ = ladrc_controller::parseControlMode(
       this->get_parameter("control_mode").as_string());
-    const double idle_hover_safety_factor =
-      this->get_parameter("idle_hover_safety_factor").as_double();
-    if (!std::isfinite(idle_hover_safety_factor) || idle_hover_safety_factor < 0.0)
-    {
-      throw std::invalid_argument(
-        "idle_hover_safety_factor must be finite and non-negative");
-    }
-
     // 初始化 LADRC 控制器
     initializeControllers();
 
@@ -413,6 +414,8 @@ private:
       this->get_parameter("execution_profile_acceleration_max").as_double();
     limits.jerk_max =
       this->get_parameter("execution_profile_jerk_max").as_double();
+    limits.iapf_violation_distance =
+      this->get_parameter("iapf_violation_distance").as_double();
     limits.iapf_enter_min =
       this->get_parameter("execution_profile_iapf_enter_min").as_double();
     limits.iapf_enter_max =
@@ -427,7 +430,8 @@ private:
   void initializeAcceptedCommand(
       uint32_t mission_id, uint8_t uav_id,
       double global_x, double global_y, double global_z,
-      double duration, const std::string & style, double safety_factor)
+      double duration, const std::string & style,
+      double legacy_safety_factor_for_metrics)
   {
     if (has_command_) writeControlAdaptationCsvRow();
     resetIAPFState();
@@ -435,7 +439,7 @@ private:
     uav_id_ = uav_id;
     target_duration_ = duration;
     motion_style_ = style;
-    safety_factor_ = safety_factor;
+    legacy_safety_factor_for_metrics_ = legacy_safety_factor_for_metrics;
     has_command_ = true;
 
     const double off_x = this->get_parameter("enu_offset_x").as_double();
@@ -499,7 +503,8 @@ private:
       !std::isfinite(msg->target_pos.x) ||
       !std::isfinite(msg->target_pos.y) ||
       !std::isfinite(msg->target_pos.z) ||
-      !std::isfinite(msg->duration) || msg->duration <= 0.0)
+      !std::isfinite(msg->duration) || msg->duration <= 0.0 ||
+      !std::isfinite(msg->safety_factor))
     {
       RCLCPP_ERROR(this->get_logger(), "拒绝非法 legacy command，未缓存");
       return;
@@ -552,11 +557,16 @@ private:
     }
     active_new_profile_ = false;
     profile_soft_safety_active_ = false;
+    // Compatibility boundary: legacy safety_factor historically scaled IAPF
+    // force. Convert it once into an already-compiled repulsion scale here;
+    // the IAPF core no longer interprets task-level s.
+    legacy_iapf_repulsion_scale_ =
+      std::max(1.0, static_cast<double>(msg->safety_factor));
     initializeAcceptedCommand(
       msg->mission_id, msg->uav_id,
       msg->target_pos.x, msg->target_pos.y, msg->target_pos.z,
       duration, msg->motion_style,
-      std::max(1.0, static_cast<double>(msg->safety_factor)));
+      legacy_iapf_repulsion_scale_);
     applyBaselineGains();
     RCLCPP_WARN(this->get_logger(),
       "legacy UAVSwarmCommand 使用 YAML baseline；motion_style='%s' 仅记录",
@@ -673,6 +683,7 @@ private:
       msg->mission_id, msg->uav_id,
       msg->target_pos.x, msg->target_pos.y, msg->target_pos.z,
       values.duration, msg->profile.style, 1.0);
+    legacy_iapf_repulsion_scale_ = 1.0;
     omega_c_x_ = values.omega_c[0];
     omega_c_y_ = values.omega_c[1];
     omega_c_z_ = values.omega_c[2];
@@ -1081,10 +1092,7 @@ private:
     }
 
     // 3. IAPF 先修正参考，再由 LADRC 计算唯一的最终加速度指令。
-    const double active_safety_factor = has_command_ ? safety_factor_ :
-      this->get_parameter("idle_hover_safety_factor").as_double();
-    const auto iapf = computeAvoidance(
-      x_meas, y_meas, z_meas, active_safety_factor);
+    const auto iapf = computeAvoidance(x_meas, y_meas, z_meas);
     const Eigen::Vector3d safe_reference =
       nominal_reference + iapf.position_offset;
     const Eigen::Vector3d safe_acceleration =
@@ -1180,8 +1188,7 @@ private:
   }
 
   ladrc_controller::IAPFResult computeAvoidance(
-      double x_meas, double y_meas, double z_meas,
-      double active_safety_factor)
+      double x_meas, double y_meas, double z_meas)
   {
     ladrc_controller::IAPFParameters parameters;
     parameters.violation_distance =
@@ -1192,7 +1199,8 @@ private:
       : this->get_parameter("iapf_exit_distance").as_double();
     parameters.repulsion_gain =
       this->get_parameter("iapf_repulsion_gain").as_double() *
-      (profile_soft_safety_active_ ? profile_iapf_repulsion_scale_ : 1.0);
+      (profile_soft_safety_active_ ? profile_iapf_repulsion_scale_ :
+      (has_command_ ? legacy_iapf_repulsion_scale_ : 1.0));
     parameters.distance_epsilon =
       this->get_parameter("iapf_distance_epsilon").as_double();
     parameters.position_gain =
@@ -1245,7 +1253,7 @@ private:
       pos_own, velocity_own, self_uav_id_, neighbors, currentAvoidanceMode(),
       ladrc_controller::parseEscapeMode(
         this->get_parameter("iapf_escape_mode").as_string()),
-      parameters, active_safety_factor);
+      parameters);
 
     for (auto & item : neighbor_states_)
     {
@@ -1468,7 +1476,8 @@ private:
     metrics_msg_.requested_duration = static_cast<float>(target_duration_);
     metrics_msg_.trajectory_duration = static_cast<float>(traj_x_.getDuration());
     metrics_msg_.motion_style = motion_style_;
-    metrics_msg_.safety_factor = static_cast<float>(safety_factor_);
+    metrics_msg_.safety_factor = static_cast<float>(
+      legacy_safety_factor_for_metrics_);
 
     double dx = target_pos_x_ - p0_x;
     double dy = target_pos_y_ - p0_y;
@@ -1782,7 +1791,7 @@ private:
   double target_pos_z_ = 0.0;
   double target_duration_ = 0.0;
   std::string motion_style_ = "normal";
-  double safety_factor_ = 0.0;
+  double legacy_safety_factor_for_metrics_ = 0.0;
   bool has_command_ = false;
   ladrc_controller::ControlMode control_mode_{
     ladrc_controller::ControlMode::PX4_POSITION};
@@ -1791,6 +1800,7 @@ private:
   double profile_iapf_enter_distance_ = 0.0;
   double profile_iapf_exit_distance_ = 0.0;
   double profile_iapf_repulsion_scale_ = 1.0;
+  double legacy_iapf_repulsion_scale_ = 1.0;
   std::string active_profile_configuration_id_;
 
   // 悬停保持：用首次位置作为固定 setpoint，避免漂移正反馈

@@ -13,7 +13,7 @@ omega_c = baseline_omega_c * total_gain
 omega_o = baseline_omega_o * total_gain
 ```
 
-The current `paper-current-v6` development values are:
+The current `paper-current-v7` development values are:
 
 | style | style gain | omega_c | omega_o |
 |---|---:|---|---|

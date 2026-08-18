@@ -54,8 +54,12 @@ class ResolutionTrace:
     r_nominal: Optional[float] = None
     r_safe: Optional[float] = None
     r_exec: Optional[float] = None
+    safety_factor: Optional[float] = None
     d_hard: Optional[float] = None
     d_plan: Optional[float] = None
+    iapf_enter_distance: Optional[float] = None
+    iapf_exit_distance: Optional[float] = None
+    iapf_repulsion_scale: Optional[float] = None
     t_request: Any = None
     t_plan: Optional[float] = None
     t_exec: Optional[float] = None

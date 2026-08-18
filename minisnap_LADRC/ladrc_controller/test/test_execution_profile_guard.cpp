@@ -13,7 +13,7 @@ ladrc_controller::ExecutionProfileLimits limits()
   return {
     {1.0, 1.0, 1.0}, {10.0, 10.0, 10.0},
     {2.0, 2.0, 2.0}, {30.0, 30.0, 30.0},
-    5.0, 4.0, 8.0, 1.0, 3.0, 4.0, 2.0};
+    5.0, 4.0, 8.0, 0.75, 1.0, 3.0, 4.0, 2.0};
 }
 
 ladrc_controller::ExecutionProfileValues profile()
@@ -60,6 +60,24 @@ TEST(ExecutionProfileGuard, RejectsBrokenHysteresisAfterClamp)
   values.iapf_enter_distance = 3.0;
   values.iapf_exit_distance = 2.0;
   EXPECT_FALSE(ladrc_controller::validateAndClampExecutionProfile(values, limits()));
+}
+
+TEST(ExecutionProfileGuard, AcceptsZeroAndRejectsNegativeRepulsionScale)
+{
+  auto values = profile();
+  values.iapf_repulsion_scale = 0.0;
+  EXPECT_TRUE(ladrc_controller::validateAndClampExecutionProfile(values, limits()));
+  values.iapf_repulsion_scale = -0.1;
+  EXPECT_FALSE(ladrc_controller::validateAndClampExecutionProfile(values, limits()));
+}
+
+TEST(ExecutionProfileGuard, RejectsEnterDistanceAtHardThreshold)
+{
+  auto configured_limits = limits();
+  auto values = profile();
+  configured_limits.iapf_enter_min = configured_limits.iapf_violation_distance;
+  EXPECT_FALSE(ladrc_controller::validateAndClampExecutionProfile(
+    values, configured_limits));
 }
 
 TEST(ExecutionProfileGuard, SmoothApplyUsesConfiguredAlpha)

@@ -40,5 +40,10 @@ Current YAML defaults include `iapf_position_gain=0.05`,
 enter/exit distances and repulsion scale; controller hard safety parameters
 remain independent guards.
 
+IAPF core consumes only these compiled physical parameters. It has no
+task-level `s` argument and performs no final `raw_repulsion *= s` step. The
+configured profile scale is applied once to `iapf_repulsion_gain` at the
+controller boundary.
+
 This document describes the existing IAPF interface. The semantic motion-style
 enablement does not change IAPF equations, modes, gains, or thresholds.

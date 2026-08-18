@@ -109,6 +109,10 @@ def test_candidate_to_executable_pipeline_has_one_duration_source():
     )
     assert result.trace.t_request == {"mode": "auto"}
     assert result.trace.d_hard == 0.5
+    assert result.trace.safety_factor == 1.0
+    assert result.trace.iapf_enter_distance == 1.0
+    assert result.trace.iapf_exit_distance == 1.2
+    assert result.trace.iapf_repulsion_scale == 1.0
     assert result.trace.r_safe == pytest.approx(
         result.trace.d_plan / result.trace.delta_min
     )

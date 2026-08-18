@@ -134,6 +134,12 @@ def test_soft_safety_does_not_expose_hard_violation_threshold():
     )
 
 
+def test_soft_safety_accepts_zero_repulsion_and_rejects_negative_scale():
+    SoftSafetyParameters(1.5, 1.8, 0.0).validate()
+    with pytest.raises(ProfileCompileError, match="non-negative"):
+        SoftSafetyParameters(1.5, 1.8, -0.1).validate()
+
+
 def test_profile_compiler_fails_fast_when_final_t_is_dynamically_infeasible():
     with pytest.raises(ProfileCompileError, match="violates shared motion limits"):
         compile_execution_profiles(

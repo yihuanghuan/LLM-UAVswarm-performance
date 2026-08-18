@@ -53,6 +53,19 @@ class SafetyResolution:
     d_plan: float
     soft_iapf: SoftSafetyParameters
 
+    def validate(self) -> None:
+        values = (self.d_hard, self.d_plan)
+        if not all(math.isfinite(value) for value in values):
+            raise ValueError("resolved safety values must be finite")
+        if self.d_hard <= 0.0 or self.d_plan < self.d_hard:
+            raise ValueError("resolved safety violates d_plan >= d_hard > 0")
+        try:
+            self.soft_iapf.validate()
+        except ValueError as exc:
+            raise ValueError(str(exc)) from exc
+        if self.soft_iapf.enter_distance <= self.d_hard:
+            raise ValueError("resolved IAPF enter distance must exceed d_hard")
+
 
 @dataclass(frozen=True)
 class LateResolutionPolicy:
@@ -218,10 +231,16 @@ def _prepare_task(
         trace.corrections.append(
             "d_plan raised to ParallelGroup maximum safety margin"
         )
-    if safety.d_hard <= 0.0 or safety.d_plan < safety.d_hard:
-        raise LateResolutionError("resolved safety violates d_plan >= d_hard")
+    try:
+        safety.validate()
+    except ValueError as exc:
+        raise LateResolutionError(f"invalid compiled Safety Profile: {exc}") from exc
+    trace.safety_factor = intent.safety_factor
     trace.d_hard = safety.d_hard
     trace.d_plan = safety.d_plan
+    trace.iapf_enter_distance = safety.soft_iapf.enter_distance
+    trace.iapf_exit_distance = safety.soft_iapf.exit_distance
+    trace.iapf_repulsion_scale = safety.soft_iapf.repulsion_scale
 
     unit = build_unit_geometry(intent.formation, len(intent.uav_ids))
     radius = resolve_scale(intent, unit, safety.d_plan, policy.scale, trace)

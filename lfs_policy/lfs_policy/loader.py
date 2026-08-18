@@ -83,6 +83,7 @@ class ControllerHardClamps:
     velocity_max: float
     acceleration_max: float
     jerk_max: float
+    iapf_violation_distance: float
     iapf_enter_min: float
     iapf_enter_max: float
     iapf_exit_max: float
@@ -105,6 +106,9 @@ class ControllerHardClamps:
             "execution_profile_velocity_max": self.velocity_max,
             "execution_profile_acceleration_max": self.acceleration_max,
             "execution_profile_jerk_max": self.jerk_max,
+            # d_violation is a system-level hard threshold owned by the
+            # loaded policy, not a task-level semantic preference.
+            "iapf_violation_distance": self.iapf_violation_distance,
             "execution_profile_iapf_enter_min": self.iapf_enter_min,
             "execution_profile_iapf_enter_max": self.iapf_enter_max,
             "execution_profile_iapf_exit_max": self.iapf_exit_max,
@@ -177,22 +181,39 @@ def _validate_policy(
     safety["mapping_type"] = mapping_type
     common_safety = (
         "d_hard", "d_plan_base", "iapf_enter_base", "iapf_exit_base",
-        "repulsion_scale", "s_min", "s_max",
+        "s_min", "s_max",
     )
     for key in common_safety:
         safety[key] = _positive(_required(safety, key, "safety"), f"safety.{key}")
+    # Accept the old constant key as a compatibility input, then normalize it
+    # to the single configurable Safety Profile mapping used at runtime.
+    repulsion_base = safety.get("iapf_repulsion_base", safety.get("repulsion_scale"))
+    if repulsion_base is None:
+        raise PolicyLoadError("missing key: safety.iapf_repulsion_base")
+    safety["iapf_repulsion_base"] = _number(
+        repulsion_base, "safety.iapf_repulsion_base", minimum=0.0
+    )
+    safety["iapf_repulsion_margin"] = _number(
+        safety.get("iapf_repulsion_margin", 0.0),
+        "safety.iapf_repulsion_margin", minimum=0.0,
+    )
+    safety.pop("repulsion_scale", None)
     if mapping_type == "legacy_affine":
         for key in ("d_plan_margin", "iapf_enter_margin", "iapf_exit_margin"):
             safety[key] = _positive(
                 _required(safety, key, "safety"), f"safety.{key}"
             )
         d_plan_min = safety["d_plan_base"] + safety["d_plan_margin"] * safety["s_min"]
+        d_plan_max = safety["d_plan_base"] + safety["d_plan_margin"] * safety["s_max"]
         enter_min = safety["iapf_enter_base"] + safety["iapf_enter_margin"] * safety["s_min"]
         exit_min = safety["iapf_exit_base"] + safety["iapf_exit_margin"] * safety["s_min"]
         max_enter = safety["iapf_enter_base"] + safety["iapf_enter_margin"] * safety["s_max"]
         max_exit = safety["iapf_exit_base"] + safety["iapf_exit_margin"] * safety["s_max"]
     elif mapping_type == "hard_anchored_linear":
         d_plan_min = safety["d_hard"] + safety["s_min"] * (
+            safety["d_plan_base"] - safety["d_hard"]
+        )
+        d_plan_max = safety["d_hard"] + safety["s_max"] * (
             safety["d_plan_base"] - safety["d_hard"]
         )
         enter_min = safety["d_hard"] + safety["s_min"] * (
@@ -211,7 +232,17 @@ def _validate_policy(
         raise PolicyLoadError("unsupported safety.mapping_type")
     if safety["s_min"] < 1.0 or safety["s_max"] < safety["s_min"]:
         raise PolicyLoadError("safety s range must satisfy 1 <= min <= max")
-    if not safety["d_hard"] <= d_plan_min or not safety["d_hard"] < enter_min < exit_min:
+    repulsion_min = safety["iapf_repulsion_base"] + safety["iapf_repulsion_margin"] * (
+        safety["s_min"] - 1.0
+    )
+    repulsion_max = safety["iapf_repulsion_base"] + safety["iapf_repulsion_margin"] * (
+        safety["s_max"] - 1.0
+    )
+    if (
+        not safety["d_hard"] <= d_plan_min <= d_plan_max
+        or not safety["d_hard"] < enter_min < exit_min
+        or not safety["d_hard"] < max_enter < max_exit
+    ):
         raise PolicyLoadError("safety ordering or IAPF hysteresis is invalid")
 
     paper_policy = status.startswith("paper_")
@@ -291,14 +322,24 @@ def _validate_policy(
 
     hard = _mapping(_required(data, "controller_hard_clamps", "policy"), "controller_hard_clamps")
     controller = ControllerHardClamps(
-        profile["baseline_omega_c"],
-        profile["baseline_omega_o"],
-        _number(_required(hard, "smoothing_alpha", "controller_hard_clamps"), "controller_hard_clamps.smoothing_alpha"),
-        _vector(_required(hard, "omega_c_min", "controller_hard_clamps"), "controller_hard_clamps.omega_c_min"),
-        _vector(_required(hard, "omega_c_max", "controller_hard_clamps"), "controller_hard_clamps.omega_c_max"),
-        _vector(_required(hard, "omega_o_min", "controller_hard_clamps"), "controller_hard_clamps.omega_o_min"),
-        _vector(_required(hard, "omega_o_max", "controller_hard_clamps"), "controller_hard_clamps.omega_o_max"),
-        *[_positive(_required(hard, key, "controller_hard_clamps"), f"controller_hard_clamps.{key}") for key in ("velocity_max", "acceleration_max", "jerk_max", "iapf_enter_min", "iapf_enter_max", "iapf_exit_max", "iapf_repulsion_max")],
+        baseline_omega_c=profile["baseline_omega_c"],
+        baseline_omega_o=profile["baseline_omega_o"],
+        smoothing_alpha=_number(
+            _required(hard, "smoothing_alpha", "controller_hard_clamps"),
+            "controller_hard_clamps.smoothing_alpha",
+        ),
+        omega_c_min=_vector(_required(hard, "omega_c_min", "controller_hard_clamps"), "controller_hard_clamps.omega_c_min"),
+        omega_c_max=_vector(_required(hard, "omega_c_max", "controller_hard_clamps"), "controller_hard_clamps.omega_c_max"),
+        omega_o_min=_vector(_required(hard, "omega_o_min", "controller_hard_clamps"), "controller_hard_clamps.omega_o_min"),
+        omega_o_max=_vector(_required(hard, "omega_o_max", "controller_hard_clamps"), "controller_hard_clamps.omega_o_max"),
+        velocity_max=_positive(_required(hard, "velocity_max", "controller_hard_clamps"), "controller_hard_clamps.velocity_max"),
+        acceleration_max=_positive(_required(hard, "acceleration_max", "controller_hard_clamps"), "controller_hard_clamps.acceleration_max"),
+        jerk_max=_positive(_required(hard, "jerk_max", "controller_hard_clamps"), "controller_hard_clamps.jerk_max"),
+        iapf_violation_distance=safety["d_hard"],
+        iapf_enter_min=_positive(_required(hard, "iapf_enter_min", "controller_hard_clamps"), "controller_hard_clamps.iapf_enter_min"),
+        iapf_enter_max=_positive(_required(hard, "iapf_enter_max", "controller_hard_clamps"), "controller_hard_clamps.iapf_enter_max"),
+        iapf_exit_max=_positive(_required(hard, "iapf_exit_max", "controller_hard_clamps"), "controller_hard_clamps.iapf_exit_max"),
+        iapf_repulsion_max=_positive(_required(hard, "iapf_repulsion_max", "controller_hard_clamps"), "controller_hard_clamps.iapf_repulsion_max"),
     )
     if not 0.0 < controller.smoothing_alpha <= 1.0:
         raise PolicyLoadError("smoothing_alpha must be in (0, 1]")
@@ -326,7 +367,15 @@ def _validate_policy(
         )
     ):
         raise PolicyLoadError("baseline_omega_o must be within controller clamps")
-    if controller.iapf_enter_min > enter_min or controller.iapf_enter_max < max_enter or controller.iapf_exit_max < max_exit:
+    if not controller.iapf_violation_distance < controller.iapf_enter_min:
+        raise PolicyLoadError("controller IAPF enter clamp must exceed d_hard")
+    if (
+        controller.iapf_enter_min > enter_min
+        or controller.iapf_enter_max < max_enter
+        or controller.iapf_exit_max < max_exit
+        or controller.iapf_repulsion_max < repulsion_max
+        or repulsion_min < 0.0
+    ):
         raise PolicyLoadError("controller IAPF clamps do not cover safety mapping")
     if (
         controller.velocity_max < motion_limits["velocity"]

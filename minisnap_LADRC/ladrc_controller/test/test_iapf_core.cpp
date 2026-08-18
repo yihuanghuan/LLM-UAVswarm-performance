@@ -20,7 +20,7 @@ TEST(IAPFCore, ClassicHasNoEscapeOrAcceleration)
   const auto result = ladrc_controller::computeIAPF(
     Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero(), 1,
     {{2, Eigen::Vector3d(0.9, 0.0, 0.0), Eigen::Vector3d::Zero(), true, false}},
-    AvoidanceMode::CLASSIC_POSITION, EscapeMode::ID_ORDER, parameters, 1.0);
+    AvoidanceMode::CLASSIC_POSITION, EscapeMode::ID_ORDER, parameters);
   EXPECT_TRUE(result.active);
   EXPECT_DOUBLE_EQ(result.raw_repulsion.z(), 0.0);
   EXPECT_DOUBLE_EQ(result.acceleration_offset.norm(), 0.0);
@@ -32,11 +32,11 @@ TEST(IAPFCore, IdOrderEscapeIsPairwiseOpposite)
   const auto first = ladrc_controller::computeIAPF(
     Eigen::Vector3d(-0.5, 0.0, 0.0), Eigen::Vector3d::UnitX(), 1,
     {{2, Eigen::Vector3d(0.5, 0.0, 0.0), -Eigen::Vector3d::UnitX(), true, false}},
-    AvoidanceMode::IAPF_DUAL, EscapeMode::ID_ORDER, parameters, 1.0);
+    AvoidanceMode::IAPF_DUAL, EscapeMode::ID_ORDER, parameters);
   const auto second = ladrc_controller::computeIAPF(
     Eigen::Vector3d(0.5, 0.0, 0.0), -Eigen::Vector3d::UnitX(), 2,
     {{1, Eigen::Vector3d(-0.5, 0.0, 0.0), Eigen::Vector3d::UnitX(), true, false}},
-    AvoidanceMode::IAPF_DUAL, EscapeMode::ID_ORDER, parameters, 1.0);
+    AvoidanceMode::IAPF_DUAL, EscapeMode::ID_ORDER, parameters);
   EXPECT_NEAR((first.raw_repulsion + second.raw_repulsion).norm(), 0.0, 1e-9);
 }
 
@@ -46,7 +46,7 @@ TEST(IAPFCore, CoincidentNeighborsRemainFiniteAndSaturate)
   const auto result = ladrc_controller::computeIAPF(
     Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero(), 1,
     {{2, Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero(), true, false}},
-    AvoidanceMode::IAPF_DUAL, EscapeMode::ID_ORDER, parameters, 1.0);
+    AvoidanceMode::IAPF_DUAL, EscapeMode::ID_ORDER, parameters);
   EXPECT_TRUE(result.raw_repulsion.allFinite());
   EXPECT_TRUE(result.position_saturated);
   EXPECT_TRUE(result.acceleration_saturated);
@@ -60,7 +60,7 @@ TEST(IAPFCore, StaleNeighborsDoNotRepel)
   const auto result = ladrc_controller::computeIAPF(
     Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero(), 1,
     {{2, Eigen::Vector3d(0.5, 0.0, 0.0), Eigen::Vector3d::Zero(), false, false}},
-    AvoidanceMode::IAPF_DUAL, EscapeMode::ID_ORDER, parameters, 1.0);
+    AvoidanceMode::IAPF_DUAL, EscapeMode::ID_ORDER, parameters);
   EXPECT_FALSE(result.active);
   EXPECT_EQ(result.valid_neighbor_count, 0);
   EXPECT_EQ(result.stale_neighbor_count, 1);
@@ -75,7 +75,7 @@ TEST(IAPFCore, RejectsUnsafeParameterRanges)
     ladrc_controller::computeIAPF(
       Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero(), 1, {},
       AvoidanceMode::IAPF_DUAL,
-      EscapeMode::ID_ORDER, parameters, 1.0),
+      EscapeMode::ID_ORDER, parameters),
     std::invalid_argument);
 }
 
@@ -88,7 +88,7 @@ TEST(IAPFCore, HysteresisAndClosingSpeedGateActivation)
   const auto inactive = ladrc_controller::computeIAPF(
     Eigen::Vector3d::Zero(), Eigen::Vector3d(-1.0, 0.0, 0.0), 1,
     {receding}, AvoidanceMode::IAPF_DUAL, EscapeMode::ID_ORDER,
-    parameters, 1.0);
+    parameters);
   EXPECT_FALSE(inactive.active);
   EXPECT_LT(inactive.nearest_neighbor_closing_speed, 0.0);
 
@@ -97,7 +97,7 @@ TEST(IAPFCore, HysteresisAndClosingSpeedGateActivation)
   const auto retained = ladrc_controller::computeIAPF(
     Eigen::Vector3d::Zero(), Eigen::Vector3d(-1.0, 0.0, 0.0), 1,
     {hysteresis_neighbor}, AvoidanceMode::IAPF_DUAL, EscapeMode::ID_ORDER,
-    parameters, 1.0);
+    parameters);
   EXPECT_TRUE(retained.active);
   EXPECT_GT(retained.raw_repulsion.norm(), 0.0);
 }
@@ -108,14 +108,32 @@ TEST(IAPFCore, RecedingRepulsionFadesBetweenViolationAndExit)
   const auto near = ladrc_controller::computeIAPF(
     Eigen::Vector3d::Zero(), -Eigen::Vector3d::UnitX(), 1,
     {{2, Eigen::Vector3d(1.1, 0.0, 0.0), Eigen::Vector3d::UnitX(), true, true}},
-    AvoidanceMode::IAPF_DUAL, EscapeMode::ID_ORDER, parameters, 1.0);
+    AvoidanceMode::IAPF_DUAL, EscapeMode::ID_ORDER, parameters);
   const auto far = ladrc_controller::computeIAPF(
     Eigen::Vector3d::Zero(), -Eigen::Vector3d::UnitX(), 1,
     {{2, Eigen::Vector3d(1.6, 0.0, 0.0), Eigen::Vector3d::UnitX(), true, true}},
-    AvoidanceMode::IAPF_DUAL, EscapeMode::ID_ORDER, parameters, 1.0);
+    AvoidanceMode::IAPF_DUAL, EscapeMode::ID_ORDER, parameters);
   EXPECT_TRUE(near.active);
   EXPECT_TRUE(far.active);
   EXPECT_GT(near.raw_repulsion.norm(), far.raw_repulsion.norm());
+}
+
+TEST(IAPFCore, RepulsionStrengthComesOnlyFromCompiledGain)
+{
+  IAPFParameters normal;
+  IAPFParameters safer = normal;
+  safer.repulsion_gain = 1.5 * normal.repulsion_gain;
+  const std::vector<NeighborSample> neighbors{{
+    2, Eigen::Vector3d(0.9, 0.0, 0.0), Eigen::Vector3d::Zero(), true, false}};
+  const auto normal_result = ladrc_controller::computeIAPF(
+    Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero(), 1, neighbors,
+    AvoidanceMode::CLASSIC_POSITION, EscapeMode::NONE, normal);
+  const auto safer_result = ladrc_controller::computeIAPF(
+    Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero(), 1, neighbors,
+    AvoidanceMode::CLASSIC_POSITION, EscapeMode::NONE, safer);
+  EXPECT_NEAR(
+    safer_result.raw_repulsion.norm(),
+    1.5 * normal_result.raw_repulsion.norm(), 1e-9);
 }
 
 TEST(IAPFCore, LowPassFilterSmoothsAndValidatesAlpha)

@@ -134,7 +134,7 @@ export LLM_API_KEY='<your-key>'
 ros2 run location_allocate location_allocate
 ```
 
-调度器默认使用英文 `candidate_v2` parser 和 `paper-current-v6` policy。只有历史实验/回归需要显式加入 `--ros-args -p lfs_runtime_mode:=legacy_v1`。Paper Candidate 失败不会 fallback 到旧 `task_sequences`。
+调度器默认使用英文 `candidate_v2` parser 和 `paper-current-v7` policy。只有历史实验/回归需要显式加入 `--ros-args -p lfs_runtime_mode:=legacy_v1`。Paper Candidate 失败不会 fallback 到旧 `task_sequences`。
 
 当前冻结接口版本为 `paper-candidate-en-v2` / `paper-candidate-schema-v2`。Formation 使用结构化 descriptor；Polygon 必须显式给出 sides。任务等待只通过结构化 q 表达，不接受独立 WaitNode。
 
@@ -161,7 +161,7 @@ First form a smooth line with 4-meter spacing centered at [10,0,5] in 10 seconds
 ### 运动风格
 
 - `smooth`（平滑）、`normal`（标准）、`aggressive`（激进）是冻结的任务语义标签。
-- 当前 `paper-current-v6` 已启用 style：controller gain 为 `0.8/1.0/1.1`，auto-T factor 为 `1.30/1.15/1.10`（smooth/normal/aggressive）。
+- 当前 `paper-current-v7` 已启用 style：controller gain 为 `0.8/1.0/1.1`，auto-T factor 为 `1.30/1.15/1.10`（smooth/normal/aggressive）。
 - 显式可行 `T` 不受 style 修改；auto T 始终满足 `T_exec>=T_min`。
 - 这些是 development values，不是 paper-final；`task_adaptation_type=identity` 且 `task_gain=1.0`。
 
@@ -176,7 +176,10 @@ tail -f src/LLM-UAVswarm-performance/logs/control_adaptation_log.csv
 
 ### 避障系数
 
-LLM 默认 `safety_factor=1.0`（标准避障），可在指令中添加如"避障系数 2.0"单独调节。
+`s` 是任务级 safety preference，不是 IAPF 末端力乘数。默认 `s=1.0`；
+late-resolution Safety Compiler 将它统一编译为 allocator `d_plan` 和
+Execution Profile 中的 IAPF enter/exit/repulsion scale。当前映射与边界见
+[Safety factor s](docs/paper_safety_factor.md)。
 
 ### IAPF 实验分析
 
@@ -247,7 +250,6 @@ LLM_swarm_ws/
 ```yaml
 # 外部平动控制模式（稳定演示默认使用 PX4 位置基线）
 control_mode: "px4_position"  # 可显式切换为 "ladrc_acceleration"
-idle_hover_safety_factor: 1.0       # 首次任务前悬停避障系数
 
 # X/Y 轴 paper-current LADRC baseline
 omega_o_x: 5.0     # 观测器带宽
@@ -382,7 +384,7 @@ UAVStatus + /uav{N}/swarm_state (nav_msgs/Odometry, world ENU)
 |------|------|------|
 | C++ 节点收不到里程计 | QoS 不匹配 | 确保发布/订阅均使用 `SensorDataQoS()` |
 | 无人机不响应指令 | `target_system` 映射错误 | 检查 `px4_target_system=uav_id+1` 与 SITL instance 对应关系 |
-| IAPF 不触发 | `safety_factor=0` | LLM 默认设为 1.0 |
+| IAPF 不触发 | `avoidance_mode=off`、邻机状态 stale 或未满足 closing-speed gate | 检查 launch mode、neighbor topic 与 IAPF debug |
 | 调度器跳过子任务 | 旧悬停状态残留 | 已修复：入口处重置 + 2s 排空 |
 | `ros2 run` 找不到 openai | 系统 Python | 用 `python3 -m` 模块方式运行 |
 | 复合指令子任务吞掉 | DDS 旧消息 | v1.1 已修复 |

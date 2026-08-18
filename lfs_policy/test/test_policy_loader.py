@@ -37,7 +37,7 @@ def test_template_is_not_a_production_policy():
 def test_paper_current_has_hash_status_and_explicit_clamp_warning():
     policy = load_paper_policy(PAPER)
 
-    assert policy.configuration_id == "paper-current-v6"
+    assert policy.configuration_id == "paper-current-v7"
     assert policy.status == "paper_current"
     assert len(policy.policy_hash) == 64
     assert policy.parameter_status["architecture_rules"] == "paper-frozen"
@@ -61,6 +61,9 @@ def test_paper_current_has_hash_status_and_explicit_clamp_warning():
     }
     assert policy.controller.omega_c_min == (1.125, 1.125, 1.3125)
     assert policy.controller.omega_c_max == (1.875, 1.875, 2.1875)
+    assert parameters["iapf_violation_distance"] == 1.0
+    assert policy.safety["iapf_repulsion_base"] == 1.0
+    assert policy.safety["iapf_repulsion_margin"] == 0.25
 
 
 @pytest.mark.parametrize("family", ["omega_c", "omega_o"])
@@ -99,6 +102,17 @@ def test_paper_runtime_rejects_legacy_policy():
         (lambda data: data["motion_limits"].update(jerk=None), "null"),
         (lambda data: data["motion_limits"].update(jerk=float("nan")), "finite"),
         (lambda data: data["safety"].update(iapf_exit_base=1.1), "hysteresis"),
+        (lambda data: data["safety"].update(d_plan_base=0.9), "ordering"),
+        (
+            lambda data: data["safety"].update(iapf_repulsion_margin=-0.1),
+            "must be >= 0",
+        ),
+        (
+            lambda data: data["controller_hard_clamps"].update(
+                iapf_repulsion_max=1.1
+            ),
+            "cover safety mapping",
+        ),
         (lambda data: data["controller_hard_clamps"].update(iapf_enter_max=1.6), "cover"),
         (
             lambda data: data["controller_hard_clamps"].update(

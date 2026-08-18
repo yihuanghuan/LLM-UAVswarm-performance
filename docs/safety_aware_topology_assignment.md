@@ -23,6 +23,12 @@ variable-duration numerical evaluation; equal-progress analytic closest
 approach is independent of the sampling rate. `comparison_tolerance` is only a
 floating-point tolerance for lexicographic comparison, not an objective weight.
 
+For Candidate tasks, `d_hard` is fixed system-wide while the Safety Compiler
+derives `d_plan(s)` from the task-level safety preference. Thus `s` changes the
+planning-margin evaluation but never redefines what counts as a hard
+violation. The allocator receives only `d_hard` and compiled `d_plan`; it does
+not interpret `s` itself.
+
 Single-task and ParallelGroup late resolution use the same final feasibility
 semantics. Only `d_min < d_hard` rejects an assignment. A hard-feasible result
 inside the preferred planning margin (`d_hard <= d_min < d_plan`) remains

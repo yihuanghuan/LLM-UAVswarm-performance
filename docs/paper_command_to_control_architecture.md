@@ -12,7 +12,7 @@ English natural language
 → fresh runtime snapshot → late resolution and final geometry
 → T_plan → lexicographic safety-aware allocation → T_exec
 → Executable LFS + separate ResolutionTrace
-→ Execution Profile Compiler
+→ Execution Profile / Safety Compiler
 → UAVExecutionCommand
 → controller finite checks, hard clamps, profile application
 → Minimum-Jerk nominal reference → IAPF safe reference
@@ -66,6 +66,16 @@ hard safety > dynamic feasibility > feasible explicit T > motion style
 Style cannot change `d_hard`, `d_plan`, the allocator objective, motion limits,
 Minimum-Jerk mathematics, LADRC mathematics, the PX4 interface, or IAPF core.
 
+## Safety-factor contract
+
+`s` has one meaning: task-level safety preference / safety-margin multiplier.
+Late resolution compiles it once into the planning-layer `d_plan` and the
+runtime-layer IAPF enter distance, exit distance, and repulsion scale.
+`d_violation` (`d_hard`) remains a system-level fixed threshold. The controller
+only validates, clamps, and applies these values; IAPF core does not receive or
+multiply by `s`. See [paper_safety_factor.md](paper_safety_factor.md) for the
+current formulas and development values.
+
 ## Controller application and observability
 
 `UAVExecutionCommand.profile` is validated and clamped before use. Accepted
@@ -99,6 +109,7 @@ calibration sequence, not declared paper-final. See
 - `paper_candidate_runtime.md`: production runtime and ROS interfaces.
 - `paper_parameter_calibration.md`: value provenance and provisional status.
 - `safety_aware_topology_assignment.md`: allocator objective and safety gates.
+- `paper_safety_factor.md`: frozen `s` semantics and cross-layer mapping.
 - `minimum_jerk_trajectory_metrics.md`: trajectory equations and metrics.
 - `control_adaptation_logging.md`: current profile/control observability.
 - `iapf_*.md`: current IAPF behavior and experiment tooling; IAPF is outside

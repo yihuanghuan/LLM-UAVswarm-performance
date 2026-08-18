@@ -82,8 +82,7 @@ IAPFResult computeIAPF(
   const std::vector<NeighborSample> & neighbors,
   AvoidanceMode avoidance_mode,
   EscapeMode escape_mode,
-  const IAPFParameters & parameters,
-  double safety_factor);
+  const IAPFParameters & parameters);
 
 }  // namespace ladrc_controller
 

@@ -5,8 +5,6 @@
 
     # 外部平动控制模式：ladrc_acceleration / px4_position
     control_mode: "px4_position"
-    # 尚未收到任务时，悬停 IAPF 使用的安全系数
-    idle_hover_safety_factor: 1.0
 
     # omega_c/omega_o are supplied by the selected LFS policy. Keeping one
     # authoritative baseline prevents launch/config drift.
@@ -45,7 +43,8 @@
     startup_total_timeout: 60.0
     startup_max_request_attempts: 20
 
-    # IAPF 避障参数 (Phase 5)
+    # IAPF runtime/idle baselines. Paper launch injects d_violation from the
+    # selected policy; accepted Candidate commands supply compiled soft values.
     avoidance_mode: "iapf_dual"
     iapf_violation_distance: 1.0
     iapf_enter_distance: 1.5

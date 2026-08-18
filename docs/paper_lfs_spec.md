@@ -39,8 +39,10 @@ parse.
   infeasible time is raised deterministically and traced.
 - `m`: smooth, normal, or aggressive semantic style; omitted style canonically
   becomes normal. It never grants permission to violate feasibility or safety.
-- `s`: numeric safety multiplier `>=1`. Non-numeric language such as “safer”
-  does not invent a multiplier and produces `1.0`.
+- `s`: numeric task-level safety preference / safety-margin multiplier `>=1`.
+  Non-numeric language such as “safer” does not invent a multiplier and
+  produces `1.0`. It is compiled once into layer-specific safety parameters;
+  it is not an IAPF force post-multiplier.
 - `q`: exactly direct, continuous, or hover-and-wait with duration. Paper JSON
   has no standalone WaitNode. The Mission Compiler alone converts q to a
   completion event and an internal WaitSpec.
@@ -105,7 +107,8 @@ remain distinct modules.
 
 `d_hard` is an invariant violation definition. `d_plan(s)` and IAPF soft
 activation margins may increase with s. Planning scale uses `d_plan(s)`, never
-`d_hard`.
+`d_hard`. The full mapping contract is specified in
+[paper_safety_factor.md](paper_safety_factor.md).
 
 ## Frozen, provisional, and legacy boundaries
 

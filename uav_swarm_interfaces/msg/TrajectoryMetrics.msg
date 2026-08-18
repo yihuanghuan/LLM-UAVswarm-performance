@@ -7,7 +7,7 @@ geometry_msgs/Point target_pos
 float32 requested_duration
 float32 trajectory_duration
 string motion_style
-float32 safety_factor
+float32 safety_factor  # legacy telemetry only; Candidate audit uses ResolutionTrace/profile
 
 float32 path_length
 float32 max_velocity

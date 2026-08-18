@@ -1,5 +1,6 @@
 """Construct existing Candidate pipeline policies from one loaded YAML."""
 
+import math
 from pathlib import Path
 
 from lfs_policy import LoadedPolicy, load_paper_policy
@@ -90,6 +91,8 @@ def build_late_resolution_policy(config: LoadedPolicy) -> LateResolutionPolicy:
     )
 
     def resolve_safety(s_value: float) -> SafetyResolution:
+        if not math.isfinite(s_value):
+            raise ValueError("s must be finite")
         if not safety["s_min"] <= s_value <= safety["s_max"]:
             raise ValueError(
                 f"s={s_value} outside configured range "
@@ -110,15 +113,28 @@ def build_late_resolution_policy(config: LoadedPolicy) -> LateResolutionPolicy:
             exit_distance = (
                 safety["iapf_exit_base"] + safety["iapf_exit_margin"] * s_value
             )
-        return SafetyResolution(
+        repulsion_scale = safety["iapf_repulsion_base"] + safety[
+            "iapf_repulsion_margin"
+        ] * (s_value - 1.0)
+
+        # The compiler owns task semantics. These clamps are the configured
+        # safety envelope and should be no-ops for every validated policy.
+        enter = max(controller.iapf_enter_min, min(controller.iapf_enter_max, enter))
+        exit_distance = min(controller.iapf_exit_max, exit_distance)
+        repulsion_scale = max(
+            0.0, min(controller.iapf_repulsion_max, repulsion_scale)
+        )
+        resolution = SafetyResolution(
             d_hard=safety["d_hard"],
             d_plan=d_plan,
             soft_iapf=SoftSafetyParameters(
                 enter_distance=enter,
                 exit_distance=exit_distance,
-                repulsion_scale=safety["repulsion_scale"],
+                repulsion_scale=repulsion_scale,
             ),
         )
+        resolution.validate()
+        return resolution
 
     def allocator_factory(
         d_hard: float, d_plan: float

@@ -29,7 +29,7 @@ def snapshot():
     return manager.snapshot([1, 2], 10.0)
 
 
-def candidate(style, time_request):
+def candidate(style, time_request, safety_factor=1.0):
     return {
         "task_id": 1,
         "U": [1, 2],
@@ -38,7 +38,7 @@ def candidate(style, time_request):
         "r": {"mode": "explicit", "value": 1.0},
         "T": time_request,
         "m": style,
-        "s": 1.0,
+        "s": safety_factor,
         "q": {"mode": "direct"},
     }
 
@@ -140,3 +140,24 @@ def test_dynamic_feasibility_overrides_infeasible_explicit_t_and_style():
     )
     assert predicted.jerk <= policy.timing.motion_limits.jerk + 1e-12
     assert result.final_metrics.min_distance + 1e-9 >= result.trace.d_hard
+
+
+def test_task_safety_factor_reaches_allocator_trace_and_execution_profile():
+    _config, policy = load_runtime_policy(PAPER_CURRENT)
+    result = resolve_execution_task(
+        candidate("normal", {"mode": "explicit", "value": 8.0}, 1.5),
+        snapshot(),
+        policy,
+    )
+
+    assert result.executable_lfs.safety_factor == 1.5
+    assert result.trace.safety_factor == 1.5
+    assert result.trace.d_hard == 1.0
+    assert result.trace.d_plan == 2.5
+    assert result.trace.iapf_enter_distance == 1.75
+    assert result.trace.iapf_exit_distance == pytest.approx(1.975)
+    assert result.trace.iapf_repulsion_scale == 1.125
+    for profile in result.profiles:
+        assert profile.iapf_enter_distance == 1.75
+        assert profile.iapf_exit_distance == pytest.approx(1.975)
+        assert profile.iapf_repulsion_scale == 1.125

@@ -72,9 +72,15 @@ class SoftSafetyParameters:
     repulsion_scale: float
 
     def validate(self) -> None:
-        values = (self.enter_distance, self.exit_distance, self.repulsion_scale)
-        if not all(math.isfinite(value) and value > 0.0 for value in values):
-            raise ProfileCompileError("soft safety values must be finite and positive")
+        if not all(
+            math.isfinite(value) and value > 0.0
+            for value in (self.enter_distance, self.exit_distance)
+        ):
+            raise ProfileCompileError("IAPF distances must be finite and positive")
+        if not math.isfinite(self.repulsion_scale) or self.repulsion_scale < 0.0:
+            raise ProfileCompileError(
+                "IAPF repulsion scale must be finite and non-negative"
+            )
         if self.exit_distance <= self.enter_distance:
             raise ProfileCompileError("IAPF exit distance must exceed enter distance")
 

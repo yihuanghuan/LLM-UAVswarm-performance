@@ -21,7 +21,7 @@ PAPER_CURRENT = (
 def test_paper_policy_constructs_all_candidate_runtime_dependencies():
     config, policy = load_runtime_policy(PAPER_CURRENT)
 
-    assert config.configuration_id == "paper-current-v6"
+    assert config.configuration_id == "paper-current-v7"
     assert len(config.policy_hash) == 64
     assert policy.scale.nominal_spacing == 2.0
     assert policy.timing.motion_limits.jerk == 10.0
@@ -40,6 +40,35 @@ def test_paper_safety_factor_has_explicit_policy_boundary():
 
     with pytest.raises(ValueError, match="outside configured range"):
         policy.resolve_safety(2.01)
+    with pytest.raises(ValueError, match="finite"):
+        policy.resolve_safety(float("nan"))
+
+
+def test_safety_factor_compiles_one_monotonic_cross_layer_profile():
+    config, policy = load_runtime_policy(PAPER_CURRENT)
+    normal = policy.resolve_safety(1.0)
+    safer = policy.resolve_safety(1.5)
+
+    assert normal.d_hard == safer.d_hard == 1.0
+    assert (normal.d_plan, normal.soft_iapf.enter_distance,
+            normal.soft_iapf.exit_distance,
+            normal.soft_iapf.repulsion_scale) == pytest.approx(
+        (2.0, 1.5, 1.65, 1.0)
+    )
+    assert (safer.d_plan, safer.soft_iapf.enter_distance,
+            safer.soft_iapf.exit_distance,
+            safer.soft_iapf.repulsion_scale) == pytest.approx(
+        (2.5, 1.75, 1.975, 1.125)
+    )
+    assert normal.d_plan < safer.d_plan
+    assert normal.soft_iapf.enter_distance < safer.soft_iapf.enter_distance
+    assert normal.soft_iapf.exit_distance < safer.soft_iapf.exit_distance
+    assert normal.soft_iapf.repulsion_scale < safer.soft_iapf.repulsion_scale
+    for resolved in (normal, safer, policy.resolve_safety(2.0)):
+        resolved.validate()
+        assert resolved.soft_iapf.enter_distance <= config.controller.iapf_enter_max
+        assert resolved.soft_iapf.exit_distance <= config.controller.iapf_exit_max
+        assert resolved.soft_iapf.repulsion_scale <= config.controller.iapf_repulsion_max
 
 
 def test_current_qualitative_audit_exposes_safety_clamp():

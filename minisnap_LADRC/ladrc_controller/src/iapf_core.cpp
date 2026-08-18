@@ -128,8 +128,7 @@ IAPFResult computeIAPF(
   const std::vector<NeighborSample> & neighbors,
   AvoidanceMode avoidance_mode,
   EscapeMode escape_mode,
-  const IAPFParameters & parameters,
-  double safety_factor)
+  const IAPFParameters & parameters)
 {
   if (
     parameters.violation_distance <= 0.0 ||
@@ -167,7 +166,7 @@ IAPFResult computeIAPF(
       result.nearest_neighbor_closing_speed = closing_speed;
     }
 
-    if (avoidance_mode == AvoidanceMode::OFF || safety_factor <= 0.0) {
+    if (avoidance_mode == AvoidanceMode::OFF) {
       continue;
     }
     const bool active = neighbor.was_active
@@ -218,7 +217,6 @@ IAPFResult computeIAPF(
     result.raw_repulsion += force;
   }
 
-  result.raw_repulsion *= safety_factor;
   if (avoidance_mode == AvoidanceMode::OFF) {
     result.active = false;
     result.raw_repulsion.setZero();

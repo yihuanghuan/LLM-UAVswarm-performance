@@ -1,6 +1,6 @@
 # Paper Parameter Calibration Manifest
 
-`paper-current-v6` is runnable but is not a paper-final calibrated policy.
+`paper-current-v7` is runnable but is not a paper-final calibrated policy.
 
 | Parameter | Current value | Current provenance | Status | Required calibration | Affects experiments |
 |---|---:|---|---|---|---|
@@ -12,6 +12,7 @@
 | qualitative multipliers | `0.8/1/1.25` | current Candidate policy | provisional | perception study and safety-floor interaction | language-scale experiments |
 | d_plan base | `2.0 m` at s=1 | current planning-margin baseline | provisional | development scenarios independent of final tests | assignment safety |
 | IAPF enter/exit | `1.5/1.65 m` at s=1 | controller baseline | provisional | collision-avoidance sweeps | avoidance activation |
+| IAPF repulsion scale | `1.0 + 0.25(s-1)` | conservative semantic-safety development mapping | provisional | targeted avoidance sweep without changing IAPF formula | avoidance strength |
 | s_max | `2.0` | current policy coverage | provisional | validate feasible workspace and controller clamp coverage | safety-factor experiments |
 | allocator comparison tolerance | `1e-6` | Paper policy `comparison_tolerance` | provisional | verify numerical stability on separate calibration scenarios, then lock before test set | floating-point lexicographic comparison only |
 | variable-duration numerical sample rate | `20 Hz` | Paper policy `sample_hz` | provisional | validate numerical closest-approach resolution on separate calibration scenarios, then lock before test set | variable-duration ParallelGroup assignment comparison |
@@ -28,6 +29,11 @@ timing path for auto T and one deterministic controller-profile path. The
 development multipliers above remain provisional parameter calibration. The
 current evidence and the reason for the conservative aggressive adjustment are
 recorded in `experiments/results/semantic_motion_style_v6_20260814/`.
+
+The safety-factor propagation architecture is also frozen: `s` is compiled
+once into `d_plan`, IAPF enter/exit distances, and repulsion scale, while
+`d_hard` remains fixed. The numeric safety baselines and repulsion margin are
+provisional calibration values; see [paper_safety_factor.md](paper_safety_factor.md).
 
 The Paper allocator has no `alpha`/`beta`/`gamma` weighted-sum weights.
 `comparison_tolerance` is only the floating-point tolerance used while comparing
