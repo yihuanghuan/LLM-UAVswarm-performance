@@ -14,6 +14,7 @@ import time
 
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
 
 ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = ROOT.parents[2]
@@ -73,7 +74,7 @@ class TrialDriver(Node):
                 ControlTrackingDebug,
                 f"/uav{uid}/control_tracking_debug",
                 lambda message, uav_id=uid: self.on_debug(uav_id, message),
-                20,
+                qos_profile_sensor_data,
             ))
 
     def on_status(self, uid, message):

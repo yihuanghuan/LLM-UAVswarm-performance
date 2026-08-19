@@ -135,6 +135,7 @@ class InfrastructureTests(unittest.TestCase):
 
     def test_trial_driver_node_constructs_without_reserved_node_attributes(self):
         import rclpy
+        from rclpy.qos import ReliabilityPolicy
 
         temporary, _, spec = self.render_entry("A1_SCREENING", {})
         self.addCleanup(temporary.cleanup)
@@ -142,6 +143,12 @@ class InfrastructureTests(unittest.TestCase):
         try:
             node = trial_driver.TrialDriver(spec)
             self.assertEqual(set(node.command_publishers), {1})
+            debug_subscription = node.command_subscriptions[-1]
+            self.assertEqual(debug_subscription.topic_name, "/uav1/control_tracking_debug")
+            self.assertEqual(
+                debug_subscription.qos_profile.reliability,
+                ReliabilityPolicy.BEST_EFFORT,
+            )
             node.destroy_node()
         finally:
             rclpy.shutdown()
