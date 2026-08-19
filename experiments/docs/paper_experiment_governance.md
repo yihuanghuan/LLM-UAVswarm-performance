@@ -29,6 +29,21 @@ algorithm manifest against the freeze tag and audit any changed core file. A
 core-file change is not a calibration result; it invalidates the algorithm
 freeze and requires an explicitly versioned new baseline.
 
+Run the automated gates from the repository root before a C0 trial and before
+accepting its parameter-freeze commit:
+
+```bash
+python3 experiments/calibration/scripts/check_algorithm_freeze.py
+python3 experiments/calibration/scripts/check_parameter_ownership.py \
+  --calibration C0-A
+```
+
+Replace `C0-A` with the active owner. The ownership checker defaults to the
+local `paper/calibration` ref; CI or a review branch may pass an explicit
+`--baseline-ref origin/paper/calibration`. Parameter policy/config files are
+checked key by key and are deliberately not treated as wholly immutable
+algorithm files.
+
 ## The one calibration mainline
 
 `paper/calibration` is the only cumulative parameter-freeze branch. Use this

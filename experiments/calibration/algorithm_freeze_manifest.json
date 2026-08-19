@@ -7,6 +7,19 @@
   "freeze_tree": "764588a636cb2adc91ff37485f18532371dd9dcc",
   "paper_policy_configuration_id": "paper-current-v7",
   "purpose": "Detect algorithm-logic drift during C0 calibration. Parameter-only changes are expected on paper/calibration; changes to the files below require an algorithm-freeze audit.",
+  "immutable_algorithm_components": [
+    "candidate_parser_schema",
+    "validator_resolver",
+    "geometry",
+    "allocator",
+    "execution_profile_safety_compiler",
+    "minimum_jerk",
+    "ladrc",
+    "iapf"
+  ],
+  "parameter_components": [
+    "paper_policy"
+  ],
   "algorithm_components": {
     "candidate_parser_schema": [
       {
