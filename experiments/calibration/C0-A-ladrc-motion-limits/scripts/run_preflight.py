@@ -61,6 +61,11 @@ def main():
         "output": branch,
         "pass": branch_ok,
     })
+    gazebo_probe = subprocess.run(
+        ["gzserver", "--version"], text=True,
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+    )
+    gazebo_lines = [line for line in gazebo_probe.stdout.splitlines() if line.strip()]
     payload = {
         "calibration_id": "C0-A",
         "protocol_version": "C0-A-prereg-v2",
@@ -81,9 +86,8 @@ def main():
             "px4_describe": subprocess.check_output(
                 ["git", "-C", "/home/yihuang/PX4-Autopilot", "describe", "--always", "--tags", "--dirty"], text=True
             ).strip(),
-            "gazebo_version": subprocess.check_output(
-                ["gzserver", "--version"], text=True, stderr=subprocess.STDOUT
-            ).splitlines()[0],
+            "gazebo_version": gazebo_lines[0] if gazebo_lines else "unavailable",
+            "gazebo_version_probe_returncode": gazebo_probe.returncode,
         },
         "checks": checks,
         "status": "PASS" if all(item["pass"] for item in checks) else "FAIL",
