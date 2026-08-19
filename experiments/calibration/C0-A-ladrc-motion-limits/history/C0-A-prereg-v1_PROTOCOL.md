@@ -1,10 +1,10 @@
 # C0-A calibration protocol: LADRC baseline and motion limits
 
-Protocol version: `C0-A-prereg-v2`
+Protocol version: `C0-A-prereg-v1`
 
 Dataset class: `calibration`
 
-Pre-registered: 2026-08-19 (Asia/Shanghai)
+Pre-registered: 2026-08-18 (Asia/Shanghai)
 
 Algorithm baseline: `paper-algorithm-freeze-v1` at
 `56e8d2c8e59fc3513769e21910b7a20b2b43088d`
@@ -17,20 +17,6 @@ This file defines the experiment before any C0-A trial is run or inspected.
 Changing its sweep, scenarios, metrics, acceptance thresholds or selection rule
 after execution begins requires a new protocol version plus a dated deviation
 record; the original protocol must remain in history.
-
-## Pre-outcome protocol clarification history
-
-`C0-A-prereg-v2` is a pre-outcome protocol clarification. No formal C0-A
-trial had been executed under v1, and no outcome was observed before the v2
-clarification. The byte-for-byte v1 protocol, blocked result, manifest,
-preflight log and placeholder trial order remain under `history/`.
-
-Version 2 changes only the deterministic execution schedule: it corrects the
-A1 signed-displacement count, registers the A3 execution set, registers
-`C0A-M-1` and the common scale-validation duration, and clarifies that A2
-duration multipliers are test conditions rather than paper-final candidates.
-It does not change a parameter range, metric, acceptance threshold, selection
-priority, tie-break rule, failure semantic, seed, algorithm, or ownership.
 
 ## Objective
 
@@ -119,11 +105,8 @@ per-axis combinations. `control_frequency=50 Hz` and `b0_x/y/z=1.0` remain
 fixed.
 
 Screen on scenarios `C0A-S-HX-3`, `C0A-S-VU-2`, and `C0A-S-DIAG-1` with the
-first three registered seeds. `C0A-S-HX-3` contributes two signed-displacement
-trials, while the other two scenarios contribute one each. A candidate
-survives only if all hard acceptance criteria pass in all 12 trials
-(`4 displacement cases x 3 seeds`). A1 screening therefore contains exactly
-`25 x 12 = 300` formal trials. Rank survivors using the selection rule
+first three registered seeds. A candidate survives only if all hard acceptance
+criteria pass in all nine trials. Rank survivors using the selection rule
 below and carry the best five distinct baseline packages to A1 confirmation on
 the complete single-UAV scenario set with all five seeds. If fewer than five
 survive, confirm every survivor; if none survive, C0-A reports
@@ -152,13 +135,6 @@ stage. Screen all candidates on `C0A-S-HX-3`, `C0A-S-HX-6`, `C0A-S-VU-2`,
 five hard-passing envelopes over the complete single-UAV set and all five
 seeds. Apply the same zero-survivor stop rule as A1.
 
-The four-value A2 candidate identity contains only `v_limit`, `a_limit`,
-`j_limit`, and `minimum_duration`. The `1.00`, `1.15`, and `1.30` explicit
-duration multipliers are registered stress conditions applied to every A2
-candidate in both screening and confirmation. They are not candidate
-parameters, are not ranked as alternative final durations, and are not part of
-the C0-A frozen output.
-
 ### Stage A3 — hard clamps and duplicated controller values
 
 This stage does not retune the A1/A2 winner. It validates the smallest guard
@@ -171,14 +147,6 @@ omega envelope candidates (baseline multipliers):
 motion clamp multiplier candidates relative to selected v/a/j:
   [1.00, 1.05, 1.10]
 ```
-
-A3 executes every Cartesian clamp pair on `C0A-S-HX-3`, `C0A-S-VU-2`, and
-`C0A-S-DIAG-1`. Each signed displacement remains a separate trial. Use seeds
-`41001` through `41005` and explicit `T=1.25*T_min`, where `T_min` is computed
-from the fixed A2 winner. Thus A3 contains exactly
-`12 clamp pairs x 4 displacement cases x 5 seeds = 240` trials. A3 may select
-only the guard envelope and duplicated caps; it may not change the A1 or A2
-winner.
 
 Select the tightest candidate covering `[0.75,1.20]` and every accepted
 profile without runtime clamping. Motion hard clamps default to exactly the
@@ -209,19 +177,14 @@ inside the current workspace AABB. The nominal start after takeoff is
 | `C0A-S-VD-1` | 1 | `[0,0,-1]` | descent with altitude margin |
 | `C0A-S-DIAG-1` | 1 | `[+2,+2,+1]` | moderate 3-D diagonal |
 | `C0A-S-DIAG-2` | 1 | `[-3,+2,+2]` | mixed-sign 3-D diagonal |
-| `C0A-M-1` | 1 | start `[-4,3,3]`, target `[+4,3,3]` | single-UAV scale-validation lane |
 | `C0A-M-4` | 4 | starts `[-4,3i,3]`, targets `[+4,3i,3]`, `i=1..4` | four-UAV scheduling/control scaling in separated parallel lanes |
 | `C0A-M-8` | 8 | starts `[-4,3i,3]`, targets `[+4,3i,3]`, `i=1..8` | eight-UAV scheduling/control scaling in separated parallel lanes |
 
 Each signed displacement is a separate trial. After A1/A2 selection, validate
 the single-UAV winner at 1 UAV, then `C0A-M-4`, then `C0A-M-8`. Scale
-validation uses the same per-UAV displacement `[+8,0,0]`, explicit duration
-and frozen parameters; it is validation, not another parameter-selection
-stage. For all three scale conditions, freeze
-`T_scale=1.25*T_min(D=8 m)`, using the A2 winner's limits and duration floor.
-All use the A1 winner, A2 winner, A3 clamps, normal style, `s=1.0`, and
-`control_mode=ladrc_acceleration`. A 4- or 8-UAV failure prevents freezing and
-cannot be used to reopen the sweep.
+validation uses the same per-UAV displacement, explicit duration and frozen
+parameters; it is validation, not another parameter-selection stage. A 4- or
+8-UAV failure prevents freezing and cannot be used to reopen the sweep.
 
 No scenario from a later formal registry may be substituted. If a future
 formal scenario is accidentally run or inspected during C0-A, it must be
@@ -230,7 +193,7 @@ permanently reclassified as calibration data.
 ## Repetitions, seeds and ordering
 
 - Screening stages: three repetitions, seeds `41001`, `41002`, `41003`.
-- Confirmation, A3 and 1/4/8-UAV validation: five repetitions, seeds `41001`,
+- Confirmation and 1/4/8-UAV validation: five repetitions, seeds `41001`,
   `41002`, `41003`, `41004`, `41005`.
 - Set the PX4/Gazebo/randomized scenario seed wherever supported and record
   each effective seed. If the simulator component is deterministic or ignores
@@ -240,43 +203,6 @@ permanently reclassified as calibration data.
   resulting order before execution, and never reorder after seeing results.
 - Start every trial from a clean simulator/PX4/controller process and the
   registered initial state. Do not reuse observer or filter state.
-
-### Machine-executable conditional schedule
-
-Before the first formal trial, generate `trial_order_v2.json` with the frozen
-seed `41999`. Enumerate the following stage blocks, then use one
-`random.Random(41999)` stream to shuffle each block independently in this
-listed stage order. Stage order itself is immutable because later blocks
-depend on deterministic winners from earlier blocks.
-
-For `SCALE_VALIDATION`, preserve the required condition order
-`C0A-M-1` then `C0A-M-4` then `C0A-M-8`; shuffle only the five seed entries
-within each condition, continuing the same PRNG stream.
-
-| Stage block | Schedule entries | Activation |
-|---|---:|---|
-| `A1_SCREENING` | 300 | all active |
-| `A1_CONFIRMATION` | 300 maximum | rank slots 1 through `min(5, survivor_count)` |
-| `A2_SCREENING` | 1134 | active only after an A1 winner |
-| `A2_CONFIRMATION` | 900 maximum | rank slots 1 through `min(5, survivor_count)` |
-| `A3_VALIDATION` | 240 | active only after an A2 winner |
-| `SCALE_VALIDATION` | 15 | active only after an A3 winner; execute condition order M-1, M-4, M-8 |
-
-The complete schedule therefore contains 2889 immutable potential entries.
-Every entry stores `stage`, `candidate_id`, `scenario_id`,
-`signed_displacement_id`, `seed`, `duration_condition`, `repetition`, and
-`trial_id`, plus its machine-readable activation predicate. Confirmation uses
-the symbolic candidate IDs `A1-RANK-01` through `A1-RANK-05` and
-`A2-RANK-01` through `A2-RANK-05`. The deterministic selector writes the
-concrete candidate mapping before that block starts. Unmapped rank slots are
-marked `NOT_APPLICABLE_NO_SURVIVOR`; they are not formal trials or failed
-trials. A zero-survivor gate terminates the campaign as already specified.
-
-Within a stage, the runner consumes entries in stored order and applies the
-activation predicate without manual input. A stage may not start until all
-active entries in the preceding stage are terminal and its selector output is
-persisted. This conditional schedule is complete before execution while
-preserving the preregistered staged survivor design.
 
 ## Metrics and computation
 
@@ -374,21 +300,19 @@ At completion, the C0-A branch must contain or reference immutable storage for:
 ```text
 experiments/calibration/C0-A-ladrc-motion-limits/
 ├── CALIBRATION_PROTOCOL.md
-├── CALIBRATION_RESULT_v2.md
-├── manifest_v2.json
-├── trial_order_v2.json
-├── history/
+├── CALIBRATION_RESULT.md
+├── manifest.json
 ├── raw/
 ├── metrics/
 ├── figures/
 └── scripts/
 ```
 
-`manifest_v2.json` must include protocol hash, algorithm tag/commit, C0 branch and
+`manifest.json` must include protocol hash, algorithm tag/commit, C0 branch and
 commit, dirty-worktree flag, policy/config hashes, PX4/ROS/Gazebo versions,
 host/environment details, scenario-registry hash, complete scheduled trial
 list, seeds, command lines, start/end timestamps, output hashes and failure
-status. `CALIBRATION_RESULT_v2.md` must apply the selection rule without changing
+status. `CALIBRATION_RESULT.md` must apply the selection rule without changing
 it, list all rejected candidates and failures, and identify the one selected
 package or `NO_ACCEPTABLE_CONFIGURATION`.
 

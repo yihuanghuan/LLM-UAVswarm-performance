@@ -1,0 +1,97 @@
+{
+  "manifest_version": 1,
+  "calibration_id": "C0-A",
+  "protocol_version": "C0-A-prereg-v1",
+  "dataset_class": "calibration",
+  "status": "INVALIDATED_INFRASTRUCTURE_BLOCKED",
+  "termination_reason": "PREREGISTRATION_INCOMPLETE",
+  "formal_trials_started": false,
+  "start_time": "2026-08-19T15:21:26+08:00",
+  "end_time": "2026-08-19T15:25:27+08:00",
+  "git": {
+    "branch": "cal/C0-A-ladrc-motion-limits",
+    "source_commit": "c57e1c771817e70c5aca1ad1a9abd610d1205149",
+    "base_ref": "origin/paper/calibration",
+    "base_commit": "c57e1c771817e70c5aca1ad1a9abd610d1205149",
+    "dirty_worktree_during_audit": true,
+    "preexisting_untracked_artifacts_present": true
+  },
+  "algorithm_freeze": {
+    "tag": "paper-algorithm-freeze-v1",
+    "commit": "56e8d2c8e59fc3513769e21910b7a20b2b43088d",
+    "check": "PASS",
+    "manifest_sha256": "e8ff8a27e65e1e62b031e50c6c4283b6f1b265a7051ad723c6a2ca3c032e102e"
+  },
+  "parameter_ownership": {
+    "calibration": "C0-A",
+    "baseline_ref": "origin/paper/calibration",
+    "check": "PASS",
+    "allowed_parameter_changes": 0
+  },
+  "protocol": {
+    "path": "experiments/calibration/C0-A-ladrc-motion-limits/CALIBRATION_PROTOCOL.md",
+    "sha256": "9b71550f76e2bb536cf0451ca0ea65f4665d7419b84377867868d72c972670bd",
+    "scenario_registry_source": "embedded calibration scenario table",
+    "scenario_registry_sha256": "9b71550f76e2bb536cf0451ca0ea65f4665d7419b84377867868d72c972670bd",
+    "ordering_seed": 41999,
+    "ordering_status": "BLOCKED_NOT_GENERATED"
+  },
+  "policy": {
+    "configuration_id_before": "paper-current-v7",
+    "configuration_id_after": "paper-current-v7",
+    "policy_sha256_before": "5b2d9e73b076e950a975ffb33596817ac4824926ed1598c7f2009c06ba014c11",
+    "policy_sha256_after": "5b2d9e73b076e950a975ffb33596817ac4824926ed1598c7f2009c06ba014c11",
+    "controller_config_sha256_before": "d3546709533b9470d88502406be136e1c7afbf7dfd9c23a1dfad81cd5c49d556",
+    "controller_config_sha256_after": "d3546709533b9470d88502406be136e1c7afbf7dfd9c23a1dfad81cd5c49d556"
+  },
+  "registered_seeds": {
+    "screening": [41001, 41002, 41003],
+    "confirmation_and_scale": [41001, 41002, 41003, 41004, 41005]
+  },
+  "scheduled_trials": [],
+  "trial_count": 0,
+  "failures": [
+    {
+      "failure_code": "PREREGISTRATION_INCOMPLETE",
+      "stage": "PRE_TRIAL_PROTOCOL_AUDIT",
+      "details": [
+        "A1 requires both nine trials per candidate and separate signed-displacement trials, which yields twelve trials per candidate for the registered screening scenarios.",
+        "A3 has no registered scenarios, seeds, repetitions, or explicit durations.",
+        "The required single-UAV scale-validation scenario, start/target pair, and explicit duration are not registered."
+      ]
+    }
+  ],
+  "commands": [
+    "git fetch origin --prune",
+    "git pull --ff-only origin paper/calibration",
+    "git switch -c cal/C0-A-ladrc-motion-limits",
+    "git push -u origin cal/C0-A-ladrc-motion-limits",
+    "python3 experiments/calibration/scripts/check_algorithm_freeze.py",
+    "python3 experiments/calibration/scripts/check_parameter_ownership.py --calibration C0-A --baseline-ref origin/paper/calibration"
+  ],
+  "environment": {
+    "host": "JIAOLONG-Series",
+    "os": "Ubuntu 22.04 family, Linux 6.8.0-136-generic x86_64",
+    "ros_distribution": "humble",
+    "ros2cli_version": "0.18.14",
+    "px4_version": "v1.15.0-dirty",
+    "px4_commit": "30e763b6780061d70a14894e3e8b06e6a656f9b8",
+    "gazebo_version": "11.10.2"
+  },
+  "output_hashes": {
+    "CALIBRATION_RESULT.md": "c5564de0ac893787527079c165d55fbe1a8f4b53755f26beb7aabac29cb778e9",
+    "trial_order.json": "1ae3a73c16a41b1c0fa4fd89eb18d2c00fdf3a6554e3fbf3d59f08be05e09981",
+    "logs/preflight_checks.txt": "5e350482f1d7681bd91d1d4c68ab3ebe402f805cc41dc6c23c11b8abff3b8280",
+    "raw/README.md": "3258116c305bd8b88b6e8f6423dc87bcc41585094afca7f1b1c8705514e7f5bd",
+    "metrics/README.md": "53f11aafa2c0f6c6ca492b46b8f72d0f35019b66622cffebb1e6a13459390bae",
+    "figures/README.md": "17e8f46713998f283d0f2f770b5b3acfcd7f14af8081dfe29d04bb17bc9d0793",
+    "scripts/README.md": "acc64cdd55ce9436d438300c31fab9b85d2a939813730d6d43fa9f4cdde5a4b1",
+    "configs/README.md": "523572bb44bc29f456c2e78ec4816c82e0dccca5914eb915f339c2d090639ff4",
+    "manifests/README.md": "b4181f0aff43455aa00ebf50aa65299522ae5c8b65a1ea853427de1acb8236d4"
+  },
+  "deviations_from_preregistration": [],
+  "selected_candidate": null,
+  "frozen_parameter_commit": null,
+  "checkpoint_tag": null,
+  "ready_for_c0_b": false
+}

@@ -1,0 +1,31 @@
+C0-A pre-trial freeze gates
+branch: cal/C0-A-ladrc-motion-limits
+branch_commit: c57e1c771817e70c5aca1ad1a9abd610d1205149
+baseline_ref: origin/paper/calibration
+baseline_commit: c57e1c771817e70c5aca1ad1a9abd610d1205149
+
+$ python3 experiments/calibration/scripts/check_algorithm_freeze.py
+algorithm freeze check = PASS (tag=paper-algorithm-freeze-v1, immutable_files=25, parameter_files_delegated=2)
+exit_code: 0
+
+$ python3 experiments/calibration/scripts/check_parameter_ownership.py --calibration C0-A --baseline-ref origin/paper/calibration
+ownership check C0-A = PASS (baseline=origin/paper/calibration, allowed_parameter_changes=0)
+exit_code: 0
+
+Post-audit verification
+
+$ python3 -m json.tool manifest.json && python3 -m json.tool trial_order.json
+JSON validation = PASS
+exit_code: 0
+
+$ python3 experiments/calibration/scripts/check_algorithm_freeze.py
+algorithm freeze check = PASS (tag=paper-algorithm-freeze-v1, immutable_files=25, parameter_files_delegated=2)
+exit_code: 0
+
+$ python3 experiments/calibration/scripts/check_parameter_ownership.py --calibration C0-A --baseline-ref origin/paper/calibration
+ownership check C0-A = PASS (baseline=origin/paper/calibration, allowed_parameter_changes=0)
+exit_code: 0
+
+$ git diff --exit-code origin/paper/calibration -- <C0-A governed files and ledger>
+C0-A governed files and ledger unchanged = PASS
+exit_code: 0
