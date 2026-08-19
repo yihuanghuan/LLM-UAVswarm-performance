@@ -51,25 +51,25 @@ class TrialDriver(Node):
         self.accepted = set()
         self.tracking_seen = set()
         self.control_modes = set()
-        self.publishers = {}
-        self.subscriptions = []
+        self.command_publishers = {}
+        self.command_subscriptions = []
         for uid in self.ids:
-            self.publishers[uid] = self.create_publisher(
+            self.command_publishers[uid] = self.create_publisher(
                 UAVExecutionCommand, f"/uav{uid}/execution_command", 10
             )
-            self.subscriptions.append(self.create_subscription(
+            self.command_subscriptions.append(self.create_subscription(
                 UAVStatus,
                 f"/uav{uid}/status",
                 lambda message, uav_id=uid: self.on_status(uav_id, message),
                 20,
             ))
-            self.subscriptions.append(self.create_subscription(
+            self.command_subscriptions.append(self.create_subscription(
                 StartupEvent,
                 f"/uav{uid}/startup_event",
                 lambda message, uav_id=uid: self.on_event(uav_id, message),
                 20,
             ))
-            self.subscriptions.append(self.create_subscription(
+            self.command_subscriptions.append(self.create_subscription(
                 ControlTrackingDebug,
                 f"/uav{uid}/control_tracking_debug",
                 lambda message, uav_id=uid: self.on_debug(uav_id, message),
@@ -154,15 +154,15 @@ def main():
         discovery_deadline = min(time.monotonic() + 5.0, args.wall_deadline_monotonic)
         while time.monotonic() < discovery_deadline:
             rclpy.spin_once(node, timeout_sec=0.05)
-            if all(pub.get_subscription_count() >= 1 for pub in node.publishers.values()):
+            if all(pub.get_subscription_count() >= 1 for pub in node.command_publishers.values()):
                 break
-        if not all(pub.get_subscription_count() >= 1 for pub in node.publishers.values()):
+        if not all(pub.get_subscription_count() >= 1 for pub in node.command_publishers.values()):
             result["termination_reason"] = "COMMAND_SUBSCRIBER_MISSING"
             return_code = 2
         else:
             commands = node.build_commands()
             for command in commands:
-                node.publishers[int(command.uav_id)].publish(command)
+                node.command_publishers[int(command.uav_id)].publish(command)
             published = time.monotonic()
             result["command_published_utc"] = utc_now()
             result["command_count"] = len(commands)

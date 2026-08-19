@@ -55,6 +55,11 @@ def main():
         ["git", "branch", "--show-current"], cwd=REPOSITORY, text=True
     ).strip()
     branch_ok = branch == "cal/C0-A-ladrc-motion-limits"
+    state_path = args.artifact_root.resolve() / "campaign_state.json"
+    campaign_state = (
+        json.loads(state_path.read_text(encoding="utf-8"))
+        if state_path.is_file() else {}
+    )
     checks.append({
         "command": ["branch identity"],
         "returncode": 0 if branch_ok else 1,
@@ -75,7 +80,8 @@ def main():
         "protocol_version_check": "C0-A-prereg-v2",
         "trial_schedule_complete": True,
         "unresolved_protocol_ambiguity": 0,
-        "formal_trials_started": False,
+        "formal_trials_started": bool(campaign_state.get("formal_trials_started", False)),
+        "formal_trials_executed": int(campaign_state.get("formal_trials_executed", 0)),
         "environment": {
             "host": platform.node(),
             "platform": platform.platform(),

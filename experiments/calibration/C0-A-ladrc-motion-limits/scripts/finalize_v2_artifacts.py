@@ -35,6 +35,7 @@ def main():
     schedule = json.loads((ROOT / "trial_order_v2.json").read_text(encoding="utf-8"))
     distributions = aggregate["distributions"]
     scale = state.get("scale_validation", {}).get("scenarios", {})
+    deviations = sorted(path.name for path in (ROOT / "deviations").glob("*.md"))
     conclusion = {
         "PASS": "C0-A = PASS",
         "NO_ACCEPTABLE_CONFIGURATION": "C0-A = NO_ACCEPTABLE_CONFIGURATION",
@@ -49,7 +50,7 @@ def main():
 - Reason for v2: pre-outcome protocol clarification
 - Previous protocol: `C0-A-prereg-v1`, status `INFRASTRUCTURE_BLOCKED`, formal trials `0`
 - Experiment branch: `cal/C0-A-ladrc-motion-limits`
-- Experiment source commit: `{state['source_commit']}`
+- Experiment source commits: `{fmt(state.get('source_commits', [state['source_commit']]))}`
 - Algorithm freeze: `paper-algorithm-freeze-v1`
 - Dataset class: `calibration`
 - Formal trials executed: `{state['formal_trials_executed']}`
@@ -97,7 +98,7 @@ def main():
 
 ## Deviations from C0-A-prereg-v2
 
-**NONE**
+`{fmt(deviations) if deviations else 'NONE'}`
 
 ## Conclusion
 
@@ -121,6 +122,7 @@ def main():
         "git": {
             "branch": "cal/C0-A-ladrc-motion-limits",
             "source_commit": state["source_commit"],
+            "source_commits": state.get("source_commits", [state["source_commit"]]),
             "artifact_commit": None,
             "base_ref": "origin/paper/calibration",
             "base_commit": subprocess.check_output(
@@ -155,7 +157,7 @@ def main():
         "scale_validation": state.get("scale_validation"),
         "failure_counts": aggregate["failure_counts"],
         "result_sha256": sha256(result_path),
-        "deviations_from_preregistration": [],
+        "deviations_from_preregistration": deviations,
         "frozen_parameter_commit": None,
         "checkpoint_tag": None,
         "ready_for_c0_b": False,

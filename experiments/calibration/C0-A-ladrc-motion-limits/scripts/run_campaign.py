@@ -101,6 +101,56 @@ def run_gate_audit(artifact_root, stage):
     path.write_text(json.dumps(records, indent=2) + "\n", encoding="utf-8")
 
 
+def preserve_interrupted_trial(trial_dir, entry, state):
+    spec = json.loads((trial_dir / "trial_spec.json").read_text(encoding="utf-8"))
+    manifest = {
+        "calibration_id": "C0-A",
+        "protocol_version": "C0-A-prereg-v2",
+        "dataset_class": "calibration",
+        "trial_id": entry["trial_id"],
+        "stage": entry["stage"],
+        "candidate_id": entry["candidate_id"],
+        "scenario_id": entry["scenario_id"],
+        "signed_displacement_id": entry["signed_displacement_id"],
+        "seed": entry["seed"],
+        "repetition": entry["repetition"],
+        "duration_condition": entry["duration_condition"],
+        "explicit_duration_s": spec["explicit_duration_s"],
+        "control_mode": "ladrc_acceleration",
+        "motion_style": "normal",
+        "policy_configuration_id": spec["policy_configuration_id"],
+        "policy_sha256": spec["policy_sha256"],
+        "controller_config_sha256": spec["controller_config_sha256"],
+        "git_commit": state["source_commit"],
+        "branch": state["branch"],
+        "cold_start": True,
+        "success": False,
+        "termination_reason": "CAMPAIGN_INTERRUPTED",
+        "error": "Campaign was stopped while this formal trial was starting; retained and not rerun.",
+        "process_exit_status": {},
+        "rosbag": {"metadata_present": False},
+        "finished_utc": utc_now(),
+    }
+    (trial_dir / "manifest.json").write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    metrics = {
+        "trial_id": entry["trial_id"],
+        "stage": entry["stage"],
+        "candidate_id": entry["candidate_id"],
+        "scenario_id": entry["scenario_id"],
+        "seed": entry["seed"],
+        "per_uav": [],
+        "hard_pass": False,
+        "hard_failures": ["CAMPAIGN_INTERRUPTED", "PROCESS_CRASH"],
+        "metric_extraction_success": False,
+        "error": "No formal rerun is permitted under the same trial ID.",
+    }
+    (trial_dir / "metrics.json").write_text(
+        json.dumps(metrics, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--artifact-root", type=Path, required=True)
@@ -122,6 +172,11 @@ def main():
     if sha256(SCHEDULE_PATH) != state["schedule_sha256"]:
         raise SystemExit("formal execution refused: schedule hash changed")
     ros_env = ros_environment()
+    current_source_commit = git_value("rev-parse", "HEAD")
+    state.setdefault("source_commits", [state["source_commit"]])
+    if current_source_commit not in state["source_commits"]:
+        state["source_commits"].append(current_source_commit)
+    state["current_source_commit"] = current_source_commit
     state["campaign_status"] = "RUNNING"
     write_state(state_path, state)
     for stage in STAGES:
@@ -138,9 +193,7 @@ def main():
             if trial_dir.exists():
                 manifest_path = trial_dir / "manifest.json"
                 if not manifest_path.is_file():
-                    raise SystemExit(
-                        f"interrupted formal trial {entry['trial_id']} cannot be rerun under the same ID"
-                    )
+                    preserve_interrupted_trial(trial_dir, entry, state)
             else:
                 command = [
                     str(VENV_PYTHON), str(RUN_TRIAL),
@@ -160,11 +213,12 @@ def main():
                     "returncode": trial.returncode,
                     "output": trial.stdout,
                 }, sort_keys=True) + "\n")
-            extraction = subprocess.run(
-                [str(VENV_PYTHON), str(EXTRACT), str(trial_dir)],
-                cwd=REPOSITORY, env=ros_env, text=True,
-                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
-            )
+            if not metrics_path.is_file():
+                extraction = subprocess.run(
+                    [str(VENV_PYTHON), str(EXTRACT), str(trial_dir)],
+                    cwd=REPOSITORY, env=ros_env, text=True,
+                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+                )
             if not metrics_path.is_file():
                 raise SystemExit(f"metric extractor did not preserve a result for {entry['trial_id']}")
             metrics = json.loads(metrics_path.read_text(encoding="utf-8"))

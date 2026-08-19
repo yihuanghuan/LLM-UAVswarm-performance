@@ -18,6 +18,7 @@ REPOSITORY = ROOT.parents[2]
 sys.path.insert(0, str(SCRIPT_DIR))
 
 import render_trial
+import trial_driver
 
 
 class InfrastructureTests(unittest.TestCase):
@@ -131,6 +132,19 @@ class InfrastructureTests(unittest.TestCase):
             for item in component
         }
         self.assertTrue(instrument_paths.isdisjoint(frozen))
+
+    def test_trial_driver_node_constructs_without_reserved_node_attributes(self):
+        import rclpy
+
+        temporary, _, spec = self.render_entry("A1_SCREENING", {})
+        self.addCleanup(temporary.cleanup)
+        rclpy.init()
+        try:
+            node = trial_driver.TrialDriver(spec)
+            self.assertEqual(set(node.command_publishers), {1})
+            node.destroy_node()
+        finally:
+            rclpy.shutdown()
 
 
 if __name__ == "__main__":
