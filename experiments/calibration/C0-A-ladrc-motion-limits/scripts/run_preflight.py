@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run and persist every mandatory C0-A-prereg-v2 preflight gate."""
+"""Run and persist every mandatory C0-A-prereg-v3 preflight gate."""
 
 from __future__ import annotations
 
@@ -73,11 +73,11 @@ def main():
     gazebo_lines = [line for line in gazebo_probe.stdout.splitlines() if line.strip()]
     payload = {
         "calibration_id": "C0-A",
-        "protocol_version": "C0-A-prereg-v2",
+        "protocol_version": "C0-A-prereg-v3",
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "source_commit": source_commit,
         "branch": branch,
-        "protocol_version_check": "C0-A-prereg-v2",
+        "protocol_version_check": "C0-A-prereg-v3",
         "trial_schedule_complete": True,
         "unresolved_protocol_ambiguity": 0,
         "formal_trials_started": bool(campaign_state.get("formal_trials_started", False)),
@@ -98,14 +98,14 @@ def main():
         "checks": checks,
         "status": "PASS" if all(item["pass"] for item in checks) else "FAIL",
     }
-    (logs / "preflight_v2.json").write_text(
+    (logs / "preflight_v3.json").write_text(
         json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     text = [
-        "C0-A-prereg-v2 preflight",
+        "C0-A-prereg-v3 preflight",
         f"source_commit: {source_commit}",
         f"status: {payload['status']}",
-        "protocol version = C0-A-prereg-v2",
+        "protocol version = C0-A-prereg-v3",
         "trial schedule complete = true",
         "unresolved protocol ambiguity = 0",
         "",
@@ -117,7 +117,7 @@ def main():
             f"exit_code: {item['returncode']}",
             "",
         ))
-    (logs / "preflight_v2.txt").write_text("\n".join(text), encoding="utf-8")
+    (logs / "preflight_v3.txt").write_text("\n".join(text), encoding="utf-8")
     print("\n".join(text[:6]))
     return 0 if payload["status"] == "PASS" else 2
 

@@ -25,10 +25,10 @@ class InfrastructureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.registry = json.loads(
-            (ROOT / "configs" / "c0a_prereg_v2.json").read_text(encoding="utf-8")
+            (ROOT / "configs" / "c0a_prereg_v3.json").read_text(encoding="utf-8")
         )
         cls.schedule = json.loads(
-            (ROOT / "trial_order_v2.json").read_text(encoding="utf-8")
+            (ROOT / "trial_order_v3.json").read_text(encoding="utf-8")
         )
 
     def render_entry(self, stage, state):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Execute exactly one C0-A v2 schedule entry from a full cold start."""
+"""Execute exactly one C0-A v3 schedule entry from a full cold start."""
 
 from __future__ import annotations
 

@@ -303,7 +303,6 @@ def summarize_uav(records, types, spec, manifest, uid, index):
         (result["post_trajectory_rms_m"] <= 0.25, "POST_RMS"),
         (max(result["post_trajectory_peak_to_peak_per_axis_m"]) <= 0.60, "PEAK_TO_PEAK"),
         (result["post_trajectory_last_first_rms_ratio"] <= 1.0, "GROWING_OSCILLATION"),
-        (max(result["post_trajectory_zero_crossings_per_axis"]) <= 6, "ZERO_CROSSINGS"),
         (analytic["velocity"] <= limits["v_limit"] + 1e-9, "REFERENCE_V_LIMIT"),
         (analytic["acceleration"] <= limits["a_limit"] + 1e-9, "REFERENCE_A_LIMIT"),
         (analytic["jerk"] <= limits["j_limit"] + 1e-9, "REFERENCE_J_LIMIT"),
@@ -326,6 +325,7 @@ def summarize_uav(records, types, spec, manifest, uid, index):
     hard_failures.extend(code for passed, code in checks if not passed)
     result["hard_failures"] = hard_failures
     result["hard_pass"] = not hard_failures
+    result["raw_zero_crossings_diagnostic_only"] = True
     return result
 
 

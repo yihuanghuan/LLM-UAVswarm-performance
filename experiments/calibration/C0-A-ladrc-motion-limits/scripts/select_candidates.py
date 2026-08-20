@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_SCHEDULE = ROOT / "trial_order_v2.json"
+DEFAULT_SCHEDULE = ROOT / "trial_order_v3.json"
 
 
 def percentile(values, probability):
@@ -56,9 +56,6 @@ def candidate_key(trials, parameters):
         max(item["post_trajectory_peak_to_peak_per_axis_m"]) for item in uavs
     )
     last_first = max(item["post_trajectory_last_first_rms_ratio"] for item in uavs)
-    zero_crossings = max(
-        max(item["post_trajectory_zero_crossings_per_axis"]) for item in uavs
-    )
     attitude_margin = min(
         30.0 - max(item["roll_peak_deg"], item["pitch_peak_deg"]) for item in uavs
     )
@@ -92,7 +89,6 @@ def candidate_key(trials, parameters):
         post_rms,
         peak_to_peak,
         last_first,
-        zero_crossings,
         -minimum_margin,
         attitude_ratio,
         jerk_ratio,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail closed unless C0-A-prereg-v2 and its schedule are fully executable."""
+"""Fail closed unless C0-A-prereg-v3 and its schedule are fully executable."""
 
 from __future__ import annotations
 
@@ -8,14 +8,18 @@ from collections import Counter, defaultdict
 import hashlib
 import json
 from pathlib import Path
+import subprocess
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CONFIG = ROOT / "configs" / "c0a_prereg_v2.json"
-DEFAULT_SCHEDULE = ROOT / "trial_order_v2.json"
-DEFAULT_OUTPUT = ROOT / "logs" / "protocol_executable_audit_v2.json"
-PROTOCOL = ROOT / "CALIBRATION_PROTOCOL.md"
+DEFAULT_CONFIG = ROOT / "configs" / "c0a_prereg_v3.json"
+DEFAULT_SCHEDULE = ROOT / "trial_order_v3.json"
+DEFAULT_OUTPUT = ROOT / "logs" / "protocol_executable_audit_v3.json"
+PROTOCOL = ROOT / "C0-A-prereg-v3.md"
 V1_MANIFEST = ROOT / "history" / "C0-A-prereg-v1_manifest.json"
+EXTRACT_METRICS = ROOT / "scripts" / "extract_metrics.py"
+SELECT_CANDIDATES = ROOT / "scripts" / "select_candidates.py"
+AUDIT_BASE_COMMIT = "e74ed9ad249f587d6c0ebf509680bf69fe98bfa1"
 
 
 def sha256(path: Path) -> str:
@@ -28,22 +32,32 @@ def require(condition: bool, message: str, checks: list[str]) -> None:
     checks.append(message)
 
 
+def baseline_text(path: Path) -> str:
+    repository = ROOT.parents[2]
+    relative = path.relative_to(repository)
+    return subprocess.check_output(
+        ["git", "show", f"{AUDIT_BASE_COMMIT}:{relative}"],
+        cwd=repository,
+        text=True,
+    )
+
+
 def audit(config: dict, schedule: dict) -> dict:
     checks: list[str] = []
     protocol_text = PROTOCOL.read_text(encoding="utf-8")
     require(
-        "Protocol version: `C0-A-prereg-v2`" in protocol_text,
-        "protocol version = C0-A-prereg-v2",
+        "Protocol version: `C0-A-prereg-v3`" in protocol_text,
+        "protocol version = C0-A-prereg-v3",
         checks,
     )
     require(
-        "No formal C0-A\ntrial had been executed under v1" in protocol_text,
-        "v2 records pre-outcome clarification",
+        "post-outcome metric-definition amendment" in protocol_text,
+        "v3 records post-outcome amendment",
         checks,
     )
     require(
         schedule["protocol_sha256"] == sha256(PROTOCOL),
-        "schedule protocol SHA-256 matches current v2",
+        "schedule protocol SHA-256 matches current v3",
         checks,
     )
     require(schedule["schedule_complete"] is True, "trial schedule complete = true", checks)
@@ -52,7 +66,7 @@ def audit(config: dict, schedule: dict) -> dict:
         "unresolved protocol ambiguity = 0",
         checks,
     )
-    require(schedule["ordering_seed"] == 41999, "ordering seed = 41999", checks)
+    require(schedule["ordering_seed"] == 43999, "ordering seed = 43999", checks)
     require(schedule["potential_trial_count"] == 2889, "potential trial count = 2889", checks)
     require(schedule["stage_counts"] == {
         "A1_SCREENING": 300,
@@ -61,7 +75,7 @@ def audit(config: dict, schedule: dict) -> dict:
         "A2_CONFIRMATION": 900,
         "A3_VALIDATION": 240,
         "SCALE_VALIDATION": 15,
-    }, "all stage schedule counts match v2", checks)
+    }, "all stage schedule counts match v3", checks)
 
     entries = schedule["entries"]
     required_fields = set(schedule["required_entry_fields"])
@@ -88,7 +102,7 @@ def audit(config: dict, schedule: dict) -> dict:
     require(len(a1_counts) == 25, "A1 candidate count = 25", checks)
     require(set(a1_counts.values()) == {12}, "A1 screening trials per candidate = 12", checks)
     require(
-        {entry["seed"] for entry in by_stage["A1_SCREENING"]} == {41001, 41002, 41003},
+        {entry["seed"] for entry in by_stage["A1_SCREENING"]} == {43001, 43002, 43003},
         "A1 screening seeds exact",
         checks,
     )
@@ -102,6 +116,12 @@ def audit(config: dict, schedule: dict) -> dict:
     require(
         a1c_counts == Counter({f"A1-RANK-{rank:02d}": 60 for rank in range(1, 6)}),
         "A1 confirmation rank slots cover 12 cases x 5 seeds",
+        checks,
+    )
+    require(
+        {entry["seed"] for entry in by_stage["A1_CONFIRMATION"]}
+        == {43001, 43002, 43003, 43004, 43005},
+        "confirmation seeds exact",
         checks,
     )
     a2_counts = Counter(entry["candidate_id"] for entry in by_stage["A2_SCREENING"])
@@ -167,6 +187,76 @@ def audit(config: dict, schedule: dict) -> dict:
     require(fixed["safety_factor"] == 1.0, "safety factor = 1.0", checks)
     require(fixed["avoidance_mode"] == "iapf_dual", "avoidance mode fixed", checks)
     require(fixed["iapf_escape_mode"] == "id_order", "escape mode fixed", checks)
+    require(config["zero_crossings_role"] == "diagnostic_only", "zero crossings diagnostic only", checks)
+    require(
+        "does not decide PASS/FAIL" in protocol_text
+        and "survival, ranking, tie-break" in protocol_text,
+        "zero crossings excluded from hard decisions and ranking",
+        checks,
+    )
+    extractor_text = EXTRACT_METRICS.read_text(encoding="utf-8")
+    hard_check_block = extractor_text.split("checks = (", 1)[1].split(
+        "hard_failures.extend", 1
+    )[0]
+    require(
+        '"ZERO_CROSSINGS"' not in hard_check_block,
+        "extractor has no ZERO_CROSSINGS hard criterion",
+        checks,
+    )
+    selector_text = SELECT_CANDIDATES.read_text(encoding="utf-8")
+    candidate_key_block = selector_text.split("def candidate_key", 1)[1].split(
+        "def evaluate_groups", 1
+    )[0]
+    require(
+        "zero_crossings" not in candidate_key_block,
+        "selector key excludes zero crossings",
+        checks,
+    )
+    expected_extractor = baseline_text(EXTRACT_METRICS).replace(
+        '        (max(result["post_trajectory_zero_crossings_per_axis"]) <= 6, "ZERO_CROSSINGS"),\n',
+        "",
+    ).replace(
+        '    result["hard_pass"] = not hard_failures\n',
+        '    result["hard_pass"] = not hard_failures\n'
+        '    result["raw_zero_crossings_diagnostic_only"] = True\n',
+    )
+    require(
+        extractor_text == expected_extractor,
+        "extractor differs from e74ed9ad only by the registered V3-B amendment",
+        checks,
+    )
+    expected_selector = baseline_text(SELECT_CANDIDATES).replace(
+        'DEFAULT_SCHEDULE = ROOT / "trial_order_v2.json"',
+        'DEFAULT_SCHEDULE = ROOT / "trial_order_v3.json"',
+    ).replace(
+        '    zero_crossings = max(\n'
+        '        max(item["post_trajectory_zero_crossings_per_axis"]) for item in uavs\n'
+        '    )\n',
+        "",
+    ).replace(
+        '        zero_crossings,\n',
+        "",
+    )
+    require(
+        selector_text == expected_selector,
+        "selector differs from e74ed9ad only by v3 schedule and crossing-key removal",
+        checks,
+    )
+
+    require(config["a1"]["baseline_omega_c"] == [1.5, 1.5, 1.75], "A1 omega_c baseline exact", checks)
+    require(config["a1"]["baseline_omega_o"] == [5.0, 5.0, 7.5], "A1 omega_o baseline exact", checks)
+    require(
+        config["a1"]["omega_c_multipliers"] == [0.67, 0.83, 1.0, 1.17, 1.33]
+        and config["a1"]["omega_o_multipliers"] == [0.67, 0.83, 1.0, 1.17, 1.33],
+        "A1 multiplier grid exact",
+        checks,
+    )
+    require(config["screening_seeds"] == [43001, 43002, 43003], "screening seed registry exact", checks)
+    require(
+        config["confirmation_seeds"] == [43001, 43002, 43003, 43004, 43005],
+        "confirmation/A3/scale seed registry exact",
+        checks,
+    )
 
     for name, expected in config["v1_archive_sha256"].items():
         require(
@@ -205,7 +295,7 @@ def main() -> int:
     result = audit(config, schedule)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print("protocol version = C0-A-prereg-v2")
+    print("protocol version = C0-A-prereg-v3")
     print("trial schedule complete = true")
     print("unresolved protocol ambiguity = 0")
     print(f"protocol executable audit = PASS ({result['checks_passed']} checks)")

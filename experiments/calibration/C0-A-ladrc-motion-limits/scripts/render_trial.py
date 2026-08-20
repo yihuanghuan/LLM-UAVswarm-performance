@@ -24,8 +24,8 @@ from location_allocate.lfs_types import ExecutableLFS
 from location_allocate.policy_adapter import load_runtime_policy
 
 
-DEFAULT_SCHEDULE = ROOT / "trial_order_v2.json"
-DEFAULT_CONFIG = ROOT / "configs" / "c0a_prereg_v2.json"
+DEFAULT_SCHEDULE = ROOT / "trial_order_v3.json"
+DEFAULT_CONFIG = ROOT / "configs" / "c0a_prereg_v3.json"
 BASE_POLICY = REPOSITORY / "lfs_policy" / "config" / "lfs_policy.paper_current.yaml"
 BASE_CONTROLLER = (
     REPOSITORY / "minisnap_LADRC" / "ladrc_controller" / "config" / "ladrc_params.yaml"
@@ -189,7 +189,7 @@ def render(entry, state, registry, output):
 
     spec = {
         "calibration_id": "C0-A",
-        "protocol_version": "C0-A-prereg-v2",
+        "protocol_version": registry["protocol_version"],
         "dataset_class": "calibration",
         "entry": entry,
         "resolved_candidate_parameters": parameters,
@@ -218,6 +218,7 @@ def render(entry, state, registry, output):
             "px4": "seed_not_supported",
             "gazebo": "seed_not_supported",
         },
+        "zero_crossings_role": registry["zero_crossings_role"],
     }
     return spec
 

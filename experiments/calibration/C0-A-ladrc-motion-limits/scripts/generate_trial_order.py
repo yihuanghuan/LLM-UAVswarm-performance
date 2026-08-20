@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the complete deterministic C0-A-prereg-v2 conditional schedule."""
+"""Generate the complete deterministic C0-A-prereg-v3 conditional schedule."""
 
 from __future__ import annotations
 
@@ -13,9 +13,9 @@ import re
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CONFIG = ROOT / "configs" / "c0a_prereg_v2.json"
-DEFAULT_OUTPUT = ROOT / "trial_order_v2.json"
-PROTOCOL = ROOT / "CALIBRATION_PROTOCOL.md"
+DEFAULT_CONFIG = ROOT / "configs" / "c0a_prereg_v3.json"
+DEFAULT_OUTPUT = ROOT / "trial_order_v3.json"
+PROTOCOL = ROOT / "C0-A-prereg-v3.md"
 ALL_FIELDS = (
     "stage",
     "candidate_id",
@@ -59,7 +59,7 @@ def make_entry(
     scenario_id, signed_displacement_id = split_case(case_id)
     duration_code = number_code(duration_multiplier)
     trial_id = "-".join((
-        "C0A-v2",
+        "C0A-v3",
         slug(stage),
         slug(candidate_id),
         slug(scenario_id),
@@ -313,7 +313,7 @@ def generate(config: dict) -> dict:
         "generator_sha256": sha256(Path(__file__)),
         "ordering_seed": config["ordering_seed"],
         "randomization": (
-            "one Python random.Random(41999) stream; stage blocks shuffled "
+            f"one Python random.Random({config['ordering_seed']}) stream; stage blocks shuffled "
             "in protocol order; scale seeds shuffled within fixed M-1/M-4/M-8 order"
         ),
         "schedule_complete": True,

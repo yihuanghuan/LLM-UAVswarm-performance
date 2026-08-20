@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Resume the complete staged C0-A-prereg-v2 campaign without manual choices."""
+"""Resume the complete staged C0-A-prereg-v3 campaign without manual choices."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from run_trial import REPOSITORY, VENV_PYTHON, ros_environment
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEDULE_PATH = ROOT / "trial_order_v2.json"
+SCHEDULE_PATH = ROOT / "trial_order_v3.json"
 RUN_TRIAL = ROOT / "scripts" / "run_trial.py"
 EXTRACT = ROOT / "scripts" / "extract_metrics.py"
 SELECT = ROOT / "scripts" / "select_candidates.py"
@@ -51,14 +51,14 @@ def initialize(artifact_root, state_path):
         return json.loads(state_path.read_text(encoding="utf-8"))
     state = {
         "calibration_id": "C0-A",
-        "protocol_version": "C0-A-prereg-v2",
+        "protocol_version": "C0-A-prereg-v3",
         "dataset_class": "calibration",
         "campaign_status": "NOT_STARTED",
         "formal_trials_started": False,
         "formal_trials_executed": 0,
         "source_commit": git_value("rev-parse", "HEAD"),
         "branch": git_value("branch", "--show-current"),
-        "protocol_sha256": sha256(ROOT / "CALIBRATION_PROTOCOL.md"),
+        "protocol_sha256": sha256(ROOT / "C0-A-prereg-v3.md"),
         "schedule_sha256": sha256(SCHEDULE_PATH),
         "artifact_root": str(artifact_root.resolve()),
         "initialized_utc": utc_now(),
@@ -105,7 +105,7 @@ def preserve_interrupted_trial(trial_dir, entry, state):
     spec = json.loads((trial_dir / "trial_spec.json").read_text(encoding="utf-8"))
     manifest = {
         "calibration_id": "C0-A",
-        "protocol_version": "C0-A-prereg-v2",
+        "protocol_version": "C0-A-prereg-v3",
         "dataset_class": "calibration",
         "trial_id": entry["trial_id"],
         "stage": entry["stage"],
@@ -162,9 +162,9 @@ def main():
     if args.initialize_only:
         print(json.dumps(state, indent=2, sort_keys=True))
         return 0
-    preflight_path = artifact_root / "logs" / "preflight_v2.json"
+    preflight_path = artifact_root / "logs" / "preflight_v3.json"
     if not preflight_path.is_file():
-        raise SystemExit("formal execution refused: preflight_v2.json is missing")
+        raise SystemExit("formal execution refused: preflight_v3.json is missing")
     preflight = json.loads(preflight_path.read_text(encoding="utf-8"))
     if preflight.get("status") != "PASS" or preflight.get("source_commit") != git_value("rev-parse", "HEAD"):
         raise SystemExit("formal execution refused: preflight is stale or failed")
