@@ -28,9 +28,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--artifact-root", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, default=ROOT)
+    parser.add_argument("--artifact-commit")
     args = parser.parse_args()
     artifact = args.artifact_root.resolve()
     output_dir = args.output_dir.resolve()
+    artifact_commit = None
+    if args.artifact_commit:
+        artifact_commit = subprocess.check_output(
+            ["git", "rev-parse", "--verify", f"{args.artifact_commit}^{{commit}}"],
+            cwd=REPOSITORY,
+            text=True,
+        ).strip()
     state = json.loads((artifact / "campaign_state.json").read_text(encoding="utf-8"))
     aggregate = json.loads((artifact / "metrics" / "aggregate_v2.json").read_text(encoding="utf-8"))
     schedule = json.loads((ROOT / "trial_order_v2.json").read_text(encoding="utf-8"))
@@ -177,7 +185,7 @@ Trial termination reasons: `{json.dumps(aggregate['termination_counts'], sort_ke
             "branch": "cal/C0-A-ladrc-motion-limits",
             "source_commit": state["source_commit"],
             "source_commits": state.get("source_commits", [state["source_commit"]]),
-            "artifact_commit": None,
+            "artifact_commit": artifact_commit,
             "base_ref": "origin/paper/calibration",
             "base_commit": subprocess.check_output(
                 ["git", "rev-parse", "origin/paper/calibration"], cwd=REPOSITORY, text=True
