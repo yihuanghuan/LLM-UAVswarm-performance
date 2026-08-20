@@ -154,6 +154,8 @@ def main():
     parser.add_argument("--trial-id", required=True)
     parser.add_argument("--state", type=Path, required=True)
     parser.add_argument("--artifact-root", type=Path, required=True)
+    parser.add_argument("--schedule", type=Path, default=ROOT / "trial_order_v3.json")
+    parser.add_argument("--config", type=Path, default=ROOT / "configs" / "c0a_prereg_v3.json")
     args = parser.parse_args()
     trial_dir = args.artifact_root.resolve() / "raw" / args.trial_id
     ros_env = ros_environment()
@@ -163,6 +165,8 @@ def main():
             "--trial-id", args.trial_id,
             "--state", str(args.state.resolve()),
             "--output", str(trial_dir),
+            "--schedule", str(args.schedule.resolve()),
+            "--config", str(args.config.resolve()),
         ],
         cwd=REPOSITORY,
         env=ros_env,
