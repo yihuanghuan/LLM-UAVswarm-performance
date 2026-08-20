@@ -10,6 +10,9 @@ from pathlib import Path
 from statistics import median
 
 
+PROTOCOL_ROOT = Path(__file__).resolve().parents[1]
+
+
 def trial_worst(metrics):
     uavs = metrics.get("per_uav", [])
     if not uavs:
@@ -46,12 +49,19 @@ def main():
     args = parser.parse_args()
     root = args.artifact_root.resolve()
     state = json.loads((root / "campaign_state.json").read_text(encoding="utf-8"))
+    schedule = json.loads(
+        (PROTOCOL_ROOT / "trial_order_v2.json").read_text(encoding="utf-8")
+    )
+    schedule_indices = {
+        entry["trial_id"]: entry["schedule_index"] for entry in schedule["entries"]
+    }
     trials = []
     for path in sorted((root / "raw").glob("*/metrics.json")):
         metrics = json.loads(path.read_text(encoding="utf-8"))
         manifest = json.loads((path.parent / "manifest.json").read_text(encoding="utf-8"))
         trials.append({
             "trial_id": metrics["trial_id"],
+            "schedule_index": schedule_indices[metrics["trial_id"]],
             "stage": metrics["stage"],
             "candidate_id": metrics["candidate_id"],
             "scenario_id": metrics["scenario_id"],
@@ -61,6 +71,7 @@ def main():
             "termination_reason": manifest["termination_reason"],
             "worst": trial_worst(metrics),
         })
+    trials.sort(key=lambda item: item["schedule_index"])
     valid = [trial for trial in trials if trial["worst"] is not None]
     numeric_fields = (
         "tracking_rmse_m", "maximum_tracking_error_m", "final_error_m",

@@ -1,0 +1,22 @@
+[
+  {
+    "command": [
+      "/home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python",
+      "/home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments/calibration/scripts/check_algorithm_freeze.py"
+    ],
+    "returncode": 0,
+    "output": "algorithm freeze check = PASS (tag=paper-algorithm-freeze-v1, immutable_files=25, parameter_files_delegated=2)\n"
+  },
+  {
+    "command": [
+      "/home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python",
+      "/home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments/calibration/scripts/check_parameter_ownership.py",
+      "--calibration",
+      "C0-A",
+      "--baseline-ref",
+      "origin/paper/calibration"
+    ],
+    "returncode": 0,
+    "output": "ownership check C0-A = PASS (baseline=origin/paper/calibration, allowed_parameter_changes=0)\n"
+  }
+]

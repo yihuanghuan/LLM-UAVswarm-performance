@@ -1,0 +1,69 @@
+C0-A-prereg-v2 preflight
+source_commit: da47b3a08a6c271b2053c41dfff8c744370a0637
+status: PASS
+protocol version = C0-A-prereg-v2
+trial schedule complete = true
+unresolved protocol ambiguity = 0
+
+$ /home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python experiments/calibration/scripts/check_algorithm_freeze.py
+algorithm freeze check = PASS (tag=paper-algorithm-freeze-v1, immutable_files=25, parameter_files_delegated=2)
+exit_code: 0
+
+$ /home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python experiments/calibration/scripts/check_parameter_ownership.py --calibration C0-A --baseline-ref origin/paper/calibration
+ownership check C0-A = PASS (baseline=origin/paper/calibration, allowed_parameter_changes=0)
+exit_code: 0
+
+$ /home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python /home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments/calibration/C0-A-ladrc-motion-limits/scripts/generate_trial_order.py --check
+trial order deterministic check = PASS (/home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments/calibration/C0-A-ladrc-motion-limits/trial_order_v2.json)
+exit_code: 0
+
+$ /home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python /home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments/calibration/C0-A-ladrc-motion-limits/scripts/audit_protocol_executable.py
+protocol version = C0-A-prereg-v2
+trial schedule complete = true
+unresolved protocol ambiguity = 0
+protocol executable audit = PASS (44 checks)
+exit_code: 0
+
+$ /home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python -m unittest /home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments/calibration/C0-A-ladrc-motion-limits/scripts/test_infrastructure.py
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.158s
+
+OK
+exit_code: 0
+
+$ ros2 launch /home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments/calibration/C0-A-ladrc-motion-limits/scripts/c0a_controller_launch.py --show-args
+Arguments (pass arguments as '<name>:=<value>'):
+
+    'uav_ids':
+        no description given
+        (default: '[1]')
+
+    'layout':
+        no description given
+        (default: 'single_origin')
+
+    'lfs_policy_file':
+        no description given
+        (default: '/home/yihuang/learning/LLM_swarm_ws/install/lfs_policy/share/lfs_policy/config/lfs_policy.paper_current.yaml')
+
+    'params_file':
+        no description given
+        (default: '/home/yihuang/learning/LLM_swarm_ws/install/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml')
+exit_code: 0
+
+$ git diff --quiet
+
+exit_code: 0
+
+$ git diff --cached --quiet
+
+exit_code: 0
+
+$ git merge-base --is-ancestor origin/paper/calibration HEAD
+
+exit_code: 0
+
+$ branch identity
+cal/C0-A-ladrc-motion-limits
+exit_code: 0

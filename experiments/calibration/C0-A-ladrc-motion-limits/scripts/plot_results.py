@@ -35,7 +35,7 @@ def main():
         if threshold is not None:
             axis.axhline(threshold, color="black", linestyle="--", linewidth=1)
         axis.set_title(label)
-        axis.set_xlabel("within-stage execution index")
+        axis.set_xlabel("within-stage preregistered execution index")
         axis.grid(alpha=0.25)
     handles, labels = axes[0, 0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="outside upper center", ncol=3)

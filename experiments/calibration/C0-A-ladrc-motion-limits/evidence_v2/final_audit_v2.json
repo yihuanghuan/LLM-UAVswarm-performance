@@ -1,0 +1,217 @@
+{
+  "artifact_root": "/home/yihuang/learning/LLM_swarm_ws/c0a_artifacts/C0-A-prereg-v2_6dbbb924",
+  "audit": "C0-A-prereg-v2 terminal campaign audit",
+  "checks": [
+    {
+      "evidence": "C0-A-prereg-v2",
+      "name": "protocol_version",
+      "pass": true
+    },
+    {
+      "evidence": true,
+      "name": "schedule_complete",
+      "pass": true
+    },
+    {
+      "evidence": 0,
+      "name": "unresolved_protocol_ambiguity",
+      "pass": true
+    },
+    {
+      "evidence": 41999,
+      "name": "ordering_seed",
+      "pass": true
+    },
+    {
+      "evidence": 300,
+      "name": "a1_schedule_count",
+      "pass": true
+    },
+    {
+      "evidence": 300,
+      "name": "metrics_count",
+      "pass": true
+    },
+    {
+      "evidence": 300,
+      "name": "manifests_count",
+      "pass": true
+    },
+    {
+      "evidence": 300,
+      "name": "unique_metric_ids",
+      "pass": true
+    },
+    {
+      "evidence": 300,
+      "name": "unique_manifest_ids",
+      "pass": true
+    },
+    {
+      "evidence": {
+        "missing": [],
+        "unexpected": []
+      },
+      "name": "executed_ids_equal_a1_schedule",
+      "pass": true
+    },
+    {
+      "evidence": 25,
+      "name": "candidate_count",
+      "pass": true
+    },
+    {
+      "evidence": {
+        "A1-OC067-OO067": 12,
+        "A1-OC067-OO083": 12,
+        "A1-OC067-OO100": 12,
+        "A1-OC067-OO117": 12,
+        "A1-OC067-OO133": 12,
+        "A1-OC083-OO067": 12,
+        "A1-OC083-OO083": 12,
+        "A1-OC083-OO100": 12,
+        "A1-OC083-OO117": 12,
+        "A1-OC083-OO133": 12,
+        "A1-OC100-OO067": 12,
+        "A1-OC100-OO083": 12,
+        "A1-OC100-OO100": 12,
+        "A1-OC100-OO117": 12,
+        "A1-OC100-OO133": 12,
+        "A1-OC117-OO067": 12,
+        "A1-OC117-OO083": 12,
+        "A1-OC117-OO100": 12,
+        "A1-OC117-OO117": 12,
+        "A1-OC117-OO133": 12,
+        "A1-OC133-OO067": 12,
+        "A1-OC133-OO083": 12,
+        "A1-OC133-OO100": 12,
+        "A1-OC133-OO117": 12,
+        "A1-OC133-OO133": 12
+      },
+      "name": "twelve_trials_per_candidate",
+      "pass": true
+    },
+    {
+      "evidence": {
+        "eliminated": 25
+      },
+      "name": "all_candidates_eliminated",
+      "pass": true
+    },
+    {
+      "evidence": 25,
+      "name": "ranking_complete",
+      "pass": true
+    },
+    {
+      "evidence": 0,
+      "name": "ranking_survivors_zero",
+      "pass": true
+    },
+    {
+      "evidence": "NO_ACCEPTABLE_CONFIGURATION",
+      "name": "terminal_status",
+      "pass": true
+    },
+    {
+      "evidence": 300,
+      "name": "formal_trial_count",
+      "pass": true
+    },
+    {
+      "evidence": [
+        "A1_SCREENING"
+      ],
+      "name": "only_a1_completed",
+      "pass": true
+    },
+    {
+      "evidence": {
+        "a1_winner": null,
+        "a2_winner": null,
+        "a3_winner": null
+      },
+      "name": "no_winners",
+      "pass": true
+    },
+    {
+      "evidence": [
+        "A1_SCREENING"
+      ],
+      "name": "later_stages_not_executed",
+      "pass": true
+    },
+    {
+      "evidence": 300,
+      "name": "aggregate_count",
+      "pass": true
+    },
+    {
+      "evidence": "NO_ACCEPTABLE_CONFIGURATION",
+      "name": "aggregate_status",
+      "pass": true
+    },
+    {
+      "evidence": {
+        "CAMPAIGN_INTERRUPTED": 2,
+        "COMMAND_JERK_P99_5": 31,
+        "GROWING_OSCILLATION": 1,
+        "METRIC_EXTRACTION_FAILED": 3,
+        "MISSION_FAILED": 2,
+        "PROCESS_CRASH": 2,
+        "ZERO_CROSSINGS": 265
+      },
+      "name": "aggregate_failure_counts",
+      "pass": true
+    },
+    {
+      "evidence": {
+        "CAMPAIGN_INTERRUPTED": 2,
+        "COMMAND_REJECTED": 1,
+        "INFRASTRUCTURE_ERROR": 2,
+        "MANDATORY_TOPIC_MISSING": 2,
+        "SUCCESS": 293
+      },
+      "name": "aggregate_termination_counts",
+      "pass": true
+    },
+    {
+      "evidence": [
+        "C0-A-prereg-v2_DEV-001.md",
+        "C0-A-prereg-v2_DEV-002.md"
+      ],
+      "name": "recorded_deviations",
+      "pass": true
+    },
+    {
+      "evidence": {
+        "C0-A-prereg-v1_PROTOCOL.md": "9b71550f76e2bb536cf0451ca0ea65f4665d7419b84377867868d72c972670bd",
+        "C0-A-prereg-v1_RESULT.md": "c5564de0ac893787527079c165d55fbe1a8f4b53755f26beb7aabac29cb778e9",
+        "C0-A-prereg-v1_manifest.json": "2969a9e4f71ac42edc9a488a08ae6bc1c4e55221e1c00a503b1da228a3091a5d",
+        "C0-A-prereg-v1_preflight_checks.txt": "5e350482f1d7681bd91d1d4c68ab3ebe402f805cc41dc6c23c11b8abff3b8280",
+        "C0-A-prereg-v1_trial_order.json": "1ae3a73c16a41b1c0fa4fd89eb18d2c00fdf3a6554e3fbf3d59f08be05e09981"
+      },
+      "name": "v1_history_byte_preserved",
+      "pass": true
+    }
+  ],
+  "failure_counts": {
+    "CAMPAIGN_INTERRUPTED": 2,
+    "COMMAND_JERK_P99_5": 31,
+    "GROWING_OSCILLATION": 1,
+    "METRIC_EXTRACTION_FAILED": 3,
+    "MISSION_FAILED": 2,
+    "PROCESS_CRASH": 2,
+    "ZERO_CROSSINGS": 265
+  },
+  "hard_fail_trials": 274,
+  "hard_pass_trials": 26,
+  "overall": "PASS",
+  "termination_counts": {
+    "CAMPAIGN_INTERRUPTED": 2,
+    "COMMAND_REJECTED": 1,
+    "INFRASTRUCTURE_ERROR": 2,
+    "MANDATORY_TOPIC_MISSING": 2,
+    "SUCCESS": 293
+  }
+}

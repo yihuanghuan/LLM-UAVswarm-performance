@@ -1,0 +1,128 @@
+{
+  "branch": "cal/C0-A-ladrc-motion-limits",
+  "calibration_id": "C0-A",
+  "checks": [
+    {
+      "command": [
+        "/home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python",
+        "experiments/calibration/scripts/check_algorithm_freeze.py"
+      ],
+      "output": "algorithm freeze check = PASS (tag=paper-algorithm-freeze-v1, immutable_files=25, parameter_files_delegated=2)\n",
+      "pass": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python",
+        "experiments/calibration/scripts/check_parameter_ownership.py",
+        "--calibration",
+        "C0-A",
+        "--baseline-ref",
+        "origin/paper/calibration"
+      ],
+      "output": "ownership check C0-A = PASS (baseline=origin/paper/calibration, allowed_parameter_changes=0)\n",
+      "pass": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python",
+        "/home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments/calibration/C0-A-ladrc-motion-limits/scripts/generate_trial_order.py",
+        "--check"
+      ],
+      "output": "trial order deterministic check = PASS (/home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments/calibration/C0-A-ladrc-motion-limits/trial_order_v2.json)\n",
+      "pass": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python",
+        "/home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments/calibration/C0-A-ladrc-motion-limits/scripts/audit_protocol_executable.py"
+      ],
+      "output": "protocol version = C0-A-prereg-v2\ntrial schedule complete = true\nunresolved protocol ambiguity = 0\nprotocol executable audit = PASS (44 checks)\n",
+      "pass": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python",
+        "-m",
+        "unittest",
+        "/home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments/calibration/C0-A-ladrc-motion-limits/scripts/test_infrastructure.py"
+      ],
+      "output": "......\n----------------------------------------------------------------------\nRan 6 tests in 0.158s\n\nOK\n",
+      "pass": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "ros2",
+        "launch",
+        "/home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments/calibration/C0-A-ladrc-motion-limits/scripts/c0a_controller_launch.py",
+        "--show-args"
+      ],
+      "output": "Arguments (pass arguments as '<name>:=<value>'):\n\n    'uav_ids':\n        no description given\n        (default: '[1]')\n\n    'layout':\n        no description given\n        (default: 'single_origin')\n\n    'lfs_policy_file':\n        no description given\n        (default: '/home/yihuang/learning/LLM_swarm_ws/install/lfs_policy/share/lfs_policy/config/lfs_policy.paper_current.yaml')\n\n    'params_file':\n        no description given\n        (default: '/home/yihuang/learning/LLM_swarm_ws/install/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml')\n",
+      "pass": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--quiet"
+      ],
+      "output": "",
+      "pass": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--quiet"
+      ],
+      "output": "",
+      "pass": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "origin/paper/calibration",
+        "HEAD"
+      ],
+      "output": "",
+      "pass": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "branch identity"
+      ],
+      "output": "cal/C0-A-ladrc-motion-limits",
+      "pass": true,
+      "returncode": 0
+    }
+  ],
+  "environment": {
+    "gazebo_version": "Gazebo multi-robot simulator, version 11.10.2",
+    "gazebo_version_probe_returncode": 255,
+    "host": "JIAOLONG-Series",
+    "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.35",
+    "px4_commit": "30e763b6780061d70a14894e3e8b06e6a656f9b8",
+    "px4_describe": "v1.15.0-dirty",
+    "ros_distro": "humble"
+  },
+  "formal_trials_executed": 5,
+  "formal_trials_started": true,
+  "protocol_version": "C0-A-prereg-v2",
+  "protocol_version_check": "C0-A-prereg-v2",
+  "source_commit": "da47b3a08a6c271b2053c41dfff8c744370a0637",
+  "status": "PASS",
+  "timestamp_utc": "2026-08-19T08:18:10.386756+00:00",
+  "trial_schedule_complete": true,
+  "unresolved_protocol_ambiguity": 0
+}

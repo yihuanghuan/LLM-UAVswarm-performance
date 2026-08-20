@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import subprocess
 
 
@@ -34,8 +35,40 @@ def main():
     aggregate = json.loads((artifact / "metrics" / "aggregate_v2.json").read_text(encoding="utf-8"))
     schedule = json.loads((ROOT / "trial_order_v2.json").read_text(encoding="utf-8"))
     distributions = aggregate["distributions"]
-    scale = state.get("scale_validation", {}).get("scenarios", {})
+    scale = (state.get("scale_validation") or {}).get("scenarios", {})
     deviations = sorted(path.name for path in (ROOT / "deviations").glob("*.md"))
+    artifact_index = artifact / "artifact_index_v2.json"
+    final_audit = artifact / "logs" / "final_audit_v2.json"
+    evidence_dir = output_dir / "evidence_v2"
+    evidence_dir.mkdir(parents=True, exist_ok=True)
+    evidence_sources = {
+        "a1_screening_ranking.json": artifact / "metrics" / "a1_screening_ranking.json",
+        "aggregate_v2.json": artifact / "metrics" / "aggregate_v2.json",
+        "artifact_index_v2.json": artifact_index,
+        "campaign_state.json": artifact / "campaign_state.json",
+        "campaign_trials.jsonl": artifact / "logs" / "campaign_trials.jsonl",
+        "c0a_v2_metric_distributions.png": artifact / "figures" / "c0a_v2_metric_distributions.png",
+        "final_audit_v2.json": final_audit,
+        "post_a1_screening_freeze_gates.json": artifact / "logs" / "post_a1_screening_freeze_gates.json",
+        "preflight_v2.json": artifact / "logs" / "preflight_v2.json",
+        "preflight_v2.txt": artifact / "logs" / "preflight_v2.txt",
+    }
+    for name, source in evidence_sources.items():
+        shutil.copyfile(source, evidence_dir / name)
+    screening_order = [
+        entry for entry in schedule["entries"] if entry["stage"] == "A1_SCREENING"
+    ]
+    trial_records_path = evidence_dir / "trial_records_v2.jsonl"
+    with trial_records_path.open("w", encoding="utf-8") as stream:
+        for entry in screening_order:
+            raw = artifact / "raw" / entry["trial_id"]
+            record = {
+                "manifest": json.loads((raw / "manifest.json").read_text(encoding="utf-8")),
+                "metrics": json.loads((raw / "metrics.json").read_text(encoding="utf-8")),
+                "schedule_index": entry["schedule_index"],
+                "trial_spec": json.loads((raw / "trial_spec.json").read_text(encoding="utf-8")),
+            }
+            stream.write(json.dumps(record, sort_keys=True) + "\n")
     conclusion = {
         "PASS": "C0-A = PASS",
         "NO_ACCEPTABLE_CONFIGURATION": "C0-A = NO_ACCEPTABLE_CONFIGURATION",
@@ -54,17 +87,19 @@ def main():
 - Algorithm freeze: `paper-algorithm-freeze-v1`
 - Dataset class: `calibration`
 - Formal trials executed: `{state['formal_trials_executed']}`
+- Trial hard passes/failures: `{aggregate['stage_counts'].get('A1_SCREENING', {}).get('passed', 0)}` / `{aggregate['stage_counts'].get('A1_SCREENING', {}).get('failed', 0)}`
 
 ## Stage A1
 
 - Screening trials: `{aggregate['stage_counts'].get('A1_SCREENING', {}).get('executed', 0)}`
-- Survivors: `{len(state.get('a1_survivors', []))}`
+- Survivors: `{len(state.get('a1_survivors') or [])}`
 - Winner ID: `{state.get('a1_winner_id', 'NONE')}`
 - Winner omega_c: `{fmt(state.get('a1_winner', {}).get('omega_c'))}`
 - Winner omega_o: `{fmt(state.get('a1_winner', {}).get('omega_o'))}`
 
 ## Stage A2
 
+- Status: `NOT ACTIVATED (A1 survivor count was zero)`
 - Winner ID: `{state.get('a2_winner_id', 'NONE')}`
 - v_limit: `{fmt(state.get('a2_winner', {}).get('v_limit'))}`
 - a_limit: `{fmt(state.get('a2_winner', {}).get('a_limit'))}`
@@ -73,16 +108,24 @@ def main():
 
 ## Stage A3
 
+- Status: `NOT ACTIVATED (A1 survivor count was zero)`
 - Winner ID: `{state.get('a3_winner_id', 'NONE')}`
-- Selected clamps: `{fmt(state.get('a3_winner'))}`
+- Omega clamps: `{fmt((state.get('a3_winner') or {}).get('omega_envelope'))}`
+- Motion clamps: `{fmt((state.get('a3_winner') or {}).get('motion_clamp_multiplier'))}`
+- Physical caps: `{fmt((state.get('a3_winner') or {}).get('physical_caps'))}`
 
 ## Scale validation
 
+- Status: `NOT ACTIVATED (A1 survivor count was zero)`
 - 1 UAV: `{scale.get('C0A-M-1', {}).get('passed', 0)}/{scale.get('C0A-M-1', {}).get('total', 0)}`
 - 4 UAV: `{scale.get('C0A-M-4', {}).get('passed', 0)}/{scale.get('C0A-M-4', {}).get('total', 0)}`
 - 8 UAV: `{scale.get('C0A-M-8', {}).get('passed', 0)}/{scale.get('C0A-M-8', {}).get('total', 0)}`
 
 ## Worst-case evidence
+
+The values below are maxima across the `{distributions['tracking_rmse_m']['count']}` trials with extractable numeric
+metrics. Failed trials without extractable metrics remain in the formal
+denominator and failure counts.
 
 - Tracking RMSE: `{fmt(distributions['tracking_rmse_m']['worst'])}`
 - Maximum tracking error: `{fmt(distributions['maximum_tracking_error_m']['worst'])}`
@@ -90,11 +133,17 @@ def main():
 - Saturation ratio: `{fmt(distributions['saturation_ratio']['worst'])}`
 - Roll/pitch: `{fmt(distributions['roll_peak_deg']['worst'])}` / `{fmt(distributions['pitch_peak_deg']['worst'])}` deg
 - Post-trajectory RMS: `{fmt(distributions['post_rms_m']['worst'])}`
+- Post-trajectory peak-to-peak: `{fmt(distributions['peak_to_peak_m']['worst'])}`
+- Last/first RMS ratio: `{fmt(distributions['last_first_rms_ratio']['worst'])}`
+- Zero crossings on worst axis: `{fmt(distributions['zero_crossings']['worst'])}`
+- Command jerk p99.5: `{fmt(distributions['command_jerk_p99_5_mps3']['worst'])}`
 - Minimum separation: `{fmt(distributions['minimum_separation_m']['worst'])}`
 
 ## Failures
 
 `{json.dumps(aggregate['failure_counts'], sort_keys=True)}`
+
+Trial termination reasons: `{json.dumps(aggregate['termination_counts'], sort_keys=True)}`
 
 ## Deviations from C0-A-prereg-v2
 
@@ -103,6 +152,11 @@ def main():
 ## Conclusion
 
 `{conclusion}`
+
+- Frozen parameter commit: `NONE`
+- Checkpoint tag: `NONE`
+- Policy SHA-256: `N/A (no winner and no frozen policy)`
+- READY_FOR_C0_B: `NO`
 """
     result_path = output_dir / "CALIBRATION_RESULT_v2.md"
     result_path.write_text(result, encoding="utf-8")
@@ -146,6 +200,12 @@ def main():
             "path": str(artifact),
             "aggregate_sha256": sha256(artifact / "metrics" / "aggregate_v2.json"),
             "campaign_state_sha256": sha256(artifact / "campaign_state.json"),
+            "artifact_index_sha256": sha256(artifact_index),
+            "final_audit_sha256": sha256(final_audit),
+            "repository_evidence": {
+                name: sha256(evidence_dir / name) for name in sorted(evidence_sources)
+            },
+            "trial_records_v2_sha256": sha256(trial_records_path),
         },
         "preflight": preflight,
         "environment": preflight["environment"],
