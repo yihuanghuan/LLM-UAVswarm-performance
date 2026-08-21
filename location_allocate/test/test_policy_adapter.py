@@ -21,7 +21,13 @@ PAPER_CURRENT = (
 def test_paper_policy_constructs_all_candidate_runtime_dependencies():
     config, policy = load_runtime_policy(PAPER_CURRENT)
 
-    assert config.configuration_id == "paper-current-v7"
+    assert config.configuration_id == "paper-current-v8-c0-b-frozen"
+    assert config.status == "paper_frozen"
+    assert config.state.state_timeout == pytest.approx(0.022080)
+    assert config.state.snapshot_skew == pytest.approx(0.022043)
+    assert config.state.fresh_state_wait_timeout == pytest.approx(0.010000)
+    assert config.parameter_status["c0_a_motion_ladrc"] == "frozen"
+    assert config.parameter_status["c0_b_state_freshness"] == "frozen"
     assert len(config.policy_hash) == 64
     assert policy.scale.nominal_spacing == 2.0
     assert policy.timing.motion_limits.jerk == 10.0

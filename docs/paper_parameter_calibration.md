@@ -5,7 +5,7 @@
 | Parameter | Current value | Current provenance | Status | Required calibration | Affects experiments |
 |---|---:|---|---|---|---|
 | workspace AABB | `[-15,-10,0.5]`–`[15,35,15]` m | current simulation workspace | provisional | Measure usable Gazebo and motion-capture regions | feasibility/rejection rate |
-| state timeout/skew/wait | `0.5/0.15/2.0 s` | Candidate integration baseline | provisional | Measure message age and inter-UAV skew distributions | late-resolution availability |
+| state timeout/skew/wait | `0.022080/0.022043/0.010000 s` | C0-B state-freshness freeze (P99 + 10 ms) | frozen | C0-B combined runtime freshness measurements | late-resolution availability |
 | v/a/j limits | `5/5/10` | current controller velocity/acceleration values; jerk newly architectural | provisional | PX4 limits plus single-UAV trajectory sweep | timing and trajectory metrics |
 | d_hard | `1.0 m` | `iapf_violation_distance` | provisional | vehicle geometry + localization/tracking error + reserve | all safety metrics |
 | nominal spacing | `2.0 m` | current formation policy baseline | provisional | formation tracking and downwash study | formation scale |

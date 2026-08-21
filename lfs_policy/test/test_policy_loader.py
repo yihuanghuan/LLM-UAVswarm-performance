@@ -34,11 +34,14 @@ def test_template_is_not_a_production_policy():
         load_policy(TEMPLATE)
 
 
-def test_paper_current_has_hash_status_and_explicit_clamp_warning():
+def test_frozen_paper_policy_has_hash_status_and_explicit_clamp_warning():
     policy = load_paper_policy(PAPER)
 
-    assert policy.configuration_id == "paper-current-v7"
-    assert policy.status == "paper_current"
+    assert policy.configuration_id == "paper-current-v8-c0-b-frozen"
+    assert policy.status == "paper_frozen"
+    assert policy.state.state_timeout == pytest.approx(0.02208)
+    assert policy.state.snapshot_skew == pytest.approx(0.022043)
+    assert policy.state.fresh_state_wait_timeout == pytest.approx(0.010)
     assert len(policy.policy_hash) == 64
     assert policy.parameter_status["architecture_rules"] == "paper-frozen"
     assert "safety-clamped" in policy.warnings[0]

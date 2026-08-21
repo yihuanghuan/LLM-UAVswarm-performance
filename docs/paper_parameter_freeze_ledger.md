@@ -23,7 +23,7 @@ write owner. A later C0 must not modify a row already marked `FROZEN`.
 | Omega hard-clamp envelope | `omega_c=[1.125,1.125,1.3125]..[1.875,1.875,2.1875]`; `omega_o=[3.75,3.75,5.625]..[6.25,6.25,9.375]` | `PROVISIONAL` | C0-A | — | — | Paper policy `controller_hard_clamps.omega_*` | Current 0.75x–1.25x development envelope; abnormal-profile guard only. |
 | Motion hard clamps | `velocity/acceleration/jerk_max=5/5/10` | `PROVISIONAL` | C0-A | — | — | Paper policy `controller_hard_clamps.*_max` | Must cover, and normally equal, selected shared motion limits. |
 | Physical controller caps | `max_velocity=5`; `max_acceleration_x/y/z=5/5/8` | `PROVISIONAL` | C0-A | — | — | Controller YAML | Accepted Candidate profiles currently reset LADRC output limits to the scalar profile acceleration limit. |
-| Candidate state freshness | timeout/skew/wait `0.5/0.15/2.0 s` | `PROVISIONAL` | C0-B | — | — | Paper policy `state_snapshot` | State age, inter-UAV skew and wait budget. |
+| Candidate state freshness | timeout/skew/wait `0.022080/0.022043/0.010000 s` | `FROZEN` | C0-B | `e7e67bea4a4a07ac5d131376863dc80c1418d1df` | C0-B final audit | Paper policy `state_snapshot` | State age, inter-UAV skew and wait budget. |
 | Controller neighbor freshness | `0.20 s` | `PROVISIONAL` | C0-B | — | — | Controller YAML `neighbor_timeout` | Availability only; IAPF equations remain C0-E-invariant. |
 | Workspace AABB | lower `[-15,-10,0.5] m`; upper `[15,35,15] m` | `PROVISIONAL` | C0-C | — | — | Paper policy `geometry.workspace_bounds` | Must reflect the usable calibration environment. |
 | Nominal formation spacing | `2.0 m` | `PROVISIONAL` | C0-C | — | — | Paper policy `geometry.nominal_spacing` | Geometry equations remain frozen. |

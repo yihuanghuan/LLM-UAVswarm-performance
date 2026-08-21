@@ -1,7 +1,7 @@
 # C0-B generated artifacts
 
-This directory is intentionally empty until the five baseline measurement
-scenarios have been recorded.  Run `state_freshness_pipeline/run_calibration.py
-freeze --measurements ...` to create the immutable freeze artifact.  No
-synthetic measurements are checked in because C0-B thresholds must come from
-runtime observations.
+C0-B is frozen in `C0-B_state_freshness_freeze/`. Its combined runtime
+measurement CSV, frozen policy, corrected planner-wait replay, validation
+record, and audit record are the downstream calibration inputs. Runtime
+campaign folders remain local because they contain rosbag databases and
+process logs; they are intentionally excluded from Git.

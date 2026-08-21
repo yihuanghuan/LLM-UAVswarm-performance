@@ -83,11 +83,11 @@ header.stamp       : controller 收到对应 PX4 sample 时的 ROS clock
 
 PX4 timestamp 是 boot-clock microseconds，不能冒充 ROS epoch/sim time，因此 frame-normalization publisher 在接收 sample 时生成 ROS source stamp。Scheduler 另存 receive stamp，freshness 使用 header source stamp。
 
-当前 paper runtime 要求：
+当前 paper runtime 使用已经冻结的 C0-A/C0-B policy（`paper-current-v8-c0-b-frozen`）：
 
-- `state_timeout=0.5s`
-- `snapshot_skew=0.15s`
-- 等待 fresh state 最多 `2s`
+- `state_timeout=0.022080s`（C0-B P99 + 固定 10 ms）
+- `snapshot_skew=0.022043s`（C0-B P99 + 固定 10 ms）
+- 等待 fresh state 最多 `0.010000s`（在冻结 freshness predicates 下重放校正后，P99 + 固定 10 ms）
 - velocity 必须 finite
 - zero/future/stale timestamp 拒绝
 - `allow_receive_time_fallback=false`

@@ -15,6 +15,7 @@ REPOSITORY = Path(__file__).resolve().parents[2]
 WORKSPACE = REPOSITORY.parents[1]
 PX4 = Path("/home/yihuang/PX4-Autopilot")
 VENV_PYTHON = WORKSPACE / "llm_env" / "bin" / "python"
+FROZEN_C0B_POLICY = REPOSITORY / "lfs_policy" / "config" / "lfs_policy.paper_current.yaml"
 READINESS = (
     REPOSITORY
     / "experiments-legacy"
@@ -103,6 +104,7 @@ def main():
         "cold_start": True,
         "uav_ids": [1, 2, 3, 4],
         "control_mode": "ladrc_acceleration",
+        "lfs_policy_file": str(FROZEN_C0B_POLICY),
         "command": command,
         "started_utc": datetime.now(timezone.utc).isoformat(),
         "readiness": False,
@@ -135,6 +137,7 @@ def main():
                 "ros2", "launch", "ladrc_controller", "swarm_launch.py",
                 "uav_ids:=[1,2,3,4]",
                 "control_mode:=ladrc_acceleration",
+                f"lfs_policy_file:={FROZEN_C0B_POLICY}",
             ],
             output / "controllers.log",
             cwd=WORKSPACE,
@@ -191,6 +194,7 @@ def main():
                 "-p", "lfs_runtime_mode:=candidate_v2",
                 "-p", "uav_ids:=[1,2,3,4]",
                 "-p", "candidate_completion_timeout:=180.0",
+                "-p", f"lfs_policy_file:={FROZEN_C0B_POLICY}",
             ],
             cwd=REPOSITORY,
             input=command + "\nq\n",

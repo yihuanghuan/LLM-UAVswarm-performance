@@ -397,7 +397,7 @@ def _validate_policy(
     if status.startswith("paper_"):
         required_status = {"architecture_rules", "physical_environment",
                            "algorithm_calibration", "semantic_controller"}
-        if set(parameter_status) != required_status:
+        if not required_status.issubset(parameter_status):
             raise PolicyLoadError(
                 "paper policy parameter_status must cover all audit categories"
             )

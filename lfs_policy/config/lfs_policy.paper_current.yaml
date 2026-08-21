@@ -1,10 +1,11 @@
-policy_status: paper_current
-configuration_id: paper-current-v7
+policy_status: paper_frozen
+configuration_id: paper-current-v8-c0-b-frozen
 
 state_snapshot:
-  state_timeout: 0.5
-  snapshot_skew: 0.15
-  fresh_state_wait_timeout: 2.0
+  # C0-B frozen from P99 plus a fixed 10 ms margin.
+  state_timeout: 0.02208
+  snapshot_skew: 0.022043
+  fresh_state_wait_timeout: 0.010
   allow_receive_time_fallback: false
   require_velocity: true
 
@@ -70,6 +71,8 @@ controller_hard_clamps:
 
 parameter_status:
   architecture_rules: paper-frozen
+  c0_a_motion_ladrc: frozen
+  c0_b_state_freshness: frozen
   physical_environment: provisional
   algorithm_calibration: provisional
   semantic_controller: architecture-frozen-parameter-calibration-provisional
@@ -80,5 +83,6 @@ provenance:
   iapf_soft: safety -> ExecutionProfile -> controller IAPF parameters
   ladrc_baseline: execution_profile.baseline_omega_c,execution_profile.baseline_omega_o
   dynamics: motion_limits
+  state_freshness: experiments_v2/Calibration Experiments/C0-B-state-freshness/results/C0-B_state_freshness_freeze/frozen_state_freshness_policy.yaml
   allocator: location_allocate/safety_aware_allocator.py:lexicographic-score
   paper_rules: paper-path freeze + legacy isolation.md

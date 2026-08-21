@@ -37,8 +37,16 @@ class PaperMissionRuntime:
             + self.policy_config.state.fresh_state_wait_timeout
         )
         last_error = None
-        while time.monotonic() <= deadline:
-            rclpy.spin_once(self.node, timeout_sec=0.05)
+        now = self.node.get_clock().now().nanoseconds / 1e9
+        try:
+            return self.snapshot_manager.snapshot(uav_ids, now)
+        except SnapshotError as exc:
+            last_error = exc
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0.0:
+                break
+            rclpy.spin_once(self.node, timeout_sec=min(0.05, remaining))
             now = self.node.get_clock().now().nanoseconds / 1e9
             try:
                 return self.snapshot_manager.snapshot(uav_ids, now)
