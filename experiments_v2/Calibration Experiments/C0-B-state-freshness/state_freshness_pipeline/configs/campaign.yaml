@@ -1,0 +1,26 @@
+calibration_id: C0-B-state-freshness-v1
+baseline_policy: lfs_policy/config/lfs_policy.paper_current.yaml
+c0a_frozen_policy: experiments_v2/Calibration Experiments/C0-A-ladrc-motion-limits/results/C0-A_motion_limits_freeze/frozen_execution_policy.yaml
+output_dir: experiments_v2/Calibration Experiments/C0-B-state-freshness/results/C0-B_state_freshness_freeze
+
+# A single pre-declared statistical rule; no candidate threshold search is
+# performed.  The margin covers one observer/poll scheduling interval.
+selection_rule:
+  percentile: 99
+  safety_margin_ms: 10.0
+
+required_scenarios:
+  - hover
+  - straight_motion
+  - waypoint_transition
+  - multi_uav_4
+  - multi_uav_8
+
+# The frozen Candidate Mission grammar has no valid one-UAV formation task.
+# Waypoint transition therefore uses the existing four-UAV Candidate pipeline.
+scenario_uav_counts:
+  hover: 1
+  straight_motion: 1
+  waypoint_transition: 4
+  multi_uav_4: 4
+  multi_uav_8: 8

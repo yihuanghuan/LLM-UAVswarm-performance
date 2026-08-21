@@ -17,7 +17,7 @@ PX4 = Path("/home/yihuang/PX4-Autopilot")
 VENV_PYTHON = WORKSPACE / "llm_env" / "bin" / "python"
 READINESS = (
     REPOSITORY
-    / "experiments"
+    / "experiments-legacy"
     / "system_8uav"
     / "scripts"
     / "wait_swarm_ready.py"

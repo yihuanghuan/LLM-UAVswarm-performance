@@ -1,0 +1,32 @@
+calibration_id: C0-B-state-freshness-v1
+timestamp_utc: '2026-08-21T08:15:54.928393+00:00'
+git_commit: 17f0c1ec62b8d5554c575af5754861b59d70eabc
+configuration_hashes:
+  campaign: d590611cf47de3aec49d325035746dc9a4b0b4306203ca6c4811d977529b9b5d
+  baseline_policy: 5b2d9e73b076e950a975ffb33596817ac4824926ed1598c7f2009c06ba014c11
+  c0a_frozen_policy: 1ac009c4da6636fe4a3fcd8492fe9957e22bba94412e005a3555dd5985a5d325
+input_measurements_sha256:
+  ? /home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments_v2/Calibration
+    Experiments/C0-B-state-freshness/results/runtime_campaign_1uav/hover.csv
+  : a15e44cb8baad48aac027fb3e689d2b8876b3cb662c58d75df47f94bdf878472
+  ? /home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments_v2/Calibration
+    Experiments/C0-B-state-freshness/results/runtime_campaign_1uav/straight_motion.csv
+  : b79e445096fe82dc586565be4d8f47197d70fa9b822177b6b6d6155c522b30c6
+  ? /home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments_v2/Calibration
+    Experiments/C0-B-state-freshness/results/runtime_campaign_waypoint_4uav/waypoint_transition_active.csv
+  : d5659e099b990de6f3e76a2970f23840c629a06029abbf0fabb5da32b0712821
+  ? /home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments_v2/Calibration
+    Experiments/C0-B-state-freshness/results/runtime_campaign_4uav/live_freshness_measurements.csv
+  : b079b2146ff831b3ed3d32cd592293dc8f95337c463dd130f5d5b4e33a8db26c
+  ? /home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments_v2/Calibration
+    Experiments/C0-B-state-freshness/results/runtime_campaign_8uav/live_freshness_measurements.csv
+  : 87865f01fd0490e0fa4788427c845a1dd6d55be810f13ddc2529022c930eaef1
+validation:
+- case: normal_operation
+  status: pass
+  evidence: fresh snapshot accepted
+- case: stale_state_rejection
+  status: pass
+  evidence: SnapshotError prevented snapshot/command resolution
+c0a_policy_modified: false
+algorithm_or_controller_modified: false
