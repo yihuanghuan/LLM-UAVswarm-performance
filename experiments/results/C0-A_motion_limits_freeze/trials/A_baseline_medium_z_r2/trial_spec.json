@@ -1,0 +1,47 @@
+{
+  "trial": {
+    "trial_id": "A_baseline_medium_z_r2",
+    "stage": "A",
+    "candidate_id": "baseline",
+    "scenario_id": "medium_z",
+    "repetition": 2,
+    "seed": 20260843,
+    "velocity": 5.0,
+    "acceleration": 5.0,
+    "jerk": 10.0,
+    "duration_s": 2.8617856063833296,
+    "displacement": [
+      0.0,
+      0.0,
+      2.0
+    ]
+  },
+  "ladrc": {
+    "omega_c": [
+      1.5,
+      1.5,
+      1.75
+    ],
+    "omega_o": [
+      5.0,
+      5.0,
+      7.5
+    ],
+    "b0": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "control_frequency_hz": 50.0,
+    "control_mode": "ladrc_acceleration",
+    "controller_params": "minisnap_LADRC/ladrc_controller/config/ladrc_params.yaml",
+    "policy_template": "lfs_policy/config/lfs_policy.paper_current.yaml"
+  },
+  "motion_limits": {
+    "velocity": 5.0,
+    "acceleration": 5.0,
+    "jerk": 10.0
+  },
+  "git_commit": "6c2fdaa4f5d0a735183e3b224d6aca2eab898455",
+  "configuration_hash": "03f00f2f90dd89ca4ef8569a9397f9d10d93ed12d023a5ccfb6d4ccc6a054e8b"
+}

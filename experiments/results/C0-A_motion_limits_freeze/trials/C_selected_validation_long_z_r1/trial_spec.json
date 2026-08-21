@@ -1,0 +1,47 @@
+{
+  "trial": {
+    "trial_id": "C_selected_validation_long_z_r1",
+    "stage": "C",
+    "candidate_id": "selected_validation",
+    "scenario_id": "long_z",
+    "repetition": 1,
+    "seed": 20260845,
+    "velocity": 5.0,
+    "acceleration": 5.0,
+    "jerk": 10.0,
+    "duration_s": 3.605623925768521,
+    "displacement": [
+      0.0,
+      0.0,
+      4.0
+    ]
+  },
+  "ladrc": {
+    "omega_c": [
+      1.5,
+      1.5,
+      1.75
+    ],
+    "omega_o": [
+      5.0,
+      5.0,
+      7.5
+    ],
+    "b0": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "control_frequency_hz": 50.0,
+    "control_mode": "ladrc_acceleration",
+    "controller_params": "minisnap_LADRC/ladrc_controller/config/ladrc_params.yaml",
+    "policy_template": "lfs_policy/config/lfs_policy.paper_current.yaml"
+  },
+  "motion_limits": {
+    "velocity": 5.0,
+    "acceleration": 5.0,
+    "jerk": 10.0
+  },
+  "git_commit": "6c2fdaa4f5d0a735183e3b224d6aca2eab898455",
+  "configuration_hash": "60a3528020b3fd84013850faab3ca24625bd1d74be4c77a19be3fc885b82f75a"
+}

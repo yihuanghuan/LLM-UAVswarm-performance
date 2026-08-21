@@ -1,0 +1,10 @@
+# Bounded sequential one-factor-at-a-time sweep. B2 and B3 use the
+# non-boundary B1/B2 selection; with the current validated baseline that is
+# the nominal 5/5/10 condition unless the preceding phase rejects it.
+velocity: [3.0, 5.0, 7.0]
+acceleration: [3.0, 5.0, 7.0]
+jerk: [5.0, 10.0, 15.0]
+
+# Select the highest stable non-endpoint value for each factor. If the highest
+# stable value is the sweep endpoint, select the next lower stable value.
+selection: highest_stable_non_endpoint

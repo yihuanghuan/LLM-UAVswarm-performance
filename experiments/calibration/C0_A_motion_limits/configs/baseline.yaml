@@ -1,0 +1,47 @@
+calibration_id: C0-A-motion-limits-v1
+seed: 20260821
+repetitions: 3
+duration_margin: 1.25
+output_dir: experiments/results/C0-A_motion_limits_freeze
+
+# This is a validation baseline, not a gain search.  These values are copied
+# verbatim into the freeze artifact once Stage C passes.
+ladrc:
+  omega_c: [1.5, 1.5, 1.75]
+  omega_o: [5.0, 5.0, 7.5]
+  b0: [1.0, 1.0, 1.0]
+  control_frequency_hz: 50.0
+  control_mode: ladrc_acceleration
+  controller_params: minisnap_LADRC/ladrc_controller/config/ladrc_params.yaml
+  policy_template: lfs_policy/config/lfs_policy.paper_current.yaml
+
+motion_limits:
+  velocity: 5.0
+  acceleration: 5.0
+  jerk: 10.0
+
+# Limits apply to trajectory generation and are also injected as controller
+# hard clamps by the execution adapter used for a live trial.
+criteria:
+  max_tracking_rmse_m: 0.50
+  max_final_position_error_m: 0.40
+  max_position_error_m: 1.50
+  max_saturation_ratio: 0.10
+  max_repeatability_spread_m: 0.20
+  require_settling: true
+
+# This adapter reuses the repository's established C0-A runtime path:
+# MicroXRCEAgent -> PX4 Gazebo-classic SITL -> c0a_controller_launch.py ->
+# trial_driver.py -> rosbag -> extract_metrics.py.
+execution:
+  command_template: >-
+    /home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python
+    experiments/calibration/C0_A_motion_limits/run_runtime_trial.py
+    --trial-spec {trial_spec} --trial-dir {trial_dir}
+  smoke_candidate_id: baseline
+  smoke_scenario_id: short_x
+  smoke_repetition: 1
+
+# Stage A already establishes direction/scale coverage. Stage B uses the
+# long diagonal as the bounded all-axis stress case, with all three repeats.
+stage_b_scenarios: [long_diagonal]

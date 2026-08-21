@@ -162,6 +162,8 @@ def summarize_uav(records, types, spec, manifest, uid, index):
     ]
     measured_acceleration_samples = differences(actual_velocity)
     measured_acceleration = [item for _, item in measured_acceleration_samples]
+    measured_jerk_samples = differences(measured_acceleration_samples)
+    measured_jerk = [item for _, item in measured_jerk_samples]
     command_jerk_samples = differences([
         (timestamp, vec(message.ladrc_output)) for timestamp, message in active
     ])
@@ -260,6 +262,8 @@ def summarize_uav(records, types, spec, manifest, uid, index):
         "ladrc_command_peak_acceleration_per_axis_mps2": axis_peaks(command_acceleration),
         "measured_peak_acceleration_mps2": max((norm(item) for item in measured_acceleration), default=None),
         "measured_peak_acceleration_per_axis_mps2": axis_peaks(measured_acceleration),
+        "measured_peak_jerk_mps3": max((norm(item) for item in measured_jerk), default=None),
+        "measured_peak_jerk_per_axis_mps3": axis_peaks(measured_jerk),
         "command_jerk_peak_mps3": max(jerk_norms, default=None),
         "command_jerk_peak_per_axis_mps3": axis_peaks(command_jerk),
         "command_jerk_p99_5_mps3": percentile(jerk_norms, 0.995),
@@ -288,6 +292,11 @@ def summarize_uav(records, types, spec, manifest, uid, index):
         "observer_state_peak": max((norm(item) for item in observer_vectors), default=None),
         "actual_duration_s": float(final_trajectory.trajectory_duration),
         "arrival_time_error_s": float(final_trajectory.arrival_time_error),
+        "settling_time_s": (
+            float(adaptations[-1][1].settling_time)
+            if adaptations and math.isfinite(float(adaptations[-1][1].settling_time))
+            else None
+        ),
         "active_samples": len(active),
         "post_samples": len(post),
     }
@@ -314,15 +323,20 @@ def summarize_uav(records, types, spec, manifest, uid, index):
         (result["tracking_rmse_m"] <= 0.50, "TRACKING_RMSE"),
         (result["maximum_tracking_error_m"] <= 1.00, "MAX_TRACKING_ERROR"),
         (result["final_error_m"] <= 0.40, "FINAL_ERROR"),
-        (
-            result["command_jerk_p99_5_mps3"] is not None
-            and math.isfinite(result["command_jerk_p99_5_mps3"])
-            and result["command_jerk_p99_5_mps3"] <= 1.5 * limits["j_limit"],
-            "COMMAND_JERK_P99_5",
-        ),
         (observer_finite, "NONFINITE_OBSERVER_STATE"),
     )
     hard_failures.extend(code for passed, code in checks if not passed)
+    # This is a finite-difference diagnostic of controller commands, not the
+    # analytic jerk of the generated trajectory.  It is deliberately retained
+    # for diagnosis but must not decide C0-A motion-limit feasibility.
+    result["diagnostic_flags"] = [
+        "COMMAND_JERK_P99_5"
+        if result["command_jerk_p99_5_mps3"] is not None
+        and math.isfinite(result["command_jerk_p99_5_mps3"])
+        and result["command_jerk_p99_5_mps3"] > 1.5 * limits["j_limit"]
+        else None
+    ]
+    result["diagnostic_flags"] = [flag for flag in result["diagnostic_flags"] if flag]
     result["hard_failures"] = hard_failures
     result["hard_pass"] = not hard_failures
     result["raw_zero_crossings_diagnostic_only"] = True

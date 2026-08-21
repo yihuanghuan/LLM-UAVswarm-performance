@@ -1,0 +1,127 @@
+{
+  "acceleration_limit_ratio": 0.52863193821801,
+  "acceleration_peak_mps2": 2.64315969109005,
+  "failure_reason": "COMMAND_JERK_P99_5",
+  "final_error": 0.0205459613353014,
+  "final_position_error_m": 0.0205459613353014,
+  "jerk_limit_ratio": 4.610791169555869,
+  "jerk_peak_mps3": 46.10791169555869,
+  "max_position_error_m": 0.17059996404224376,
+  "peak_acceleration": 2.64315969109005,
+  "peak_jerk": 46.10791169555869,
+  "peak_velocity": 2.1054382224369483,
+  "runtime_metrics": {
+    "candidate_id": "runtime",
+    "hard_failures": [
+      "COMMAND_JERK_P99_5"
+    ],
+    "hard_pass": false,
+    "metric_extraction_success": true,
+    "minimum_inter_uav_distance_m": null,
+    "multi_uav_failures": [],
+    "per_uav": [
+      {
+        "acceleration_saturation_ratio_any_axis": 0.0,
+        "acceleration_saturation_ratio_per_axis": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "active_samples": 164,
+        "actual_duration_s": 3.2759268283843994,
+        "analytic_reference_peaks": {
+          "acceleration": 1.6139581327177623,
+          "jerk": 5.120000000000002,
+          "velocity": 1.7170713638299981
+        },
+        "arrival_time_error_s": 1.0833359956741333,
+        "command_jerk_p99_5_mps3": 17.146746669037935,
+        "command_jerk_peak_mps3": 17.146746669037935,
+        "command_jerk_peak_per_axis_mps3": [
+          8.771624059851217,
+          10.251058046634938,
+          10.582312677733722
+        ],
+        "control_loop_achieved_hz": 50.00068396351298,
+        "final_error_m": 0.0205459613353014,
+        "hard_failures": [
+          "COMMAND_JERK_P99_5"
+        ],
+        "hard_pass": false,
+        "iapf_activation": false,
+        "ladrc_command_peak_acceleration_mps2": 2.677502179529384,
+        "ladrc_command_peak_acceleration_per_axis_mps2": [
+          1.873116260230975,
+          1.90662234299193,
+          0.5254832105144809
+        ],
+        "maximum_tracking_error_m": 0.17059996404224376,
+        "measured_peak_acceleration_mps2": 2.64315969109005,
+        "measured_peak_acceleration_per_axis_mps2": [
+          1.8417357370627365,
+          1.8674529087685479,
+          1.1246923709868883
+        ],
+        "measured_peak_jerk_mps3": 46.10791169555869,
+        "measured_peak_jerk_per_axis_mps3": [
+          40.75638400152902,
+          32.36447736123965,
+          20.058087711115032
+        ],
+        "measured_peak_velocity_mps": 2.1054382224369483,
+        "minimum_neighbor_distance_m": null,
+        "missed_samples": 1,
+        "mission_success": true,
+        "nonfinite_setpoint": false,
+        "observer_state_peak": 3.853569578351961,
+        "observer_states_finite": true,
+        "offboard_loss": false,
+        "omega_application_max_abs_error": 0.0,
+        "pitch_peak_deg": 10.686570521782107,
+        "post_samples": 250,
+        "post_trajectory_last_first_rms_ratio": 0.23284308618246896,
+        "post_trajectory_peak_to_peak_per_axis_m": [
+          0.15172874927520752,
+          0.18683147430419922,
+          0.03519320487976074
+        ],
+        "post_trajectory_rms_m": 0.06339081142534232,
+        "post_trajectory_rms_per_axis_m": [
+          0.03945096446683318,
+          0.048938835770057976,
+          0.00818576381721768
+        ],
+        "post_trajectory_zero_crossings_per_axis": [
+          4,
+          4,
+          14
+        ],
+        "profile_clamped": false,
+        "px4_failsafe": false,
+        "raw_zero_crossings_diagnostic_only": true,
+        "roll_peak_deg": 10.357046008733162,
+        "settling_time_s": 4.359262943267822,
+        "startup_failure": false,
+        "tracking_rmse_m": 0.11014605999448307,
+        "tracking_rmse_per_axis_m": [
+          0.0789846814947325,
+          0.0750247451727125,
+          0.016274588574015623
+        ],
+        "uav_id": 1,
+        "unintended_disarm": false
+      }
+    ],
+    "scenario_id": "C0A_RUNTIME",
+    "seed": 20260851,
+    "stage": "A1_SCREENING",
+    "trial_id": "C_selected_validation_medium_diagonal_r1"
+  },
+  "saturation_ratio": 0.0,
+  "settling_time_s": 4.359262943267822,
+  "success": true,
+  "tracking_rmse": 0.11014605999448307,
+  "tracking_rmse_m": 0.11014605999448307,
+  "velocity_limit_ratio": 0.42108764448738967,
+  "velocity_peak_mps": 2.1054382224369483
+}
