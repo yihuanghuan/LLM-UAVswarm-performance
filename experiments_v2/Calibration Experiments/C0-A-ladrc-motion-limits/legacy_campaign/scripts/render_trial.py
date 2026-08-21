@@ -13,7 +13,7 @@ import sys
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY = ROOT.parents[2]
+REPOSITORY = ROOT.parents[3]
 sys.path.insert(0, str(REPOSITORY / "location_allocate"))
 sys.path.insert(0, str(REPOSITORY / "lfs_policy"))
 

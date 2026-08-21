@@ -16,14 +16,14 @@ import time
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY = ROOT.parents[2]
+REPOSITORY = ROOT.parents[3]
 WORKSPACE = REPOSITORY.parents[1]
 PX4 = Path("/home/yihuang/PX4-Autopilot")
 VENV_PYTHON = WORKSPACE / "llm_env" / "bin" / "python"
 RENDER = ROOT / "scripts" / "render_trial.py"
 DRIVER = ROOT / "scripts" / "trial_driver.py"
 RESOURCE_MONITOR = ROOT / "scripts" / "resource_monitor.py"
-READINESS = REPOSITORY / "experiments" / "system_8uav" / "scripts" / "wait_swarm_ready.py"
+READINESS = REPOSITORY / "experiments-legacy" / "system_8uav" / "scripts" / "wait_swarm_ready.py"
 LAUNCH = ROOT / "scripts" / "c0a_controller_launch.py"
 SITL = PX4 / "Tools" / "simulation" / "gazebo-classic" / "sitl_multiple_run.sh"
 

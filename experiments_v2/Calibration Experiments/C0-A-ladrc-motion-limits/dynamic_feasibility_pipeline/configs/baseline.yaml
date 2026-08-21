@@ -2,7 +2,7 @@ calibration_id: C0-A-motion-limits-v1
 seed: 20260821
 repetitions: 3
 duration_margin: 1.25
-output_dir: experiments/results/C0-A_motion_limits_freeze
+output_dir: experiments_v2/Calibration Experiments/C0-A-ladrc-motion-limits/results/C0-A_motion_limits_freeze
 
 # This is a validation baseline, not a gain search.  These values are copied
 # verbatim into the freeze artifact once Stage C passes.
@@ -36,7 +36,7 @@ criteria:
 execution:
   command_template: >-
     /home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python
-    experiments/calibration/C0_A_motion_limits/run_runtime_trial.py
+    "experiments_v2/Calibration Experiments/C0-A-ladrc-motion-limits/dynamic_feasibility_pipeline/run_runtime_trial.py"
     --trial-spec {trial_spec} --trial-dir {trial_dir}
   smoke_candidate_id: baseline
   smoke_scenario_id: short_x

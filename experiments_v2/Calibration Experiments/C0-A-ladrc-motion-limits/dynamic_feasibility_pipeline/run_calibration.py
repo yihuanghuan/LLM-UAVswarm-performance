@@ -8,7 +8,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parent
-REPO = ROOT.parents[2]
+REPO = ROOT.parents[3]
 
 def load(path):
     with path.open(encoding="utf-8") as stream:

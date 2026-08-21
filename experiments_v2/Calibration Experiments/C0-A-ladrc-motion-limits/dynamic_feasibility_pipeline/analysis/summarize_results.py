@@ -9,7 +9,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-REPO = ROOT.parents[2]
+REPO = ROOT.parents[3]
 
 REQUIRED = ("tracking_rmse_m", "final_position_error_m", "max_position_error_m", "settling_time_s", "velocity_peak_mps", "acceleration_peak_mps2", "jerk_peak_mps3", "saturation_ratio", "failure_reason")
 LEGACY_DIAGNOSTIC_FAILURES = {"COMMAND_JERK_P99_5"}

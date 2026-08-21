@@ -4,10 +4,10 @@ import argparse, json, subprocess, sys
 from collections import defaultdict
 from pathlib import Path
 from datetime import datetime, timezone
-ROOT=Path(__file__).resolve().parents[1]; REPO=ROOT.parents[2]
+ROOT=Path(__file__).resolve().parents[1]; REPO=ROOT.parents[3]
 sys.path.insert(0,str(ROOT/'scripts'))
 from run_trial import ros_environment
-PYTHON=ROOT.parents[2].parents[1]/'llm_env/bin/python'
+PYTHON=REPO.parents[1]/'llm_env/bin/python'
 RUN=ROOT/'scripts/run_trial.py'; EXTRACT=ROOT/'scripts/extract_metrics.py'
 SCHEDULE=ROOT/'trial_order_v4.json'; CONFIG=ROOT/'configs/c0a_prereg_v4.json'
 def now(): return datetime.now(timezone.utc).isoformat()

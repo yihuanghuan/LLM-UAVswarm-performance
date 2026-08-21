@@ -33,7 +33,7 @@ def require(condition: bool, message: str, checks: list[str]) -> None:
 
 
 def baseline_text(path: Path) -> str:
-    repository = ROOT.parents[2]
+    repository = ROOT.parents[3]
     relative = path.relative_to(repository)
     return subprocess.check_output(
         ["git", "show", f"{AUDIT_BASE_COMMIT}:{relative}"],

@@ -9,7 +9,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-REPO = ROOT.parents[2]
+REPO = ROOT.parents[3]
 METRICS = (
     ("tracking_rmse_m", "Tracking RMSE", "m"),
     ("final_position_error_m", "Final error", "m"),

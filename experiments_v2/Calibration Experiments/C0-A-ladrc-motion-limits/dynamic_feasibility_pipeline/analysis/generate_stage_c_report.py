@@ -9,7 +9,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parents[2] / "experiments/results/C0-A_motion_limits_freeze"
+OUT = ROOT.parent / "results/C0-A_motion_limits_freeze"
 
 
 def stats(rows, key):

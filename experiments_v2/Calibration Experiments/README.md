@@ -24,4 +24,4 @@ and generated data remain on that C0 branch or in external artifact storage.
 Only frozen parameter values and provenance return to `paper/calibration`.
 
 The canonical pre-registration for C0-A is
-`experiments/calibration/C0-A-ladrc-motion-limits/CALIBRATION_PROTOCOL.md`.
+`experiments_v2/Calibration Experiments/C0-A-ladrc-motion-limits/legacy_campaign/CALIBRATION_PROTOCOL.md`.

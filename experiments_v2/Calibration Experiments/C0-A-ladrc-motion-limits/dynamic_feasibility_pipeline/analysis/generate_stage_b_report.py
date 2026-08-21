@@ -5,7 +5,7 @@ import json, statistics
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parents[2] / "experiments/results/C0-A_motion_limits_freeze"
+OUT = ROOT.parent / "results/C0-A_motion_limits_freeze"
 
 def mean(rows, key):
     return statistics.mean(float(row[key]) for row in rows)

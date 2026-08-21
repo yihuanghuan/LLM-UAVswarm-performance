@@ -11,8 +11,8 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parent
-REPO = ROOT.parents[2]
-OLD_C0A = REPO / "experiments" / "calibration" / "C0-A-ladrc-motion-limits"
+REPO = ROOT.parents[3]
+OLD_C0A = ROOT.parent / "legacy_campaign"
 VENV = REPO.parents[1] / "llm_env" / "bin" / "python"
 
 

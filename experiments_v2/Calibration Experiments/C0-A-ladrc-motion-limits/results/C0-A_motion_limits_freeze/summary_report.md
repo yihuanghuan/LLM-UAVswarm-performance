@@ -1,6 +1,6 @@
 # C0-A Dynamic Feasibility Calibration
 
-Git commit: `6c2fdaa4f5d0a735183e3b224d6aca2eab898455`
+Git commit: `a53a3c0bc0dbfbbeffe2a72eaab1bfc0f61dccde`
 
 ## Tested range
 

@@ -19,8 +19,8 @@ SCHEDULE_PATH = ROOT / "trial_order_v3.json"
 RUN_TRIAL = ROOT / "scripts" / "run_trial.py"
 EXTRACT = ROOT / "scripts" / "extract_metrics.py"
 SELECT = ROOT / "scripts" / "select_candidates.py"
-ALGORITHM_CHECK = REPOSITORY / "experiments" / "calibration" / "scripts" / "check_algorithm_freeze.py"
-OWNERSHIP_CHECK = REPOSITORY / "experiments" / "calibration" / "scripts" / "check_parameter_ownership.py"
+ALGORITHM_CHECK = REPOSITORY / "experiments-legacy" / "calibration" / "scripts" / "check_algorithm_freeze.py"
+OWNERSHIP_CHECK = REPOSITORY / "experiments-legacy" / "calibration" / "scripts" / "check_parameter_ownership.py"
 STAGES = (
     "A1_SCREENING", "A1_CONFIRMATION", "A2_SCREENING",
     "A2_CONFIRMATION", "A3_VALIDATION", "SCALE_VALIDATION",

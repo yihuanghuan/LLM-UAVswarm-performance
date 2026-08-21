@@ -2,5 +2,7 @@
 
 Owner scope: LADRC baseline bandwidths, shared motion limits, minimum duration,
 dynamic hard clamps and duplicated physical controller caps.
-The canonical pre-registration is under
-`experiments/calibration/C0-A-ladrc-motion-limits/`.
+
+- `dynamic_feasibility_pipeline/` is the reproducible Stage A/B/C pipeline.
+- `results/C0-A_motion_limits_freeze/` contains its frozen 5/5/10 policy.
+- `legacy_campaign/` retains the older C0-A campaign and its original records.

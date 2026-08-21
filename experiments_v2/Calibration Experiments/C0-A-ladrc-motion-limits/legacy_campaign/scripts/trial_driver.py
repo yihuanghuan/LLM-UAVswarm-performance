@@ -17,7 +17,7 @@ from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
 
 ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY = ROOT.parents[2]
+REPOSITORY = ROOT.parents[3]
 sys.path.insert(0, str(REPOSITORY / "location_allocate"))
 
 from location_allocate.execution_command_builder import (

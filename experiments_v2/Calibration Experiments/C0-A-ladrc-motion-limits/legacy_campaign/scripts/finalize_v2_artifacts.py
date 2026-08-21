@@ -13,7 +13,7 @@ import subprocess
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY = ROOT.parents[2]
+REPOSITORY = ROOT.parents[3]
 
 
 def sha256(path):

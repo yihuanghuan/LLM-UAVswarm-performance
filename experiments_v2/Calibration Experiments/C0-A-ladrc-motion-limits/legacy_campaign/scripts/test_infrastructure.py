@@ -14,7 +14,7 @@ import yaml
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT = SCRIPT_DIR.parent
-REPOSITORY = ROOT.parents[2]
+REPOSITORY = ROOT.parents[3]
 sys.path.insert(0, str(SCRIPT_DIR))
 
 import render_trial
@@ -119,7 +119,7 @@ class InfrastructureTests(unittest.TestCase):
 
     def test_instrumentation_does_not_edit_frozen_runtime_sources(self):
         algorithm_manifest = json.loads(
-            (REPOSITORY / "experiments" / "calibration" / "algorithm_freeze_manifest.json")
+            (REPOSITORY / "experiments-legacy" / "calibration" / "algorithm_freeze_manifest.json")
             .read_text(encoding="utf-8")
         )
         instrument_paths = {

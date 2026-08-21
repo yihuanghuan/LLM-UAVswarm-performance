@@ -7,7 +7,7 @@ Stage A validates the fixed LADRC baseline on short/medium/long x, y, z, and dia
 Create the Stage A+B plan:
 
 ```bash
-python3 experiments/calibration/C0_A_motion_limits/run_calibration.py
+python3 "experiments_v2/Calibration Experiments/C0-A-ladrc-motion-limits/dynamic_feasibility_pipeline/run_calibration.py"
 ```
 
 `execution.command_template` is configured for this repository's existing
@@ -29,12 +29,12 @@ Saturation is the fraction of active samples at the LADRC acceleration limit.
 After Stage A+B results exist:
 
 ```bash
-python3 experiments/calibration/C0_A_motion_limits/analysis/summarize_results.py
-python3 experiments/calibration/C0_A_motion_limits/run_calibration.py --validation --execute
-python3 experiments/calibration/C0_A_motion_limits/analysis/summarize_results.py --validation
+python3 "experiments_v2/Calibration Experiments/C0-A-ladrc-motion-limits/dynamic_feasibility_pipeline/analysis/summarize_results.py"
+python3 "experiments_v2/Calibration Experiments/C0-A-ladrc-motion-limits/dynamic_feasibility_pipeline/run_calibration.py" --validation --execute
+python3 "experiments_v2/Calibration Experiments/C0-A-ladrc-motion-limits/dynamic_feasibility_pipeline/analysis/summarize_results.py" --validation
 ```
 
-Artifacts are written to `experiments/results/C0-A_motion_limits_freeze/`: plan, per-trial metrics, `calibration_results.csv`, report, manifest (git/config hashes), selected policy, and—only after Stage C passes—the frozen policy.
+Artifacts are written to `experiments_v2/Calibration Experiments/C0-A-ladrc-motion-limits/results/C0-A_motion_limits_freeze/`: plan, per-trial metrics, `calibration_results.csv`, report, manifest (git/config hashes), selected policy, and—only after Stage C passes—the frozen policy.
 
 Rosbags and raw runtime logs remain under each local trial's `runtime/raw/`
 directory for audit and re-extraction. They are intentionally ignored by Git;
