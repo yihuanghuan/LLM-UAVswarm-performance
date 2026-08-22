@@ -1,20 +1,20 @@
 # Paper Parameter Calibration Manifest
 
-`paper-current-v8-c0-b-frozen` is the current runnable Paper policy.  It
-contains the frozen C0-A LADRC/motion-limit package and the frozen C0-B
-Candidate state-freshness package; it is not a claim that the remaining
-calibration parameters are paper-final.
+`paper-current-v9-c0-c-frozen` is the current runnable Paper policy.  It
+contains the frozen C0-A LADRC/motion-limit package, frozen C0-B Candidate
+state-freshness package, and frozen C0-C geometry/qualitative-scale package;
+it is not a claim that the remaining calibration parameters are paper-final.
 
 | Parameter | Current value | Current provenance | Status | Required calibration | Affects experiments |
 |---|---:|---|---|---|---|
 | LADRC baseline `omega_c` | `[1.5,1.5,1.75] rad/s` | C0-A frozen execution policy | frozen | C0-A Stage C validated execution-policy freeze | tracking and execution |
 | LADRC baseline `omega_o` | `[5.0,5.0,7.5] rad/s` | C0-A frozen execution policy | frozen | C0-A Stage C validated execution-policy freeze | tracking and execution |
-| workspace AABB | `[-15,-10,0.5]`–`[15,35,15]` m | current simulation workspace | provisional | Measure usable Gazebo and motion-capture regions | feasibility/rejection rate |
+| workspace AABB | `[-15,-10,0.5]`–`[15,35,15]` m | C0-C accepted geometry/scale freeze | frozen | C0-C Stage A/B accepted | feasibility/rejection rate |
 | state timeout/skew/wait | `0.022080/0.022043/0.010000 s` | C0-B state-freshness freeze (P99 + 10 ms) | frozen | C0-B combined runtime freshness measurements | late-resolution availability |
 | v/a/j limits | `5/5/10` | C0-A frozen execution policy | frozen | C0-A Stage C validated execution-policy freeze | timing and trajectory metrics |
 | d_hard | `1.0 m` | `iapf_violation_distance` | provisional | vehicle geometry + localization/tracking error + reserve | all safety metrics |
-| nominal spacing | `2.0 m` | current formation policy baseline | provisional | formation tracking and downwash study | formation scale |
-| qualitative multipliers | `0.8/1/1.25` | current Candidate policy | provisional | perception study and safety-floor interaction | language-scale experiments |
+| nominal spacing | `2.25 m` | C0-C accepted geometry/scale freeze | frozen | C0-C Stage A/B accepted | formation scale |
+| qualitative multipliers | `0.8/1/1.25` | C0-C accepted geometry/scale freeze | frozen | C0-C Stage A/B accepted | language-scale experiments |
 | d_plan base | `2.0 m` at s=1 | current planning-margin baseline | provisional | development scenarios independent of final tests | assignment safety |
 | IAPF enter/exit | `1.5/1.65 m` at s=1 | controller baseline | provisional | collision-avoidance sweeps | avoidance activation |
 | IAPF repulsion scale | `1.0 + 0.25(s-1)` | conservative semantic-safety development mapping | provisional | targeted avoidance sweep without changing IAPF formula | avoidance strength |
@@ -31,9 +31,9 @@ No parameter in this table may be described as experimentally tuned or paper-fin
 
 The C0-A frozen policy also fixes its campaign inputs `b0=[1,1,1]`, control
 frequency `50 Hz`, and `control_mode=ladrc_acceleration`; these are immutable
-execution inputs rather than further calibration selectors.  All C0-C, C0-D,
-C0-E, C0-F, and C0-G numerical parameters listed as provisional remain
-provisional.
+execution inputs rather than further calibration selectors.  C0-C geometry and
+qualitative-scale values are frozen; C0-D, C0-E, C0-F, and C0-G numerical
+parameters listed as provisional remain provisional.
 
 The semantic motion-style architecture is frozen: `m` has one deterministic
 timing path for auto T and one deterministic controller-profile path. The

@@ -21,15 +21,16 @@ PAPER_CURRENT = (
 def test_paper_policy_constructs_all_candidate_runtime_dependencies():
     config, policy = load_runtime_policy(PAPER_CURRENT)
 
-    assert config.configuration_id == "paper-current-v8-c0-b-frozen"
+    assert config.configuration_id == "paper-current-v9-c0-c-frozen"
     assert config.status == "paper_frozen"
     assert config.state.state_timeout == pytest.approx(0.022080)
     assert config.state.snapshot_skew == pytest.approx(0.022043)
     assert config.state.fresh_state_wait_timeout == pytest.approx(0.010000)
     assert config.parameter_status["c0_a_motion_ladrc"] == "frozen"
     assert config.parameter_status["c0_b_state_freshness"] == "frozen"
+    assert config.parameter_status["c0_c_geometry_scale"] == "frozen"
     assert len(config.policy_hash) == 64
-    assert policy.scale.nominal_spacing == 2.0
+    assert policy.scale.nominal_spacing == 2.25
     assert policy.timing.motion_limits.jerk == 10.0
     assert policy.timing.motion_limits is policy.profile.motion_limits
     assert policy.profile.task_adaptation_type == "identity"
@@ -77,10 +78,10 @@ def test_safety_factor_compiles_one_monotonic_cross_layer_profile():
         assert resolved.soft_iapf.repulsion_scale <= config.controller.iapf_repulsion_max
 
 
-def test_current_qualitative_audit_exposes_safety_clamp():
+def test_current_qualitative_audit_preserves_c0c_scale_separation():
     config, _policy = load_runtime_policy(PAPER_CURRENT)
 
-    assert any("compact" in warning for warning in config.warnings)
+    assert config.warnings == ()
 
 
 def test_normal_identity_profile_compiles_exact_canonical_ladrc_baseline():

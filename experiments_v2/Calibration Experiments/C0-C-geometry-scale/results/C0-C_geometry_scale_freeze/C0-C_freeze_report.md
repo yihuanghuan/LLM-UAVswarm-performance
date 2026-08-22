@@ -24,4 +24,19 @@ At the current runnable `d_plan(s=1)=2.0 m`, `35` of `105` selected-case qualita
 
 All nine predeclared cold-start trials passed: Triangle (3 UAV), Line (8 UAV), and Sphere (8 UAV), each at compact, normal, and spacious.  The runtime table records Candidate completion, geometry validity, workspace result, frozen-freshness outcome, resolved scale, and final target coordinates.  The temporary Candidate-owned readiness harness is startup infrastructure only; it leaves the frozen post-submission freshness predicates unchanged.
 
-This commit records Stage A/B evidence only.  It does not integrate or freeze the canonical Paper policy.
+## Canonical policy integration
+
+The canonical policy is `paper-current-v9-c0-c-frozen`.  It freezes the
+accepted C0-C values: workspace lower `[-15.0, -10.0, 0.5]`, workspace upper
+`[15.0, 35.0, 15.0]`, nominal spacing `2.25 m`, and
+compact/normal/spacious multipliers `0.8/1.0/1.25`.  Its SHA-256 is recorded
+in `manifest.yaml` with this integration.
+
+## Runtime compatibility correction
+
+The C0-C smoke diagnosis led to a Candidate runtime readiness correction, not
+a C0-B recalibration.  C0-B numerical timeout/skew/wait thresholds are
+unchanged.  Before dispatch, the runtime obtains one all-participant snapshot
+using those existing frozen C0-B predicates; the first resolution consumes the
+accepted snapshot rather than checking it again.  Later mission nodes retain
+normal fresh-snapshot acquisition.

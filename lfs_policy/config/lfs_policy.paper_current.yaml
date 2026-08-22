@@ -1,5 +1,5 @@
 policy_status: paper_frozen
-configuration_id: paper-current-v8-c0-b-frozen
+configuration_id: paper-current-v9-c0-c-frozen
 
 state_snapshot:
   # C0-B frozen from P99 plus a fixed 10 ms margin.
@@ -13,7 +13,7 @@ geometry:
   workspace_bounds:
     lower: [-15.0, -10.0, 0.5]
     upper: [15.0, 35.0, 15.0]
-  nominal_spacing: 2.0
+  nominal_spacing: 2.25
   qualitative_multipliers: {compact: 0.8, normal: 1.0, spacious: 1.25}
 
 safety:
@@ -73,6 +73,7 @@ parameter_status:
   architecture_rules: paper-frozen
   c0_a_motion_ladrc: frozen
   c0_b_state_freshness: frozen
+  c0_c_geometry_scale: frozen
   physical_environment: provisional
   algorithm_calibration: provisional
   semantic_controller: architecture-frozen-parameter-calibration-provisional
@@ -84,5 +85,6 @@ provenance:
   ladrc_baseline: execution_profile.baseline_omega_c,execution_profile.baseline_omega_o
   dynamics: motion_limits
   state_freshness: experiments_v2/Calibration Experiments/C0-B-state-freshness/results/C0-B_state_freshness_freeze/frozen_state_freshness_policy.yaml
+  geometry_scale: experiments_v2/Calibration Experiments/C0-C-geometry-scale/results/C0-C_geometry_scale_freeze/frozen_geometry_policy.yaml
   allocator: location_allocate/safety_aware_allocator.py:lexicographic-score
   paper_rules: paper-path freeze + legacy isolation.md
