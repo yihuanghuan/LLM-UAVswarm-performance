@@ -1,0 +1,23 @@
+calibration_id: C0-C-geometry-scale-v1
+baseline_policy: lfs_policy/config/lfs_policy.paper_current.yaml
+algorithm_freeze_manifest: experiments-legacy/calibration/algorithm_freeze_manifest.json
+canonical_center: [0.0, 10.0, 5.0]
+workspace_decision:
+  starting_bounds:
+    lower: [-15.0, -10.0, 0.5]
+    upper: [15.0, 35.0, 15.0]
+  rule: retain unless deterministic boundary checks or existing calibration evidence shows an unusable region
+nominal_spacing_grid: [2.00, 2.25, 2.50, 2.75, 3.00]
+qualitative_multipliers: {compact: 0.8, normal: 1.0, spacious: 1.25}
+selection_rule:
+  - zero algorithm-freeze and ownership violations
+  - valid geometry and strict compact < normal < spacious executed spacing at s=1
+  - canonical workspace compatibility
+  - minimum deviation from provisional geometry policy
+  - smaller nominal spacing
+runtime_smoke:
+  fallback_rule: no alternate candidate is permitted; reproducible geometry failure fails C0-C
+  cases:
+    - {formation: Triangle, uav_count: 3, center: [0.0, 6.0, 3.0]}
+    - {formation: Line, uav_count: 8, center: [0.0, 12.0, 3.0]}
+    - {formation: Sphere, uav_count: 8, center: [0.0, 18.0, 5.0]}

@@ -1,0 +1,53 @@
+configuration_id: paper-current-v9-c0-c-frozen
+geometry:
+  workspace_bounds:
+    lower:
+    - -15.0
+    - -10.0
+    - 0.5
+    upper:
+    - 15.0
+    - 35.0
+    - 15.0
+  nominal_spacing: 2.25
+  qualitative_multipliers:
+    compact: 0.8
+    normal: 1.0
+    spacious: 1.25
+baseline_safety_d_plan_s1: 2.0
+compact_unclipped_compatibility_ceiling: 1.8
+selection:
+  winner: &id001
+    nominal_spacing: 2.25
+    valid: true
+    separated: true
+    deviation: 0.25
+  candidates:
+  - nominal_spacing: 2.0
+    valid: true
+    separated: false
+    deviation: 0.0
+  - *id001
+  - nominal_spacing: 2.5
+    valid: true
+    separated: true
+    deviation: 0.5
+  - nominal_spacing: 2.75
+    valid: true
+    separated: true
+    deviation: 0.75
+  - nominal_spacing: 3.0
+    valid: true
+    separated: true
+    deviation: 1.0
+  fallback_multiplier_grid_used: false
+workspace_validation:
+  inset_center:
+  - 0.0
+  - 10.0
+  - 5.0
+  inset_scale_limit: 4.285714285714286
+  lower_face_center_rejected: true
+  upper_face_center_rejected: true
+  method: frozen workspace limiter at AABB faces plus C0-A documented ENU calibration
+    lanes
