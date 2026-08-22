@@ -65,6 +65,9 @@ def main():
         if snapshot is None: raise RuntimeError("Candidate-owned pre-command readiness timed out")
         ages = {str(uid): now - item.effective_timestamp for uid, item in snapshot.states.items()}
         record["snapshot_ages_s"] = ages; record["snapshot_skew_s"] = max(item.effective_timestamp for item in snapshot.states.values()) - min(item.effective_timestamp for item in snapshot.states.values())
+        # Carry the exact just-qualified C0-B snapshot across synchronous
+        # parsing/dispatch; PaperMissionRuntime validates participant equality.
+        node.paper_runtime.prime_dispatch_snapshot(ids, snapshot)
         record["execute_runtime_payload_entered"] = True
         execute_runtime_payload(node, payload)
         record["candidate_completed"] = True

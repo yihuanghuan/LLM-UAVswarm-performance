@@ -1,0 +1,25 @@
+checkpoint_status: C0_E_NOT_FROZEN
+canonical_policy_status: unchanged_paper_current_v9_c0_c_frozen
+parent_c0d_commit: e1f7a478b41702e5dcce1d461498f4af516f23b8
+c0b_frozen_policy_sha256: fdc7b3fd038ae623699eaefd131028d53a259c22507b320c2775369c23594884
+root_cause: PAPER_RUNTIME_HANDOFF_RACE
+preserved_derived_artifacts:
+  static_policy_check.csv: 3d796b5628e25f4fe81849e8c16486316be9f5199596917e09094b3ebea2f37c
+  r1_crossing_probe_summary.json: 55e0b7c6aa4813c922995958f560f47400ee3f75f4e48607d98ad186143b6dd9
+  r1_crossing_state_updates.csv: 4a4d08de7675a98e0e70e15074fca673c2201431edc4bf69cb9176b6423f6452
+  r1_crossing_snapshot_attempts.csv: 90eb0fb6336d597c538a1b4c98ef416eda6cdf1b26236accb8321d5c77420923
+raw_logs_not_committed:
+  - path: integrated_runtime_raw_post_idle_baseline_fix/compact_s1/scheduler.log
+    sha256: 1e2c563171128b2deca50a0cf615979e713905681a198f06d480a34d8b8cd62b
+  - path: integrated_runtime_raw_post_idle_baseline_fix/crossing_prone_s1/scheduler.log
+    sha256: 4fd7114fa290a8f2c9daf263775982347b6f01c5b24540c6fb9f2a22e0ea0d26
+  - path: r1_crossing_probe_retry_after_path_fix/
+    note: contains retained PX4/Gazebo/controller raw logs and derived probe CSVs
+current_c0e_owned_idle_iapf:
+  source: minisnap_LADRC/ladrc_controller/config/ladrc_params.yaml
+  values: {iapf_violation_distance: 1.5, iapf_enter_distance: 1.7, iapf_exit_distance: 1.8}
+  source_git_blob: f6d3e7dc6094d3ce969348e869a30ac47ffe7b4b
+tests:
+  - static production loader checks: PASS
+  - test_paper_runtime_fresh_snapshot.py: 6 PASS
+  - lfs_policy/test_policy_loader.py: 19 PASS

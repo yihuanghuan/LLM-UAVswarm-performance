@@ -46,9 +46,11 @@
     # IAPF runtime/idle baselines. Paper launch injects d_violation from the
     # selected policy; accepted Candidate commands supply compiled soft values.
     avoidance_mode: "iapf_dual"
-    iapf_violation_distance: 1.0
-    iapf_enter_distance: 1.5
-    iapf_exit_distance: 1.65
+    # C0-E-owned idle values must remain valid before the first compiled
+    # execution profile arrives from the C0-D/C0-E integrated policy.
+    iapf_violation_distance: 1.5
+    iapf_enter_distance: 1.7
+    iapf_exit_distance: 1.8
     iapf_filter_alpha: 0.20
     iapf_repulsion_gain: 25.0
     iapf_escape_mode: "id_order"

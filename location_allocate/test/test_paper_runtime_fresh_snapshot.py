@@ -113,7 +113,7 @@ def test_first_resolution_consumes_dispatch_snapshot_without_rechecking(monkeypa
         None, manager, {}, None, [1, 2],
     )
     ready = manager.snapshot([1, 2], 100.0)
-    candidate_runtime._dispatch_snapshot = ready
+    candidate_runtime.prime_dispatch_snapshot([1, 2], ready)
     monkeypatch.setattr(
         candidate_runtime,
         "_fresh_snapshot",
@@ -122,3 +122,14 @@ def test_first_resolution_consumes_dispatch_snapshot_without_rechecking(monkeypa
 
     assert candidate_runtime._snapshot_for_resolution([1]) is ready
     assert candidate_runtime._dispatch_snapshot is None
+
+
+def test_primed_dispatch_snapshot_rejects_wrong_participants():
+    manager = FreshStateSnapshotManager(0.1, 0.1)
+    manager.update(1, [0, 0, 1], 100.0, source_timestamp=100.0)
+    runtime_instance = PaperMissionRuntime(
+        Node(Clock()), SimpleNamespace(state=SimpleNamespace(fresh_state_wait_timeout=0.01)),
+        None, manager, {}, None, [1, 2],
+    )
+    with pytest.raises(ValueError, match="participants"):
+        runtime_instance.prime_dispatch_snapshot([1, 2], manager.snapshot([1], 100.0))

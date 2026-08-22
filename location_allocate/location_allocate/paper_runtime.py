@@ -35,6 +35,23 @@ class PaperMissionRuntime:
         # only.  It bridges the single-threaded parser-to-mission hand-off;
         # later mission nodes retain their normal C0-B freshness checks.
         self._dispatch_snapshot = None
+        self._dispatch_snapshot_participants = None
+
+    def prime_dispatch_snapshot(self, participant_ids, snapshot):
+        """Accept one just-qualified harness snapshot for first dispatch.
+
+        The caller must have obtained ``snapshot`` from this runtime's own
+        SnapshotManager under the frozen C0-B predicate immediately before
+        submission.  ``run`` verifies the participant set before consuming it;
+        this avoids a second freshness wait across the parser/dispatch boundary.
+        """
+        ids = tuple(sorted(int(uid) for uid in participant_ids))
+        if not ids or len(ids) != len(set(ids)):
+            raise ValueError("dispatch snapshot needs unique participants")
+        if set(snapshot.states) != set(ids):
+            raise ValueError("dispatch snapshot participants do not match")
+        self._dispatch_snapshot = snapshot
+        self._dispatch_snapshot_participants = ids
 
     def _fresh_snapshot(self, uav_ids):
         deadline = (
@@ -265,9 +282,10 @@ class PaperMissionRuntime:
         # and take one all-participant snapshot under the already frozen C0-B
         # predicates.  The first resolution consumes this exact snapshot, so
         # it cannot become stale merely by being checked a second time.
-        self._dispatch_snapshot = self._fresh_snapshot(
-            self._mission_participant_ids(validated)
-        )
+        participants = self._mission_participant_ids(validated)
+        if self._dispatch_snapshot_participants != participants:
+            self._dispatch_snapshot = self._fresh_snapshot(participants)
+            self._dispatch_snapshot_participants = participants
         self._mission_counter += 1
         mission_id = self._mission_counter
         group_counter = {"value": 0}
@@ -312,5 +330,6 @@ class PaperMissionRuntime:
             )
         finally:
             self._dispatch_snapshot = None
+            self._dispatch_snapshot_participants = None
         self.node.get_logger().info(f"Candidate mission {mission_id} completed")
         return compiled
