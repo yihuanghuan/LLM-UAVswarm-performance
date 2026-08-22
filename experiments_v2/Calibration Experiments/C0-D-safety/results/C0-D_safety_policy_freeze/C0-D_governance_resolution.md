@@ -1,6 +1,6 @@
 # C0-D governance resolution: planning-safety component boundary
 
-The original C0-D blocked audit is preserved as historical evidence. It correctly found that the composite of the C0-D candidate and the *old, provisional* C0-E IAPF policy cannot be loaded: the loader's strict inequality requires `d_hard < iapf_enter_min`, while both values were 1.50 m.
+The original [C0-D_freeze_report.md](C0-D_freeze_report.md) is preserved unchanged as historical blocked evidence. It is superseded for the final governance decision by this resolution and [C0-D_component_freeze_report.md](C0-D_component_freeze_report.md). It correctly found that the composite of the C0-D candidate and the *old, provisional* C0-E IAPF policy cannot be loaded: the loader's strict inequality requires `d_hard < iapf_enter_min`, while both values were 1.50 m.
 
 That condition was accidentally made a C0-D Stage-C selection criterion. It creates a circular calibration dependency: C0-D must determine the hard planning envelope before C0-E can select its downstream IAPF activation numerics, but C0-D was being required to remain compatible with those unselected numerics.
 

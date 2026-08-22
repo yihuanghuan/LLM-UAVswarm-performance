@@ -4,6 +4,9 @@
 contains the frozen C0-A LADRC/motion-limit package, frozen C0-B Candidate
 state-freshness package, and frozen C0-C geometry/qualitative-scale package;
 it is not a claim that the remaining calibration parameters are paper-final.
+The C0-D planning-safety component is frozen separately; it is deliberately not
+merged into this full-runtime policy until C0-E selects compatible provisional
+IAPF numerics.
 
 | Parameter | Current value | Current provenance | Status | Required calibration | Affects experiments |
 |---|---:|---|---|---|---|
@@ -12,13 +15,13 @@ it is not a claim that the remaining calibration parameters are paper-final.
 | workspace AABB | `[-15,-10,0.5]`–`[15,35,15]` m | C0-C accepted geometry/scale freeze | frozen | C0-C Stage A/B accepted | feasibility/rejection rate |
 | state timeout/skew/wait | `0.022080/0.022043/0.010000 s` | C0-B state-freshness freeze (P99 + 10 ms) | frozen | C0-B combined runtime freshness measurements | late-resolution availability |
 | v/a/j limits | `5/5/10` | C0-A frozen execution policy | frozen | C0-A Stage C validated execution-policy freeze | timing and trajectory metrics |
-| d_hard | `1.0 m` | `iapf_violation_distance` | provisional | vehicle geometry + localization/tracking error + reserve | all safety metrics |
+| d_hard | `1.50 m` | C0-D frozen planning-safety component | component-frozen | collision geometry + C0-A P99 tracking error + C0-B timeout travel | all safety metrics |
 | nominal spacing | `2.25 m` | C0-C accepted geometry/scale freeze | frozen | C0-C Stage A/B accepted | formation scale |
 | qualitative multipliers | `0.8/1/1.25` | C0-C accepted geometry/scale freeze | frozen | C0-C Stage A/B accepted | language-scale experiments |
-| d_plan base | `2.0 m` at s=1 | current planning-margin baseline | provisional | development scenarios independent of final tests | assignment safety |
+| d_plan base | `1.80 m` at s=1 | C0-D frozen planning-safety component | component-frozen | first descending C0-D planning/geometry-compatible candidate | assignment safety |
 | IAPF enter/exit | `1.5/1.65 m` at s=1 | controller baseline | provisional | collision-avoidance sweeps | avoidance activation |
 | IAPF repulsion scale | `1.0 + 0.25(s-1)` | conservative semantic-safety development mapping | provisional | targeted avoidance sweep without changing IAPF formula | avoidance strength |
-| s_max | `2.0` | current policy coverage | provisional | validate feasible workspace and controller clamp coverage | safety-factor experiments |
+| s_max | `2.00` | C0-D frozen planning-safety component | component-frozen | largest preregistered C0-D planning/geometry-feasible candidate | safety-factor experiments |
 | allocator comparison tolerance | `1e-6` | Paper policy `comparison_tolerance` | provisional | verify numerical stability on separate calibration scenarios, then lock before test set | floating-point lexicographic comparison only |
 | variable-duration numerical sample rate | `20 Hz` | Paper policy `sample_hz` | provisional | validate numerical closest-approach resolution on separate calibration scenarios, then lock before test set | variable-duration ParallelGroup assignment comparison |
 | minimum duration / auto style | `0.5 s / 1.30,1.15,1.10` (smooth, normal, aggressive) | 2026-08-14 motion-style development sweep; aggressive raised from 1.00 after saturation at the jerk boundary | provisional | broader displacement/payload sweep | completion-time results |
@@ -27,13 +30,13 @@ it is not a claim that the remaining calibration parameters are paper-final.
 | omega hard clamps | `0.75x–1.25x` baseline | bounded safety envelope around enabled styles | provisional safety boundary | stress invalid/out-of-family profiles | profile rejection/clamping |
 | profile apply smoothing | `1.0` | guarded atomic application baseline | provisional | dedicated repeated mid-flight switching study | switching transient |
 
-No parameter in this table may be described as experimentally tuned or paper-final without a new calibrated policy and a changed configuration ID/hash.
+No remaining provisional parameter in this table may be described as experimentally tuned or paper-final without its calibrated artifact. C0-D is component-frozen by its own policy/hash; a changed full-runtime configuration ID is deferred until C0-E integrates compatible IAPF numerics.
 
 The C0-A frozen policy also fixes its campaign inputs `b0=[1,1,1]`, control
 frequency `50 Hz`, and `control_mode=ladrc_acceleration`; these are immutable
-execution inputs rather than further calibration selectors.  C0-C geometry and
-qualitative-scale values are frozen; C0-D, C0-E, C0-F, and C0-G numerical
-parameters listed as provisional remain provisional.
+execution inputs rather than further calibration selectors. C0-C geometry and
+qualitative-scale values and the C0-D planning-safety component are frozen.
+C0-E IAPF numerics, C0-F, and C0-G numerical parameters remain provisional.
 
 The semantic motion-style architecture is frozen: `m` has one deterministic
 timing path for auto T and one deterministic controller-profile path. The

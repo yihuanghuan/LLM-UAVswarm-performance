@@ -1,5 +1,11 @@
 # C0-D planning-safety component freeze
 
+This final component-freeze report, together with
+[C0-D_governance_resolution.md](C0-D_governance_resolution.md), supersedes the
+governance conclusion of the preserved historical
+[C0-D_freeze_report.md](C0-D_freeze_report.md). The historical report and raw
+failed-load logs remain unchanged.
+
 ## Frozen component policy
 
 `d_hard=1.50 m`, `d_plan_base=1.80 m`, `s_min=1.0`, and `s_max=2.00` are frozen under `hard_anchored_linear` mapping.

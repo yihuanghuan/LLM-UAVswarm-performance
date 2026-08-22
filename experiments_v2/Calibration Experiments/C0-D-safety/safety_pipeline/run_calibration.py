@@ -2,6 +2,7 @@
 """Bounded C0-D safety calibration using frozen production policy/code."""
 from __future__ import annotations
 
+import argparse
 import csv
 import hashlib
 import math
@@ -104,8 +105,58 @@ def evaluate_candidate(d_hard, d_plan):
                          planning_margin_assignment_exists=a.last_diagnostics.get("planning_margin_satisfying_assignment_found")))
     return rows
 
+def run_stage_c(d_hard, d_plan_base):
+    """Evaluate only C0-D-owned planning/geometry requirements.
+
+    Old C0-E provisional clamp coverage remains a diagnostic so that the
+    historical integration block is reproducible, but is not a C0-D selector.
+    """
+    rows = []
+    for s in [2.0, 1.75, 1.5, 1.25]:
+        dplan = d_hard + s * (d_plan_base - d_hard)
+        geometry = []
+        for formation, count in (("Line", 3), ("Line", 5), ("Line", 8)):
+            unit = build_unit_geometry({"type": formation}, count)
+            geometry.append(bool(build_final_geometry(
+                (0., 10., 5.), unit, dplan,
+                ((-15., -10., .5), (15., 35., 15.)), dplan)))
+        # Diagnostic only: C0-E owns these provisional numbers.
+        p = yaml.safe_load(POLICY.read_text())
+        enter = d_hard + s * (p["safety"]["iapf_enter_base"] - d_hard)
+        exit_ = d_hard + s * (p["safety"]["iapf_exit_base"] - d_hard)
+        clamps = p["controller_hard_clamps"]
+        c0e_compile = (d_hard < clamps["iapf_enter_min"] <= enter <= clamps["iapf_enter_max"]
+                       and enter < exit_ <= clamps["iapf_exit_max"])
+        c0d_pass = (dplan > d_hard and all(geometry))
+        rows.append(dict(s_max_candidate=s, d_plan_at_smax=dplan,
+                         monotonic=True, d_plan_s1_equals_base=True,
+                         d_plan_gt_d_hard=dplan > d_hard,
+                         canonical_geometry_executable=all(geometry),
+                         workspace_systemic_rejection=False,
+                         provisional_iapf_clamp_compile=c0e_compile,
+                         c0d_selection_criterion="planning_geometry_only",
+                         result="PASS" if c0d_pass else "FAIL",
+                         selected=False))
+    winner = next(row for row in rows if row["result"] == "PASS")
+    winner["selected"] = True
+    with (RESULTS / "s_max_results.csv").open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=list(rows[0]), lineterminator="\n")
+        writer.writeheader(); writer.writerows(rows)
+    return winner["s_max_candidate"]
+
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--stage-c-only", action="store_true",
+                        help="regenerate C0-D-owned Stage-C evidence from the frozen component")
+    args = parser.parse_args()
     RESULTS.mkdir(parents=True, exist_ok=True)
+    if args.stage_c_only:
+        frozen = yaml.safe_load((RESULTS / "frozen_safety_policy.yaml").read_text())
+        selected = run_stage_c(float(frozen["d_hard"]), float(frozen["d_plan_base"]))
+        if selected != float(frozen["s_max"]):
+            raise SystemExit("C0-D Stage-C reproduction disagrees with frozen s_max")
+        print(f"C0-D Stage-C reproduction selected s_max={selected:.2f}")
+        return
     c0a_policy = C0A / "frozen_execution_policy.yaml"
     c0a_bags = sorted(C0A.glob("trials/C_selected_validation_*/runtime/raw/*/rosbag"))
     errors = [e for bag in c0a_bags for e in active_errors(bag)]
@@ -129,24 +180,7 @@ def main():
     if selected_plan is None: raise SystemExit("no compatible d_plan_base candidate")
     with (RESULTS / "planning_margin_results.csv").open("w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(planning_rows[0])); w.writeheader(); w.writerows(planning_rows)
-    srows=[]; selected_smax=None
-    for s in [2.0,1.75,1.5,1.25]:
-        dplan=d_hard+s*(selected_plan-d_hard)
-        geom=[]
-        for formation,count in (("Line",3),("Line",5),("Line",8)):
-            unit=build_unit_geometry({"type":formation},count)
-            targets=build_final_geometry((0.,10.,5.),unit,dplan,((-15.,-10.,.5),(15.,35.,15.)),dplan)
-            geom.append(bool(targets))
-        # Compile feasibility is checked against unchanged C0-E provisional hard clamps.
-        p=yaml.safe_load(POLICY.read_text()); enter=d_hard+s*(p["safety"]["iapf_enter_base"]-d_hard); exit_=d_hard+s*(p["safety"]["iapf_exit_base"]-d_hard)
-        clamps=p["controller_hard_clamps"]
-        compile_ok=d_hard < clamps["iapf_enter_min"] <= enter <= clamps["iapf_enter_max"] and enter < exit_ <= clamps["iapf_exit_max"]
-        row=dict(s_max_candidate=s,d_plan_at_smax=dplan, monotonic=True, d_plan_s1_equals_base=True, d_plan_gt_d_hard=dplan>d_hard, canonical_geometry_executable=all(geom), workspace_systemic_rejection=False, provisional_iapf_clamp_compile=compile_ok, result="PASS" if all(geom) and compile_ok else "FAIL")
-        srows.append(row)
-        if row["result"] == "PASS": selected_smax=s; break
-    with (RESULTS / "s_max_results.csv").open("w", newline="") as f:
-        w=csv.DictWriter(f,fieldnames=list(srows[0]));w.writeheader();w.writerows(srows)
-    if selected_smax is None: raise SystemExit("no s_max candidate compiles under frozen C0-E clamps")
+    selected_smax = run_stage_c(d_hard, selected_plan)
     frozen={"mapping_type":"hard_anchored_linear","d_hard":d_hard,"d_plan_base":selected_plan,"s_min":1.0,"s_max":selected_smax,"iapf_parameters_status":"C0-E provisional; not frozen or tuned by C0-D"}
     (RESULTS / "frozen_safety_policy.yaml").write_text(yaml.safe_dump(frozen,sort_keys=False))
     print(yaml.safe_dump(frozen,sort_keys=False))
