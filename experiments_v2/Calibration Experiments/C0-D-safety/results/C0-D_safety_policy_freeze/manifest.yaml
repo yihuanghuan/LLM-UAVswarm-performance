@@ -1,0 +1,46 @@
+calibration_id: C0-D-safety-v1
+freeze_status: BLOCKED_C0D_C0E_INTERFACE_CONFLICT
+parent_branch: cal/C0-C-geometry-scale
+parent_commit: d2d1c10302b1f43aa9229046a69ac92f8abb7d71
+current_commit_at_calibration: d2d1c10302b1f43aa9229046a69ac92f8abb7d71
+frozen_artifacts:
+  c0a_policy:
+    path: experiments_v2/Calibration Experiments/C0-A-ladrc-motion-limits/results/C0-A_motion_limits_freeze/frozen_execution_policy.yaml
+    sha256: 1ac009c4da6636fe4a3fcd8492fe9957e22bba94412e005a3555dd5985a5d325
+  c0b_policy:
+    path: experiments_v2/Calibration Experiments/C0-B-state-freshness/results/C0-B_state_freshness_freeze/frozen_state_freshness_policy.yaml
+    sha256: fdc7b3fd038ae623699eaefd131028d53a259c22507b320c2775369c23594884
+  c0c_policy:
+    path: experiments_v2/Calibration Experiments/C0-C-geometry-scale/results/C0-C_geometry_scale_freeze/frozen_geometry_policy.yaml
+    sha256: 25ab21d7cc688ba3f7e5e94124fdde88795075b263fddf30c41f2d47819a61fa
+algorithm_freeze_audit:
+  path: experiments-legacy/calibration/algorithm_freeze_manifest.json
+  sha256: e8ff8a27e65e1e62b031e50c6c4283b6f1b265a7051ad723c6a2ca3c032e102e
+  result: PASS
+candidate_grids:
+  d_plan_base_descending_m: [1.80, 1.70, 1.60, 1.50, 1.40, 1.30, 1.20, 1.10]
+  s_max_descending: [2.00, 1.75, 1.50, 1.25]
+selection_rules:
+  d_hard: retain 1.0 if sufficient; otherwise minimum 0.05-m round-up of physical requirement
+  d_plan_base: first descending candidate above d_hard that satisfies preregistered offline constraints
+  s_max: largest candidate that also compiles under unchanged C0-E provisional mapping/clamps
+stage_results:
+  proposed_d_hard_m: 1.50
+  proposed_d_plan_base_m: 1.80
+  selected_s_max: null
+  c0c_compact_compatibility_ceiling_m: 1.80
+  runtime_smoke_attempts: 2
+  runtime_smoke_result: BLOCKED_AT_CONTROLLER_POLICY_LOAD
+blocker:
+  invariant: d_hard < controller_hard_clamps.iapf_enter_min
+  proposed_d_hard_m: 1.50
+  unchanged_c0e_iapf_enter_min_m: 1.50
+  owner_of_needed_numeric_change: C0-E-iapf
+governance:
+  c0a_values_unchanged: true
+  c0b_values_unchanged: true
+  c0c_values_unchanged: true
+  allocator_objective_unchanged: true
+  geometry_logic_unchanged: true
+  iapf_parameters_unchanged_and_provisional: true
+  canonical_paper_policy_updated: false

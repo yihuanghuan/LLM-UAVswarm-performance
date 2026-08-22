@@ -1,0 +1,37 @@
+collision_radius_m:
+  value: 0.38353864678361277
+  method: max horizontal center offset + collision primitive radius
+  collision_primitive_radii_m:
+  - 0.3323401871576773
+  - 0.38353864678361277
+  - 0.36653720883753127
+  - 0.38353864678361277
+  - 0.36653720883753127
+  source_file: /home/yihuang/PX4-Autopilot/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/iris/iris.sdf
+  source_sha256: 18f07896a00dc54484eb86b035c20d428d186fdf5e1f086b7f22fdd103a24a25
+tracking_error_p99_m:
+  value: 0.2380183021913345
+  sample_count: 14985
+  bags: 36
+  source_glob: C0-A_motion_limits_freeze/trials/C_selected_validation_*/runtime/raw/*/rosbag
+  frozen_policy_sha256: 1ac009c4da6636fe4a3fcd8492fe9957e22bba94412e005a3555dd5985a5d325
+state_timeout_s:
+  value: 0.02208
+  source_file: /home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments_v2/Calibration
+    Experiments/C0-B-state-freshness/results/C0-B_state_freshness_freeze/frozen_state_freshness_policy.yaml
+  source_sha256: fdc7b3fd038ae623699eaefd131028d53a259c22507b320c2775369c23594884
+velocity_limit_mps:
+  value: 5.0
+  source_file: /home/yihuang/learning/LLM_swarm_ws/src/LLM-UAVswarm-performance/experiments_v2/Calibration
+    Experiments/C0-A-ladrc-motion-limits/results/C0-A_motion_limits_freeze/frozen_execution_policy.yaml
+  source_sha256: 1ac009c4da6636fe4a3fcd8492fe9957e22bba94412e005a3555dd5985a5d325
+formula: 2 * collision_radius + 2 * tracking_error_P99 + 2 * velocity_limit * state_timeout
+components_m:
+  collision: 0.7670772935672255
+  tracking: 0.476036604382669
+  timeout_travel: 0.2208
+derived_requirement_m: 1.4639138979498947
+rounding: up to 0.05 m
+selected_d_hard_m: 1.5
+selection_rule: retain provisional 1.0 m if it meets requirement; otherwise minimum
+  0.05 m round-up
