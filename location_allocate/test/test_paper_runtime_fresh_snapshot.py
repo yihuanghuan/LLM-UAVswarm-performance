@@ -85,3 +85,40 @@ def test_unavailable_snapshot_never_spins_past_deadline(monkeypatch):
         runtime(manager)._fresh_snapshot([1])
     assert requested == [pytest.approx(0.01)]
     assert monotonic.value == pytest.approx(0.01)
+
+
+def test_dispatch_snapshot_covers_all_mission_participants():
+    mission = {
+        "mission": {
+            "nodes": [
+                {"type": "task", "task": {"U": [2, 1]}},
+                {
+                    "type": "parallel",
+                    "tasks": [{"U": [3, 2]}, {"U": [4]}],
+                },
+            ]
+        }
+    }
+
+    assert PaperMissionRuntime._mission_participant_ids(mission) == (1, 2, 3, 4)
+
+
+def test_first_resolution_consumes_dispatch_snapshot_without_rechecking(monkeypatch):
+    manager = FreshStateSnapshotManager(0.1, 0.1)
+    manager.update(1, [0, 0, 1], 100.0, source_timestamp=100.0)
+    manager.update(2, [1, 0, 1], 100.0, source_timestamp=100.0)
+    candidate_runtime = PaperMissionRuntime(
+        Node(Clock()),
+        SimpleNamespace(state=SimpleNamespace(fresh_state_wait_timeout=0.01)),
+        None, manager, {}, None, [1, 2],
+    )
+    ready = manager.snapshot([1, 2], 100.0)
+    candidate_runtime._dispatch_snapshot = ready
+    monkeypatch.setattr(
+        candidate_runtime,
+        "_fresh_snapshot",
+        lambda _ids: pytest.fail("dispatch snapshot was checked twice"),
+    )
+
+    assert candidate_runtime._snapshot_for_resolution([1]) is ready
+    assert candidate_runtime._dispatch_snapshot is None

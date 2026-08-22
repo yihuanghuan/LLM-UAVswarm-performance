@@ -5,13 +5,14 @@ import time
 
 import rclpy
 
-from .candidate_mission_runtime import execute_candidate_payload
+from .candidate_mission_runtime import candidate_relation_policy
 from .execution_command_builder import (
     build_parallel_command_batch,
     build_task_command_batch,
 )
 from .late_resolution import resolve_execution_parallel, resolve_execution_task
-from .mission_executor import MissionRuntimeCallbacks
+from .mission_compiler import compile_candidate_mission
+from .mission_executor import MissionRuntimeCallbacks, execute_compiled_mission
 from .paper_lfs_validator import early_validate_candidate_mission
 from .state_snapshot import SnapshotError
 from .trace_logger import append_resolution_trace
@@ -30,6 +31,10 @@ class PaperMissionRuntime:
         self.completion_tracker = completion_tracker
         self.available_uav_ids = tuple(available_uav_ids)
         self._mission_counter = 0
+        # A dispatch readiness snapshot is consumed by the first resolution
+        # only.  It bridges the single-threaded parser-to-mission hand-off;
+        # later mission nodes retain their normal C0-B freshness checks.
+        self._dispatch_snapshot = None
 
     def _fresh_snapshot(self, uav_ids):
         deadline = (
@@ -56,6 +61,29 @@ class PaperMissionRuntime:
             f"fresh state wait timed out: {last_error or 'no state'}"
         )
 
+    @staticmethod
+    def _mission_participant_ids(validated_mission):
+        """Return the unique UAVs that must be ready before dispatch."""
+        participants = []
+        for mission_node in validated_mission["mission"]["nodes"]:
+            tasks = (
+                [mission_node["task"]]
+                if mission_node["type"] == "task"
+                else mission_node["tasks"]
+            )
+            participants.extend(
+                int(uid) for task in tasks for uid in task["U"]
+            )
+        return tuple(sorted(set(participants)))
+
+    def _snapshot_for_resolution(self, uav_ids):
+        """Use the just-validated dispatch snapshot for the first command."""
+        snapshot = self._dispatch_snapshot
+        self._dispatch_snapshot = None
+        if snapshot is not None and set(uav_ids).issubset(snapshot.states):
+            return snapshot
+        return self._fresh_snapshot(uav_ids)
+
     def _publish_commands(self, commands):
         self.completion_tracker.arm(command.uav_id for command in commands)
         for command in commands:
@@ -67,7 +95,7 @@ class PaperMissionRuntime:
             self.publishers[int(command.uav_id)].publish(command)
 
     def _resolve_task(self, task, mission_id, group_id=0):
-        snapshot = self._fresh_snapshot(task["U"])
+        snapshot = self._snapshot_for_resolution(task["U"])
         resolved = resolve_execution_task(
             task, snapshot, self.candidate_policy
         )
@@ -81,7 +109,7 @@ class PaperMissionRuntime:
 
     def _resolve_parallel(self, tasks, mission_id, group_id, completion_mode):
         participant_ids = [uid for task in tasks for uid in task["U"]]
-        snapshot = self._fresh_snapshot(participant_ids)
+        snapshot = self._snapshot_for_resolution(participant_ids)
         group_d_plan = max(
             self.candidate_policy.resolve_safety(float(task["s"])).d_plan
             for task in tasks
@@ -230,6 +258,16 @@ class PaperMissionRuntime:
             tasks = [node["task"]] if node["type"] == "task" else node["tasks"]
             for task in tasks:
                 self.candidate_policy.resolve_safety(float(task["s"]))
+        compiled = compile_candidate_mission(
+            validated, candidate_relation_policy()
+        )
+        # Keep ROS callbacks serviced through the parser/mission transition
+        # and take one all-participant snapshot under the already frozen C0-B
+        # predicates.  The first resolution consumes this exact snapshot, so
+        # it cannot become stale merely by being checked a second time.
+        self._dispatch_snapshot = self._fresh_snapshot(
+            self._mission_participant_ids(validated)
+        )
         self._mission_counter += 1
         mission_id = self._mission_counter
         group_counter = {"value": 0}
@@ -263,14 +301,16 @@ class PaperMissionRuntime:
                 raise ValueError("unsupported internal WaitSpec")
             self._wait_elapsed(wait_spec.duration)
 
-        compiled = execute_candidate_payload(
-            validated,
-            MissionRuntimeCallbacks(
-                execute_task=execute_task,
-                execute_parallel=execute_parallel,
-                execute_wait=execute_wait,
-            ),
-            available_uav_ids=self.available_uav_ids,
-        )
+        try:
+            execute_compiled_mission(
+                compiled,
+                MissionRuntimeCallbacks(
+                    execute_task=execute_task,
+                    execute_parallel=execute_parallel,
+                    execute_wait=execute_wait,
+                ),
+            )
+        finally:
+            self._dispatch_snapshot = None
         self.node.get_logger().info(f"Candidate mission {mission_id} completed")
         return compiled
