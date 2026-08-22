@@ -1,3 +1,3 @@
 attempt,uav_count,s,candidate_completed,workspace_rejection,freshness_failure,integration_result,failure_reason,raw_log_dir
-compact_s1,8,1.0,False,False,False,FAIL,"controller launch rejected candidate policy: safety ordering or IAPF hysteresis is invalid (d_hard=1.50 m is not strictly below unchanged C0-E iapf_enter_min=1.50 m)",runtime_raw/compact_s1
-crossing_prone_s1,8,1.0,False,False,False,FAIL,"controller launch rejected candidate policy: safety ordering or IAPF hysteresis is invalid (d_hard=1.50 m is not strictly below unchanged C0-E iapf_enter_min=1.50 m)",runtime_raw/crossing_prone_s1
+compact_s1,8,1.0,False,False,False,integration_blocked_by_downstream_provisional_iapf_policy,"policy-load rejection before physical execution: strict d_hard < iapf_enter_min failed for C0-D 1.50 m plus old C0-E provisional 1.50 m",runtime_raw/compact_s1
+crossing_prone_s1,8,1.0,False,False,False,integration_blocked_by_downstream_provisional_iapf_policy,"policy-load rejection before physical execution: strict d_hard < iapf_enter_min failed for C0-D 1.50 m plus old C0-E provisional 1.50 m",runtime_raw/crossing_prone_s1

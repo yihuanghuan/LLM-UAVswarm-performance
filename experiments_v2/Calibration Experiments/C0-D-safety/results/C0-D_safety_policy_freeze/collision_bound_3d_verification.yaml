@@ -1,0 +1,58 @@
+method: collision geometry only; exact maximum Euclidean norm from model origin to
+  each axis-aligned collision primitive
+distance_semantics: 3-D Euclidean center-to-collision-extent, matching paper inter-agent
+  distance
+source_file: /home/yihuang/PX4-Autopilot/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/iris/iris.sdf
+source_sha256: 18f07896a00dc54484eb86b035c20d428d186fdf5e1f086b7f22fdd103a24a25
+primitives:
+- link: base_link
+  collision: base_link_inertia_collision
+  type: box
+  pose_xyz_m:
+  - 0.0
+  - 0.0
+  - 0.0
+  center_to_collision_extent_3d_m: 0.33686050525402944
+- link: rotor_0
+  collision: rotor_0_collision
+  type: cylinder
+  pose_xyz_m:
+  - 0.13
+  - -0.22
+  - 0.023
+  center_to_collision_extent_3d_m: 0.38438541020257894
+- link: rotor_1
+  collision: rotor_1_collision
+  type: cylinder
+  pose_xyz_m:
+  - -0.13
+  - 0.2
+  - 0.023
+  center_to_collision_extent_3d_m: 0.36742315586038937
+- link: rotor_2
+  collision: rotor_2_collision
+  type: cylinder
+  pose_xyz_m:
+  - 0.13
+  - 0.22
+  - 0.023
+  center_to_collision_extent_3d_m: 0.38438541020257894
+- link: rotor_3
+  collision: rotor_3_collision
+  type: cylinder
+  pose_xyz_m:
+  - -0.13
+  - -0.2
+  - 0.023
+  center_to_collision_extent_3d_m: 0.36742315586038937
+selected_3d_collision_radius_m: 0.38438541020257894
+previous_horizontal_radius_m: 0.38353864678361277
+difference_m: 0.0008467634189661677
+stage_a_inputs_unchanged:
+  tracking_error_p99_m: 0.2380183021913345
+  velocity_limit_mps: 5.0
+  state_timeout_s: 0.02208
+formula: 2 * collision_radius + 2 * tracking_error_P99 + 2 * velocity_limit * state_timeout
+derived_requirement_m: 1.465607424787827
+rounded_d_hard_m: 1.5
+conclusion: 3-D correction does not change the 0.05-m rounded C0-D d_hard

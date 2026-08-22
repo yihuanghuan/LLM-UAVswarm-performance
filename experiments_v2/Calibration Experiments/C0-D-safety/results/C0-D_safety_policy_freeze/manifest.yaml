@@ -1,5 +1,5 @@
 calibration_id: C0-D-safety-v1
-freeze_status: BLOCKED_C0D_C0E_INTERFACE_CONFLICT
+freeze_status: COMPONENT_FROZEN_C0D_PLANNING_SAFETY
 parent_branch: cal/C0-C-geometry-scale
 parent_commit: d2d1c10302b1f43aa9229046a69ac92f8abb7d71
 current_commit_at_calibration: d2d1c10302b1f43aa9229046a69ac92f8abb7d71
@@ -23,19 +23,32 @@ candidate_grids:
 selection_rules:
   d_hard: retain 1.0 if sufficient; otherwise minimum 0.05-m round-up of physical requirement
   d_plan_base: first descending candidate above d_hard that satisfies preregistered offline constraints
-  s_max: largest candidate that also compiles under unchanged C0-E provisional mapping/clamps
+  s_max: largest candidate satisfying C0-D-owned planning and canonical-geometry requirements
 stage_results:
-  proposed_d_hard_m: 1.50
-  proposed_d_plan_base_m: 1.80
-  selected_s_max: null
+  selected_d_hard_m: 1.50
+  selected_d_plan_base_m: 1.80
+  selected_s_max: 2.00
   c0c_compact_compatibility_ceiling_m: 1.80
   runtime_smoke_attempts: 2
-  runtime_smoke_result: BLOCKED_AT_CONTROLLER_POLICY_LOAD
-blocker:
+  runtime_smoke_result: DEFERRED_TO_C0E_INTEGRATION
+preserved_blocked_audit:
+  result: historical evidence retained unchanged
+  cause: old C0-E provisional iapf_enter_min equals C0-D candidate d_hard
   invariant: d_hard < controller_hard_clamps.iapf_enter_min
   proposed_d_hard_m: 1.50
   unchanged_c0e_iapf_enter_min_m: 1.50
   owner_of_needed_numeric_change: C0-E-iapf
+component_freeze:
+  policy_path: experiments_v2/Calibration Experiments/C0-D-safety/results/C0-D_safety_policy_freeze/frozen_safety_policy.yaml
+  policy_sha256: 901bc58803ace3ae8d858996e67065710920b62dda04f12c7c60e7ad1b4fd563
+  collision_3d_verification_path: experiments_v2/Calibration Experiments/C0-D-safety/results/C0-D_safety_policy_freeze/collision_bound_3d_verification.yaml
+  collision_3d_verification_sha256: 294ae1641800b51918f68b5ae47ba88bc8e4e8fd9ab4f85f823f88c8e0c5ef64
+  governance_resolution_path: experiments_v2/Calibration Experiments/C0-D-safety/results/C0-D_safety_policy_freeze/C0-D_governance_resolution.md
+  governance_resolution_sha256: 902b7d4afb590233a7d6b0abac2d1d9dfdf632460142f29563625bce94222600
+  component_report_path: experiments_v2/Calibration Experiments/C0-D-safety/results/C0-D_safety_policy_freeze/C0-D_component_freeze_report.md
+  component_report_sha256: 773201d13c03050a0452ebdc31fa2376149ec263bb873955bbfd3d0c9f32c47b
+  full_runtime_canonical_policy: paper-current-v9-c0-c-frozen
+  full_runtime_canonical_policy_updated: false
 governance:
   c0a_values_unchanged: true
   c0b_values_unchanged: true
@@ -44,3 +57,4 @@ governance:
   geometry_logic_unchanged: true
   iapf_parameters_unchanged_and_provisional: true
   canonical_paper_policy_updated: false
+  production_loader_inequalities_unchanged: true
