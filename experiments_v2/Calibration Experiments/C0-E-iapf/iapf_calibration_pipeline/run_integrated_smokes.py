@@ -15,7 +15,6 @@ RESULTS = PIPELINE.parent / "results" / "C0-E_iapf_freeze"
 PX4 = Path("/home/yihuang/PX4-Autopilot")
 PYTHON = WORKSPACE / "llm_env/bin/python"
 READY = REPO / "experiments-legacy/system_8uav/scripts/wait_swarm_ready.py"
-PREWARM = REPO / "experiments_v2/Calibration Experiments/C0-C-geometry-scale/geometry_scale_pipeline/candidate_owned_prewarm.py"
 POLICY = REPO / "lfs_policy/config/lfs_policy.paper_current.yaml"
 CASES = (
     ("compact_s1", 1.0, "Have UAVs 1 through 8 form a line with compact qualitative scale centered at [0, 12, 3] with automatic duration, using normal motion and safety factor 1.0."),
@@ -63,7 +62,7 @@ def main():
             (output / "readiness.log").write_text(ready.stdout + ready.stderr)
             if ready.returncode:
                 raise RuntimeError("readiness gate failed")
-            job = subprocess.run([str(PYTHON), str(PREWARM), "--uav-ids", "1,2,3,4,5,6,7,8", "--policy", str(POLICY), "--command", command], cwd=REPO, text=True, capture_output=True, timeout=300)
+            job = subprocess.run([str(PYTHON), "-m", "location_allocate.candidate_dispatch", "--uav-ids", "1,2,3,4,5,6,7,8", "--policy", str(POLICY), "--command", command], cwd=REPO, text=True, capture_output=True, timeout=300)
             text = job.stdout + job.stderr; (output / "scheduler.log").write_text(text)
             if job.returncode or '"candidate_completed": true' not in text:
                 raise RuntimeError("Candidate mission did not complete")

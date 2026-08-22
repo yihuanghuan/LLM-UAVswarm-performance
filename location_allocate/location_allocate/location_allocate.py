@@ -48,6 +48,9 @@ class UAVFormationNode(Node):
         self.declare_parameter("lfs_policy_file", "")
         self.declare_parameter("uav_ids", ALL_UAV_IDS)
         self.declare_parameter("candidate_completion_timeout", 120.0)
+        # Orchestration readiness only. Accepted snapshots still use the
+        # frozen C0-B state_timeout/skew predicate without alteration.
+        self.declare_parameter("candidate_dispatch_readiness_timeout", 15.0)
         self.declare_parameter("candidate_state_timeout", -1.0)
         self.declare_parameter("candidate_snapshot_skew", -1.0)
 

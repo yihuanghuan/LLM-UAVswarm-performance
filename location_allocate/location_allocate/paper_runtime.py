@@ -78,6 +78,24 @@ class PaperMissionRuntime:
             f"fresh state wait timed out: {last_error or 'no state'}"
         )
 
+    def _await_dispatch_snapshot(self, uav_ids):
+        """Shared cold-start orchestration wait using only C0-B snapshots."""
+        timeout = float(
+            self.node.get_parameter("candidate_dispatch_readiness_timeout").value
+        )
+        deadline = time.monotonic() + timeout
+        last_error = None
+        while time.monotonic() < deadline:
+            now = self.node.get_clock().now().nanoseconds / 1e9
+            try:
+                return self.snapshot_manager.snapshot(uav_ids, now)
+            except SnapshotError as exc:
+                last_error = exc
+            rclpy.spin_once(self.node, timeout_sec=min(0.05, deadline - time.monotonic()))
+        raise RuntimeError(
+            f"dispatch readiness timed out: {last_error or 'no fresh snapshot'}"
+        )
+
     @staticmethod
     def _mission_participant_ids(validated_mission):
         """Return the unique UAVs that must be ready before dispatch."""
@@ -284,7 +302,7 @@ class PaperMissionRuntime:
         # it cannot become stale merely by being checked a second time.
         participants = self._mission_participant_ids(validated)
         if self._dispatch_snapshot_participants != participants:
-            self._dispatch_snapshot = self._fresh_snapshot(participants)
+            self._dispatch_snapshot = self._await_dispatch_snapshot(participants)
             self._dispatch_snapshot_participants = participants
         self._mission_counter += 1
         mission_id = self._mission_counter

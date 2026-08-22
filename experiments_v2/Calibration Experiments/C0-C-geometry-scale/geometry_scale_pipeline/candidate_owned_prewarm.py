@@ -52,17 +52,9 @@ def main():
         record.update(state_timeout_s=state.state_timeout, snapshot_skew_threshold_s=state.snapshot_skew,
                       fresh_state_wait_timeout_s=state.fresh_state_wait_timeout)
         started = time.monotonic(); record["candidate_readiness_start_utc"] = datetime.now(timezone.utc).isoformat()
-        snapshot = None
-        while time.monotonic() - started < args.timeout:
-            rclpy.spin_once(node, timeout_sec=0.05)
-            now = node.get_clock().now().nanoseconds / 1e9
-            try:
-                snapshot = node.snapshot_manager.snapshot(ids, now); break
-            except SnapshotError:
-                pass
+        snapshot = node.paper_runtime._await_dispatch_snapshot(ids)
         record["candidate_readiness_duration_s"] = time.monotonic() - started
         record["candidate_readiness_end_utc"] = datetime.now(timezone.utc).isoformat()
-        if snapshot is None: raise RuntimeError("Candidate-owned pre-command readiness timed out")
         ages = {str(uid): now - item.effective_timestamp for uid, item in snapshot.states.items()}
         record["snapshot_ages_s"] = ages; record["snapshot_skew_s"] = max(item.effective_timestamp for item in snapshot.states.values()) - min(item.effective_timestamp for item in snapshot.states.values())
         # Carry the exact just-qualified C0-B snapshot across synchronous
