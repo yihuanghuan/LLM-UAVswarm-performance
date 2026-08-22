@@ -30,7 +30,9 @@ The canonical policy is `paper-current-v9-c0-c-frozen`.  It freezes the
 accepted C0-C values: workspace lower `[-15.0, -10.0, 0.5]`, workspace upper
 `[15.0, 35.0, 15.0]`, nominal spacing `2.25 m`, and
 compact/normal/spacious multipliers `0.8/1.0/1.25`.  Its SHA-256 is recorded
-in `manifest.yaml` with this integration.
+in `manifest.yaml` with this integration.  Stage A/B evidence was recorded at
+`3a6f7fb09e2aa9432d82202d4b5efd843d1c5f25`; canonical policy integration was
+completed later at `7b5741267a56a75583f9683268cff2728426b0be`.
 
 ## Runtime compatibility correction
 
