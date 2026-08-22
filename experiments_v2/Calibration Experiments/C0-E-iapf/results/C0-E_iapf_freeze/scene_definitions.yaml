@@ -1,0 +1,74 @@
+schema_version: c0e-calibration-scenes-v1
+score_rule: >-
+  Score from the first interaction execution-command timestamp through the
+  maximum interaction profile duration. Staging nodes are excluded.
+sign_convention: >-
+  For critical pair (i,j), relative_position=p_i-p_j and
+  relative_velocity=v_i-v_j. Their dot product is negative while closing and
+  positive while separating.
+common:
+  stage_s: 1.0
+  motion_style: normal
+  duration_s: 8.0
+  formation_pair_radius_m: 0.9
+  initial_safety_rule: all scored-start pair distances > 1.50 m
+scenes:
+  S1:
+    family: head_on_closing
+    participants: [1, 2, 3, 4]
+    staging:
+      - {ids: [1, 2], formation: Line, center: [-4.0, -0.775, 3.0]}
+      - {ids: [3, 4], formation: Line, center: [4.0, 0.775, 3.0]}
+    interaction:
+      - {ids: [1, 2], formation: Line, center: [4.0, -0.775, 3.0]}
+      - {ids: [3, 4], formation: Line, center: [-4.0, 0.775, 3.0]}
+    critical_pair_candidates: [[1, 3], [1, 4], [2, 3], [2, 4]]
+    expected: opposite x motion; closing dot < 0; lateral offset <= 1.70 m
+  S2:
+    family: offset_crossing
+    participants: [1, 2, 3, 4]
+    staging:
+      - {ids: [1, 2], formation: Line, center: [-4.0, 0.0, 3.0]}
+      - {ids: [3, 4], formation: Sphere, center: [2.25, -4.0, 3.0]}
+    interaction:
+      - {ids: [1, 2], formation: Line, center: [0.0, 0.0, 3.0]}
+      - {ids: [3, 4], formation: Sphere, center: [2.25, 0.0, 3.0]}
+    critical_pair_candidates: [[1, 3], [1, 4], [2, 3], [2, 4]]
+    expected: near-perpendicular xy motion; nonzero lateral miss; closing before closest approach
+  S3:
+    family: vertical_crossing
+    participants: [1, 2, 3, 4]
+    staging:
+      - {ids: [1, 2], formation: Line, center: [-4.0, -0.775, 2.0]}
+      - {ids: [3, 4], formation: Line, center: [4.0, 0.775, 6.0]}
+    interaction:
+      - {ids: [1, 2], formation: Line, center: [4.0, -0.775, 6.0]}
+      - {ids: [3, 4], formation: Line, center: [-4.0, 0.775, 2.0]}
+    critical_pair_candidates: [[1, 3], [1, 4], [2, 3], [2, 4]]
+    expected: opposing x and z motion; nonzero relative vertical speed
+  S4:
+    family: dense_interaction
+    participants: [1, 2, 3, 4, 5, 6, 7, 8]
+    staging:
+      - {ids: [1, 2], formation: Line, center: [-5.0, -2.37, 3.0]}
+      - {ids: [3, 4], formation: Line, center: [5.0, -0.79, 3.0]}
+      - {ids: [5, 6], formation: Line, center: [-5.0, 0.79, 3.0]}
+      - {ids: [7, 8], formation: Line, center: [5.0, 2.37, 3.0]}
+    interaction:
+      - {ids: [1, 2], formation: Line, center: [5.0, -2.37, 3.0]}
+      - {ids: [3, 4], formation: Line, center: [-5.0, -0.79, 3.0]}
+      - {ids: [5, 6], formation: Line, center: [5.0, 0.79, 3.0]}
+      - {ids: [7, 8], formation: Line, center: [-5.0, 2.37, 3.0]}
+    critical_pair_candidates: [[1, 3], [2, 4], [3, 5], [4, 6], [5, 7], [6, 8]]
+    expected: multiple simultaneous soft-region neighbor pairs; all initially safe
+  S5:
+    family: already_separating
+    participants: [1, 2, 3, 4]
+    staging:
+      - {ids: [1, 2], formation: Line, center: [0.0, -0.9, 3.0]}
+      - {ids: [3, 4], formation: Line, center: [0.0, 0.9, 3.0]}
+    interaction:
+      - {ids: [1, 2], formation: Line, center: [0.0, -4.0, 3.0]}
+      - {ids: [3, 4], formation: Line, center: [0.0, 4.0, 3.0]}
+    critical_pair_candidates: [[1, 3], [1, 4], [2, 3], [2, 4]]
+    expected: critical pair starts at 1.80 m then separates; dot > 0 after motion begins

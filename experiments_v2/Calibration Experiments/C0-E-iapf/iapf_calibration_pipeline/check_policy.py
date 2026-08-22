@@ -49,7 +49,9 @@ def main() -> int:
                      "k_rep": f"{repulsion:.6f}", "pass": str(passed).upper()})
     args.csv.parent.mkdir(parents=True, exist_ok=True)
     with args.csv.open("w", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=rows[0].keys())
+        writer = csv.DictWriter(
+            handle, fieldnames=rows[0].keys(), lineterminator="\n"
+        )
         writer.writeheader(); writer.writerows(rows)
     if not all(row["pass"] == "TRUE" for row in rows):
         raise SystemExit("C0-E static mapping check failed")

@@ -162,3 +162,101 @@ def test_primed_dispatch_snapshot_rejects_wrong_participants():
     )
     with pytest.raises(ValueError, match="participants"):
         runtime_instance.prime_dispatch_snapshot([1, 2], manager.snapshot([1], 100.0))
+
+
+def test_command_publish_waits_for_controller_subscription(monkeypatch):
+    manager = FreshStateSnapshotManager(0.1, 0.1)
+    monotonic = Monotonic()
+    events = []
+
+    class Publisher:
+        matched = False
+
+        def get_subscription_count(self):
+            return int(self.matched)
+
+        def publish(self, command):
+            events.append(("publish", command.uav_id))
+
+    class Tracker:
+        def arm(self, ids):
+            events.append(("arm", tuple(ids)))
+
+    publisher = Publisher()
+    candidate_runtime = PaperMissionRuntime(
+        Node(Clock()),
+        SimpleNamespace(state=SimpleNamespace(fresh_state_wait_timeout=0.01)),
+        None, manager, {1: publisher}, Tracker(), [1],
+    )
+
+    def spin(_node, timeout_sec):
+        events.append(("spin", timeout_sec))
+        monotonic.value += 0.001
+        publisher.matched = True
+
+    monkeypatch.setattr("location_allocate.paper_runtime.time.monotonic", monotonic)
+    monkeypatch.setattr("location_allocate.paper_runtime.rclpy.spin_once", spin)
+    candidate_runtime._publish_commands([SimpleNamespace(uav_id=1)])
+
+    assert events[0][0] == "spin"
+    assert events[1:] == [("arm", (1,)), ("publish", 1)]
+
+
+def test_command_publish_does_not_mistake_bag_recorder_for_controller(monkeypatch):
+    manager = FreshStateSnapshotManager(0.1, 0.1)
+    monotonic = Monotonic()
+    events = []
+
+    class Publisher:
+        def get_subscription_count(self):
+            return 1
+
+        def publish(self, command):
+            events.append(("publish", command.uav_id))
+
+    class Tracker:
+        def arm(self, ids):
+            events.append(("arm", tuple(ids)))
+
+    class EndpointNode(Node):
+        def __init__(self, clock):
+            super().__init__(clock)
+            self.controller_ready = False
+
+        def get_subscriptions_info_by_topic(self, _topic):
+            endpoints = [
+                SimpleNamespace(
+                    node_name="rosbag2_recorder", node_namespace="/"
+                )
+            ]
+            if self.controller_ready:
+                endpoints.append(
+                    SimpleNamespace(
+                        node_name="ladrc_position_controller_node",
+                        node_namespace="/uav1",
+                    )
+                )
+            return endpoints
+
+    node = EndpointNode(Clock())
+    candidate_runtime = PaperMissionRuntime(
+        node,
+        SimpleNamespace(state=SimpleNamespace(fresh_state_wait_timeout=0.01)),
+        None,
+        manager,
+        {1: Publisher()},
+        Tracker(),
+        [1],
+    )
+
+    def spin(_node, timeout_sec):
+        events.append(("spin", timeout_sec))
+        monotonic.value += 0.001
+        node.controller_ready = True
+
+    monkeypatch.setattr("location_allocate.paper_runtime.time.monotonic", monotonic)
+    monkeypatch.setattr("location_allocate.paper_runtime.rclpy.spin_once", spin)
+    candidate_runtime._publish_commands([SimpleNamespace(uav_id=1)])
+
+    assert events[0][0] == "spin"
+    assert events[1:] == [("arm", (1,)), ("publish", 1)]

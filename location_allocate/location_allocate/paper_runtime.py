@@ -120,6 +120,51 @@ class PaperMissionRuntime:
         return self._fresh_snapshot(uav_ids)
 
     def _publish_commands(self, commands):
+        # A freshly-created non-interactive candidate_dispatch node can obtain
+        # a valid state snapshot before DDS discovery has matched every
+        # execution-command publisher to its long-running controller. A
+        # best-effort publish in that window is silently lost. Gate only this
+        # transport handoff; the frozen C0-B state predicate is unchanged.
+        deadline = (
+            time.monotonic()
+            + float(self.node.get_parameter(
+                "candidate_dispatch_readiness_timeout"
+            ).value)
+        )
+        def controller_subscription_ready(uav_id):
+            topic = f"/uav{uav_id}/execution_command"
+            endpoint_query = getattr(
+                self.node, "get_subscriptions_info_by_topic", None
+            )
+            if endpoint_query is not None:
+                expected_namespace = f"/uav{uav_id}"
+                return any(
+                    str(info.node_namespace).rstrip("/")
+                    == expected_namespace
+                    for info in endpoint_query(topic)
+                )
+            publisher = self.publishers[uav_id]
+            return (
+                not hasattr(publisher, "get_subscription_count")
+                or publisher.get_subscription_count() >= 1
+            )
+
+        while True:
+            unmatched = [
+                int(command.uav_id) for command in commands
+                if int(command.uav_id) in self.publishers
+                and not controller_subscription_ready(int(command.uav_id))
+            ]
+            if not unmatched:
+                break
+            remaining = deadline - time.monotonic()
+            if remaining <= 0.0:
+                raise RuntimeError(
+                    f"execution command subscribers not ready: {unmatched}"
+                )
+            rclpy.spin_once(
+                self.node, timeout_sec=min(0.05, remaining)
+            )
         self.completion_tracker.arm(command.uav_id for command in commands)
         for command in commands:
             if int(command.uav_id) not in self.publishers:

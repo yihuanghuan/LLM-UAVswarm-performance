@@ -1,77 +1,233 @@
 #!/usr/bin/env python3
-"""Minimal, reproducible C0-E runtime calibration campaign.
-
-Each invocation is a cold-start production Candidate dispatch trial.  The
-runner never replaces a trial directory and retains startup/mission failures
-as first-class rows.  It intentionally does not implement avoidance or
-trajectory equations: PX4/Gazebo, LADRC and candidate_dispatch are used
-unchanged.
-"""
+"""Run one immutable, cold-start C0-E trial on the production Candidate path."""
 from __future__ import annotations
-import argparse, csv, hashlib, json, os, signal, subprocess, sys, time
+
+import argparse
 from datetime import datetime, timezone
+import hashlib
+import json
+import os
 from pathlib import Path
+import signal
+import subprocess
+import time
+
 import yaml
 
 PIPE = Path(__file__).resolve().parent
 REPO = PIPE.parents[3]
 WORKSPACE = REPO.parents[1]
 RESULTS = PIPE.parent / "results" / "C0-E_iapf_freeze"
+SCENES_FILE = RESULTS / "scene_definitions.yaml"
 PX4 = Path("/home/yihuang/PX4-Autopilot")
 PYTHON = WORKSPACE / "llm_env/bin/python"
 READY = REPO / "experiments-legacy/system_8uav/scripts/wait_swarm_ready.py"
+EXTRACT = PIPE / "extract_trial_metrics.py"
 
-# Independent diagnostic calibration scenes.  Commands are deterministic
-# specifications (Candidate parser temperature is fixed at production 0).
-SCENES = {
- "S1": {"ids":"1,2,3,4,5,6,7,8", "command":"Have UAVs 1 through 8 form a line with compact qualitative scale centered at [0, 12, 3] with automatic duration, using normal motion and safety factor {s}.", "family":"head-on"},
- "S2": {"ids":"1,2,3,4,5,6,7,8", "command":"Have UAVs 1 through 8 form a circle with normal qualitative scale centered at [0, 12, 3] with automatic duration, using normal motion and safety factor {s}.", "family":"offset-crossing"},
- "S3": {"ids":"1,2,3,4,5,6,7,8", "command":"Have UAVs 1 through 8 form a vertical line with normal qualitative scale centered at [0, 12, 5] with automatic duration, using normal motion and safety factor {s}.", "family":"vertical-crossing"},
- "S4": {"ids":"1,2,3,4,5,6,7,8", "command":"Have UAVs 1 through 8 form a circle with compact qualitative scale centered at [0, 12, 3] with automatic duration, using normal motion and safety factor {s}.", "family":"dense"},
- "S5": {"ids":"1,2,3,4,5,6,7,8", "command":"Have UAVs 1 through 8 form a line with spacious qualitative scale centered at [0, 12, 3] with automatic duration, using normal motion and safety factor {s}.", "family":"already-separating"},
-}
 
-def sha(path):
- h=hashlib.sha256(); h.update(Path(path).read_bytes()); return h.hexdigest()
-def stop(p):
- if p and p.poll() is None:
-  os.killpg(p.pid, signal.SIGINT)
-  try: p.wait(25)
-  except subprocess.TimeoutExpired: os.killpg(p.pid, signal.SIGKILL); p.wait(10)
-def ros_env():
- out=subprocess.check_output(['bash','-lc',f'source /opt/ros/humble/setup.bash && source {WORKSPACE}/install/setup.bash && env -0'])
- return {x.split(b'=',1)[0].decode():x.split(b'=',1)[1].decode() for x in out.split(b'\0') if b'=' in x}
-def start(cmd, log, cwd=None, env=None):
- f=log.open("w"); return subprocess.Popen(cmd,cwd=cwd,env=env,stdout=f,stderr=subprocess.STDOUT,start_new_session=True),f
+def sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def ros_environment() -> dict[str, str]:
+    command = (
+        "source /opt/ros/humble/setup.bash && "
+        f"source {WORKSPACE}/install/setup.bash && env -0"
+    )
+    output = subprocess.check_output(["bash", "-lc", command])
+    return {
+        item.split(b"=", 1)[0].decode(): item.split(b"=", 1)[1].decode()
+        for item in output.split(b"\0") if b"=" in item
+    }
+
+
+def start(command, log_path, *, cwd=None, env=None):
+    log = log_path.open("w", encoding="utf-8")
+    process = subprocess.Popen(
+        command, cwd=cwd, env=env, stdout=log, stderr=subprocess.STDOUT,
+        start_new_session=True, text=True,
+    )
+    return process, log
+
+
+def stop(process):
+    if process is None or process.poll() is not None:
+        return
+    os.killpg(process.pid, signal.SIGINT)
+    try:
+        process.wait(25)
+    except subprocess.TimeoutExpired:
+        os.killpg(process.pid, signal.SIGKILL)
+        process.wait(10)
+
+
+def task(task_id, entry, safety_factor, *, stage=False):
+    return {
+        "task_id": task_id,
+        "U": entry["ids"],
+        "F": {"type": entry["formation"]},
+        "c": {"mode": "absolute", "value": entry["center"]},
+        "r": {"mode": "explicit", "value": 0.9},
+        "T": {"mode": "explicit", "value": 8.0},
+        "m": "normal",
+        "s": 1.0 if stage else safety_factor,
+        "q": {"mode": "direct"},
+    }
+
+
+def materialize_scene(scene, safety_factor):
+    nodes, task_id = [], 1
+    # Staging is sequential and explicitly excluded from scoring.
+    for entry in scene["staging"]:
+        nodes.append({"type": "task", "task": task(task_id, entry, 1.0, stage=True)})
+        task_id += 1
+    score_task_ids = []
+    interaction = []
+    for entry in scene["interaction"]:
+        interaction.append(task(task_id, entry, safety_factor))
+        score_task_ids.append(task_id)
+        task_id += 1
+    nodes.append({
+        "type": "parallel", "completion_mode": "synchronized",
+        "tasks": interaction,
+    })
+    return {"lfs_version": "2.1", "mission": {"nodes": nodes}}, score_task_ids
+
+
 def topics(ids):
- out=[]
- for u in ids.split(','):
-  out += [f"/uav{u}/iapf_debug",f"/uav{u}/control_tracking_debug",f"/uav{u}/trajectory_metrics",f"/uav{u}/status",f"/uav{u}/swarm_state"]
- return out
-def main():
- p=argparse.ArgumentParser(); p.add_argument('--stage',required=True); p.add_argument('--candidate',required=True); p.add_argument('--policy',type=Path,required=True); p.add_argument('--scene',choices=SCENES,required=True); p.add_argument('--s',type=float,required=True); p.add_argument('--cold-start',type=int,default=1); p.add_argument('--root',type=Path,default=RESULTS/'runtime_raw'); a=p.parse_args()
- a.policy=a.policy.resolve(); spec=SCENES[a.scene]; trial=f"{a.stage}_{a.candidate}_{a.scene}_s{a.s:g}_cold{a.cold_start}_{int(time.time())}"; d=a.root/trial; d.mkdir(parents=True,exist_ok=False); env=ros_env()
- policy=yaml.safe_load(a.policy.read_text()); alpha=float(policy.get('iapf_runtime',{}).get('filter_alpha',.20)); ids=spec['ids']; command=spec['command'].format(s=f"{a.s:.1f}")
- manifest={"trial_id":trial,"stage":a.stage,"candidate":a.candidate,"scene":a.scene,"scene_family":spec['family'],"s":a.s,"cold_start":a.cold_start,"seed":"c0e-screen-20260822","control_mode":"ladrc_acceleration","dispatch":"location_allocate.candidate_dispatch","policy":str(a.policy),"policy_sha256":sha(a.policy),"iapf_filter_alpha":alpha,"command":command,"spawn":"standard_8_uav_line","started_utc":datetime.now(timezone.utc).isoformat(),"result":"FAIL","failure_reason":""}
- ps=[]; logs=[]; bag=None
- try:
-  q,l=start(['MicroXRCEAgent','udp4','-p','8888'],d/'agent.log',env=env); ps+=[q];logs+=[l]
-  q,l=start(['bash',str(PX4/'Tools/simulation/gazebo-classic/sitl_multiple_run.sh'),'-n','8','-m','iris'],d/'sitl.log',PX4,env);ps+=[q];logs+=[l];time.sleep(18)
-  if q.poll() is not None: raise RuntimeError('PX4/Gazebo exited during startup')
-  q,l=start(['ros2','launch','ladrc_controller','swarm_launch.py',f'uav_ids:=[{ids}]','control_mode:=ladrc_acceleration',f'lfs_policy_file:={a.policy}',f'iapf_filter_alpha:={alpha:.2f}'],d/'controllers.log',WORKSPACE,env);ps+=[q];logs+=[l]
-  r=subprocess.run([str(PYTHON),str(READY),'--uav-ids',ids,'--timeout','120'],cwd=REPO,env=env,text=True,capture_output=True,timeout=135); (d/'readiness.log').write_text(r.stdout+r.stderr)
-  if r.returncode: raise RuntimeError('readiness gate failed')
-  bag,bl=start(['ros2','bag','record','-o',str(d/'rosbag'),*topics(ids)],d/'rosbag.log',REPO,env); logs+=[bl]; time.sleep(1)
-  j=subprocess.run([str(PYTHON),'-m','location_allocate.candidate_dispatch','--uav-ids',ids,'--policy',str(a.policy),'--command',command],cwd=REPO,env=env,text=True,capture_output=True,timeout=300); (d/'scheduler.log').write_text(j.stdout+j.stderr)
-  if j.returncode or '"candidate_completed": true' not in j.stdout: raise RuntimeError('Candidate mission did not complete')
-  manifest['result']='PASS'
- except Exception as e: manifest['failure_reason']=f'{type(e).__name__}: {e}'
- finally:
-  stop(bag)
-  for q in reversed(ps): stop(q)
-  for l in logs: l.close()
-  manifest['finished_utc']=datetime.now(timezone.utc).isoformat(); (d/'manifest.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n')
- # A raw bag is retained for all completed trials.  Mission/runtime evidence
- # is recorded immediately; debug metrics are summarized offline in a stable CSV.
- row={k:manifest[k] for k in ('trial_id','stage','candidate','scene','scene_family','s','cold_start','control_mode','dispatch','iapf_filter_alpha','result','failure_reason','policy_sha256')}; row['raw_dir']=str(d.relative_to(RESULTS)); print(json.dumps(row,sort_keys=True)); return 0 if manifest['result']=='PASS' else 2
-if __name__=='__main__': raise SystemExit(main())
+    result = []
+    for uid in ids:
+        result.extend([
+            f"/uav{uid}/execution_command", f"/uav{uid}/iapf_debug",
+            f"/uav{uid}/control_tracking_debug",
+            f"/uav{uid}/trajectory_metrics", f"/uav{uid}/status",
+            f"/uav{uid}/swarm_state",
+        ])
+    return result
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--stage", required=True)
+    parser.add_argument("--candidate", required=True)
+    parser.add_argument("--policy", type=Path, required=True)
+    parser.add_argument("--scene", choices=("S1", "S2", "S3", "S4", "S5"), required=True)
+    parser.add_argument("--s", type=float, required=True)
+    parser.add_argument("--cold-start", type=int, default=1)
+    parser.add_argument("--root", type=Path, default=RESULTS / "runtime_raw_semantic_v1")
+    args = parser.parse_args()
+
+    args.policy = args.policy.resolve()
+    definitions = yaml.safe_load(SCENES_FILE.read_text(encoding="utf-8"))
+    scene = definitions["scenes"][args.scene]
+    mission, score_task_ids = materialize_scene(scene, args.s)
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    trial_id = (
+        f"{args.stage}_{args.candidate}_{args.scene}_s{args.s:g}_"
+        f"cold{args.cold_start}_{stamp}_{os.getpid()}"
+    )
+    trial_dir = args.root.resolve() / trial_id
+    trial_dir.mkdir(parents=True, exist_ok=False)
+    mission_path = trial_dir / "candidate_mission.json"
+    mission_path.write_text(json.dumps(mission, indent=2) + "\n", encoding="utf-8")
+    policy = yaml.safe_load(args.policy.read_text(encoding="utf-8"))
+    alpha = float(policy.get("iapf_runtime", {}).get("filter_alpha", 0.20))
+    ids = [int(value) for value in scene["participants"]]
+    manifest = {
+        "trial_id": trial_id, "stage": args.stage,
+        "candidate": args.candidate, "scene": args.scene,
+        "scene_family": scene["family"], "s": args.s,
+        "cold_start": args.cold_start, "seed": "c0e-screen-20260822",
+        "control_mode": "ladrc_acceleration",
+        "dispatch": "location_allocate.candidate_dispatch",
+        "runtime": "UAVFormationNode/PaperMissionRuntime",
+        "policy": str(args.policy), "policy_sha256": sha256(args.policy),
+        "scene_definitions_sha256": sha256(SCENES_FILE),
+        "mission_sha256": sha256(mission_path),
+        "score_task_ids": score_task_ids,
+        "iapf_filter_alpha": alpha, "participants": ids,
+        "staging_scored": False, "candidate_completed": False,
+        "result": "FAIL", "failure_reason": "",
+        "started_utc": datetime.now(timezone.utc).isoformat(),
+    }
+    env = ros_environment()
+    processes, logs, bag = [], [], None
+    try:
+        process, log = start(
+            ["MicroXRCEAgent", "udp4", "-p", "8888"],
+            trial_dir / "agent.log", env=env,
+        )
+        processes.append(process); logs.append(log)
+        process, log = start(
+            ["bash", str(PX4 / "Tools/simulation/gazebo-classic/sitl_multiple_run.sh"),
+             "-n", str(max(ids)), "-m", "iris"],
+            trial_dir / "sitl.log", cwd=PX4, env=env,
+        )
+        processes.append(process); logs.append(log)
+        time.sleep(18)
+        if process.poll() is not None:
+            raise RuntimeError("PX4/Gazebo exited during startup")
+        ids_arg = "[" + ",".join(str(uid) for uid in ids) + "]"
+        process, log = start(
+            ["ros2", "launch", "ladrc_controller", "swarm_launch.py",
+             f"uav_ids:={ids_arg}", "control_mode:=ladrc_acceleration",
+             f"lfs_policy_file:={args.policy}",
+             f"iapf_filter_alpha:={alpha:.2f}"],
+            trial_dir / "controllers.log", cwd=WORKSPACE, env=env,
+        )
+        processes.append(process); logs.append(log)
+        ready = subprocess.run(
+            [str(PYTHON), str(READY), "--uav-ids", ",".join(map(str, ids)),
+             "--timeout", "120"], cwd=REPO, env=env, text=True,
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=135,
+        )
+        (trial_dir / "readiness.log").write_text(ready.stdout, encoding="utf-8")
+        if ready.returncode:
+            raise RuntimeError("readiness gate failed")
+        bag, log = start(
+            ["ros2", "bag", "record", "-o", str(trial_dir / "rosbag"),
+             *topics(ids)], trial_dir / "rosbag.log", cwd=REPO, env=env,
+        )
+        logs.append(log)
+        time.sleep(1)
+        scheduler = subprocess.run(
+            [str(PYTHON), "-m", "location_allocate.candidate_dispatch",
+             "--uav-ids", ",".join(map(str, ids)), "--policy", str(args.policy),
+             "--mission-json", str(mission_path)],
+            cwd=REPO, env=env, text=True, stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT, timeout=420,
+        )
+        (trial_dir / "scheduler.log").write_text(scheduler.stdout, encoding="utf-8")
+        if scheduler.returncode or '"candidate_completed": true' not in scheduler.stdout:
+            raise RuntimeError("Candidate mission did not complete")
+        manifest["candidate_completed"] = True
+        manifest["result"] = "PASS"
+    except Exception as error:
+        manifest["failure_reason"] = f"{type(error).__name__}: {error}"
+    finally:
+        stop(bag)
+        for process in reversed(processes):
+            stop(process)
+        for log in logs:
+            log.close()
+        manifest["finished_utc"] = datetime.now(timezone.utc).isoformat()
+        (trial_dir / "manifest.json").write_text(
+            json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+
+    if (trial_dir / "rosbag" / "metadata.yaml").is_file():
+        subprocess.run(
+            [str(PYTHON), str(EXTRACT), str(trial_dir),
+             "--scene-definitions", str(SCENES_FILE)],
+            cwd=REPO, env=env, check=False,
+        )
+    print(json.dumps({
+        "trial_id": trial_id, "result": manifest["result"],
+        "failure_reason": manifest["failure_reason"],
+        "raw_dir": str(trial_dir.relative_to(RESULTS)),
+    }, sort_keys=True))
+    return 0 if manifest["result"] == "PASS" else 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
