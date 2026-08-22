@@ -55,6 +55,7 @@ def main():
         snapshot = node.paper_runtime._await_dispatch_snapshot(ids)
         record["candidate_readiness_duration_s"] = time.monotonic() - started
         record["candidate_readiness_end_utc"] = datetime.now(timezone.utc).isoformat()
+        now = node.get_clock().now().nanoseconds / 1e9
         ages = {str(uid): now - item.effective_timestamp for uid, item in snapshot.states.items()}
         record["snapshot_ages_s"] = ages; record["snapshot_skew_s"] = max(item.effective_timestamp for item in snapshot.states.values()) - min(item.effective_timestamp for item in snapshot.states.values())
         # Carry the exact just-qualified C0-B snapshot across synchronous

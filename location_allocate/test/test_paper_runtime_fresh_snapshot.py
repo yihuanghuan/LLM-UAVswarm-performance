@@ -21,6 +21,10 @@ class Node:
     def get_clock(self):
         return self.clock
 
+    def get_parameter(self, name):
+        values = {"candidate_dispatch_readiness_timeout": 0.02}
+        return SimpleNamespace(value=values[name])
+
 
 class Monotonic:
     def __init__(self):
@@ -122,6 +126,31 @@ def test_first_resolution_consumes_dispatch_snapshot_without_rechecking(monkeypa
 
     assert candidate_runtime._snapshot_for_resolution([1]) is ready
     assert candidate_runtime._dispatch_snapshot is None
+
+
+def test_second_resolution_reacquires_after_single_dispatch_consumption(monkeypatch):
+    manager = FreshStateSnapshotManager(0.1, 0.1)
+    manager.update(1, [0, 0, 1], 100.0, source_timestamp=100.0)
+    candidate_runtime = runtime(manager)
+    ready = manager.snapshot([1], 100.0)
+    candidate_runtime.prime_dispatch_snapshot([1], ready)
+    assert candidate_runtime._snapshot_for_resolution([1]) is ready
+    reacquired = object()
+    monkeypatch.setattr(candidate_runtime, "_fresh_snapshot", lambda _ids: reacquired)
+    assert candidate_runtime._snapshot_for_resolution([1]) is reacquired
+
+
+def test_dispatch_readiness_rejects_stale_state(monkeypatch):
+    manager = FreshStateSnapshotManager(0.01, 0.1)
+    manager.update(1, [0, 0, 1], 100.0, source_timestamp=100.0)
+    monotonic = Monotonic()
+    monkeypatch.setattr("location_allocate.paper_runtime.time.monotonic", monotonic)
+    monkeypatch.setattr(
+        "location_allocate.paper_runtime.rclpy.spin_once",
+        lambda _node, timeout_sec: setattr(monotonic, "value", monotonic.value + timeout_sec),
+    )
+    with pytest.raises(RuntimeError, match="dispatch readiness timed out"):
+        runtime(manager, clock=Clock(100.1))._await_dispatch_snapshot([1])
 
 
 def test_primed_dispatch_snapshot_rejects_wrong_participants():
