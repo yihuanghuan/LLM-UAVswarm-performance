@@ -38,6 +38,7 @@ def generate_launch_description():
             'avoidance_mode').perform(context).strip()
         control_mode = LaunchConfiguration('control_mode').perform(context).strip()
         escape_mode = LaunchConfiguration('iapf_escape_mode').perform(context)
+        filter_alpha = float(LaunchConfiguration('iapf_filter_alpha').perform(context))
         legacy_value = LaunchConfiguration(
             'enable_iapf_accel_feedforward').perform(context).strip().lower()
         policy_file = LaunchConfiguration('lfs_policy_file').perform(context)
@@ -84,6 +85,9 @@ def generate_launch_description():
             experiment_parameters = {
                 'neighbor_uav_ids': ids,
                 'iapf_escape_mode': escape_mode,
+                # C0-E runtime numeric: supplied by its locked calibration
+                # policy/harness, never by the allocator or Candidate parser.
+                'iapf_filter_alpha': filter_alpha,
                 'control_mode': control_mode,
             }
             if avoidance_mode != 'unset':
@@ -134,6 +138,9 @@ def generate_launch_description():
             'iapf_escape_mode',
             default_value='id_order',
             description='none/fixed_positive_z/id_order'),
+        DeclareLaunchArgument(
+            'iapf_filter_alpha', default_value='0.20',
+            description='C0-E IAPF first-order filter alpha (0, 1]'),
         DeclareLaunchArgument(
             'enable_iapf_accel_feedforward',
             default_value='unset',

@@ -15,6 +15,7 @@ def main() -> int:
     parser.add_argument("--exit", dest="exit_", type=float, required=True)
     parser.add_argument("--repulsion-base", type=float, default=1.0)
     parser.add_argument("--repulsion-margin", type=float, default=0.25)
+    parser.add_argument("--filter-alpha", type=float, default=0.20)
     args = parser.parse_args()
     policy = yaml.safe_load(args.base.read_text())
     safety = policy["safety"]
@@ -31,6 +32,9 @@ def main() -> int:
     policy["controller_hard_clamps"].update(
         iapf_enter_min=args.enter, iapf_enter_max=enter_max,
         iapf_exit_max=exit_max, iapf_repulsion_max=repulsion_max)
+    # This is a C0-E controller runtime parameter, deliberately separate from
+    # paper policy smoothing_alpha (which is architecture-frozen at 1.0).
+    policy.setdefault("iapf_runtime", {})["filter_alpha"] = args.filter_alpha
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(yaml.safe_dump(policy, sort_keys=False))
     return 0
