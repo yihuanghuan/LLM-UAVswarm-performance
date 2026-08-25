@@ -114,8 +114,14 @@ def main() -> int:
     parser.add_argument("--scene", choices=("S1", "S2", "S3", "S4", "S5"), required=True)
     parser.add_argument("--s", type=float, required=True)
     parser.add_argument("--cold-start", type=int, default=1)
+    parser.add_argument("--seed", help="provenance seed label")
     parser.add_argument("--root", type=Path, default=RESULTS / "runtime_raw_semantic_v1")
     args = parser.parse_args()
+    seed = args.seed or (
+        "c0e-confirm-20260822"
+        if args.stage == "confirmation"
+        else "c0e-screen-20260822"
+    )
 
     args.policy = args.policy.resolve()
     definitions = yaml.safe_load(SCENES_FILE.read_text(encoding="utf-8"))
@@ -137,7 +143,7 @@ def main() -> int:
         "trial_id": trial_id, "stage": args.stage,
         "candidate": args.candidate, "scene": args.scene,
         "scene_family": scene["family"], "s": args.s,
-        "cold_start": args.cold_start, "seed": "c0e-screen-20260822",
+        "cold_start": args.cold_start, "seed": seed,
         "control_mode": "ladrc_acceleration",
         "dispatch": "location_allocate.candidate_dispatch",
         "runtime": "UAVFormationNode/PaperMissionRuntime",

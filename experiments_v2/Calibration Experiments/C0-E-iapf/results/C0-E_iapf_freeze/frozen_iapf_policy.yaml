@@ -1,0 +1,67 @@
+calibration_id: C0-E-iapf-v1
+freeze_status: frozen
+canonical_configuration_id: paper-current-v10-c0-e-frozen
+selection_rule:
+  type: lexicographic
+  order: [safety_violation, mission_failure, trajectory_deviation, tracking_cost]
+  weighted_score: false
+selected_mapping:
+  mapping_type: hard_anchored_linear
+  enter_base_m: 1.60
+  exit_base_m: 1.70
+  repulsion_base: 1.00
+  repulsion_margin: 0.25
+  filter_alpha: 0.20
+  domain:
+    s_min: 1.0
+    s_max: 2.0
+  equations:
+    enter: d_enter(s) = 1.50 + 0.10*s
+    exit: d_exit(s) = 1.50 + 0.20*s
+    repulsion: k_rep(s) = 1.00 + 0.25*(s - 1)
+retained_controller_numerics:
+  source: minisnap_LADRC/ladrc_controller/config/ladrc_params.yaml
+  repulsion_gain: 25.0
+  escape_mode: id_order
+  escape_gain: 0.05
+  distance_epsilon_m: 0.10
+  position_modulation_gain: 0.05
+  position_modulation_limit_m: 0.50
+  acceleration_modulation_gain: 0.30
+  acceleration_modulation_limit_mps2: 2.00
+  changed_by_c0_e: false
+derived_clamps:
+  derivation: monotone mapping coverage over s in [1, 2]
+  iapf_enter_min_m: 1.60
+  iapf_enter_max_m: 1.7000000000000002
+  iapf_exit_max_m: 1.90
+  iapf_repulsion_max: 1.25
+upstream_safety_envelope:
+  source: experiments_v2/Calibration Experiments/C0-D-safety/results/C0-D_safety_policy_freeze/frozen_safety_policy.yaml
+  mapping_type: hard_anchored_linear
+  d_hard_m: 1.50
+  d_plan_base_m: 1.80
+  s_min: 1.0
+  s_max: 2.0
+candidate_lock:
+  path: candidate_lock.yaml
+  sha256: bbd161ef7b96b52ecabe9f40b830c3d9a0967833c59a605f2a3075163a176e09
+locked_candidate_policy:
+  path: locked_candidate_policy.yaml
+  sha256: fbd2747711ffd05c70541c69af17818030f74f6cbdbd97f3349afa66310d62e7
+validation:
+  production_loader: PASS
+  confirmation_runs: 20
+  confirmation_result: PASS
+  confirmation_hard_violations: 0
+  confirmation_mission_failures: 0
+  confirmation_stalls: 0
+  confirmation_chatter_toggles: 0
+  confirmation_clamp_activity: 0
+  deferred_integration_smokes: 3
+  deferred_integration_result: PASS
+runtime_contract:
+  dispatch: location_allocate.candidate_dispatch
+  runtime: UAVFormationNode/PaperMissionRuntime
+  control_mode: ladrc_acceleration
+  c0_c_prewarm_dependency: false

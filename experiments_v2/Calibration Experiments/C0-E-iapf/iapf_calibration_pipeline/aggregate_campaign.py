@@ -11,7 +11,8 @@ from pathlib import Path
 FIELDS = (
     "trial_id", "stage", "candidate", "scene", "scene_family", "s",
     "cold_start", "result", "failure_reason", "candidate_completed",
-    "scene_semantics_valid", "scene_initially_safe", "critical_pair",
+    "metric_extraction_success", "scene_semantics_valid",
+    "scene_initially_safe", "critical_pair",
     "initial_pair_distance_m", "initial_critical_distance_m",
     "relative_closing_metric", "lateral_offset_m",
     "relative_vertical_speed_mps", "neighbor_count",
@@ -33,6 +34,9 @@ def main() -> int:
     parser.add_argument("--stage", required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--one-valid-per-scene", action="store_true")
+    validity = parser.add_mutually_exclusive_group()
+    validity.add_argument("--valid-runtime-only", action="store_true")
+    validity.add_argument("--invalid-runtime-only", action="store_true")
     args = parser.parse_args()
     rows = []
     for manifest_path in sorted(args.root.glob("*/manifest.json")):
@@ -45,6 +49,18 @@ def main() -> int:
         row["critical_pair"] = json.dumps(row.get("critical_pair"))
         row["raw_dir"] = str(manifest_path.parent.relative_to(args.root.parent))
         rows.append({field: row.get(field) for field in FIELDS})
+    def valid_runtime(row):
+        return (
+            row["result"] == "PASS"
+            and row["candidate_completed"] is True
+            and row["metric_extraction_success"] is True
+            and row["scene_semantics_valid"] is True
+            and row["scene_initially_safe"] is True
+        )
+    if args.valid_runtime_only:
+        rows = [row for row in rows if valid_runtime(row)]
+    elif args.invalid_runtime_only:
+        rows = [row for row in rows if not valid_runtime(row)]
     if args.one_valid_per_scene:
         selected = {}
         for row in rows:

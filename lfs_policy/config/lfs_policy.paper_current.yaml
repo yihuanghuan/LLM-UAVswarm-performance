@@ -1,5 +1,5 @@
 policy_status: paper_frozen
-configuration_id: paper-current-v9-c0-c-frozen
+configuration_id: paper-current-v10-c0-e-frozen
 
 state_snapshot:
   # C0-B frozen from P99 plus a fixed 10 ms margin.
@@ -18,11 +18,12 @@ geometry:
 
 safety:
   mapping_type: hard_anchored_linear
-  d_hard: 1.0
-  d_plan_base: 2.0
-  iapf_enter_base: 1.5
-  iapf_exit_base: 1.65
-  # Provisional development mapping: k_rep(s) = base + margin * (s - 1).
+  # C0-D planning-safety component freeze.
+  d_hard: 1.50
+  d_plan_base: 1.80
+  # C0-E IAPF runtime freeze: k_rep(s) = base + margin * (s - 1).
+  iapf_enter_base: 1.60
+  iapf_exit_base: 1.70
   iapf_repulsion_base: 1.0
   iapf_repulsion_margin: 0.25
   s_min: 1.0
@@ -63,19 +64,27 @@ controller_hard_clamps:
   velocity_max: 5.0
   acceleration_max: 5.0
   jerk_max: 10.0
-  iapf_enter_min: 1.5
-  iapf_enter_max: 2.0
-  iapf_exit_max: 2.3
-  # Safety guard; the configured s range compiles only to [1.0, 1.25].
-  iapf_repulsion_max: 1.5
+  # Derived coverage bounds for the selected C0-E mapping over s in [1, 2].
+  iapf_enter_min: 1.60
+  iapf_enter_max: 1.7000000000000002
+  iapf_exit_max: 1.90
+  iapf_repulsion_max: 1.25
+
+# C0-E-owned controller runtime filter; distinct from the architecture-frozen
+# execution-profile smoothing_alpha above.
+iapf_runtime:
+  filter_alpha: 0.20
 
 parameter_status:
   architecture_rules: paper-frozen
   c0_a_motion_ladrc: frozen
   c0_b_state_freshness: frozen
   c0_c_geometry_scale: frozen
+  c0_d_planning_safety: frozen
+  c0_e_iapf: frozen
+  c0_f_motion_style: provisional
   physical_environment: provisional
-  algorithm_calibration: provisional
+  algorithm_calibration: c0-e-iapf-frozen
   semantic_controller: architecture-frozen-parameter-calibration-provisional
 
 provenance:
@@ -86,5 +95,7 @@ provenance:
   dynamics: motion_limits
   state_freshness: experiments_v2/Calibration Experiments/C0-B-state-freshness/results/C0-B_state_freshness_freeze/frozen_state_freshness_policy.yaml
   geometry_scale: experiments_v2/Calibration Experiments/C0-C-geometry-scale/results/C0-C_geometry_scale_freeze/frozen_geometry_policy.yaml
+  planning_safety: experiments_v2/Calibration Experiments/C0-D-safety/results/C0-D_safety_policy_freeze/frozen_safety_policy.yaml
+  iapf_runtime: experiments_v2/Calibration Experiments/C0-E-iapf/results/C0-E_iapf_freeze/frozen_iapf_policy.yaml
   allocator: location_allocate/safety_aware_allocator.py:lexicographic-score
   paper_rules: paper-path freeze + legacy isolation.md

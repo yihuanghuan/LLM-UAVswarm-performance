@@ -1,0 +1,155 @@
+schema_version: c0-e-freeze-manifest-v1
+status: frozen_pass
+configuration_id: paper-current-v10-c0-e-frozen
+git:
+  actual_starting_commit: be203117071dec3453e4c0ff5e536706de28101e
+  stage_screen_commit: c78ac1e20c4dd44f09fb3aa4cd908a84ba4cfbc5
+  candidate_lock_commit: d888996f64c142cde543c3bc5c15adb85393fbb4
+  final_freeze_content_commit: PENDING
+  final_git_commit: PENDING
+parent_c0_d:
+  commit: e1f7a478b41702e5dcce1d461498f4af516f23b8
+  artifact: experiments_v2/Calibration Experiments/C0-D-safety/results/C0-D_safety_policy_freeze/frozen_safety_policy.yaml
+  sha256: 901bc58803ace3ae8d858996e67065710920b62dda04f12c7c60e7ad1b4fd563
+upstream_frozen_artifacts:
+  c0_a:
+    path: experiments_v2/Calibration Experiments/C0-A-ladrc-motion-limits/results/C0-A_motion_limits_freeze/frozen_execution_policy.yaml
+    sha256: 1ac009c4da6636fe4a3fcd8492fe9957e22bba94412e005a3555dd5985a5d325
+  c0_b:
+    path: experiments_v2/Calibration Experiments/C0-B-state-freshness/results/C0-B_state_freshness_freeze/frozen_state_freshness_policy.yaml
+    sha256: fdc7b3fd038ae623699eaefd131028d53a259c22507b320c2775369c23594884
+  c0_c:
+    path: experiments_v2/Calibration Experiments/C0-C-geometry-scale/results/C0-C_geometry_scale_freeze/frozen_geometry_policy.yaml
+    sha256: 25ab21d7cc688ba3f7e5e94124fdde88795075b263fddf30c41f2d47819a61fa
+  c0_d:
+    path: experiments_v2/Calibration Experiments/C0-D-safety/results/C0-D_safety_policy_freeze/frozen_safety_policy.yaml
+    sha256: 901bc58803ace3ae8d858996e67065710920b62dda04f12c7c60e7ad1b4fd563
+preregistered_protocol:
+  calibration_plan:
+    path: calibration_plan.csv
+    sha256: f7986abb3aab1ff16c43755c321f6f0e56eef6de0002754b5786658af6cf6b77
+  candidate_sets:
+    threshold:
+      - {id: T1, enter_base_m: 1.60, exit_base_m: 1.70}
+      - {id: T2, enter_base_m: 1.65, exit_base_m: 1.75}
+      - {id: T3, enter_base_m: 1.65, exit_base_m: 1.80}
+      - {id: T4, enter_base_m: 1.70, exit_base_m: 1.80}
+    repulsion:
+      base: 1.00
+      margins: [0.125, 0.25, 0.50]
+    filter_alpha: [0.10, 0.20, 0.30]
+  scenes:
+    path: scene_definitions.yaml
+    sha256: faeacd625d02e9657048a7ef969abfd3369e20f750834639650cbc0b9d53922d
+    families: {S1: head_on_closing, S2: offset_crossing, S3: vertical_crossing, S4: dense_interaction, S5: already_separating}
+  seeds:
+    static: c0e-static-20260822
+    screening: c0e-screen-20260822
+    confirmation_preregistered: c0e-confirm-20260822
+    confirmation_recorded_in_raw_manifests: c0e-screen-20260822
+    confirmation_seed_effect: label_only_no_rng_or_runtime_consumption
+  exact_trial_ids: first column of each content-addressed CSV below
+  selection_rule:
+    type: lexicographic
+    order: [safety_violation, mission_failure, trajectory_deviation, tracking_cost]
+    weighted_score: false
+    minimum_change_tie_break: true
+stage_locks:
+  threshold: {selected: T1, enter_base_m: 1.60, exit_base_m: 1.70}
+  repulsion: {selected: C_M025, repulsion_base: 1.00, repulsion_margin: 0.25}
+  filter: {selected: D_A020, alpha: 0.20}
+selected_c0_e:
+  enter_base_m: 1.60
+  exit_base_m: 1.70
+  repulsion_base: 1.00
+  repulsion_margin: 0.25
+  filter_alpha: 0.20
+  retained_numerics:
+    repulsion_gain: 25.0
+    escape_mode: id_order
+    escape_gain: 0.05
+    distance_epsilon_m: 0.10
+    position_modulation_gain: 0.05
+    position_modulation_limit_m: 0.50
+    acceleration_modulation_gain: 0.30
+    acceleration_modulation_limit_mps2: 2.00
+  derived_clamps:
+    domain: "s in [1, 2]"
+    iapf_enter_min_m: 1.60
+    iapf_enter_max_m: 1.7000000000000002
+    iapf_exit_max_m: 1.90
+    iapf_repulsion_max: 1.25
+candidate_lock:
+  path: candidate_lock.yaml
+  sha256: bbd161ef7b96b52ecabe9f40b830c3d9a0967833c59a605f2a3075163a176e09
+locked_policy:
+  path: locked_candidate_policy.yaml
+  sha256: fbd2747711ffd05c70541c69af17818030f74f6cbdbd97f3349afa66310d62e7
+runtime_contract:
+  dispatch: location_allocate.candidate_dispatch
+  runtime: UAVFormationNode/PaperMissionRuntime
+  readiness: shared PaperMissionRuntime
+  control_mode: ladrc_acceleration
+  c0_c_prewarm_dependency: false
+runtime_hashes_sha256:
+  candidate_dispatch.py: d1e5932cae63bc8fe40daabee007c5950fc90ec9190ac7bb194d78c2bca1d8e5
+  paper_runtime.py: 70e1a0e8964659f78fe952779c1d05e4a843bc85268b3b58781f56e59d63dfc8
+  location_allocate.py: 50c251abd5bf7c24b53e47abf19dc5eb8243b3b7fd52f4e215831e7bbda7e709
+  state_snapshot.py: a957f9a632bc79c5a6d598747d6a91907107991d9c3a629a619c16e6dd8e3aca
+controller_hashes_sha256:
+  ladrc_position_controller_node.cpp: cc7a3b1c36126555749504d03b504c1c6c01e210ffb829b473d8980a87973dfa
+  ladrc_params.yaml: 62657f4fe4100a0397bae68bd73a20f361bbf4aab8389d7ecd1dac974e447692
+  swarm_launch.py: eebe0d26d7d6d9408078c99dd735c4076b36eb79f1ebc8d02be64af24d9782dd
+evidence:
+  scene_sanity: {path: scene_sanity_results.csv, sha256: 919733b1cda078f076c8e455b0055c8a16230dc2f0b19318a8a63cc351341c6a, trials: 5, result: PASS}
+  threshold: {path: threshold_screen.csv, sha256: e4e175c9871dc6b5fe9c2a5664627766f4c55c6ede326d8819c5e83cd7a69c5a, valid_trials: 29, selected: T1}
+  excluded_attempts: {path: screening_excluded_attempts.csv, sha256: d10b68954d997d9c5be05f61600d6083737099eb86be710d41f1729f098feb09, trials: 2, used_for_ranking: false}
+  repulsion: {path: repulsion_screen.csv, sha256: de8c345436566a94d5eec3f29a463a6d4ef3e1ba30e101608fb3bb0fdfaa4dc2, valid_trials: 18, selected: C_M025}
+  filter: {path: filter_screen.csv, sha256: 90e5df004f719634977ae0daef74fbffeac883ea25ff42da0a05d1e82beb3fe5, valid_trials: 18, selected: D_A020}
+  final_validation:
+    path: final_validation.csv
+    sha256: 374b1b2aad148a6f4589de0c2a782ebc26b80150c178871ff5b3b21fced98299
+    trials: 20
+    result: PASS
+    hard_violations: 0
+    hard_exposure_s: 0.0
+    mission_failures: 0
+    stalls: 0
+    timeouts: 0
+    chatter_toggles: 0
+    clamp_activity: 0
+    minimum_pairwise_distance_m: 1.503509969683395
+    maximum_tracking_rmse_m: 0.07335030604074244
+    maximum_final_error_m: 0.10263147950172424
+  deferred_smokes:
+    path: integrated_runtime_smokes.csv
+    sha256: ad339bced0ff72a095e733eccb54731a935113d7a921d985d89f75ce1dac6d04
+    result: PASS
+    locked_policy_sha256: fbd2747711ffd05c70541c69af17818030f74f6cbdbd97f3349afa66310d62e7
+    trials:
+      - {id: compact_s1, uavs: 8, s: 1.0, result: PASS}
+      - {id: crossing_prone_s1, uavs: 8, s: 1.0, result: PASS}
+      - {id: normal_spacious_s2, uavs: 8, s: 2.0, result: PASS}
+frozen_outputs:
+  frozen_iapf_policy:
+    path: frozen_iapf_policy.yaml
+    sha256: 47a491a3906f00833fc25b577b5489a89ddd113a540a778b956032a03c900e48
+  canonical_policy:
+    path: lfs_policy/config/lfs_policy.paper_current.yaml
+    sha256: fcfaabdecbef9bb0bd622cabe003d5c38cf91fde8ddb4c1f4db60dac6f37333c
+    unchanged_loader_result: PASS
+  canonical_static_check:
+    path: canonical_static_check.csv
+    sha256: 924493004d2fe822567c9a6b5aefeeea83959e3efd5c413ee231d47bb25177a8
+historical_evidence:
+  pre_semantic_runtime_raw_B_T1_S1_cold4: PRODUCTION_HARNESS_SMOKE_NOT_RANKED
+  v9_eight_uav_smokes: INFRASTRUCTURE_REGRESSION_NOT_FINAL_DEFERRED_SMOKES
+  freshness_failures: INFRASTRUCTURE_HISTORY_NOT_RANKED
+frozen_invariants:
+  c0_a_unchanged: true
+  c0_b_unchanged: true
+  c0_b_predicates: {state_timeout_s: 0.02208, snapshot_skew_s: 0.022043, fresh_state_wait_timeout_s: 0.010, allow_receive_time_fallback: false}
+  c0_c_unchanged: true
+  c0_d: {mapping_type: hard_anchored_linear, d_hard_m: 1.50, d_plan_base_m: 1.80, s_min: 1.0, s_max: 2.0}
+  c0_f_status: provisional_not_started
+  formal_e1_e6_status: not_started

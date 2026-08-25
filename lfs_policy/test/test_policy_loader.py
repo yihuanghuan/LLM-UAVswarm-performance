@@ -34,10 +34,10 @@ def test_template_is_not_a_production_policy():
         load_policy(TEMPLATE)
 
 
-def test_frozen_paper_policy_has_hash_status_and_c0c_freeze_status():
+def test_frozen_paper_policy_has_hash_status_and_c0e_freeze_status():
     policy = load_paper_policy(PAPER)
 
-    assert policy.configuration_id == "paper-current-v9-c0-c-frozen"
+    assert policy.configuration_id == "paper-current-v10-c0-e-frozen"
     assert policy.status == "paper_frozen"
     assert policy.state.state_timeout == pytest.approx(0.02208)
     assert policy.state.snapshot_skew == pytest.approx(0.022043)
@@ -45,6 +45,9 @@ def test_frozen_paper_policy_has_hash_status_and_c0c_freeze_status():
     assert len(policy.policy_hash) == 64
     assert policy.parameter_status["architecture_rules"] == "paper-frozen"
     assert policy.parameter_status["c0_c_geometry_scale"] == "frozen"
+    assert policy.parameter_status["c0_d_planning_safety"] == "frozen"
+    assert policy.parameter_status["c0_e_iapf"] == "frozen"
+    assert policy.parameter_status["c0_f_motion_style"] == "provisional"
     assert policy.warnings == ()
     parameters = policy.controller.ros_parameters()
     assert [parameters[f"omega_c_{axis}"] for axis in "xyz"] == [
@@ -65,7 +68,10 @@ def test_frozen_paper_policy_has_hash_status_and_c0c_freeze_status():
     }
     assert policy.controller.omega_c_min == (1.125, 1.125, 1.3125)
     assert policy.controller.omega_c_max == (1.875, 1.875, 2.1875)
-    assert parameters["iapf_violation_distance"] == 1.0
+    assert parameters["iapf_violation_distance"] == 1.5
+    assert policy.safety["d_plan_base"] == 1.8
+    assert policy.safety["iapf_enter_base"] == 1.6
+    assert policy.safety["iapf_exit_base"] == 1.7
     assert policy.safety["iapf_repulsion_base"] == 1.0
     assert policy.safety["iapf_repulsion_margin"] == 0.25
 
