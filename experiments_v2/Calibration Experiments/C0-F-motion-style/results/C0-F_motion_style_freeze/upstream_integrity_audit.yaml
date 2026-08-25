@@ -1,0 +1,103 @@
+schema_version: c0f-upstream-integrity-audit-v1
+starting_c0_e_sha_expected: 1e58f78ae3678eafdf9d0213e59514879601d461
+starting_c0_e_sha_remote: 1e58f78ae3678eafdf9d0213e59514879601d461
+working_head_at_audit: 1e58f78ae3678eafdf9d0213e59514879601d461
+policy_path: lfs_policy/config/lfs_policy.paper_current.yaml
+policy_sha256: fcfaabdecbef9bb0bd622cabe003d5c38cf91fde8ddb4c1f4db60dac6f37333c
+inherited_configuration_id: paper-current-v10-c0-e-frozen
+changed_policy_paths_from_c0_e: []
+ownership_violations: []
+frozen_artifacts:
+  c0_a:
+    path: experiments_v2/Calibration Experiments/C0-A-ladrc-motion-limits/results/C0-A_motion_limits_freeze/frozen_execution_policy.yaml
+    expected_sha256: 1ac009c4da6636fe4a3fcd8492fe9957e22bba94412e005a3555dd5985a5d325
+    actual_sha256: 1ac009c4da6636fe4a3fcd8492fe9957e22bba94412e005a3555dd5985a5d325
+    result: PASS
+  c0_b:
+    path: experiments_v2/Calibration Experiments/C0-B-state-freshness/results/C0-B_state_freshness_freeze/frozen_state_freshness_policy.yaml
+    expected_sha256: fdc7b3fd038ae623699eaefd131028d53a259c22507b320c2775369c23594884
+    actual_sha256: fdc7b3fd038ae623699eaefd131028d53a259c22507b320c2775369c23594884
+    result: PASS
+  c0_c:
+    path: experiments_v2/Calibration Experiments/C0-C-geometry-scale/results/C0-C_geometry_scale_freeze/frozen_geometry_policy.yaml
+    expected_sha256: 25ab21d7cc688ba3f7e5e94124fdde88795075b263fddf30c41f2d47819a61fa
+    actual_sha256: 25ab21d7cc688ba3f7e5e94124fdde88795075b263fddf30c41f2d47819a61fa
+    result: PASS
+  c0_d:
+    path: experiments_v2/Calibration Experiments/C0-D-safety/results/C0-D_safety_policy_freeze/frozen_safety_policy.yaml
+    expected_sha256: 901bc58803ace3ae8d858996e67065710920b62dda04f12c7c60e7ad1b4fd563
+    actual_sha256: 901bc58803ace3ae8d858996e67065710920b62dda04f12c7c60e7ad1b4fd563
+    result: PASS
+  c0_e:
+    path: experiments_v2/Calibration Experiments/C0-E-iapf/results/C0-E_iapf_freeze/frozen_iapf_policy.yaml
+    expected_sha256: 47a491a3906f00833fc25b577b5489a89ddd113a540a778b956032a03c900e48
+    actual_sha256: 47a491a3906f00833fc25b577b5489a89ddd113a540a778b956032a03c900e48
+    result: PASS
+semantic_contracts:
+  checks:
+    task_adaptation_identity: true
+    normal_style_gain_identity: true
+    style_gain_ordering: true
+    auto_t_factor_ordering: true
+    smoothing_alpha_valid: true
+    explicit_t_invariant: true
+    explicit_reference_invariant: true
+    compiled_task_gain_identity: true
+    auto_t_runtime_ordering: true
+    auto_t_analytic_peaks_inside_5_5_10: true
+    all_four_scene_static_contracts: true
+  explicit_t_exec_s:
+    smooth: 9.0
+    normal: 9.0
+    aggressive: 9.0
+  auto_t_exec_s:
+    smooth: 4.843028733204558
+    normal: 4.2842177255271086
+    aggressive: 4.097947389634626
+  scene_contracts:
+    S1:
+      time_mode: explicit
+      T_exec_s:
+        smooth: 9.0
+        normal: 9.0
+        aggressive: 9.0
+      duration_contract: true
+      explicit_reference_invariant: true
+      nominal_hard_safety: true
+      analytic_dynamic_feasibility: true
+      result: PASS
+    S2:
+      time_mode: explicit
+      T_exec_s:
+        smooth: 9.0
+        normal: 9.0
+        aggressive: 9.0
+      duration_contract: true
+      explicit_reference_invariant: true
+      nominal_hard_safety: true
+      analytic_dynamic_feasibility: true
+      result: PASS
+    S3:
+      time_mode: auto
+      T_exec_s:
+        smooth: 4.66089269322536
+        normal: 4.123097382468587
+        aggressive: 3.943832278882997
+      duration_contract: true
+      explicit_reference_invariant: true
+      nominal_hard_safety: true
+      analytic_dynamic_feasibility: true
+      result: PASS
+    S4:
+      time_mode: auto
+      T_exec_s:
+        smooth: 6.190482235860143
+        normal: 5.476195824030126
+        aggressive: 5.238100353420121
+      duration_contract: true
+      explicit_reference_invariant: true
+      nominal_hard_safety: true
+      analytic_dynamic_feasibility: true
+      result: PASS
+  result: PASS
+result: PASS

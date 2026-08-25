@@ -1,0 +1,58 @@
+schema_version: c0f-motion-style-scenes-v1
+seed_policy:
+  screening: c0f-screen-20260825
+  confirmation_cold_1: c0f-confirm-a-20260825
+  confirmation_cold_2: c0f-confirm-b-20260825
+score_rule: >-
+  Staging is excluded. Score from the scored execution-command timestamp
+  through trajectory completion plus the controller completion diagnostic.
+common:
+  formation_scale: {mode: qualitative, value: normal}
+  safety_factor: 1.0
+  staging_duration_s: 8.0
+  staging_style: normal
+  control_mode: ladrc_acceleration
+  expected_iapf_activation_fraction: 0.0
+scenes:
+  S1:
+    family: short_horizontal
+    participants: [1, 2, 3]
+    formation: {type: Line}
+    staging_center: [0.0, 6.0, 3.0]
+    target_center: [2.5, 6.0, 3.0]
+    time_request: {mode: explicit, value: 9.0}
+    motion_coverage: short horizontal rigid-formation translation
+  S2:
+    family: medium_3d_diagonal
+    participants: [1, 2, 3, 4]
+    formation: {type: Circle}
+    staging_center: [0.0, 7.5, 3.0]
+    target_center: [3.0, 7.5, 6.0]
+    time_request: {mode: explicit, value: 9.0}
+    motion_coverage: medium vertical and horizontal diagonal translation
+  S3:
+    family: medium_auto_diagonal
+    participants: [1, 2, 3, 4]
+    formation: {type: Circle}
+    staging_center: [-1.0, 7.5, 3.0]
+    target_center: [4.0, 12.5, 6.0]
+    time_request: {mode: auto}
+    motion_coverage: medium auto-duration 3-D diagonal translation
+  S4:
+    family: long_auto_high_demand
+    participants: [1, 2, 3, 4, 5, 6, 7, 8]
+    formation: {type: Circle}
+    staging_center: [0.0, 13.5, 3.0]
+    target_center: [8.0, 22.0, 8.0]
+    time_request: {mode: auto}
+    motion_coverage: long auto-duration 3-D translation retaining aggressive demand
+style_switch:
+  family: sequential_profile_transition
+  participants: [1, 2, 3]
+  formation: {type: Line}
+  staging_center: [0.0, 6.0, 3.0]
+  time_request: {mode: explicit, value: 7.0}
+  sequence:
+    - {style: smooth, center: [2.0, 6.0, 3.5]}
+    - {style: aggressive, center: [-2.0, 6.0, 3.0]}
+    - {style: normal, center: [0.0, 6.0, 3.0]}
