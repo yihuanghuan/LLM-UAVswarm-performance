@@ -74,7 +74,10 @@ def main() -> int:
         metrics_path = manifest_path.with_name("metrics.json")
         metrics = json.loads(metrics_path.read_text(encoding="utf-8")) if metrics_path.is_file() else {}
         row = {**manifest, **metrics}
-        row["raw_dir"] = str(manifest_path.parent)
+        try:
+            row["raw_dir"] = str(manifest_path.parent.relative_to(RESULTS))
+        except ValueError:
+            row["raw_dir"] = str(manifest_path.parent)
         row["condition_result"] = "PASS" if condition_pass(metrics) else "FAIL"
         rows.append(row)
 
@@ -115,7 +118,12 @@ def main() -> int:
                 value = row.get(field, "")
                 cooked[field] = json.dumps(value, separators=(",", ":")) if isinstance(value, (list, dict)) else value
             writer.writerow(cooked)
-    expected = 12 if args.stage == "screening" else 24 if args.stage == "confirmation" else 2
+    if args.stage == "screening":
+        expected = 12
+    elif args.stage == "confirmation":
+        expected = 24
+    else:
+        expected = 2 if any(row["stage"] == "style_switch_confirmation" for row in rows) else 1
     passed = len(rows) == expected and all(row["condition_result"] == "PASS" for row in rows)
     print(json.dumps({"stage": args.stage, "rows": len(rows), "expected": expected,
                       "passed": sum(row["condition_result"] == "PASS" for row in rows),

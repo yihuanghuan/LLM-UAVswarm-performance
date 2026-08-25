@@ -5,10 +5,11 @@ from __future__ import annotations
 import csv
 from datetime import datetime, timezone
 import shutil
+import subprocess
 
 import yaml
 
-from common import CANONICAL_POLICY, RESULTS, START_SHA, load_yaml, sha256
+from common import CANONICAL_POLICY, RESULTS, SCENES_FILE, START_SHA, load_yaml, sha256
 
 
 def passing(path, expected):
@@ -28,11 +29,15 @@ def main() -> None:
         raise SystemExit("cannot lock: alpha=1.0 style-switch screening smoke failed")
     policy = load_yaml(CANONICAL_POLICY)
     policy_hash = sha256(CANONICAL_POLICY)
+    prelock_commit = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=CANONICAL_POLICY.parents[2], text=True
+    ).strip()
     lock = {
         "schema_version": "c0f-candidate-lock-v1",
         "status": "LOCKED_NO_RETUNING",
         "locked_utc": datetime.now(timezone.utc).isoformat(),
         "source_commit": START_SHA,
+        "prelock_tooling_commit": prelock_commit,
         "source_configuration_id": policy["configuration_id"],
         "policy_sha256": policy_hash,
         "auto_style_factors": policy["timing"]["auto_style_factors"],
@@ -47,6 +52,11 @@ def main() -> None:
         ],
         "screening": {"valid": len(screening), "required": 12, "result": "PASS"},
         "style_switch_screening": {"valid": 1, "required": 1, "result": "PASS"},
+        "evidence_sha256": {
+            "screening_results.csv": sha256(RESULTS / "screening_results.csv"),
+            "style_switch_smoke.csv": sha256(RESULTS / "style_switch_smoke.csv"),
+            "scene_definitions.yaml": sha256(SCENES_FILE),
+        },
         "fallback_stage_entered": False,
         "parameter_search_stopped": True,
     }

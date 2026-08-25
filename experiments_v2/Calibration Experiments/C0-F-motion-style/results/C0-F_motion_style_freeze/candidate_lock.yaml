@@ -1,0 +1,39 @@
+schema_version: c0f-candidate-lock-v1
+status: LOCKED_NO_RETUNING
+locked_utc: '2026-08-25T13:29:52.130420+00:00'
+source_commit: 1e58f78ae3678eafdf9d0213e59514879601d461
+prelock_tooling_commit: 4260f2be191def6c58fcb60f2da7790ae4222f86
+source_configuration_id: paper-current-v10-c0-e-frozen
+policy_sha256: fcfaabdecbef9bb0bd622cabe003d5c38cf91fde8ddb4c1f4db60dac6f37333c
+auto_style_factors:
+  smooth: 1.3
+  normal: 1.15
+  aggressive: 1.1
+style_gains:
+  smooth: 0.8
+  normal: 1.0
+  aggressive: 1.1
+smoothing_alpha: 1.0
+task_adaptation_type: identity
+task_gain: 1.0
+selection_rule:
+- hard-safety/dynamic-feasibility
+- mission/stability
+- saturation/clamp
+- semantic-ordering
+- tracking/final-error
+- minimum-deviation-from-provisional
+screening:
+  valid: 12
+  required: 12
+  result: PASS
+style_switch_screening:
+  valid: 1
+  required: 1
+  result: PASS
+evidence_sha256:
+  screening_results.csv: cc29cf0c0c9bbf48de02520d7964af359ae4ab3a85b1848dbcc7afae78a6fd8f
+  style_switch_smoke.csv: d5ce7a2a533f56ea225089fc74b406713efb10cc84a6560240f517b70962d32c
+  scene_definitions.yaml: 5282e663bd7eb0a64de27bc71c2a345aedd83d231e1d1bc8a8396e1ff801d10a
+fallback_stage_entered: false
+parameter_search_stopped: true

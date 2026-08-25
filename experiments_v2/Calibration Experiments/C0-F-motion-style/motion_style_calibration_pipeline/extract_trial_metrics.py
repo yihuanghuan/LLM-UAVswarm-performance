@@ -178,7 +178,17 @@ def main() -> int:
         accel = [float(np.max(np.abs(vector(message.px4_acceleration_setpoint)))) for _, _, message in debug]
         controller_saturated = sum(value >= 4.999 for value in accel)
         finite = all(math.isfinite(value) for value in tracking + accel)
-        final_errors = [float(message.final_position_error) for _, _, message in scored_trajectory]
+        # `is_finished` becomes true at the nominal duration and remains true
+        # while the production runtime performs its hover-stability gate.  The
+        # final error is therefore the last recorded completion sample per UAV,
+        # not the largest lag at the first duration-boundary sample.
+        final_by_uav = {}
+        for timestamp, uid, message in scored_trajectory:
+            if uid is not None and (uid not in final_by_uav or timestamp > final_by_uav[uid][0]):
+                final_by_uav[uid] = (timestamp, float(message.final_position_error))
+        final_errors = [item[1] for item in final_by_uav.values()]
+        if not final_errors:
+            raise RuntimeError("final completion samples missing")
         analytic_v = max(float(message.max_velocity) for _, _, message in scored_trajectory)
         analytic_a = max(float(message.max_acceleration) for _, _, message in scored_trajectory)
         analytic_j = max(float(message.max_jerk) for _, _, message in scored_trajectory)
