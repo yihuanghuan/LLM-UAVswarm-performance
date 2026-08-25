@@ -1,0 +1,55 @@
+schema_version: c0f-freeze-manifest-v1
+status: FROZEN_PASS
+generated_utc: '2026-08-25T13:58:58.347862+00:00'
+source_c0_e_commit: 1e58f78ae3678eafdf9d0213e59514879601d461
+candidate_lock_commit: f4096f683589f49e43eb464a23de08a13ae6178f
+confirmation_evidence_commit: 5898749f33209ab16bef4b5750a11b2f26c96146
+configuration_id: paper-current-v11-c0-f-frozen
+canonical_policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+locked_policy_sha256: fcfaabdecbef9bb0bd622cabe003d5c38cf91fde8ddb4c1f4db60dac6f37333c
+counts:
+  screening: 12
+  confirmation: 24
+  style_switch_smokes: 2
+results:
+  screening: PASS
+  confirmation: PASS
+  style_switch: PASS
+  explicit_t_invariance: PASS
+  auto_t_ordering: PASS
+  upstream_integrity: PASS
+summary:
+  screening_count: 12
+  confirmation_count: 24
+  style_switch_smoke_count: 2
+  maximum_controller_saturation_ratio: 0.0
+  maximum_controller_saturation_samples: 0
+  maximum_profile_clamp_activity: 0
+  maximum_iapf_clamp_activity: 0
+  maximum_tracking_rmse_m: 0.19009069596549366
+  maximum_final_error_m: 0.14504562318325043
+  minimum_pairwise_distance_m: 2.1666742196017177
+  maximum_peak_tilt_deg: 25.295521501867963
+  hard_safety_violations: 0
+  iapf_activation_fraction_max: 0.0
+artifacts_sha256:
+  C0-F_freeze_report.md: 9adc7a7c2b56490b14c9c2fd053c1e257398431ad42bebf2012c35a4b50eae28
+  frozen_motion_style_policy.yaml: 43f1a9f4a5eee0e23b9b002946f40335a287cee206551f18aaceea91dba4c9a2
+  candidate_lock.yaml: 12e524121bd0c10330ba2fe86a93626c3b1ebfd633b175b5ac093a83fb7b6fd2
+  locked_candidate_policy.yaml: fcfaabdecbef9bb0bd622cabe003d5c38cf91fde8ddb4c1f4db60dac6f37333c
+  calibration_plan.csv: 8483534588aa2560b856de99b385c8f18d68e216578dcbe8100ae323de19ada6
+  screening_results.csv: cc29cf0c0c9bbf48de02520d7964af359ae4ab3a85b1848dbcc7afae78a6fd8f
+  confirmation_results.csv: 2b469862a63d471fece655816ec786ee90da82b475f32129d921283d658f8faa
+  style_switch_smoke.csv: 70f6a21f61edf8def3f5d3903655ca3d5bcad13c607f9039ce0fff405fa97135
+  upstream_integrity_audit.yaml: b9027759bf3bd9ad4baf9a4498d65b74c7e9c88314b40cc33d357e455605e1e3
+pipeline_sha256:
+  aggregate_results.py: 8226ae610ec87a541e278a950cfb20558899c4cdb51f0719be2b09e2a60ec98b
+  common.py: b406b535bf01575efbeebc8d7f69573419b0364231f4997ccb5d4a80b410148b
+  extract_trial_metrics.py: 2aeddbfa437d5ac7eb9d26ead672290ad902b9534ca7f279e286e267350da31a
+  finalize_freeze.py: a9b6d0d122ce619f3ab8283e772c73877bae6291e0d7acbd5f068cc8f994261b
+  generate_plan.py: df158af9fa4b4563b29e125c36b8ffef64db0be12599ecf2a55deb7dda8322ea
+  lock_candidate.py: 793e8243388dec884264a66b5b20c89a5050d601fee37a9b884e4c3e2d244a2d
+  run_campaign.py: 4f95f8d22ee298a0814ce53ab348618b8f5c63c8c94820a31bcb1a37d5f7d894
+  run_trial.py: 8a7a5ad386c2785e4d67fc7d40abbe0946627b74b5360d8a4eb60d96e6b62d84
+  static_preflight.py: de4751a107efa42d10a05d0b8386fbda802cb32ed1a5ba03a2de093970439598
+  scene_definitions.yaml: 5282e663bd7eb0a64de27bc71c2a345aedd83d231e1d1bc8a8396e1ff801d10a

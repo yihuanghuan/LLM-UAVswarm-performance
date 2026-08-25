@@ -257,6 +257,7 @@ def main() -> int:
         "policy_path": policy_display,
         "policy_sha256": sha256(args.policy),
         "inherited_configuration_id": base_policy["configuration_id"],
+        "current_configuration_id": current_policy["configuration_id"],
         "changed_policy_paths_from_c0_e": changed,
         "ownership_violations": violations,
         "frozen_artifacts": artifacts,

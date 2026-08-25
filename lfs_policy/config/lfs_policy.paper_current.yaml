@@ -1,5 +1,5 @@
 policy_status: paper_frozen
-configuration_id: paper-current-v10-c0-e-frozen
+configuration_id: paper-current-v11-c0-f-frozen
 
 state_snapshot:
   # C0-B frozen from P99 plus a fixed 10 ms margin.
@@ -37,7 +37,7 @@ motion_limits:
 timing:
   policy_type: minimum_jerk
   minimum_duration: 0.5
-  # Provisional development values. Explicit T bypasses these factors.
+  # C0-F frozen values. Explicit T bypasses these factors.
   auto_style_factors: {smooth: 1.30, normal: 1.15, aggressive: 1.10}
   planning_distance_bound_type: max_pairwise
   final_recheck_tolerance: 0.0
@@ -51,7 +51,7 @@ execution_profile:
   task_adaptation_type: identity
   baseline_omega_c: [1.5, 1.5, 1.75]
   baseline_omega_o: [5.0, 5.0, 7.5]
-  # Provisional development values; task_gain remains exactly 1.0.
+  # C0-F frozen values; task_gain remains exactly 1.0.
   style_gains: {smooth: 0.8, normal: 1.0, aggressive: 1.1}
 
 controller_hard_clamps:
@@ -82,10 +82,10 @@ parameter_status:
   c0_c_geometry_scale: frozen
   c0_d_planning_safety: frozen
   c0_e_iapf: frozen
-  c0_f_motion_style: provisional
+  c0_f_motion_style: frozen
   physical_environment: provisional
-  algorithm_calibration: c0-e-iapf-frozen
-  semantic_controller: architecture-frozen-parameter-calibration-provisional
+  algorithm_calibration: c0-f-motion-style-frozen
+  semantic_controller: architecture-frozen-c0-f-motion-style-frozen
 
 provenance:
   d_hard: safety.d_hard -> controller iapf_violation_distance
@@ -97,5 +97,6 @@ provenance:
   geometry_scale: experiments_v2/Calibration Experiments/C0-C-geometry-scale/results/C0-C_geometry_scale_freeze/frozen_geometry_policy.yaml
   planning_safety: experiments_v2/Calibration Experiments/C0-D-safety/results/C0-D_safety_policy_freeze/frozen_safety_policy.yaml
   iapf_runtime: experiments_v2/Calibration Experiments/C0-E-iapf/results/C0-E_iapf_freeze/frozen_iapf_policy.yaml
+  motion_style: experiments_v2/Calibration Experiments/C0-F-motion-style/results/C0-F_motion_style_freeze/frozen_motion_style_policy.yaml
   allocator: location_allocate/safety_aware_allocator.py:lexicographic-score
   paper_rules: paper-path freeze + legacy isolation.md
