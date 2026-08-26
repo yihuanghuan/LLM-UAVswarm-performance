@@ -1,0 +1,98 @@
+protocol_id: E1-candidate-semantic-representation-v1
+dataset_class: formal_evaluation
+status: SEALED
+baseline_tag: paper-final-sim-v3
+dataset_registry: e1_dataset_registry_v1.yaml
+llm_runtime_manifest: ../llm_runtime_manifest_v1.yaml
+
+execution_prohibited_before_final_seal: true
+inference_order_registry: e1_inference_order_v1.yaml
+inference_order_seed: 20260826
+inference_order_permutation_sha256: 9f1eed1cdbba6335ae6f77ed6c8d49964cd009973870bea1080dcd08050b61b4
+attempt_policy:
+  use_parser_retry_policy: true
+  retain_every_attempt: true
+  no_manual_deletion: true
+  all_attempt_denominator_required: true
+  no_post_result_prompt_schema_or_ground_truth_changes: true
+
+primary_metrics:
+  schema_valid_rate:
+    definition: expected-valid commands producing schema-valid Candidate Mission JSON divided by 96
+  semantic_field_accuracy:
+    definition: macro accuracy over U,F,c,r,T,m,s,q and mission-relation fields for expected-valid commands
+  exact_semantic_task_accuracy:
+    definition: expected-valid commands whose complete normalized Candidate Mission equals ground truth divided by 96
+  invalid_rejection_rate:
+    definition: expected-invalid commands rejected in the registered rejection class divided by 24
+  premature_numerical_commitment_rate:
+    definition: unresolved c/r/T fields incorrectly replaced by numerical values divided by all registered unresolved c/r/T fields
+    eligible_fields:
+      - relative, maintain-current-centroid, or auto center c
+      - qualitative or auto scale r
+      - auto timing T
+    excluded_frozen_semantic_rule: qualitative safer/cautious/conservative without a number maps to s=1.0 and is never a premature commitment
+  latency:
+    definition: provider call wall latency per attempt and total latency to terminal success or rejection; report median, P90, P95, P99
+  tokens:
+    definition: prompt, completion, and total provider-reported tokens per attempt; retain missing-usage as missing, never zero-impute
+
+secondary_diagnostics:
+  - strict JSON format compliance
+  - retry count distribution
+  - rejection-class confusion matrix
+  - accuracy by registered category
+
+normalization_contract:
+  scope: Candidate Mission JSON before any late resolution
+  validation_before_normalization:
+    - Validate both Candidate Missions against the frozen schema before normalization.
+    - Reject missing or extra semantic fields; normalization never repairs schema or semantic errors.
+    - Require every task_id to be a unique positive integer and every task reference to resolve before canonical renumbering.
+  json_object_key_order: ignored recursively
+  json_numeric_equivalence: finite JSON integer and floating representations compare by exact mathematical value; 4 equals 4.0, with no tolerance or string coercion
+  array_order:
+    mission_nodes: exact and significant
+    parallel_tasks: order-insensitive only within each parallel node; canonicalize deterministically before comparison
+    UAV_U: set semantics; require unique IDs and sort ascending before comparison
+    vectors_and_offsets: exact axis order x,y,z
+  parallel_task_canonicalization:
+    scope: tasks inside one parallel node only; top-level mission nodes are never reordered
+    ordering_key:
+      - canonicalized ascending U tuple
+      - canonical task semantic representation with task_id excluded, object keys canonicalized, numeric values represented by exact mathematical value, and all semantically significant arrays preserved
+    ties: semantically identical tasks are interchangeable; raw task_id is never a tie-breaker
+  task_id:
+    raw_value_comparison: ignored after uniqueness and reference validation
+    canonicalization: after U normalization and parallel-task ordering, traverse top-level mission nodes in their original order and tasks within each parallel node in canonical order; renumber tasks 1 through N
+    references: rewrite every task-id reference through the same old-to-canonical ID mapping so mission relations are preserved
+    comparison: compare the canonically renumbered missions
+  enums_and_strings: exact case-sensitive schema value required
+  missing_fields: never synthesized; a missing ground-truth field is an error
+  extra_fields: forbidden by schema and therefore an error
+  defaults: no scorer-side defaults; only fields explicitly present in frozen ground truth are compared
+  floating_values: no post-hoc tolerance; only integer/float representation equivalence above
+
+invalid_scoring_contract:
+  expected_class_source: immutable expected_rejection_class field in the dataset record
+  expected_classes:
+    - incomplete_instruction
+    - contradictory_semantics
+    - unavailable_uav_id
+    - formation_semantic_violation
+    - illegal_transition
+    - unsupported_or_ambiguous_semantics
+  automatic_outcome_mapping:
+    rejected: no executable Candidate remains after the frozen retry policy because parsing, schema validation, availability validation, semantic validation, mission compilation, or pre-dispatch runtime validation terminates the attempt
+    not_rejected: a Candidate passes every frozen pre-dispatch gate; later flight success is irrelevant to E1 invalid rejection
+  class_reporting: compute binary invalid-rejection rate separately within each immutable expected class; do not infer or relabel an expected class from model prose
+  terminal_stage_reporting: report the first deterministic terminal gate and machine exception/code as a diagnostic, not as a replacement expected class
+  unparseable_model_text: rejected with terminal stage parser_unparseable; its immutable expected class remains unchanged
+  manual_reinterpretation_or_relabeling: forbidden
+
+failure_accounting:
+  provider_timeout: failed attempt retained
+  provider_error: failed attempt retained
+  malformed_or_extra_text: format failure retained
+  parser_or_validator_rejection: terminal outcome after registered retry policy
+  infrastructure_failure: labeled separately but retained in all-attempt denominator

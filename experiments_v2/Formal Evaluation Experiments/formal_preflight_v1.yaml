@@ -1,0 +1,138 @@
+preflight_id: formal-preflight-v1
+preflight_type: human_approved_final_seal
+status: SEALED
+ready_for_final_review: false
+final_review_completed: true
+dataset_class: formal_evaluation
+
+baseline_tag: paper-final-sim-v3
+baseline_commit: 6cf402debf23851b1eff3edc6f3ab49eae7127c4
+configuration_id: paper-current-v11-c0-f-frozen
+canonical_policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+
+artifacts:
+  E1_dataset_registry: E1/e1_dataset_registry_v1.yaml
+  E1_dataset: E1/e1_candidate_semantic_dataset_v1.jsonl
+  E1_inference_order: E1/e1_inference_order_v1.yaml
+  E1_protocol: E1/e1_protocol_v1.yaml
+  E1_client_environment_lock: E1/e1_client_environment_lock_v1.txt
+  E1_client_environment_metadata: E1/e1_client_environment_lock_v1.yaml
+  E1_client_environment_hashes: E1/e1_client_environment_lock_v1.sha256
+  LLM_runtime_manifest: llm_runtime_manifest_v1.yaml
+  E2_E5_scenario_seed_registry: e2_e5_scenario_seed_registry_v1.yaml
+  E2_exact_registry: E2/e2_scenario_registry_v1.yaml
+  E3_exact_factorial_registry: E3/e3_factorial_registry_v1.yaml
+  E4_motion_style_registry: E4/e4_motion_style_registry_v1.yaml
+  E5_end_to_end_registry: E5/e5_end_to_end_registry_v1.yaml
+  simulation_trial_order: simulation_trial_order_v1.yaml
+  simulation_trial_order_complete_permutation: simulation_trial_order_v1.txt
+  E2_protocol: protocols/E2_protocol_v1.yaml
+  E3_protocol: protocols/E3_protocol_v1.yaml
+  E4_protocol: protocols/E4_protocol_v1.yaml
+  E5_protocol: protocols/E5_protocol_v1.yaml
+  simulation_environment_manifest: simulation_environment_manifest_v1.yaml
+  workspace_build_lock: environment/workspace_build_lock_v1.yaml
+  experiment_harness:
+    E2_commitment_wrapper: harness/e2_commitment_wrapper.py
+    E3_wrench_driver: harness/e3_wrench_driver.py
+    deterministic_order_generator: harness/generate_simulation_trial_order_v1.py
+  environment_overlays:
+    PX4_seed_runner: environment/patches/px4_runner_gazebo_seed_v1.patch
+    E3_force_endpoint: environment/patches/iris_gazebo_ros_force_v1.patch
+
+E1_dataset_status: SEALED
+LLM_manifest_status: SEALED
+E1_protocol_status: SEALED
+E1_inference_order_status: SEALED
+E1_client_environment_status: SEALED
+E1_technical_final_seal_ready: true
+E1_execution_gate:
+  technical_requirements_satisfied: true
+  human_approval_required: true
+  human_approval_recorded: true
+  execution_allowed: true
+human_approval:
+  status: APPROVED
+  scope: full E1-E5 formal evaluation preregistration and execution
+  approval_recorded_before_any_formal_outcome: true
+  approved_preflight_commit: e3877eca75c56809461d3fc333c3699b206f784c
+  prior_E1_only_approval_commit: 561b68e09204483500c97818dc817d1dda155a8c
+  approval_timestamp: not recorded
+  signature: not recorded
+E2_scenario_registry_status: SEALED
+E2_protocol_status: SEALED
+E3_scenario_registry_status: SEALED
+E3_protocol_status: SEALED
+E3_planning_baseline:
+  P1: {assignment_mode: safety_aware, meaning: frozen safety-aware lexicographic assignment}
+  P0: {assignment_mode: distance_hungarian, meaning: standard distance-only Hungarian assignment without safety-aware lexicographic refinement}
+  only_planning_difference: assignment rule under identical initial state, target set, seed, controller, timing, and feedback condition
+E4_scenario_registry_status: SEALED
+E4_protocol_status: SEALED
+E5_scenario_registry_status: SEALED
+E5_protocol_status: SEALED
+global_E2_E5_scenario_seed_registry_status: SEALED
+simulation_environment_status: SEALED
+workspace_build_lock_status: SEALED
+simulation_trial_order_status: SEALED
+
+rules:
+  formal_data_may_not_retune_parameters: true
+  calibration_and_formal_data_must_not_be_pooled: true
+  failed_runs_must_be_retained: true
+  all_attempt_denominator_required: true
+  no_manual_trial_deletion: true
+  paired_seeds_where_applicable: true
+  runtime_semantics_may_not_change: true
+
+after_final_seal:
+  parameter_retuning_forbidden: true
+  scenario_changes_forbidden: true
+  seed_changes_forbidden: true
+  sample_size_changes_forbidden: true
+  primary_metric_changes_forbidden: true
+  prompt_schema_model_decoding_changes_forbidden: true
+  production_runtime_semantic_changes_forbidden: true
+  experiment_condition_switching_per_registry_allowed: true
+  logging_runner_analysis_instrumentation_allowed_if_semantics_unchanged: true
+  formal_results_may_not_be_used_to_reopen_calibration: true
+
+calibration_status:
+  C0-A: frozen
+  C0-B: frozen
+  C0-C: frozen
+  C0-D: frozen
+  C0-E: frozen
+  C0-F: frozen
+
+review_gate:
+  formal_execution_allowed: true
+  formal_execution_allowed_scope: full E1-E5 suite
+  approved_execution_scope: E1-E5
+  final_seal_required_before_any_formal_run: true
+  statuses_must_be_resolved_to_SEALED_before_execution: true
+  human_approval_required: true
+  human_approval_satisfied_for_approved_scope: true
+  engineering_blockers: []
+
+requires_review: []
+
+resolved_review_items:
+  E1_metric_order_and_scoring_contract: SEALED
+  E1_provider_backend_reproducibility_limitation: ACCEPTED
+  E1_client_environment_lock: SEALED
+  E2_exact_scenarios_and_commitment_comparison: SEALED
+  E3_exact_factorial_disturbance_and_15_paired_seeds: SEALED
+  E3_distance_hungarian_planning_baseline: SEALED
+  E4_hypotheses_and_authority_contract: SEALED
+  E5_exact_end_to_end_registry: SEALED
+  simulation_environment_and_build_lock: SEALED
+  deterministic_simulation_trial_order: SEALED
+
+execution_record:
+  llm_calls_run: 0
+  gazebo_formal_trials_run: 0
+  accepted_formal_results_created: 0
+  E1_branch_created: false
+  immutable_formal_tag_created: false
+  runtime_or_config_modified: false

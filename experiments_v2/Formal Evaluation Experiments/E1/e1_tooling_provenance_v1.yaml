@@ -1,0 +1,21 @@
+tooling_id: E1-formal-tooling-v1
+dataset_class: formal_evaluation_tooling
+runtime_baseline_tag: paper-final-sim-v3
+runtime_baseline_commit: 6cf402debf23851b1eff3edc6f3ab49eae7127c4
+source_final_preflight_branch: formal/preflight-v1
+source_final_preflight_commit: 36dba68c6b16681ec98500b49c5a83095de4b634
+
+scope:
+  experiment: E1
+  production_runtime_semantics_changed: false
+  frozen_parameters_changed: false
+  provider_inference_performed_during_tooling_validation: false
+  accepted_formal_results_created_during_tooling_validation: false
+
+execution_contract:
+  real_provider_execution_requires_explicit_cli_flag: true
+  pre_run_provenance_validation_fail_closed: true
+  production_candidate_parser_used_without_fallback: true
+  append_only_atomic_attempt_journal: true
+  terminal_commands_never_rerun_on_resume: true
+  mock_results_are_labeled_synthetic_validation: true

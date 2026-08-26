@@ -1,0 +1,26 @@
+order_id: E1-inference-order-v1
+status: SEALED
+dataset_version: E1-candidate-semantic-v1
+ordering_algorithm: Python 3 random.Random(seed).shuffle over E1-0001 through E1-0120
+ordering_seed: 20260826
+serialization_for_hash: each command ID encoded as UTF-8 followed by LF, including the final ID
+permutation_sha256: 9f1eed1cdbba6335ae6f77ed6c8d49964cd009973870bea1080dcd08050b61b4
+command_count: 120
+permutation:
+  - [E1-0046, E1-0044, E1-0036, E1-0007, E1-0013, E1-0022, E1-0109, E1-0094, E1-0097, E1-0099]
+  - [E1-0085, E1-0003, E1-0025, E1-0089, E1-0111, E1-0056, E1-0004, E1-0043, E1-0103, E1-0116]
+  - [E1-0106, E1-0072, E1-0021, E1-0071, E1-0057, E1-0113, E1-0053, E1-0050, E1-0018, E1-0032]
+  - [E1-0058, E1-0001, E1-0112, E1-0039, E1-0118, E1-0055, E1-0002, E1-0096, E1-0095, E1-0074]
+  - [E1-0120, E1-0024, E1-0009, E1-0042, E1-0102, E1-0041, E1-0080, E1-0026, E1-0047, E1-0083]
+  - [E1-0093, E1-0114, E1-0065, E1-0110, E1-0054, E1-0029, E1-0087, E1-0091, E1-0049, E1-0062]
+  - [E1-0101, E1-0011, E1-0067, E1-0034, E1-0105, E1-0048, E1-0060, E1-0088, E1-0086, E1-0045]
+  - [E1-0038, E1-0098, E1-0076, E1-0108, E1-0037, E1-0090, E1-0104, E1-0033, E1-0068, E1-0075]
+  - [E1-0031, E1-0082, E1-0008, E1-0070, E1-0035, E1-0079, E1-0092, E1-0064, E1-0059, E1-0119]
+  - [E1-0084, E1-0100, E1-0030, E1-0063, E1-0052, E1-0073, E1-0005, E1-0019, E1-0012, E1-0016]
+  - [E1-0028, E1-0117, E1-0077, E1-0014, E1-0023, E1-0115, E1-0051, E1-0015, E1-0017, E1-0027]
+  - [E1-0066, E1-0020, E1-0040, E1-0081, E1-0010, E1-0107, E1-0006, E1-0078, E1-0069, E1-0061]
+
+execution_contract:
+  inference_must_follow_this_permutation: true
+  retries_finish_before_advancing_to_next_id: true
+  permutation_may_not_change_after_any_E1_output: true
