@@ -7,7 +7,9 @@ baseline_tag: paper-final-sim-v3
 dataset_path: experiments_v2/Formal Evaluation Experiments/E1/e1_candidate_semantic_dataset_v1.jsonl
 dataset_sha256: 6929f47d125831df2493e72d6c0bb4f68ca32c9f822a96319ba7f40fbee03d9e
 format: JSON Lines; one record per command
-ordering: ascending integer order 1 through 120; no shuffle before inference
+ordering:
+  dataset_storage_order: E1-0001 through E1-0120 in ascending integer order
+  formal_inference_order: sealed permutation in e1_inference_order_v1.yaml
 command_count: 120
 valid_count: 96
 invalid_count: 24
