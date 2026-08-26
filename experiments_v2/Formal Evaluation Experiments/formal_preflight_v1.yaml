@@ -1,7 +1,8 @@
 preflight_id: formal-preflight-v1
-preflight_type: human_review_candidate
+preflight_type: human_approved_final_seal
 status: SEALED
-ready_for_final_review: true
+ready_for_final_review: false
+final_review_completed: true
 dataset_class: formal_evaluation
 
 baseline_tag: paper-final-sim-v3
@@ -52,21 +53,28 @@ E1_execution_gate:
   execution_allowed: true
 human_approval:
   status: APPROVED
-  scope: formal evaluation preregistration and E1 execution
+  scope: full E1-E5 formal evaluation preregistration and execution
   approval_recorded_before_any_formal_outcome: true
-  approved_preflight_commit: 561b68e09204483500c97818dc817d1dda155a8c
+  approved_preflight_commit: e3877eca75c56809461d3fc333c3699b206f784c
+  prior_E1_only_approval_commit: 561b68e09204483500c97818dc817d1dda155a8c
   approval_timestamp: not recorded
   signature: not recorded
-E2_scenario_registry_status: SEALED_CANDIDATE
+E2_scenario_registry_status: SEALED
+E2_protocol_status: SEALED
 E3_scenario_registry_status: SEALED
 E3_protocol_status: SEALED
 E3_planning_baseline:
   P1: {assignment_mode: safety_aware, meaning: frozen safety-aware lexicographic assignment}
   P0: {assignment_mode: distance_hungarian, meaning: standard distance-only Hungarian assignment without safety-aware lexicographic refinement}
   only_planning_difference: assignment rule under identical initial state, target set, seed, controller, timing, and feedback condition
-E4_scenario_registry_status: SEALED_CANDIDATE
-E5_scenario_registry_status: SEALED_CANDIDATE
-simulation_environment_status: SEALED_CANDIDATE
+E4_scenario_registry_status: SEALED
+E4_protocol_status: SEALED
+E5_scenario_registry_status: SEALED
+E5_protocol_status: SEALED
+global_E2_E5_scenario_seed_registry_status: SEALED
+simulation_environment_status: SEALED
+workspace_build_lock_status: SEALED
+simulation_trial_order_status: SEALED
 
 rules:
   formal_data_may_not_retune_parameters: true
@@ -77,6 +85,18 @@ rules:
   paired_seeds_where_applicable: true
   runtime_semantics_may_not_change: true
 
+after_final_seal:
+  parameter_retuning_forbidden: true
+  scenario_changes_forbidden: true
+  seed_changes_forbidden: true
+  sample_size_changes_forbidden: true
+  primary_metric_changes_forbidden: true
+  prompt_schema_model_decoding_changes_forbidden: true
+  production_runtime_semantic_changes_forbidden: true
+  experiment_condition_switching_per_registry_allowed: true
+  logging_runner_analysis_instrumentation_allowed_if_semantics_unchanged: true
+  formal_results_may_not_be_used_to_reopen_calibration: true
+
 calibration_status:
   C0-A: frozen
   C0-B: frozen
@@ -86,9 +106,9 @@ calibration_status:
   C0-F: frozen
 
 review_gate:
-  formal_execution_allowed: false
-  formal_execution_allowed_scope: full E1-E5 suite; E1 execution is governed separately by E1_execution_gate
-  approved_execution_scope: E1
+  formal_execution_allowed: true
+  formal_execution_allowed_scope: full E1-E5 suite
+  approved_execution_scope: E1-E5
   final_seal_required_before_any_formal_run: true
   statuses_must_be_resolved_to_SEALED_before_execution: true
   human_approval_required: true
@@ -101,13 +121,13 @@ resolved_review_items:
   E1_metric_order_and_scoring_contract: SEALED
   E1_provider_backend_reproducibility_limitation: ACCEPTED
   E1_client_environment_lock: SEALED
-  E2_exact_scenarios_and_commitment_comparison: SEALED_CANDIDATE
+  E2_exact_scenarios_and_commitment_comparison: SEALED
   E3_exact_factorial_disturbance_and_15_paired_seeds: SEALED
   E3_distance_hungarian_planning_baseline: SEALED
-  E4_hypotheses_and_authority_contract: SEALED_CANDIDATE
-  E5_exact_end_to_end_registry: SEALED_CANDIDATE
-  simulation_environment_and_build_lock: SEALED_CANDIDATE
-  deterministic_simulation_trial_order: SEALED_CANDIDATE
+  E4_hypotheses_and_authority_contract: SEALED
+  E5_exact_end_to_end_registry: SEALED
+  simulation_environment_and_build_lock: SEALED
+  deterministic_simulation_trial_order: SEALED
 
 execution_record:
   llm_calls_run: 0

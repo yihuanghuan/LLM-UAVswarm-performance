@@ -23,10 +23,10 @@ Formal branches must be siblings created independently from the same
 paper-final tag. Instrumentation may observe or record but must not change Full
 Method runtime semantics or frozen parameter values.
 
-The active human-review candidate is `formal_preflight_v1.yaml`. Exact E2-E5
+The active human-approved final seal is `formal_preflight_v1.yaml`. Exact E2-E5
 definitions live in the experiment-specific registries, and
 `simulation_trial_order_v1.yaml` fixes the complete deterministic simulation
 order. `simulation_environment_manifest_v1.yaml` reconstructs the clean PX4 /
-Gazebo base plus sealed experiment-only overlays. No artifact in this candidate
-is an accepted formal result, and formal execution remains disabled until human
-final-seal approval.
+Gazebo base plus sealed experiment-only overlays. No artifact in this preflight
+is an accepted formal result. Full E1-E5 preregistration and execution received
+human final-seal approval before any formal outcome was created.
