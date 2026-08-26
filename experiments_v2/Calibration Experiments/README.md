@@ -18,10 +18,14 @@ Rules:
 - Legacy `exp/*` and pilot results are context only. They are not automatically
   members of this calibration set.
 
-The directory order is C0-A, C0-B, C0-C, C0-G, C0-D, C0-E, C0-F. Each C0
+The directory order is C0-A, C0-B, C0-C, C0-D, C0-E, C0-F. Each C0
 branch is created from the latest `paper/calibration`, while experimental code
 and generated data remain on that C0 branch or in external artifact storage.
 Only frozen parameter values and provenance return to `paper/calibration`.
+
+Allocator numerical convergence is Supporting Method Verification, not a
+Phase-0 calibration stage. It may verify the sealed allocator numerics but may
+not select or retune them.
 
 The canonical pre-registration for C0-A is
 `experiments_v2/Calibration Experiments/C0-A-ladrc-motion-limits/legacy_campaign/CALIBRATION_PROTOCOL.md`.

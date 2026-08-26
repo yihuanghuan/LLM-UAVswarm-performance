@@ -1,12 +1,10 @@
 # Paper Parameter Calibration Manifest
 
-`paper-current-v9-c0-c-frozen` is the current runnable Paper policy.  It
-contains the frozen C0-A LADRC/motion-limit package, frozen C0-B Candidate
-state-freshness package, and frozen C0-C geometry/qualitative-scale package;
-it is not a claim that the remaining calibration parameters are paper-final.
-The C0-D planning-safety component is frozen separately; it is deliberately not
-merged into this full-runtime policy until C0-E selects compatible provisional
-IAPF numerics.
+This document records the calibration inventory as it evolved. The current
+authoritative runnable Paper policy is `paper-current-v11-c0-f-frozen`; its
+canonical values and final C0-A through C0-F status are recorded in
+`lfs_policy/config/lfs_policy.paper_current.yaml` and the formal-baseline
+provenance manifest.
 
 | Parameter | Current value | Current provenance | Status | Required calibration | Affects experiments |
 |---|---:|---|---|---|---|
@@ -22,8 +20,8 @@ IAPF numerics.
 | IAPF enter/exit | `1.5/1.65 m` at s=1 | controller baseline | provisional | collision-avoidance sweeps | avoidance activation |
 | IAPF repulsion scale | `1.0 + 0.25(s-1)` | conservative semantic-safety development mapping | provisional | targeted avoidance sweep without changing IAPF formula | avoidance strength |
 | s_max | `2.00` | C0-D frozen planning-safety component | component-frozen | largest preregistered C0-D planning/geometry-feasible candidate | safety-factor experiments |
-| allocator comparison tolerance | `1e-6` | Paper policy `comparison_tolerance` | provisional | verify numerical stability on separate calibration scenarios, then lock before test set | floating-point lexicographic comparison only |
-| variable-duration numerical sample rate | `20 Hz` | Paper policy `sample_hz` | provisional | validate numerical closest-approach resolution on separate calibration scenarios, then lock before test set | variable-duration ParallelGroup assignment comparison |
+| allocator comparison tolerance | `1e-6` | Paper policy `comparison_tolerance` | sealed baseline | Supporting Method Verification only; no parameter selection or retuning | floating-point lexicographic comparison only |
+| variable-duration numerical sample rate | `20 Hz` | Paper policy `sample_hz` | sealed baseline | Supporting Method Verification only; no parameter selection or retuning | variable-duration ParallelGroup assignment comparison |
 | minimum duration / auto style | `0.5 s / 1.30,1.15,1.10` (smooth, normal, aggressive) | 2026-08-14 motion-style development sweep; aggressive raised from 1.00 after saturation at the jerk boundary | provisional | broader displacement/payload sweep | completion-time results |
 | style gain | `0.8,1.0,1.1` | 2026-08-14 explicit/auto-T Gazebo development sweep; initial aggressive 1.2 reduced after targeted saturation checks | provisional | broader trajectory and disturbance sweep | semantic controller results |
 | task adaptation | `identity`, `task_gain=1.0` | deliberate style-isolation boundary | architecture-frozen, value fixed for current study | only revisit in a separate task-adaptation study | none in this style-only study |
@@ -36,7 +34,9 @@ The C0-A frozen policy also fixes its campaign inputs `b0=[1,1,1]`, control
 frequency `50 Hz`, and `control_mode=ladrc_acceleration`; these are immutable
 execution inputs rather than further calibration selectors. C0-C geometry and
 qualitative-scale values and the C0-D planning-safety component are frozen.
-C0-E IAPF numerics, C0-F, and C0-G numerical parameters remain provisional.
+C0-E IAPF and C0-F motion-style parameters were subsequently frozen in the
+canonical `paper-current-v11-c0-f-frozen` policy. Allocator numerical
+convergence is Supporting Method Verification rather than a calibration stage.
 
 The semantic motion-style architecture is frozen: `m` has one deterministic
 timing path for auto T and one deterministic controller-profile path. The
