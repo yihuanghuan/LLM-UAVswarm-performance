@@ -1,0 +1,130 @@
+registry_id: formal-E2-E5-scenarios-seeds-v1
+dataset_class: formal_evaluation
+status: REQUIRES_REVIEW
+baseline_tag: paper-final-sim-v3
+
+global_seed_policy:
+  seeds_are_independent_of_calibration_and_legacy_registries: true
+  exact_seed_lists_are_fixed_candidates_below: true
+  apply_seed_to_every_rng_that_supports_explicit_seeding: true
+  unsupported_seed_consumers_must_be_recorded_as_seed_not_supported: true
+  reset_and_scheduler_variability_remains_part_of_repeats: true
+  no_replacement_seed_after_failure: true
+  trial_order_status: REQUIRES_REVIEW
+  trial_order_review: Seal one deterministic permutation and its ordering seed before any formal simulation run.
+
+global_initial_state_policy:
+  base_spawn_rule: PX4 gazebo-classic sitl_multiple_run instance N spawns at X=0, Y=3*N, Z=0.83; controller publishes global ENU with the registered offset.
+  cold_start_required: true
+  startup_ready_gate_required: true
+  scenario_specific_initial_coordinates_status: REQUIRES_REVIEW
+  review: Exact risk-family transforms and tolerances must be approved without inspecting formal outcomes.
+
+global_failure_accounting:
+  retain_every_attempt: true
+  all_attempt_denominator: true
+  no_manual_trial_deletion: true
+  timeout_or_infrastructure_failure_is_not_missing_data: true
+  retry_creates_new_retained_attempt: true
+  replacement_of_failed_seed: forbidden
+
+experiments:
+  E2:
+    title: Commitment timing and late grounding
+    status: REQUIRES_REVIEW
+    scenario_count: 6
+    seeds: [52101, 52102, 52103, 52104, 52105]
+    repeats_per_scenario_condition: 5
+    paired_seed_relationship: Use the same seed and initial snapshot across each registered baseline/variation pair.
+    disturbance_policy: No exogenous wind or force disturbance; only preregistered runtime-state shifts are allowed.
+    scenarios:
+      - {family_id: E2-RSV, scenario_id: E2-RSV-01, label: runtime-state variation, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E2-PES, scenario_id: E2-PES-01, label: parse-to-execute state shift, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E2-RC, scenario_id: E2-RC-01, label: relative center grounding, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E2-QS, scenario_id: E2-QS-01, label: qualitative scale grounding, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E2-AT, scenario_id: E2-AT-01, label: auto duration grounding, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E2-DF, scenario_id: E2-DF-01, label: dynamic-feasibility correction or rejection, parameterization_status: REQUIRES_REVIEW}
+    review_required:
+      - Exact pre-parse and pre-execute snapshots and the allowed state-shift operator.
+      - Exact English command, availability set, formation, and displacement for every scenario.
+      - Whether each state-shift case is paired to an explicit no-shift control as a separate condition.
+
+  E3:
+    title: Planning by feedback safety factorial
+    status: REQUIRES_REVIEW
+    scenario_count: 6
+    seeds: [53101, 53102, 53103, 53104, 53105]
+    repeats_per_scenario_condition: 5
+    factorial_conditions: [P1_F1, P1_F0, P0_F1, P0_F0]
+    paired_seed_relationship: All four planning/feedback conditions use the same scenario and seed.
+    initial_state_policy: Pair-identical cold start and target geometry within each seed.
+    disturbance_policy:
+      Family_A: no exogenous disturbance; structural risk comes from geometry and assignment.
+      Family_B: preregistered execution disturbance required; exact waveform, axis, onset, duration, and magnitude are REQUIRES_REVIEW.
+      Family_C: combine preregistered structural and execution risk; exact composition is REQUIRES_REVIEW.
+    scenarios:
+      - {family_id: E3-A, scenario_id: E3-A-01, label: predictable crossing assignment risk, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E3-A, scenario_id: E3-A-02, label: predictable compacting structural risk, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E3-B, scenario_id: E3-B-01, label: residual lateral execution risk, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E3-B, scenario_id: E3-B-02, label: residual vertical execution risk, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E3-C, scenario_id: E3-C-01, label: mixed crossing and lateral execution risk, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E3-C, scenario_id: E3-C-02, label: mixed compaction and vertical execution risk, parameterization_status: REQUIRES_REVIEW}
+    review_required:
+      - Exact geometry and disturbance parameterization for all six scenarios.
+      - Confirm the existing-mode mapping for P1/P0 and F1/F0 without code changes.
+      - Confirm that disabling a component is a preregistered ablation, never a tuned Full Method setting.
+
+  E4_A:
+    title: Explicit-duration behavioral isolation
+    status: REQUIRES_REVIEW
+    scenario_count: 3
+    seeds: [54101, 54102, 54103, 54104, 54105]
+    repeats_per_scenario_condition: 5
+    conditions: [smooth, normal, aggressive]
+    paired_seed_relationship: All three styles share identical initial state, target, safety value, and feasible explicit T for a scenario/seed.
+    disturbance_policy: none
+    scenarios:
+      - {family_id: E4A-ISO, scenario_id: E4A-ISO-X, label: horizontal explicit-T isolation, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E4A-ISO, scenario_id: E4A-ISO-Z, label: vertical explicit-T isolation, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E4A-ISO, scenario_id: E4A-ISO-DIAG, label: three-dimensional diagonal explicit-T isolation, parameterization_status: REQUIRES_REVIEW}
+    review_required:
+      - Exact start/target displacement and one demonstrably feasible explicit T per scenario, chosen without formal outcomes.
+
+  E4_B:
+    title: Duration authority preservation
+    status: REQUIRES_REVIEW
+    scenario_count: 4
+    seeds: [54201, 54202, 54203, 54204, 54205]
+    repeats_per_scenario_condition: 5
+    conditions: [smooth, normal, aggressive]
+    paired_seed_relationship: All styles share the same scenario and seed; requested T category is held fixed.
+    disturbance_policy: none except the registered safety-active geometry; no injected disturbance.
+    scenarios:
+      - {family_id: E4B-AUTH, scenario_id: E4B-FEASIBLE-T, label: feasible explicit T, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E4B-AUTH, scenario_id: E4B-INFEASIBLE-T, label: infeasible explicit T, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E4B-AUTH, scenario_id: E4B-AUTO-T, label: auto T, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E4B-AUTH, scenario_id: E4B-SAFETY-ACTIVE, label: safety-active duration authority, parameterization_status: REQUIRES_REVIEW}
+    review_required:
+      - Exact displacement and requested T values defining feasible and infeasible cases.
+      - Exact safety-active geometry and acceptance rule for authorized safety/feasibility correction.
+
+  E5:
+    title: Eight-UAV end-to-end Full Method
+    status: REQUIRES_REVIEW
+    scenario_count: 5
+    seeds: [55101, 55102, 55103, 55104, 55105]
+    repeats_per_scenario_condition: 5
+    conditions: [Full_Method]
+    paired_seed_relationship: If reviewer adds comparison methods, every method must use the same scenario/seed pair; Full Method seeds remain unchanged.
+    initial_state_policy: Eight-UAV cold start using instances 1 through 8 and the global base spawn rule.
+    disturbance_policy: No unregistered disturbance; any designated disturbance must be sealed before runs.
+    scenarios:
+      - {family_id: E5-E2E, scenario_id: E5-SIMPLE, label: simple formation, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E5-E2E, scenario_id: E5-REL-QUAL, label: relative-center qualitative-scale command, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E5-E2E, scenario_id: E5-SEQUENTIAL, label: sequential mission, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E5-E2E, scenario_id: E5-PARALLEL, label: parallel mission, parameterization_status: REQUIRES_REVIEW}
+      - {family_id: E5-E2E, scenario_id: E5-MIXED-HIGH, label: mixed high-complexity command, parameterization_status: REQUIRES_REVIEW}
+    review_required:
+      - Exact English commands and Candidate ground truth for all five scenarios.
+      - Exact geometry, transitions, completion modes, safety values, and timeouts.
+      - Confirm whether comparison methods are in scope; do not add them after observing Full Method results.

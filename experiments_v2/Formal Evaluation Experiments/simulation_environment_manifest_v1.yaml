@@ -1,0 +1,131 @@
+manifest_id: formal-simulation-environment-v1
+dataset_class: formal_evaluation
+status: REQUIRES_REVIEW
+observed_at_utc: '2026-08-26T08:18:03Z'
+baseline_tag: paper-final-sim-v3
+
+host:
+  os: Ubuntu 22.04.5 LTS (Jammy Jellyfish)
+  kernel: 6.8.0-138-generic
+  architecture: x86_64
+  cpu: AMD Ryzen 9 7845HX with Radeon Graphics
+  physical_cores: 12
+  logical_cpus: 24
+  memory_total: 30 GiB
+  swap: 0 B
+
+ros:
+  distribution: humble
+  ros_version: 2
+  ros_base_package: 0.10.0-1jammy.20251017.032654
+  ros_core_package: 0.10.0-1jammy.20251013.140131
+  rmw_default_package: rmw_fastrtps_cpp 6.2.9-1jammy.20251008.013154
+  RMW_IMPLEMENTATION: UNSET
+  ROS_DOMAIN_ID: UNSET
+  use_sim_time: false
+  use_sim_time_basis: No launch or config override is present; false is the ROS 2 default and must be verified in the pre-run environment check.
+
+gazebo:
+  product: Gazebo Classic
+  version: 11.10.2
+  package: 11.10.2+dfsg-1
+  world: empty
+  world_path: /home/yihuang/PX4-Autopilot/Tools/simulation/gazebo-classic/sitl_gazebo-classic/worlds/empty.world
+  world_sha256: 26fa1651862737227d1fcaf3ac4808d06609c74debe733ad313fd93c7a29134b
+  GAZEBO_MODEL_PATH_at_observation: UNSET
+  GAZEBO_PLUGIN_PATH_at_observation: UNSET
+
+px4:
+  checkout_path: /home/yihuang/PX4-Autopilot
+  commit: 30e763b6780061d70a14894e3e8b06e6a656f9b8
+  describe: v1.15.0-dirty
+  version_family: v1.15.0
+  tree_clean: false
+  top_level_diff_sha256: 7a9ba7c1a20b2bd9b443cfa81217f0f831fc7dbba8bc7bcecff915d06af5d40e
+  modified_or_untracked:
+    - Tools/setup/ubuntu.sh
+    - Tools/setup/ubuntu.sh.bak
+    - Tools/simulation/gazebo-classic/setup_gazebo.bash
+    - Tools/simulation/gazebo-classic/sitl_gazebo-classic
+  gazebo_classic_submodule_commit: da7206e057703cc645770f02437013358b71e1c0
+  gazebo_classic_submodule_describe: da7206e-dirty
+  gazebo_classic_submodule_diff_sha256: abde6382a4558f16e3fda15d53d8edcc8e74ae8eb00d337a299e38df2751d74c
+  dirty_tree_policy: BLOCKER; reviewer must either approve and fully seal the observed content or provide a clean pinned checkout before formal runs.
+
+vehicle:
+  simulator_model: iris
+  model_template_path: /home/yihuang/PX4-Autopilot/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/iris/iris.sdf.jinja
+  model_template_sha256: 33402f400ecb23631c2a93b82b168cb712371cc331ccf8c03227c949e3c052fa
+  model_template_worktree_state: modified in dirty gazebo-classic submodule
+  instance_mapping: UAV N maps to PX4 instance N and target system N+1 for multi-vehicle runs.
+  spawn_rule: X=0, Y=3*N, Z=0.83 for PX4 instance N
+
+full_method_runtime:
+  control_mode: ladrc_acceleration
+  control_mode_note: Must be explicitly supplied because the repository launch default remains px4_position.
+  assignment_mode: safety_aware
+  allocator_objective: lexicographic
+  lfs_runtime_mode: candidate_v2
+  avoidance_mode: iapf_dual
+  iapf_escape_mode: id_order
+  controller_frequency_hz: 50.0
+  policy_path: lfs_policy/config/lfs_policy.paper_current.yaml
+  configuration_id: paper-current-v11-c0-f-frozen
+  policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+
+repository_runtime_file_hashes:
+  swarm_launch_sha256: eebe0d26d7d6d9408078c99dd735c4076b36eb79f1ebc8d02be64af24d9782dd
+  allocator_launch_sha256: 0decfa5ca66c24b6449e69a77d09f3837fde75beeb437fd860ceffb305c4d464
+  controller_yaml_sha256: 62657f4fe4100a0397bae68bd73a20f361bbf4aab8389d7ecd1dac974e447692
+  files_modified_by_preflight: false
+
+launch_candidate:
+  xrce_agent: MicroXRCEAgent udp4 -p 8888
+  xrce_agent_path: /usr/local/bin/MicroXRCEAgent
+  xrce_agent_library_version: libmicroxrcedds_agent.so.2.4
+  px4_multi_vehicle: cd /home/yihuang/PX4-Autopilot && ./Tools/simulation/gazebo-classic/sitl_multiple_run.sh -n 8 -m iris -w empty
+  controller: ros2 launch ladrc_controller swarm_launch.py uav_ids:=[1,2,3,4,5,6,7,8] control_mode:=ladrc_acceleration avoidance_mode:=iapf_dual iapf_escape_mode:=id_order iapf_filter_alpha:=0.20
+  scheduler: ros2 launch location_allocate location_allocate.launch.py assignment_mode:=safety_aware lfs_runtime_mode:=candidate_v2
+  launch_status: REQUIRES_REVIEW
+
+environment_variables_at_observation:
+  ROS_DISTRO: humble
+  ROS_VERSION: '2'
+  RMW_IMPLEMENTATION: UNSET
+  ROS_DOMAIN_ID: UNSET
+  GAZEBO_MODEL_PATH: UNSET
+  GAZEBO_PLUGIN_PATH: UNSET
+  PX4_SIM_MODEL: UNSET before launch; runner sets gazebo-classic_iris
+  PX4_HOME_LAT: UNSET
+  PX4_HOME_LON: UNSET
+  PX4_HOME_ALT: UNSET
+  HEADLESS: UNSET
+  DISPLAY: ':1'
+
+clock_and_rtf:
+  ros_use_sim_time: false
+  gazebo_clock_topic: /clock
+  real_time_factor_collection_method: Record /clock plus monotonic wall timestamps; over each scored interval compute delta simulation time divided by delta monotonic wall time.
+  reporting: median, P05, P95, and minimum interval RTF plus scored-duration aggregate
+  clock_configuration_status: REQUIRES_REVIEW
+  review: Verify /clock publication, ROS node use_sim_time parameters, and timestamp domains before any formal run.
+
+randomization:
+  registry_source: e2_e5_scenario_seed_registry_v1.yaml
+  gazebo_seed_interface: not confirmed
+  px4_seed_interface: not confirmed
+  harness_rng: must consume the registered seed wherever a reviewed harness supports it
+  unsupported_component_rule: record seed_not_supported; do not pretend the component was seeded
+  randomization_status: REQUIRES_REVIEW
+
+blockers:
+  - PX4 and gazebo-classic worktrees are dirty and are not yet an accepted immutable environment.
+  - The iris model template is locally modified; approve/hash-seal it or select a clean pinned model before formal runs.
+  - Gazebo/PX4 seed support and clock-domain checks are not yet sealed.
+  - Exact package/build lock for the workspace install tree is not yet recorded.
+
+governance:
+  px4_position_may_not_be_used_for_full_method: true
+  environment_changes_after_formal_results: forbidden
+  no_simulation_was_started_for_this_preflight: true
+  accepted_formal_results_created: false

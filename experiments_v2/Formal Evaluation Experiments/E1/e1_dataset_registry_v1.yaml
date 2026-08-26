@@ -1,0 +1,58 @@
+registry_id: E1-dataset-registry-v1
+dataset_version: E1-candidate-semantic-v1
+dataset_class: formal_evaluation
+status: SEALED_CANDIDATE
+baseline_tag: paper-final-sim-v3
+
+dataset_path: experiments_v2/Formal Evaluation Experiments/E1/e1_candidate_semantic_dataset_v1.jsonl
+dataset_sha256: 6929f47d125831df2493e72d6c0bb4f68ca32c9f822a96319ba7f40fbee03d9e
+format: JSON Lines; one record per command
+ordering: ascending integer order 1 through 120; no shuffle before inference
+command_count: 120
+valid_count: 96
+invalid_count: 24
+
+valid_distribution:
+  mission_structure: {single: 72, sequential: 12, parallel: 12}
+  center: {absolute: 24, relative: 24, auto: 24, mixed: 24}
+  scale: {explicit: 15, compact: 15, normal: 14, spacious: 14, auto: 14, mixed: 24}
+  timing: {explicit: 36, auto: 36, mixed: 24}
+  motion_style: {smooth: 24, normal: 24, aggressive: 24, mixed: 24}
+  safety: {numeric: 54, qualitative_safer: 18, mixed: 24}
+  transition: {direct: 60, continuous: 12, hover-and-wait: 24}
+
+invalid_distribution:
+  incomplete_instruction: 4
+  contradictory_semantics: 4
+  unavailable_uav_id: 4
+  formation_semantic_violation: 4
+  illegal_transition: 4
+  unsupported_or_ambiguous_semantics: 4
+
+record_contract:
+  unique_id_required: true
+  fixed_order_required: true
+  availability_required: true
+  valid_label_required: true
+  valid_ground_truth_required: true
+  invalid_rejection_class_required: true
+
+validation:
+  json_parse: PASS
+  unique_ids: PASS
+  contiguous_order: PASS
+  valid_ground_truth_schema_validation: PASS
+  valid_ground_truth_candidate_early_validation: PASS
+  validation_performed_without_llm_inference: true
+
+independence:
+  independently_authored_for_formal_preflight: true
+  copied_from_legacy_command_sets: false
+  calibration_or_legacy_results_used_as_formal_results: false
+  legacy_categories_used_only_as_non-result_design_context: true
+
+governance:
+  commands_may_not_be_added_removed_or_reordered_after_final_seal: true
+  ground_truth_may_not_be_changed_after_outputs_are_viewed: true
+  no_llm_was_run_during_registry_creation: true
+  accepted_formal_results_created: false

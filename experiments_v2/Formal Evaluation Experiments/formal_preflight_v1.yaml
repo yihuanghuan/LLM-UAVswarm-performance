@@ -1,0 +1,72 @@
+preflight_id: formal-preflight-v1
+preflight_type: human_review_candidate
+status: REQUIRES_REVIEW
+dataset_class: formal_evaluation
+
+baseline_tag: paper-final-sim-v3
+baseline_commit: 6cf402debf23851b1eff3edc6f3ab49eae7127c4
+configuration_id: paper-current-v11-c0-f-frozen
+canonical_policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+
+artifacts:
+  E1_dataset_registry: E1/e1_dataset_registry_v1.yaml
+  E1_dataset: E1/e1_candidate_semantic_dataset_v1.jsonl
+  E1_protocol: E1/e1_protocol_v1.yaml
+  LLM_runtime_manifest: llm_runtime_manifest_v1.yaml
+  E2_E5_scenario_seed_registry: e2_e5_scenario_seed_registry_v1.yaml
+  E2_protocol: protocols/E2_protocol_v1.yaml
+  E3_protocol: protocols/E3_protocol_v1.yaml
+  E4_protocol: protocols/E4_protocol_v1.yaml
+  E5_protocol: protocols/E5_protocol_v1.yaml
+  simulation_environment_manifest: simulation_environment_manifest_v1.yaml
+
+E1_dataset_status: SEALED_CANDIDATE
+LLM_manifest_status: REQUIRES_REVIEW
+E2_scenario_registry_status: REQUIRES_REVIEW
+E3_scenario_registry_status: REQUIRES_REVIEW
+E4_scenario_registry_status: REQUIRES_REVIEW
+E5_scenario_registry_status: REQUIRES_REVIEW
+simulation_environment_status: REQUIRES_REVIEW
+
+rules:
+  formal_data_may_not_retune_parameters: true
+  calibration_and_formal_data_must_not_be_pooled: true
+  failed_runs_must_be_retained: true
+  all_attempt_denominator_required: true
+  no_manual_trial_deletion: true
+  paired_seeds_where_applicable: true
+  runtime_semantics_may_not_change: true
+
+calibration_status:
+  C0-A: frozen
+  C0-B: frozen
+  C0-C: frozen
+  C0-D: frozen
+  C0-E: frozen
+  C0-F: frozen
+
+review_gate:
+  formal_execution_allowed: false
+  final_seal_required_before_any_formal_run: true
+  statuses_must_be_resolved_to_SEALED_before_execution: true
+  human_approval_required: true
+
+requires_review:
+  - Accept or resolve the MiniMax backend-version reproducibility limitation and seal the E1 client environment.
+  - Seal exact E2 state-shift operators, snapshots, commands, and trial pairing.
+  - Seal exact E3 risk geometry, disturbances, and existing-mode factorial mapping.
+  - BLOCKER: no sealed non-runtime-changing disturbance injection method has been identified for E3 Family B/C.
+  - Seal exact E4-A displacements and feasible T values.
+  - Seal exact E4-B feasible/infeasible/auto/safety-active definitions.
+  - Seal exact E5 English commands, semantic ground truth, geometry, transitions, and timeouts.
+  - Seal one deterministic global trial order and ordering seed.
+  - Resolve the dirty PX4/Gazebo worktrees and locally modified iris model.
+  - Verify and seal Gazebo/PX4 seed support, clock domains, RTF capture, and workspace build/package lock.
+
+execution_record:
+  llm_calls_run: 0
+  gazebo_formal_trials_run: 0
+  accepted_formal_results_created: 0
+  E1_branch_created: false
+  immutable_formal_tag_created: false
+  runtime_or_config_modified: false

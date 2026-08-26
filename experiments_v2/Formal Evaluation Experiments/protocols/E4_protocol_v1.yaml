@@ -1,0 +1,23 @@
+protocol_id: E4-motion-style-authority-v1
+dataset_class: formal_evaluation
+status: REQUIRES_REVIEW
+baseline_tag: paper-final-sim-v3
+scenario_registry: ../e2_e5_scenario_seed_registry_v1.yaml
+execution_prohibited_before_final_seal: true
+
+E4_A_primary_metrics:
+  settling_time: preregistered task-command time to stable-hover entry under the existing completion definition
+  control_effort: time integral of norm of commanded LADRC acceleration over the scored interval
+  acceleration_response: peak, RMS, and rise-time summary of commanded acceleration
+  tracking_RMSE: RMS 3-D distance between safe reference and measured position
+
+E4_B_primary_metrics:
+  unauthorized_override_count: count of output-duration changes not justified by frozen dynamic-feasibility or safety priority rules
+  Priority_Preservation_Rate: attempts with every duration decision respecting hard safety greater than dynamic feasibility greater than feasible explicit T greater than motion style, divided by all attempts
+
+isolation_rules:
+  E4_A_explicit_T_must_be_identical_across_styles: true
+  start_target_geometry_and_seed_must_be_paired: true
+  no_post_result_duration_adjustment: true
+
+failure_accounting: inherit registry global_failure_accounting

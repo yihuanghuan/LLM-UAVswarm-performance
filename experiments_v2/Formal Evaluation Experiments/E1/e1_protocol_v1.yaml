@@ -1,0 +1,44 @@
+protocol_id: E1-candidate-semantic-representation-v1
+dataset_class: formal_evaluation
+status: SEALED_CANDIDATE
+baseline_tag: paper-final-sim-v3
+dataset_registry: e1_dataset_registry_v1.yaml
+llm_runtime_manifest: ../llm_runtime_manifest_v1.yaml
+
+execution_prohibited_before_final_seal: true
+inference_order: dataset order 1 through 120
+attempt_policy:
+  use_parser_retry_policy: true
+  retain_every_attempt: true
+  no_manual_deletion: true
+  all_attempt_denominator_required: true
+  no_post_result_prompt_schema_or_ground_truth_changes: true
+
+primary_metrics:
+  schema_valid_rate:
+    definition: expected-valid commands producing schema-valid Candidate Mission JSON divided by 96
+  semantic_field_accuracy:
+    definition: macro accuracy over U,F,c,r,T,m,s,q and mission-relation fields for expected-valid commands
+  exact_semantic_task_accuracy:
+    definition: expected-valid commands whose complete normalized Candidate Mission equals ground truth divided by 96
+  invalid_rejection_rate:
+    definition: expected-invalid commands rejected in the registered rejection class divided by 24
+  premature_numerical_commitment_rate:
+    definition: eligible auto, qualitative-scale, or qualitative-safer fields replaced by an invented numeric value divided by all eligible fields
+  latency:
+    definition: provider call wall latency per attempt and total latency to terminal success or rejection; report median, P90, P95, P99
+  tokens:
+    definition: prompt, completion, and total provider-reported tokens per attempt; retain missing-usage as missing, never zero-impute
+
+secondary_diagnostics:
+  - strict JSON format compliance
+  - retry count distribution
+  - rejection-class confusion matrix
+  - accuracy by registered category
+
+failure_accounting:
+  provider_timeout: failed attempt retained
+  provider_error: failed attempt retained
+  malformed_or_extra_text: format failure retained
+  parser_or_validator_rejection: terminal outcome after registered retry policy
+  infrastructure_failure: labeled separately but retained in all-attempt denominator

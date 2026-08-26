@@ -1,0 +1,89 @@
+manifest_id: E1-llm-runtime-v1
+dataset_class: formal_evaluation
+status: REQUIRES_REVIEW
+observed_at_utc: '2026-08-26T08:18:03Z'
+baseline_tag: paper-final-sim-v3
+
+provider:
+  name: MiniMax
+  api_compatibility: OpenAI Chat Completions compatible
+  base_url: https://api.minimax.chat/v1
+  exact_model_name: MiniMax-M2.7-highspeed
+  provider_backend_version_identifier: unavailable_from_current_runtime_contract
+  limitation: The API call and repository parser do not expose an immutable backend build identifier; no identifier is invented.
+
+prompt:
+  prompt_version: paper-candidate-en-v2
+  system_prompt_path: location_allocate/prompts/paper_candidate_en_v2_system.txt
+  system_prompt_sha256: ed9e83e971d05f034065f82298599463d9d3e20f6b79e508f68233da79b0c4da
+  few_shot_path: location_allocate/prompts/paper_candidate_en_v2_fewshot.json
+  few_shot_sha256: 385ab2d0d99bc51c3862c289e28a9a95fa0bd5df1436b68bd0ebf30bb5a83958
+  combined_prompt_sha256: 0327c1364145df3b5c990eef3328ee176b12bf496f4a81f7232ce99fb8e4dd91
+  hash_algorithm: sha256(system_bytes + newline + --PAPER-FEWSHOT-- + newline + few_shot_bytes)
+  delivery_role: user
+  note: The current implementation concatenates the system asset, few-shot examples, availability, instruction, reminder, and output cue into one user-role message.
+  exact_user_message_template: |-
+    {system_prompt_contents}
+
+    {rendered_few_shot_examples}
+
+    Availability information:
+    {ros_aux_info}
+
+    User instruction:
+    {user_command}
+
+    Reminder: output exactly one JSON object and no other text.
+    Output:
+
+schema:
+  schema_version: paper-candidate-schema-v2
+  lfs_version: '2.1'
+  path: schemas/paper_candidate_schema_v2.json
+  sha256: be6063a533f05b8d0b6e87353a40fb294975261fa1514cd5d34ced19ce2bffe7
+
+implementation:
+  parser_path: location_allocate/location_allocate/paper_candidate_parser.py
+  parser_sha256: f3be633ba9f7f13cd9acb5fbcd3425e88aa1d951a8fb16f333fa104b967f6fd5
+  prompt_loader_path: location_allocate/location_allocate/prompt_loader.py
+  prompt_loader_sha256: 73932f89b1c99d7a09010c5c85caf69a5c20a705648f1405ee9f2d85246b3534
+
+decoding:
+  temperature: 0.0
+  top_p: 0.01
+  max_tokens: 4000
+  response_format: {type: json_object}
+  structured_output_json_schema_enforced_by_provider: false
+  schema_validation_after_response: true
+  deterministic_seed_supported_by_current_call: false
+  seed_parameter_sent: false
+
+retry_and_failure_policy:
+  maximum_attempts: 3
+  delay_between_failed_attempts_seconds: 2
+  timeout_per_attempt_seconds: 60
+  strict_single_json_object_required: true
+  parsing_failure_handling: retry through maximum_attempts, then terminal CandidateParseError
+  legacy_fallback_allowed: false
+  every_attempt_logged: true
+
+client_environment_candidate:
+  python: 3.10.12
+  virtual_environment: /home/yihuang/learning/LLM_swarm_ws/llm_env
+  openai: 2.34.0
+  httpx: 0.28.1
+  jsonschema: 4.26.0
+  api_key_present_at_observation: true
+  secret_value_recorded: false
+
+requires_review:
+  - Human acceptance of provider backend-version limitation.
+  - Confirm the exact virtual environment and package lock before E1.
+  - Confirm credentials, endpoint availability, rate limits, and data-retention terms without running dataset commands.
+  - Decide whether provider-side model aliases can change behind the exact model name; document provider response.
+
+governance:
+  prompt_or_schema_changes_allowed: false
+  decoding_changes_after_output_inspection_allowed: false
+  model_changes_after_output_inspection_allowed: false
+  llm_calls_performed_for_this_preflight: 0

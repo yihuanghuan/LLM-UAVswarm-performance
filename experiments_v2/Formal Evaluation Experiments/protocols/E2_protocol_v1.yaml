@@ -1,0 +1,25 @@
+protocol_id: E2-commitment-timing-v1
+dataset_class: formal_evaluation
+status: REQUIRES_REVIEW
+baseline_tag: paper-final-sim-v3
+scenario_registry: ../e2_e5_scenario_seed_registry_v1.yaml
+execution_prohibited_before_final_seal: true
+
+primary_metrics:
+  executable_grounding_success:
+    definition: attempts producing a valid executable mission grounded against the registered execution snapshot divided by all attempts
+  state_consistency_violation_rate:
+    definition: attempts whose executable fields are inconsistent with the registered execution snapshot divided by all attempts
+  dynamic_infeasibility_rate:
+    definition: attempts for which requested timing or geometry is dynamically infeasible under the frozen policy divided by all attempts
+  correction_or_rejection_rate:
+    definition: attempts with a traced deterministic correction or terminal rejection divided by all attempts; report correction and rejection separately
+
+required_trace_fields:
+  - parse-time availability and state reference
+  - execution snapshot epoch and state
+  - Candidate and Executable c/r/T
+  - correction and rejection reason
+  - configuration ID and policy hash
+
+failure_accounting: inherit registry global_failure_accounting

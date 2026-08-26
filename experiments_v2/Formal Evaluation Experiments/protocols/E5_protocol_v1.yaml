@@ -1,0 +1,22 @@
+protocol_id: E5-eight-uav-end-to-end-v1
+dataset_class: formal_evaluation
+status: REQUIRES_REVIEW
+baseline_tag: paper-final-sim-v3
+scenario_registry: ../e2_e5_scenario_seed_registry_v1.yaml
+execution_prohibited_before_final_seal: true
+
+primary_metrics:
+  all_attempt_mission_success: successful attempts divided by every attempted run, including retained infrastructure failures
+  tracking_RMSE: RMS 3-D distance between safe reference and measured position, per UAV and pooled only with declared weighting
+  final_error: 3-D position error at terminal completion, per UAV and mission aggregate
+  actual_d_min: minimum measured pairwise 3-D distance over the entire scored mission
+  iapf_burden: activation time plus integral norm Delta-p and integral norm Delta-a
+  latency_decomposition: LLM inference, parse/validation, snapshot wait, resolution, allocation, dispatch, and physical execution durations
+
+required_full_method_modes:
+  lfs_runtime_mode: candidate_v2
+  assignment_mode: safety_aware
+  control_mode: ladrc_acceleration
+  avoidance_mode: iapf_dual
+
+failure_accounting: inherit registry global_failure_accounting
