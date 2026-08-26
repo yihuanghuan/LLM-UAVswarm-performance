@@ -1,6 +1,6 @@
 protocol_id: E3-planning-feedback-safety-factorial-v1
 dataset_class: formal_evaluation
-status: SEALED_CANDIDATE
+status: SEALED
 baseline_tag: paper-final-sim-v3
 scenario_registry: ../E3/e3_factorial_registry_v1.yaml
 execution_prohibited_before_final_seal: true
@@ -14,6 +14,26 @@ design:
   paired_seeds_per_scenario_condition: 15
   fixed_total_attempts: 6 scenarios * 4 conditions * 15 paired seeds = 360 attempts
   significance_triggered_sample_extension: forbidden
+  planning_assignment_comparison:
+    P1:
+      assignment_mode: safety_aware
+      meaning: frozen safety-aware lexicographic assignment
+    P0:
+      assignment_mode: distance_hungarian
+      meaning: standard distance-only Hungarian assignment without safety-aware lexicographic refinement
+  condition_mapping:
+    P1_F1: {assignment_mode: safety_aware, avoidance_mode: iapf_dual}
+    P1_F0: {assignment_mode: safety_aware, avoidance_mode: 'off'}
+    P0_F1: {assignment_mode: distance_hungarian, avoidance_mode: iapf_dual}
+    P0_F0: {assignment_mode: distance_hungarian, avoidance_mode: 'off'}
+  paired_invariants:
+    - same initial state
+    - same target set
+    - same seed
+    - same controller
+    - same timing
+    - same feedback condition
+  only_planning_difference: assignment rule; P0 does not preserve or impose target ownership
 
 primary_metrics:
   actual_d_min: minimum measured pairwise 3-D distance over the scored interval

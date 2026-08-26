@@ -29,13 +29,14 @@ experiments:
     registered_attempts: 120
     pairing: Same command, semantic interpretation, runtime state, state-shift operator, and seed; only the numerical commitment stage differs between Early and Late.
   E3:
-    status: SEALED_CANDIDATE
+    status: SEALED
     scenario_count: 6
     seeds: [53101, 53102, 53103, 53104, 53105, 53106, 53107, 53108, 53109, 53110, 53111, 53112, 53113, 53114, 53115]
     repeats_per_scenario_condition: 15
     conditions: [P1_F1, P1_F0, P0_F1, P0_F0]
     registered_attempts: 360
-    pairing: All four planning/feedback conditions use the same scenario and seed.
+    planning_assignment_comparison: distance-only Hungarian vs safety-aware lexicographic refinement
+    pairing: All four planning/feedback conditions use the same initial state, target set, seed, controller, timing, and paired feedback condition; within a feedback condition, only the planning assignment rule differs.
   E4_A:
     status: SEALED_CANDIDATE
     scenario_count: 3

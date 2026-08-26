@@ -48,10 +48,22 @@ E1_technical_final_seal_ready: true
 E1_execution_gate:
   technical_requirements_satisfied: true
   human_approval_required: true
-  human_approval_recorded: false
-  execution_allowed: false
+  human_approval_recorded: true
+  execution_allowed: true
+human_approval:
+  status: APPROVED
+  scope: formal evaluation preregistration and E1 execution
+  approval_recorded_before_any_formal_outcome: true
+  approved_preflight_commit: 561b68e09204483500c97818dc817d1dda155a8c
+  approval_timestamp: not recorded
+  signature: not recorded
 E2_scenario_registry_status: SEALED_CANDIDATE
-E3_scenario_registry_status: SEALED_CANDIDATE
+E3_scenario_registry_status: SEALED
+E3_protocol_status: SEALED
+E3_planning_baseline:
+  P1: {assignment_mode: safety_aware, meaning: frozen safety-aware lexicographic assignment}
+  P0: {assignment_mode: distance_hungarian, meaning: standard distance-only Hungarian assignment without safety-aware lexicographic refinement}
+  only_planning_difference: assignment rule under identical initial state, target set, seed, controller, timing, and feedback condition
 E4_scenario_registry_status: SEALED_CANDIDATE
 E5_scenario_registry_status: SEALED_CANDIDATE
 simulation_environment_status: SEALED_CANDIDATE
@@ -75,21 +87,23 @@ calibration_status:
 
 review_gate:
   formal_execution_allowed: false
+  formal_execution_allowed_scope: full E1-E5 suite; E1 execution is governed separately by E1_execution_gate
+  approved_execution_scope: E1
   final_seal_required_before_any_formal_run: true
   statuses_must_be_resolved_to_SEALED_before_execution: true
   human_approval_required: true
+  human_approval_satisfied_for_approved_scope: true
   engineering_blockers: []
 
-requires_review:
-  - Human approval is required before E1 execution; technical sealing does not constitute approval.
-  - At execution approval, reconfirm credentials and operational provider terms without running dataset commands.
+requires_review: []
 
 resolved_review_items:
   E1_metric_order_and_scoring_contract: SEALED
   E1_provider_backend_reproducibility_limitation: ACCEPTED
   E1_client_environment_lock: SEALED
   E2_exact_scenarios_and_commitment_comparison: SEALED_CANDIDATE
-  E3_exact_factorial_disturbance_and_15_paired_seeds: SEALED_CANDIDATE
+  E3_exact_factorial_disturbance_and_15_paired_seeds: SEALED
+  E3_distance_hungarian_planning_baseline: SEALED
   E4_hypotheses_and_authority_contract: SEALED_CANDIDATE
   E5_exact_end_to_end_registry: SEALED_CANDIDATE
   simulation_environment_and_build_lock: SEALED_CANDIDATE

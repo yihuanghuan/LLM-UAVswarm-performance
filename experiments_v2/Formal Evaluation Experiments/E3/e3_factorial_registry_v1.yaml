@@ -1,5 +1,5 @@
 registry_id: E3-exact-factorial-v1
-status: SEALED_CANDIDATE
+status: SEALED
 baseline_tag: paper-final-sim-v3
 configuration_id: paper-current-v11-c0-f-frozen
 scenario_count: 6
@@ -19,17 +19,17 @@ common_execution:
   scoring_end: t0 plus registered duration plus 2.0 seconds
   timeout: registered duration plus 6.0 seconds after t0
   target_order: authoritative allocator input order shown per scenario
+  target_labels_define_input_order_not_uav_ownership: true
   scenario_or_sample_extension_after_results: forbidden
 
 factorial_mapping:
   P1:
-    meaning: planning safety ON
     assignment_mode: safety_aware
+    meaning: frozen safety-aware lexicographic assignment
     allocator: lexicographic-safety-aware-v2
   P0:
-    meaning: planning safety OFF while preserving registered target ownership
-    assignment_mode: fixed
-    allocator_evaluation_still_logged: true
+    assignment_mode: distance_hungarian
+    meaning: standard distance-only Hungarian assignment without safety-aware lexicographic refinement
   F1:
     meaning: feedback safety ON
     avoidance_mode: iapf_dual
@@ -37,15 +37,25 @@ factorial_mapping:
     iapf_filter_alpha: 0.20
   F0:
     meaning: feedback safety OFF
-    avoidance_mode: off
+    avoidance_mode: 'off'
     iapf_escape_mode: id_order
     iapf_filter_alpha: 0.20
   conditions:
     P1_F1: {assignment_mode: safety_aware, avoidance_mode: iapf_dual}
-    P1_F0: {assignment_mode: safety_aware, avoidance_mode: off}
-    P0_F1: {assignment_mode: fixed, avoidance_mode: iapf_dual}
-    P0_F0: {assignment_mode: fixed, avoidance_mode: off}
+    P1_F0: {assignment_mode: safety_aware, avoidance_mode: 'off'}
+    P0_F1: {assignment_mode: distance_hungarian, avoidance_mode: iapf_dual}
+    P0_F0: {assignment_mode: distance_hungarian, avoidance_mode: 'off'}
   invariant_flags: {lfs_runtime_mode: candidate_v2, control_mode: ladrc_acceleration, policy: lfs_policy.paper_current.yaml}
+  planning_assignment_comparison: distance-only Hungarian vs safety-aware lexicographic refinement
+  paired_invariants:
+    - same initial state
+    - same target set
+    - same seed
+    - same controller
+    - same timing
+    - same feedback condition
+  only_planning_difference: assignment rule
+  fixed_target_ownership_for_P0: false
   no_condition_specific_tuning: true
 
 disturbance_contract:
@@ -65,18 +75,18 @@ disturbance_contract:
 scenarios:
   - scenario_id: E3-A-01
     family: A_predictable_structural_risk
-    label: four-UAV crossing ownership
+    label: four-UAV crossing target set
     command_text_for_manifest: Execute the registered four-UAV crossing target set in 6 seconds using normal motion and safety factor 1.0.
     uav_ids: [1, 2, 3, 4]
     duration_s: 6.0
     initial_positions_m: {1: [-3, -3, 3], 2: [3, -3, 3], 3: [-3, 3, 3], 4: [3, 3, 3]}
     ordered_targets_m: {1: [-3, 3, 3], 2: [3, 3, 3], 3: [-3, -3, 3], 4: [3, -3, 3]}
-    structural_risk: fixed target ownership produces opposing vertical crossings; planning-safe assignment may reassign only through the frozen allocator
+    structural_risk: the target geometry admits assignment-dependent opposing crossings; compare distance-only Hungarian assignment with the frozen safety-aware lexicographic refinement
     disturbance: {affected_uavs: [], axis: none, vector_N: {}, onset_s: 2.0, duration_s: 1.5}
 
   - scenario_id: E3-A-02
     family: A_predictable_structural_risk
-    label: eight-UAV reversed-circle ownership
+    label: eight-UAV reversed-circle target set
     command_text_for_manifest: Execute the registered reversed eight-UAV circle target set in 8 seconds using normal motion and safety factor 1.0.
     uav_ids: [1, 2, 3, 4, 5, 6, 7, 8]
     duration_s: 8.0
@@ -98,7 +108,7 @@ scenarios:
       6: [0.000000000000, 20.000000000000, 3.0]
       7: [4.242640687119, 18.242640687119, 3.0]
       8: [6.000000000000, 14.000000000000, 3.0]
-    structural_risk: reversed target order produces multi-path structural conflict under fixed ownership
+    structural_risk: the reversed target geometry admits assignment-dependent multi-path conflict; both planning modes receive the identical target set and input order
     disturbance: {affected_uavs: [], axis: none, vector_N: {}, onset_s: 2.0, duration_s: 1.5}
 
   - scenario_id: E3-B-01
@@ -143,7 +153,7 @@ scenarios:
     duration_s: 6.0
     initial_positions_m: {1: [-3, -3, 3], 2: [3, -3, 3], 3: [-3, 3, 3], 4: [3, 3, 3]}
     ordered_targets_m: {1: [-3, 3, 3], 2: [3, 3, 3], 3: [-3, -3, 3], 4: [3, -3, 3]}
-    structural_risk: same registered ownership conflict as E3-A-01
+    structural_risk: same assignment-dependent target-set conflict as E3-A-01
     disturbance:
       affected_uavs: [1, 3]
       axis: world_y toward crossing center
@@ -176,7 +186,7 @@ scenarios:
       6: [0.000000000000, 20.000000000000, 3.0]
       7: [4.242640687119, 18.242640687119, 3.0]
       8: [6.000000000000, 14.000000000000, 3.0]
-    structural_risk: same registered ownership conflict as E3-A-02
+    structural_risk: same assignment-dependent target-set conflict as E3-A-02
     disturbance:
       affected_uavs: [4, 8]
       axis: world_x inward
