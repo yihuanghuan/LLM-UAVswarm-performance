@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 import e1_provenance
+import e1_runner
 from e1_audit import REQUIRED_PROVENANCE_CHECKS, audit_run
 from e1_common import (
     BASELINE_COMMIT,
@@ -62,6 +63,13 @@ def returned(raw_response, *, prompt=10, completion=5):
             "total_tokens": prompt + completion,
         },
     }
+
+
+def provider_timeout():
+    return {"exception": {
+        "type": "SyntheticProviderTimeout",
+        "message": "synthetic retained infrastructure failure",
+    }}
 
 
 def test_runner_enforces_permutation_and_finishes_retries_before_advancing(tmp_path):
@@ -119,7 +127,13 @@ def test_run_state_rejects_out_of_permutation_attempt(tmp_path):
         RunState.build(journal.read(), order)
 
 
-def test_crash_resume_replays_evidence_without_rerunning_completed_attempt(tmp_path):
+@pytest.mark.parametrize("crash_event_type", [
+    "provider_result",
+    "attempt_completed",
+])
+def test_crash_resume_replays_evidence_without_rerunning_completed_attempt(
+    tmp_path, monkeypatch, crash_event_type
+):
     records = {record["id"]: record for record in load_dataset()}
     command_id = load_order()[0]
     fixtures = {
@@ -130,17 +144,30 @@ def test_crash_resume_replays_evidence_without_rerunning_completed_attempt(tmp_p
     }
     crashed = {"done": False}
 
-    def crash_after_first_completion(event):
+    def crash_after_persisted_evidence(event):
         if (
             not crashed["done"]
-            and event["event_type"] == "attempt_completed"
+            and event["event_type"] == crash_event_type
             and event["payload"]["attempt_index"] == 1
         ):
             crashed["done"] = True
             raise SimulatedCrash()
 
+    provider_calls = []
+    original_create = e1_runner._FixtureCompletions.create_for_attempt
+
+    def counted_provider_call(self, attempt_index, **kwargs):
+        provider_calls.append(attempt_index)
+        return original_create(self, attempt_index, **kwargs)
+
+    monkeypatch.setattr(
+        e1_runner._FixtureCompletions,
+        "create_for_attempt",
+        counted_provider_call,
+    )
+
     run_dir = tmp_path / "run"
-    first_journal = EventJournal(run_dir / "journal", crash_after_first_completion)
+    first_journal = EventJournal(run_dir / "journal", crash_after_persisted_evidence)
     first_runner = E1Runner(
         run_dir,
         mock_mode=True,
@@ -163,7 +190,58 @@ def test_crash_resume_replays_evidence_without_rerunning_completed_attempt(tmp_p
 
     assert state.terminal_ids() == [command_id]
     assert len(state.attempts_for(command_id)) == 2
+    assert provider_calls == [1, 2]
     assert all(after[name] == contents for name, contents in before.items())
+
+
+def test_ambiguous_attempt_resume_fails_closed_without_provider_call(
+    tmp_path, monkeypatch
+):
+    command_id = load_order()[0]
+    run_dir = tmp_path / "ambiguous-run"
+    runner = E1Runner(
+        run_dir,
+        mock_mode=True,
+        fixture_commands={command_id: [returned("must-not-be-called")]},
+    )
+    runner.run(max_new_commands=0, provenance_report=provenance_report())
+    runner.journal.append("attempt_started", {
+        "command_id": command_id,
+        "attempt_index": 1,
+        "inference_position": 1,
+        "request_timestamp_utc": "2026-08-26T00:00:00.000Z",
+        "request_metadata": {},
+    })
+    before = {
+        path.name: path.read_bytes()
+        for path in (run_dir / "journal").glob("[0-9]*.json")
+    }
+    provider_calls = []
+
+    def forbidden_provider_call(*_args, **_kwargs):
+        provider_calls.append(True)
+        raise AssertionError("provider fixture must not be called")
+
+    monkeypatch.setattr(
+        e1_runner._FixtureCompletions,
+        "create_for_attempt",
+        forbidden_provider_call,
+    )
+    with pytest.raises(
+        E1ToolingError,
+        match=(
+            "ambiguous formal attempt resume.*attempt_started exists without "
+            "provider_result.*no provider request was issued.*human governance"
+        ),
+    ):
+        runner.run(max_new_commands=1, provenance_report=provenance_report())
+
+    after = {
+        path.name: path.read_bytes()
+        for path in (run_dir / "journal").glob("[0-9]*.json")
+    }
+    assert provider_calls == []
+    assert after == before
 
 
 def test_journal_detects_deletion_or_replacement_in_its_chain(tmp_path):
@@ -296,9 +374,21 @@ def test_provenance_hash_mismatch_fails_closed(monkeypatch):
 
 def test_complete_mock_run_audits_and_scores_without_provider(tmp_path):
     dataset = load_dataset()
+    order = load_order()
+    valid_infrastructure_id = next(
+        command_id for command_id in order
+        if next(item for item in dataset if item["id"] == command_id)["valid"]
+    )
+    invalid_infrastructure_id = "E1-0097"
+    infrastructure_ids = {
+        valid_infrastructure_id,
+        invalid_infrastructure_id,
+    }
     fixtures = {}
     for record in dataset:
-        if record["valid"]:
+        if record["id"] in infrastructure_ids:
+            fixtures[record["id"]] = [provider_timeout() for _ in range(3)]
+        elif record["valid"]:
             fixtures[record["id"]] = [returned(record["ground_truth"])]
         else:
             fixtures[record["id"]] = [
@@ -315,13 +405,38 @@ def test_complete_mock_run_audits_and_scores_without_provider(tmp_path):
     state = runner.run(provenance_report=provenance_report())
 
     assert len(state.terminals) == 120
-    assert len(state.attempts) == 168
+    assert len(state.attempts) == 170
+    assert {
+        terminal["command_id"] for terminal in state.terminals
+        if terminal["outcome"] == "infrastructure_failure"
+    } == infrastructure_ids
     audit = audit_run(run_dir, verify_current_provenance=False)
     assert audit["status"] == "PASS"
+    infrastructure_check = next(
+        check for check in audit["checks"]
+        if check["name"]
+        == "infrastructure_failures_retained_and_accounted"
+    )
+    assert infrastructure_check["status"] == "PASS"
+    assert infrastructure_check["evidence"]["count"] == 2
+    assert infrastructure_check["evidence"][
+        "command_denominator_contribution"
+    ] == 2
+    assert infrastructure_check["evidence"][
+        "all_attempt_denominator_contribution"
+    ] == 6
+    assert set(infrastructure_check["evidence"]["commands"]) == infrastructure_ids
     score = score_run_state(dataset, state)
     primary = score["primary_metrics"]
-    assert primary["schema_valid_rate"]["rate"] == 1.0
-    assert primary["semantic_field_accuracy"]["rate"] == 1.0
-    assert primary["exact_semantic_task_accuracy"]["rate"] == 1.0
-    assert primary["invalid_rejection_rate"]["rate"] == 1.0
+    assert score["all_attempt_count"] == 170
+    assert primary["schema_valid_rate"] == {
+        "numerator": 95, "denominator": 96, "rate": 95 / 96
+    }
+    assert primary["semantic_field_accuracy"]["rate"] < 1.0
+    assert primary["exact_semantic_task_accuracy"] == {
+        "numerator": 95, "denominator": 96, "rate": 95 / 96
+    }
+    assert primary["invalid_rejection_rate"]["numerator"] == 23
+    assert primary["invalid_rejection_rate"]["denominator"] == 24
+    assert primary["invalid_rejection_rate"]["rate"] == 23 / 24
     assert primary["premature_numerical_commitment_rate"]["numerator"] == 0

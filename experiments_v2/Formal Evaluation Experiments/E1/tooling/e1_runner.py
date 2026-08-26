@@ -227,6 +227,13 @@ class _InstrumentedCompletions:
 
         if existing.provider_result is not None:
             return self._replay(existing.provider_result)
+        if resumed_uncertain:
+            raise E1ToolingError(
+                f"ambiguous formal attempt resume for {self._command['id']} "
+                f"attempt {attempt_index}: attempt_started exists without "
+                "provider_result; no provider request was issued and human "
+                "governance review is required"
+            )
 
         started = time.perf_counter()
         try:
@@ -527,6 +534,19 @@ class E1Runner:
         })
 
     def _run_command(self, parser: Any, command: Dict[str, Any], position: int):
+        state = RunState.build(self.journal.read(), self.order)
+        ambiguous = [
+            attempt for attempt in state.attempts_for(command["id"])
+            if attempt.started is not None and attempt.provider_result is None
+        ]
+        if ambiguous:
+            attempt_indexes = [attempt.attempt_index for attempt in ambiguous]
+            raise E1ToolingError(
+                f"ambiguous formal attempt resume for {command['id']} attempt(s) "
+                f"{attempt_indexes}: attempt_started exists without "
+                "provider_result; no provider request was issued and human "
+                "governance review is required"
+            )
         underlying = self._underlying_factory(parser, command["id"])
         wrapper = _InstrumentedOpenAI(
             underlying,

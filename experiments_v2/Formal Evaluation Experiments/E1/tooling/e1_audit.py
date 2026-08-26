@@ -36,7 +36,6 @@ def audit_run(
     run_dir: Path,
     *,
     verify_current_provenance: bool = True,
-    require_no_infrastructure_failures: bool = True,
 ) -> Dict[str, Any]:
     run_dir = Path(run_dir)
     journal = EventJournal(run_dir / "journal")
@@ -126,14 +125,58 @@ def audit_run(
         })
         record("retry_accounting", retry_contract, per_command)
 
-        infrastructure_ids = [
-            terminal["command_id"] for terminal in state.terminals
-            if terminal["outcome"] == "infrastructure_failure"
-        ]
+        infrastructure_diagnostics = {}
+        infrastructure_accounted = True
+        for terminal in state.terminals:
+            if terminal["outcome"] != "infrastructure_failure":
+                continue
+            command_id = terminal["command_id"]
+            attempts = state.attempts_for(command_id)
+            retry_outcome = terminal.get("terminal_retry_outcome")
+            retained = (
+                terminal.get("attempts_total") == len(attempts)
+                and isinstance(retry_outcome, dict)
+                and retry_outcome.get("attempts_used") == len(attempts)
+                and isinstance(retry_outcome.get("terminal_gate"), str)
+                and isinstance(retry_outcome.get("exception"), dict)
+                and all(
+                    attempt.started is not None
+                    and attempt.provider_result is not None
+                    and attempt.completed is not None
+                    for attempt in attempts
+                )
+            )
+            infrastructure_accounted = infrastructure_accounted and retained
+            infrastructure_diagnostics[command_id] = {
+                "retained_and_accounted": retained,
+                "attempts_total": len(attempts),
+                "command_denominator_contribution": 1,
+                "all_attempt_denominator_contribution": len(attempts),
+                "provider_statuses": [
+                    attempt.provider_result.get("provider_status")
+                    for attempt in attempts
+                    if attempt.provider_result is not None
+                ],
+                "terminal_gate": (
+                    retry_outcome.get("terminal_gate")
+                    if isinstance(retry_outcome, dict) else None
+                ),
+            }
         record(
-            "no_infrastructure_failures",
-            not infrastructure_ids or not require_no_infrastructure_failures,
-            {"command_ids": infrastructure_ids},
+            "infrastructure_failures_retained_and_accounted",
+            infrastructure_accounted,
+            {
+                "count": len(infrastructure_diagnostics),
+                "command_denominator_contribution": len(
+                    infrastructure_diagnostics
+                ),
+                "all_attempt_denominator_contribution": sum(
+                    item["all_attempt_denominator_contribution"]
+                    for item in infrastructure_diagnostics.values()
+                ),
+                "commands": infrastructure_diagnostics,
+                "excluded_from_eligibility": False,
+            },
         )
 
         provenance = state.provenance or {}
