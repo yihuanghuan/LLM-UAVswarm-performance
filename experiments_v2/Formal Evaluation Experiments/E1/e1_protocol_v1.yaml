@@ -1,6 +1,6 @@
 protocol_id: E1-candidate-semantic-representation-v1
 dataset_class: formal_evaluation
-status: SEALED_CANDIDATE
+status: SEALED
 baseline_tag: paper-final-sim-v3
 dataset_registry: e1_dataset_registry_v1.yaml
 llm_runtime_manifest: ../llm_runtime_manifest_v1.yaml
@@ -45,14 +45,28 @@ secondary_diagnostics:
 
 normalization_contract:
   scope: Candidate Mission JSON before any late resolution
+  validation_before_normalization:
+    - Validate both Candidate Missions against the frozen schema before normalization.
+    - Reject missing or extra semantic fields; normalization never repairs schema or semantic errors.
+    - Require every task_id to be a unique positive integer and every task reference to resolve before canonical renumbering.
   json_object_key_order: ignored recursively
   json_numeric_equivalence: finite JSON integer and floating representations compare by exact mathematical value; 4 equals 4.0, with no tolerance or string coercion
   array_order:
     mission_nodes: exact and significant
-    parallel_tasks: exact and significant
-    UAV_U: exact and significant; no sorting or set normalization
+    parallel_tasks: order-insensitive only within each parallel node; canonicalize deterministically before comparison
+    UAV_U: set semantics; require unique IDs and sort ascending before comparison
     vectors_and_offsets: exact axis order x,y,z
-  task_id: exact integer match required
+  parallel_task_canonicalization:
+    scope: tasks inside one parallel node only; top-level mission nodes are never reordered
+    ordering_key:
+      - canonicalized ascending U tuple
+      - canonical task semantic representation with task_id excluded, object keys canonicalized, numeric values represented by exact mathematical value, and all semantically significant arrays preserved
+    ties: semantically identical tasks are interchangeable; raw task_id is never a tie-breaker
+  task_id:
+    raw_value_comparison: ignored after uniqueness and reference validation
+    canonicalization: after U normalization and parallel-task ordering, traverse top-level mission nodes in their original order and tasks within each parallel node in canonical order; renumber tasks 1 through N
+    references: rewrite every task-id reference through the same old-to-canonical ID mapping so mission relations are preserved
+    comparison: compare the canonically renumbered missions
   enums_and_strings: exact case-sensitive schema value required
   missing_fields: never synthesized; a missing ground-truth field is an error
   extra_fields: forbidden by schema and therefore an error

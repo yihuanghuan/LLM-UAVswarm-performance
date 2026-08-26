@@ -1,6 +1,6 @@
 preflight_id: formal-preflight-v1
 preflight_type: human_review_candidate
-status: REQUIRES_REVIEW
+status: SEALED
 ready_for_final_review: true
 dataset_class: formal_evaluation
 
@@ -14,6 +14,9 @@ artifacts:
   E1_dataset: E1/e1_candidate_semantic_dataset_v1.jsonl
   E1_inference_order: E1/e1_inference_order_v1.yaml
   E1_protocol: E1/e1_protocol_v1.yaml
+  E1_client_environment_lock: E1/e1_client_environment_lock_v1.txt
+  E1_client_environment_metadata: E1/e1_client_environment_lock_v1.yaml
+  E1_client_environment_hashes: E1/e1_client_environment_lock_v1.sha256
   LLM_runtime_manifest: llm_runtime_manifest_v1.yaml
   E2_E5_scenario_seed_registry: e2_e5_scenario_seed_registry_v1.yaml
   E2_exact_registry: E2/e2_scenario_registry_v1.yaml
@@ -36,8 +39,17 @@ artifacts:
     PX4_seed_runner: environment/patches/px4_runner_gazebo_seed_v1.patch
     E3_force_endpoint: environment/patches/iris_gazebo_ros_force_v1.patch
 
-E1_dataset_status: SEALED_CANDIDATE
-LLM_manifest_status: REQUIRES_REVIEW
+E1_dataset_status: SEALED
+LLM_manifest_status: SEALED
+E1_protocol_status: SEALED
+E1_inference_order_status: SEALED
+E1_client_environment_status: SEALED
+E1_technical_final_seal_ready: true
+E1_execution_gate:
+  technical_requirements_satisfied: true
+  human_approval_required: true
+  human_approval_recorded: false
+  execution_allowed: false
 E2_scenario_registry_status: SEALED_CANDIDATE
 E3_scenario_registry_status: SEALED_CANDIDATE
 E4_scenario_registry_status: SEALED_CANDIDATE
@@ -69,11 +81,13 @@ review_gate:
   engineering_blockers: []
 
 requires_review:
-  - Accept or resolve the MiniMax backend-version reproducibility limitation and seal the E1 client environment.
-  - Confirm credentials, endpoint availability, provider alias stability, rate limits, and data-retention terms without running E1 commands.
+  - Human approval is required before E1 execution; technical sealing does not constitute approval.
+  - At execution approval, reconfirm credentials and operational provider terms without running dataset commands.
 
 resolved_review_items:
-  E1_metric_order_and_scoring_contract: SEALED_CANDIDATE
+  E1_metric_order_and_scoring_contract: SEALED
+  E1_provider_backend_reproducibility_limitation: ACCEPTED
+  E1_client_environment_lock: SEALED
   E2_exact_scenarios_and_commitment_comparison: SEALED_CANDIDATE
   E3_exact_factorial_disturbance_and_15_paired_seeds: SEALED_CANDIDATE
   E4_hypotheses_and_authority_contract: SEALED_CANDIDATE

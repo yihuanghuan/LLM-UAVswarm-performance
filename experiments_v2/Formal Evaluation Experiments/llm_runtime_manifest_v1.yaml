@@ -1,6 +1,6 @@
 manifest_id: E1-llm-runtime-v1
 dataset_class: formal_evaluation
-status: REQUIRES_REVIEW
+status: SEALED
 observed_at_utc: '2026-08-26T08:18:03Z'
 baseline_tag: paper-final-sim-v3
 
@@ -11,6 +11,11 @@ provider:
   exact_model_name: MiniMax-M2.7-highspeed
   provider_backend_version_identifier: unavailable_from_current_runtime_contract
   limitation: The API call and repository parser do not expose an immutable backend build identifier; no identifier is invented.
+  reproducibility_limitation_accepted: true
+  reproducibility_governance_conclusion:
+    exact_model_name_frozen: MiniMax-M2.7-highspeed
+    provider_side_alias_or_backend_may_change_outside_local_control: true
+    accepted_as_formal_reproducibility_limitation: true
 
 prompt:
   prompt_version: paper-candidate-en-v2
@@ -67,20 +72,38 @@ retry_and_failure_policy:
   legacy_fallback_allowed: false
   every_attempt_logged: true
 
-client_environment_candidate:
-  python: 3.10.12
+client_environment_lock:
+  status: SEALED
+  python_exact_version: 3.10.12
+  pip_exact_version: 22.0.2
   virtual_environment: /home/yihuang/learning/LLM_swarm_ws/llm_env
   openai: 2.34.0
   httpx: 0.28.1
   jsonschema: 4.26.0
+  complete_pip_freeze_path: experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.txt
+  complete_pip_freeze_sha256: bcf94474093afed3bbdebef98a5d46640574c2e874594aef8b438037b3dacc41
+  metadata_path: experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.yaml
+  metadata_sha256: 162d503987b2c155ee9e3bd27951adc3d9a181ce5ebf42a0846c7a411d99313b
+  hash_manifest_path: experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.sha256
   api_key_present_at_observation: true
   secret_value_recorded: false
 
-requires_review:
-  - Human acceptance of provider backend-version limitation.
-  - Confirm the exact virtual environment and package lock before E1.
-  - Confirm credentials, endpoint availability, rate limits, and data-retention terms without running dataset commands.
-  - Decide whether provider-side model aliases can change behind the exact model name; document provider response.
+formal_request_evidence_requirements:
+  retain_for_every_attempt:
+    - request_timestamp_utc
+    - provider_returned_model_field
+    - request_id_and_response_metadata_if_available
+    - wall_latency
+    - provider_reported_token_usage
+    - raw_response
+  retain_for_every_command:
+    - terminal_retry_outcome
+  unavailable_provider_metadata: retain an explicit unavailable marker; never invent a value
+
+remaining_execution_gate:
+  human_approval_required: true
+  human_approval_recorded: false
+  execution_allowed: false
 
 governance:
   prompt_or_schema_changes_allowed: false

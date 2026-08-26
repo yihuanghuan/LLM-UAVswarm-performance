@@ -1,0 +1,49 @@
+lock_id: E1-client-environment-lock-v1
+status: SEALED
+captured_at_utc: '2026-08-26T11:39:42Z'
+capture_policy: Existing formal virtual environment observed without installing, upgrading, or downgrading packages.
+
+runtime:
+  virtual_environment: /home/yihuang/learning/LLM_swarm_ws/llm_env
+  python_exact_version: 3.10.12
+  pip_exact_version: 22.0.2
+  pip_location: /home/yihuang/learning/LLM_swarm_ws/llm_env/lib/python3.10/site-packages/pip
+
+package_lock:
+  path: experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.txt
+  format: Header metadata followed by the complete verbatim output of python -m pip freeze.
+  sha256: bcf94474093afed3bbdebef98a5d46640574c2e874594aef8b438037b3dacc41
+  complete_environment_freeze_retained: true
+
+direct_and_runtime_relevant_packages:
+  inference_client:
+    openai: 2.34.0
+    httpx: 0.28.1
+    httpcore: 1.0.9
+    anyio: 4.13.0
+    pydantic: 2.13.3
+    jiter: 0.14.0
+  validation_and_scoring:
+    jsonschema: 4.26.0
+    jsonschema-specifications: 2025.9.1
+    referencing: 0.37.0
+    rpds-py: 0.30.0
+    PyYAML: 6.0.3
+  standard_library_parser_modules:
+    - json
+    - re
+    - math
+    - copy
+    - pathlib
+    - csv
+    - time
+    - uuid
+
+credentials_observation:
+  accepted_environment_variable_present: true
+  present_variable_name: LLM_API_KEY
+  secret_value_read_or_recorded: false
+
+integrity:
+  hash_algorithm: SHA-256
+  hash_manifest_path: experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.sha256
