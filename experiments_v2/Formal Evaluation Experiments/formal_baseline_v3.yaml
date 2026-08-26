@@ -1,0 +1,45 @@
+baseline_id: paper-final-sim-v3
+dataset_class: formal_evaluation_baseline
+
+parent_baseline_tag: paper-final-sim-v2
+parent_baseline_commit: 627ce31b02c4b348f2ddaa3dd37decee2e705fa8
+
+source_calibration_branch: cal/C0-F-motion-style
+source_calibration_commit: 513b4dd77eb527721ced851ef4d1991a5a6cfd37
+
+configuration_id: paper-current-v11-c0-f-frozen
+canonical_policy_path: lfs_policy/config/lfs_policy.paper_current.yaml
+canonical_policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+
+change_scope:
+  docs_and_provenance_only: true
+  runtime_semantics_changed: false
+  frozen_parameter_values_changed: false
+  calibration_reopened: false
+
+status_taxonomy:
+  retained_baseline_sealed: true
+  calibration_selection_not_implied: true
+  immutable_during_E1_E5: true
+
+calibration_status:
+  C0-A: frozen
+  C0-B: frozen
+  C0-C: frozen
+  C0-D: frozen
+  C0-E: frozen
+  C0-F: frozen
+
+governance:
+  calibration_closed: true
+  formal_results_may_not_retune_parameters: true
+  formal_branches_must_descend_from_tag: paper-final-sim-v3
+  calibration_and_formal_data_must_not_be_pooled: true
+
+formal_dataset_registry: pending_before_first_formal_run
+formal_seed_registry: pending_before_first_formal_run
+llm_runtime_manifest: pending_before_E1
+simulation_environment_manifest: pending_before_first_simulation_formal_run
+
+# The annotated Git tag is the authoritative baseline commit record.
+baseline_commit: PENDING

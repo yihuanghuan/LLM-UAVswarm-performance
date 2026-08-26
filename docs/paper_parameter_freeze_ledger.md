@@ -7,24 +7,35 @@ This ledger is the authoritative write-ownership inventory for the
 `minisnap_LADRC/ladrc_controller/config/ladrc_params.yaml` at algorithm commit
 `56e8d2c8e59fc3513769e21910b7a20b2b43088d`.
 
-`PROVISIONAL` means runnable development value, not paper-final evidence. Its
-freeze commit and tag remain blank until its owning C0 completes. An
-`ARCHITECTURE_FROZEN` item is part of the algorithm contract and has no C0
-write owner. A later C0 must not modify a row already marked `FROZEN`.
+Status taxonomy:
+
+- `FROZEN`: recorded by an authoritative C0 frozen artifact, including values
+  explicitly selected or explicitly retained by that artifact.
+- `RETAINED_BASELINE`: a runtime value not selected by the corresponding
+  calibration campaign, but fixed by the immutable formal baseline and not
+  allowed to change during E1-E5.
+- `ARCHITECTURE_FROZEN`: part of the algorithm contract with no C0 numeric
+  write owner.
+- `PROVISIONAL`: runnable development value that is neither frozen nor sealed;
+  no runtime parameter used by the formal baseline has this status.
+
+Neither `RETAINED_BASELINE` nor `ARCHITECTURE_FROZEN` implies calibration
+selection. Formal results may not retune any of these three immutable status
+classes.
 
 ## Parameter ownership and freeze status
 
-| Parameter / group | Current value | Status | Owner calibration | Freeze commit | Freeze tag | Provenance | Notes |
+| Parameter / group | Current value | Status | Owner calibration | Seal/freeze commit | Seal/freeze tag | Provenance | Notes |
 |---|---|---|---|---|---|---|---|
 | LADRC baseline `omega_c` (x/y/z) | `[1.5, 1.5, 1.75] rad/s` | `FROZEN` | C0-A | `a53a3c0bc0dbfbbeffe2a72eaab1bfc0f61dccde` | — | `results/C0-A_motion_limits_freeze/frozen_execution_policy.yaml` (SHA-256 `1ac009c4…5a5d325`) | C0-A Stage C execution-policy freeze; normal style gain remains the architecture-frozen identity. |
 | LADRC baseline `omega_o` (x/y/z) | `[5.0, 5.0, 7.5] rad/s` | `FROZEN` | C0-A | `a53a3c0bc0dbfbbeffe2a72eaab1bfc0f61dccde` | — | `results/C0-A_motion_limits_freeze/frozen_execution_policy.yaml` (SHA-256 `1ac009c4…5a5d325`) | C0-A Stage C execution-policy freeze; LESO/LSEF mathematics remain frozen. |
 | Motion limits `v/a/j` | `5 m/s`, `5 m/s²`, `10 m/s³` | `FROZEN` | C0-A | `a53a3c0bc0dbfbbeffe2a72eaab1bfc0f61dccde` | — | `results/C0-A_motion_limits_freeze/frozen_execution_policy.yaml` (SHA-256 `1ac009c4…5a5d325`) | C0-A Stage C execution-policy freeze; shared timing/compiler limits. |
-| Minimum executable duration | `0.5 s` | `PROVISIONAL` | C0-A | — | — | Paper policy `timing.minimum_duration` | Explicit requests are raised to the frozen feasibility floor. |
-| Omega hard-clamp envelope | `omega_c=[1.125,1.125,1.3125]..[1.875,1.875,2.1875]`; `omega_o=[3.75,3.75,5.625]..[6.25,6.25,9.375]` | `PROVISIONAL` | C0-A | — | — | Paper policy `controller_hard_clamps.omega_*` | Current 0.75x–1.25x development envelope; abnormal-profile guard only. |
-| Motion hard clamps | `velocity/acceleration/jerk_max=5/5/10` | `PROVISIONAL` | C0-A | — | — | Paper policy `controller_hard_clamps.*_max` | Must cover, and normally equal, selected shared motion limits. |
-| Physical controller caps | `max_velocity=5`; `max_acceleration_x/y/z=5/5/8` | `PROVISIONAL` | C0-A | — | — | Controller YAML | Accepted Candidate profiles currently reset LADRC output limits to the scalar profile acceleration limit. |
+| Minimum executable duration | `0.5 s` | `RETAINED_BASELINE` | — (not calibration-selected) | `627ce31b02c4b348f2ddaa3dd37decee2e705fa8` | `paper-final-sim-v2` | Paper policy `timing.minimum_duration` | Inherited executable floor, sealed unchanged for E1-E5; explicit requests are raised to it. |
+| Omega hard-clamp envelope | `omega_c=[1.125,1.125,1.3125]..[1.875,1.875,2.1875]`; `omega_o=[3.75,3.75,5.625]..[6.25,6.25,9.375]` | `RETAINED_BASELINE` | — (not calibration-selected) | `627ce31b02c4b348f2ddaa3dd37decee2e705fa8` | `paper-final-sim-v2` | Paper policy `controller_hard_clamps.omega_*` | Inherited 0.75x–1.25x abnormal-profile guard, sealed unchanged for E1-E5. |
+| Motion hard clamps | `velocity/acceleration/jerk_max=5/5/10` | `RETAINED_BASELINE` | — (not calibration-selected) | `627ce31b02c4b348f2ddaa3dd37decee2e705fa8` | `paper-final-sim-v2` | Paper policy `controller_hard_clamps.*_max` | Inherited guard values covering the selected shared motion limits; sealed unchanged for E1-E5. |
+| Physical controller caps | `max_velocity=5`; `max_acceleration_x/y/z=5/5/8` | `RETAINED_BASELINE` | — (not calibration-selected) | `627ce31b02c4b348f2ddaa3dd37decee2e705fa8` | `paper-final-sim-v2` | Controller YAML | Inherited controller runtime caps, sealed unchanged for E1-E5; no C0 selection is claimed. |
 | Candidate state freshness | timeout/skew/wait `0.022080/0.022043/0.010000 s` | `FROZEN` | C0-B | `ec48c256077698dabc52a6c897c8b6a01fee34d2` | — | C0-B frozen policy and final audit (original result `e7e67bea4a4a07ac5d131376863dc80c1418d1df`) | Candidate state age, inter-UAV skew and planner wait budget only. |
-| Controller neighbor freshness | `0.20 s` | `PROVISIONAL` | C0-E | — | — | Controller YAML `neighbor_timeout` | Explicitly excluded from C0-B and not listed as frozen by the authoritative C0-E artifact; no frozen status is inferred. |
+| Controller neighbor freshness | `0.20 s` | `RETAINED_BASELINE` | — (not calibration-selected) | `627ce31b02c4b348f2ddaa3dd37decee2e705fa8` | `paper-final-sim-v2` | Controller YAML `neighbor_timeout` | Excluded from C0-B and not selected by C0-E; inherited and sealed unchanged for E1-E5. |
 | Workspace AABB | lower `[-15,-10,0.5] m`; upper `[15,35,15] m` | `FROZEN` | C0-C | `7b5741267a56a75583f9683268cff2728426b0be` | — | `results/C0-C_geometry_scale_freeze/frozen_geometry_policy.yaml` (SHA-256 `25ab21d7…7819a61fa`) | C0-C Stage A/B accepted; frozen simulation experiment envelope. |
 | Nominal formation spacing | `2.25 m` | `FROZEN` | C0-C | `7b5741267a56a75583f9683268cff2728426b0be` | — | `results/C0-C_geometry_scale_freeze/frozen_geometry_policy.yaml` (SHA-256 `25ab21d7…7819a61fa`) | C0-C Stage A/B accepted; geometry equations remain frozen. |
 | Qualitative scale multipliers | compact/normal/spacious `0.8/1.0/1.25` | `FROZEN` | C0-C | `7b5741267a56a75583f9683268cff2728426b0be` | — | `results/C0-C_geometry_scale_freeze/frozen_geometry_policy.yaml` (SHA-256 `25ab21d7…7819a61fa`) | C0-C Stage A/B accepted; label semantics/order remain frozen. |
@@ -46,7 +57,7 @@ write owner. A later C0 must not modify a row already marked `FROZEN`.
 
 ## Architecture-frozen values and structures
 
-| Parameter / group | Current value | Status | Owner calibration | Freeze commit | Freeze tag | Provenance | Notes |
+| Parameter / group | Current value | Status | Owner calibration | Seal/freeze commit | Seal/freeze tag | Provenance | Notes |
 |---|---|---|---|---|---|---|---|
 | Candidate/schema version and LFS semantics | schema v2, `lfs_version=2.1` | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | Schema, prompt and parser hashes in algorithm manifest | No C0 may change fields or meanings. |
 | Validator/resolver/geometry algorithms | current freeze implementation | `ARCHITECTURE_FROZEN` | — | `56e8d2c8…` | `paper-algorithm-freeze-v1` | Algorithm manifest | Numeric C0-C policy inputs do not authorize equation changes. |
@@ -66,13 +77,12 @@ write owner. A later C0 must not modify a row already marked `FROZEN`.
 
 ## Ownership audit
 
-The ledger contains no unowned `PROVISIONAL` row and no row with multiple C0
-owners. C0-E and C0-F are closed. In particular, profile-application smoothing
-is frozen at the loader-compatible singleton `1.0`. Controller neighbor
-freshness remains provisional because the authoritative C0-E artifact does not
-list it as frozen; this reconciliation does not infer missing provenance.
+The ledger contains no formal-runtime row pending calibration and no row with
+multiple C0 owners. C0-E and C0-F are closed. Profile-application smoothing is
+frozen at the loader-compatible singleton `1.0`. Controller neighbor freshness
+is not attributed to C0-E selection; it is an inherited retained baseline.
 
-C0-A through C0-F frozen rows are read-only. Formal evaluation results may not
-select, reject, or revise any frozen value. Architecture-frozen values remain
-architecture contracts even when a later calibration artifact confirms that
-they were preserved.
+C0-A through C0-F `FROZEN` rows and all `RETAINED_BASELINE` rows are read-only.
+Formal evaluation results may not select, reject, or revise them.
+Architecture-frozen values remain architecture contracts even when a later
+calibration artifact confirms that they were preserved.

@@ -23,17 +23,17 @@ provenance manifest.
 | safety preference domain | `s_min=1.0`, `s_max=2.0` | C0-D frozen safety envelope, integrated by C0-E | frozen | C0-D selection and C0-E coverage validation | safety-factor experiments |
 | allocator comparison tolerance | `1e-6` | Paper policy `comparison_tolerance` | sealed baseline | Supporting Method Verification only; no parameter selection or retuning | floating-point lexicographic comparison only |
 | variable-duration numerical sample rate | `20 Hz` | Paper policy `sample_hz` | sealed baseline | Supporting Method Verification only; no parameter selection or retuning | variable-duration ParallelGroup assignment comparison |
-| minimum executable duration | `0.5 s` | inherited Paper policy floor; outside C0-F selector scope | retained baseline | not selected by C0-F | timing feasibility |
+| minimum executable duration | `0.5 s` | inherited Paper policy floor; sealed by formal baseline | `RETAINED_BASELINE` | not calibration-selected; immutable during E1-E5 | timing feasibility |
 | auto-duration style factors | `1.30/1.15/1.10` (smooth, normal, aggressive) | C0-F frozen motion-style policy | frozen | C0-F locked candidate and confirmation | completion-time results |
 | style gain | `0.8/1.0/1.1` (smooth, normal, aggressive) | C0-F frozen motion-style policy | frozen | C0-F locked candidate and confirmation | semantic controller results |
 | task adaptation | `identity`, `task_gain=1.0` | architecture-frozen style-isolation boundary, preserved by C0-F | architecture-frozen | not a C0-F calibration selector | none in this style-only study |
-| omega hard clamps | `0.75x–1.25x` baseline | bounded safety envelope around enabled styles | provisional safety boundary | stress invalid/out-of-family profiles | profile rejection/clamping |
+| omega hard clamps | `0.75x–1.25x` baseline | inherited abnormal-profile safety envelope; sealed by formal baseline | `RETAINED_BASELINE` | not calibration-selected; immutable during E1-E5 | profile rejection/clamping |
 | profile apply smoothing | `1.0` | C0-F frozen motion-style policy | frozen | C0-F style-switch smoke validation | guarded atomic application |
 
-Any row that remains provisional or retained rather than calibration-selected
-must not be described as experimentally tuned. C0-D was integrated with the
-C0-E freeze, and the canonical full-runtime configuration is
-`paper-current-v11-c0-f-frozen`.
+`RETAINED_BASELINE` rows were not calibration-selected and must not be
+described as experimentally tuned. They are nevertheless immutable during
+E1-E5. C0-D was integrated with the C0-E freeze, and the canonical full-runtime
+configuration is `paper-current-v11-c0-f-frozen`.
 
 The C0-A frozen policy also fixes its campaign inputs `b0=[1,1,1]`, control
 frequency `50 Hz`, and `control_mode=ladrc_acceleration`; these are immutable
