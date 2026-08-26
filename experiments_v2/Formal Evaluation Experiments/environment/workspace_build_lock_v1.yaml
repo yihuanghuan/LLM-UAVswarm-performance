@@ -1,0 +1,47 @@
+lock_id: formal-workspace-build-lock-v1
+status: SEALED_CANDIDATE
+observed_at_utc: '2026-08-26T09:12:00Z'
+runtime_source_commit: 6cf402debf23851b1eff3edc6f3ab49eae7127c4
+runtime_source_tag: paper-final-sim-v3
+preflight_definition_commit: authoritative Git commit containing this manifest
+build_command: >-
+  colcon --log-base /home/yihuang/learning/LLM_swarm_ws/formal_log_v1 build
+  --build-base /home/yihuang/learning/LLM_swarm_ws/formal_build_v1
+  --install-base /home/yihuang/learning/LLM_swarm_ws/formal_install_v1
+  --packages-up-to location_allocate ladrc_controller --symlink-install
+dependency_prefix: /home/yihuang/learning/LLM_swarm_ws/install
+formal_install_prefix: /home/yihuang/learning/LLM_swarm_ws/formal_install_v1
+
+packages:
+  lfs_policy:
+    version: 0.1.0
+    tree_sha256: 13dca526f3baa6decf70efa81498d1bf49a22337a6ef8785272ef10110cf58b0
+    installed_policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+  uav_swarm_interfaces:
+    version: 0.0.0
+    tree_sha256: 8355e3828f48f5d47f707021da4da213cde3b6c1b9fccf6d24c1199daed0d350
+  location_allocate:
+    version: 0.0.0
+    tree_sha256: e55430315c9990fc4a4ba3cf3b84ecb5af30e81975d0b3d9ac79ab06ff5dc445
+    launcher_sha256: 2bf81150acfb4cedbf3c3c4de2dea172157a6abd3de9f533de1bda15ac5fb7da
+  ladrc_controller:
+    version: 0.0.0
+    tree_sha256: 016247566c768cd9b44375618b8533281f09dba53e2ffa21622437e29a512461
+    controller_binary_sha256: 4efd098c79606d275228893feba1211f2c62a53cfe84e6878b96ea47e98986ea
+  px4_msgs:
+    version: 2.0.1
+    source_prefix: /home/yihuang/learning/LLM_swarm_ws/install/px4_msgs
+    share_tree_sha256: a01c7841be0f0cd1550ea9cf04b2b1d8ab22b504538d5f406248c957ea3057cc
+
+build_evidence:
+  lfs_policy: PASS
+  uav_swarm_interfaces: PASS
+  location_allocate: PASS
+  ladrc_controller: PASS after explicitly sourcing the registered px4_msgs dependency prefix
+  formal_trials_run: 0
+
+execution_contract:
+  source_this_prefix_first: /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/setup.bash
+  reject_if_any_registered_hash_differs: true
+  explicit_policy_path_required: true
+  stale_default_workspace_install_may_not_be_used: true

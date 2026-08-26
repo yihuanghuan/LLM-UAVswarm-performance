@@ -1,0 +1,150 @@
+registry_id: E2-exact-scenarios-v1
+status: SEALED_CANDIDATE
+baseline_tag: paper-final-sim-v3
+configuration_id: paper-current-v11-c0-f-frozen
+scenario_count: 6
+seeds: [52101, 52102, 52103, 52104, 52105]
+repeats_per_scenario_condition: 5
+
+common:
+  availability: [1, 2, 3, 4, 5, 6, 7, 8]
+  participants: [1, 2, 3, 4]
+  parse_epoch_s: 100.0
+  execute_epoch_s: 102.0
+  velocity_for_every_snapshot_uav_mps: [0.0, 0.0, 0.0]
+  parse_positions_m:
+    1: [-3.0, 6.0, 3.0]
+    2: [-1.0, 6.0, 3.0]
+    3: [1.0, 6.0, 3.0]
+    4: [3.0, 6.0, 3.0]
+  no_shift_control:
+    execute_snapshot_equals_parse_snapshot_except_epoch: true
+    execute_epoch_s: 102.0
+  snapshot_contract:
+    frame: world ENU
+    source_and_receive_timestamps_equal_snapshot_epoch: true
+    no_interpolation_or_noise_in_offline_E2_wrapper: true
+  paired_design: every Early/Late and shift/no-shift cell shares scenario and seed
+  target_and_displacement_contract: For every cell, generate paper unit geometry v3 from the condition-specific executable F/c/r, run the frozen allocator, and define each UAV displacement as Euclidean distance from its registered execute-snapshot position to its assigned target.
+
+comparison_conditions:
+  Early_Commitment:
+    input_semantics: identical frozen Candidate and English command used by Late Commitment
+    mechanism: experiment-only e2_commitment_wrapper.py
+    commitment_rule: resolve at parse-time snapshot, then replace only c/r/T with absolute/explicit numerical values and retain that request at execution
+    frozen_feasibility_gate: may still raise an early explicit T when required; this correction is counted and never bypassed
+  Information_Aligned_Late_Commitment:
+    input_semantics: untouched Candidate generated from the same command
+    mechanism: frozen production resolve_execution_task at execute-time snapshot
+    commitment_rule: retain relative/maintain-current/auto c, qualitative/auto r, and auto T until their frozen runtime stages
+  invariant_fields: [task_id, U, F, m, s, q]
+  prohibited_differences: [prompt, schema, semantic interpretation, runtime state, seed, policy, allocator, controller]
+
+scenarios:
+  - scenario_id: E2-RSV-01
+    family_id: E2-RSV
+    label: runtime-state translation
+    english_command: Have UAVs 1 through 4 form a circle around their current centroid at normal scale with automatic duration, using normal motion and safety factor 1.0.
+    candidate_ground_truth: {task_id: 1, U: [1, 2, 3, 4], F: {type: Circle}, c: {mode: auto}, r: {mode: qualitative, value: normal}, T: {mode: auto}, m: normal, s: 1.0, q: {mode: direct}}
+    expected_unresolved_fields: [c, r, T]
+    state_shift_operator: translate every participant by world vector [2.0, 0.0, 0.0]
+    shifted_execute_positions_m:
+      1: [-1.0, 6.0, 3.0]
+      2: [1.0, 6.0, 3.0]
+      3: [3.0, 6.0, 3.0]
+      4: [5.0, 6.0, 3.0]
+    parse_commitment: {c: [0.0, 6.0, 3.0], r: 1.5909902576697321, T: 2.5787129505911586}
+    shifted_late_resolution: {c: [2.0, 6.0, 3.0], r: 1.5909902576697321, T: 2.5787129505911595}
+    target_geometry: Circle unit geometry v3 at the condition-specific c and r above
+    displacement_definition: per-UAV Euclidean distance from the registered execute position to its allocator-assigned target
+
+  - scenario_id: E2-PES-01
+    family_id: E2-PES
+    label: parse-to-execute translation with relative center
+    english_command: Have UAVs 1 through 4 form a spacious line centered at world-frame offset [2, 0, 1] meters from their current centroid with automatic duration, using smooth motion and safety factor 1.25.
+    candidate_ground_truth: {task_id: 1, U: [1, 2, 3, 4], F: {type: Line}, c: {mode: relative, reference: current_swarm_centroid, offset: [2, 0, 1], frame: world}, r: {mode: qualitative, value: spacious}, T: {mode: auto}, m: smooth, s: 1.25, q: {mode: direct}}
+    expected_unresolved_fields: [c, r, T]
+    state_shift_operator: translate every participant by world vector [3.0, 2.0, 0.0]
+    shifted_execute_positions_m:
+      1: [0.0, 8.0, 3.0]
+      2: [2.0, 8.0, 3.0]
+      3: [4.0, 8.0, 3.0]
+      4: [6.0, 8.0, 3.0]
+    parse_commitment: {c: [2.0, 6.0, 4.0], r: 2.8125, T: 3.5418138428707784}
+    shifted_late_resolution: {c: [5.0, 8.0, 4.0], r: 2.8125, T: 3.5418138428707784}
+    parse_assigned_targets_m: [[-2.21875, 6.0, 4.0], [0.59375, 6.0, 4.0], [3.40625, 6.0, 4.0], [6.21875, 6.0, 4.0]]
+    shifted_late_assigned_targets_m: [[0.78125, 8.0, 4.0], [3.59375, 8.0, 4.0], [6.40625, 8.0, 4.0], [9.21875, 8.0, 4.0]]
+
+  - scenario_id: E2-RC-01
+    family_id: E2-RC
+    label: isolated relative-center grounding
+    english_command: Have UAVs 1 through 4 form a compact circle centered at world-frame offset [0, 2, 1] meters from their current centroid in 6 seconds, using normal motion and safety factor 1.0.
+    candidate_ground_truth: {task_id: 1, U: [1, 2, 3, 4], F: {type: Circle}, c: {mode: relative, reference: current_swarm_centroid, offset: [0, 2, 1], frame: world}, r: {mode: qualitative, value: compact}, T: {mode: explicit, value: 6.0}, m: normal, s: 1.0, q: {mode: direct}}
+    expected_unresolved_fields: [c, r]
+    state_shift_operator: translate every participant by world vector [0.0, 3.0, 1.0]
+    shifted_execute_positions_m:
+      1: [-3.0, 9.0, 4.0]
+      2: [-1.0, 9.0, 4.0]
+      3: [1.0, 9.0, 4.0]
+      4: [3.0, 9.0, 4.0]
+    parse_commitment: {c: [0.0, 8.0, 4.0], r: 1.2727922061357857, T: 6.0}
+    shifted_late_resolution: {c: [0.0, 11.0, 5.0], r: 1.2727922061357857, T: 6.0}
+    target_geometry: Circle unit geometry v3 at the condition-specific c and r above
+
+  - scenario_id: E2-QS-01
+    family_id: E2-QS
+    label: qualitative-scale invariance control
+    english_command: Have UAVs 1 through 4 form a spacious sphere centered at [0, 10, 4] in 7 seconds, using normal motion and safety factor 1.5.
+    candidate_ground_truth: {task_id: 1, U: [1, 2, 3, 4], F: {type: Sphere}, c: {mode: absolute, value: [0, 10, 4]}, r: {mode: qualitative, value: spacious}, T: {mode: explicit, value: 7.0}, m: normal, s: 1.5, q: {mode: direct}}
+    expected_unresolved_fields: [r]
+    state_shift_operator: translate every participant by world vector [0.0, 0.0, 1.0]
+    shifted_execute_positions_m:
+      1: [-3.0, 6.0, 4.0]
+      2: [-1.0, 6.0, 4.0]
+      3: [1.0, 6.0, 4.0]
+      4: [3.0, 6.0, 4.0]
+    parse_commitment: {c: [0.0, 10.0, 4.0], r: 2.4356964481437338, T: 7.0}
+    shifted_late_resolution: {c: [0.0, 10.0, 4.0], r: 2.4356964481437338, T: 7.0}
+    assigned_targets_m: [[-1.69329140953161, 10.811898816047911, 5.551193637946744], [0.0, 7.564303551856266, 4.0], [0.0, 12.435696448143734, 4.0], [0.2007641399527303, 9.188101183952089, 1.7123961750099643]]
+
+  - scenario_id: E2-AT-01
+    family_id: E2-AT
+    label: isolated automatic-duration grounding
+    english_command: Have UAVs 1 through 4 form a line centered at [0, 14, 3] with radius 1.8 meters using automatic duration, aggressive motion, and safety factor 1.0.
+    candidate_ground_truth: {task_id: 1, U: [1, 2, 3, 4], F: {type: Line}, c: {mode: absolute, value: [0, 14, 3]}, r: {mode: explicit, value: 1.8}, T: {mode: auto}, m: aggressive, s: 1.0, q: {mode: direct}}
+    expected_unresolved_fields: [T]
+    state_shift_operator: translate every participant by world vector [0.0, -4.0, 0.0]
+    shifted_execute_positions_m:
+      1: [-3.0, 2.0, 3.0]
+      2: [-1.0, 2.0, 3.0]
+      3: [1.0, 2.0, 3.0]
+      4: [3.0, 2.0, 3.0]
+    assigned_targets_m: [[-2.7, 14.0, 3.0], [-0.9, 14.0, 3.0], [0.9, 14.0, 3.0], [2.7, 14.0, 3.0]]
+    parse_commitment: {c: [0.0, 14.0, 3.0], r: 1.8, T: 3.998601708511926}
+    shifted_early_T_after_mandatory_feasibility_raise: 4.501406030342076
+    shifted_late_resolution: {c: [0.0, 14.0, 3.0], r: 1.8, T: 4.951546633376283}
+
+  - scenario_id: E2-DF-01
+    family_id: E2-DF
+    label: dynamic-feasibility correction under nonuniform state shift
+    english_command: Have UAVs 1 through 4 form a circle around their current centroid at normal scale with automatic duration, using smooth motion and safety factor 1.0.
+    candidate_ground_truth: {task_id: 1, U: [1, 2, 3, 4], F: {type: Circle}, c: {mode: auto}, r: {mode: qualitative, value: normal}, T: {mode: auto}, m: smooth, s: 1.0, q: {mode: direct}}
+    expected_unresolved_fields: [c, r, T]
+    state_shift_operator: set exact participant positions to the shifted snapshot below; no interpolation or stochastic displacement
+    shifted_execute_positions_m:
+      1: [-7.0, 2.0, 3.0]
+      2: [-5.0, 2.0, 3.0]
+      3: [5.0, 10.0, 3.0]
+      4: [7.0, 10.0, 3.0]
+    parse_commitment: {c: [0.0, 6.0, 3.0], r: 1.5909902576697321, T: 2.915066813711745}
+    shifted_early_T_after_mandatory_feasibility_raise: 3.4302991452933056
+    shifted_late_resolution: {c: [0.0, 6.0, 3.0], r: 1.5909902576697321, T: 4.459388888881297}
+    target_geometry: Circle unit geometry v3 centered at [0, 6, 3] with radius 1.5909902576697321
+
+execution_rules:
+  condition_order: simulation_trial_order_v1.yaml
+  shift_is_applied_before_execution_snapshot_capture: true
+  no_shift_and_shift_share_parse_snapshot: true
+  no_prompt_or_schema_difference_between_conditions: true
+  no_production_runtime_patch: true
+  accepted_formal_results_created: false

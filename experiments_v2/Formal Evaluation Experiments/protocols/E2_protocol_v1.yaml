@@ -1,9 +1,17 @@
 protocol_id: E2-commitment-timing-v1
 dataset_class: formal_evaluation
-status: REQUIRES_REVIEW
+status: SEALED_CANDIDATE
 baseline_tag: paper-final-sim-v3
-scenario_registry: ../e2_e5_scenario_seed_registry_v1.yaml
+scenario_registry: ../E2/e2_scenario_registry_v1.yaml
 execution_prohibited_before_final_seal: true
+
+design:
+  comparison: [Early_Commitment, Information_Aligned_Late_Commitment]
+  shift_cells: [no_shift_control, registered_state_shift]
+  paired_by: [scenario_id, seed, parse_snapshot, execute_snapshot]
+  only_manipulated_factor: numerical commitment stage for c/r/T
+  experiment_only_wrapper: ../harness/e2_commitment_wrapper.py
+  production_runtime_changes_allowed: false
 
 primary_metrics:
   executable_grounding_success:

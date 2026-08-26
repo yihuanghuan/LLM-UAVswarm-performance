@@ -1,0 +1,15 @@
+diff --git a/Tools/simulation/gazebo-classic/sitl_multiple_run.sh b/Tools/simulation/gazebo-classic/sitl_multiple_run.sh
+index 8ad774746c..5a89887351 100755
+--- a/Tools/simulation/gazebo-classic/sitl_multiple_run.sh
++++ b/Tools/simulation/gazebo-classic/sitl_multiple_run.sh
+@@ -107,7 +107,9 @@ else
+ fi
+ 
+ echo "Starting gazebo"
+-gzserver ${src_path}/Tools/simulation/gazebo-classic/sitl_gazebo-classic/worlds/${world}.world --verbose $ros_args &
++: "${FORMAL_GAZEBO_SEED:?FORMAL_GAZEBO_SEED must be set for formal runs}"
++gzserver ${src_path}/Tools/simulation/gazebo-classic/sitl_gazebo-classic/worlds/${world}.world \
++  --verbose --seed "${FORMAL_GAZEBO_SEED}" $ros_args &
+ sleep 5
+ 
+ n=0

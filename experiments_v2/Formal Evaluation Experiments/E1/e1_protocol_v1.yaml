@@ -6,7 +6,9 @@ dataset_registry: e1_dataset_registry_v1.yaml
 llm_runtime_manifest: ../llm_runtime_manifest_v1.yaml
 
 execution_prohibited_before_final_seal: true
-inference_order: dataset order 1 through 120
+inference_order_registry: e1_inference_order_v1.yaml
+inference_order_seed: 20260826
+inference_order_permutation_sha256: 9f1eed1cdbba6335ae6f77ed6c8d49964cd009973870bea1080dcd08050b61b4
 attempt_policy:
   use_parser_retry_policy: true
   retain_every_attempt: true
@@ -24,7 +26,12 @@ primary_metrics:
   invalid_rejection_rate:
     definition: expected-invalid commands rejected in the registered rejection class divided by 24
   premature_numerical_commitment_rate:
-    definition: eligible auto, qualitative-scale, or qualitative-safer fields replaced by an invented numeric value divided by all eligible fields
+    definition: unresolved c/r/T fields incorrectly replaced by numerical values divided by all registered unresolved c/r/T fields
+    eligible_fields:
+      - relative, maintain-current-centroid, or auto center c
+      - qualitative or auto scale r
+      - auto timing T
+    excluded_frozen_semantic_rule: qualitative safer/cautious/conservative without a number maps to s=1.0 and is never a premature commitment
   latency:
     definition: provider call wall latency per attempt and total latency to terminal success or rejection; report median, P90, P95, P99
   tokens:
@@ -35,6 +42,39 @@ secondary_diagnostics:
   - retry count distribution
   - rejection-class confusion matrix
   - accuracy by registered category
+
+normalization_contract:
+  scope: Candidate Mission JSON before any late resolution
+  json_object_key_order: ignored recursively
+  json_numeric_equivalence: finite JSON integer and floating representations compare by exact mathematical value; 4 equals 4.0, with no tolerance or string coercion
+  array_order:
+    mission_nodes: exact and significant
+    parallel_tasks: exact and significant
+    UAV_U: exact and significant; no sorting or set normalization
+    vectors_and_offsets: exact axis order x,y,z
+  task_id: exact integer match required
+  enums_and_strings: exact case-sensitive schema value required
+  missing_fields: never synthesized; a missing ground-truth field is an error
+  extra_fields: forbidden by schema and therefore an error
+  defaults: no scorer-side defaults; only fields explicitly present in frozen ground truth are compared
+  floating_values: no post-hoc tolerance; only integer/float representation equivalence above
+
+invalid_scoring_contract:
+  expected_class_source: immutable expected_rejection_class field in the dataset record
+  expected_classes:
+    - incomplete_instruction
+    - contradictory_semantics
+    - unavailable_uav_id
+    - formation_semantic_violation
+    - illegal_transition
+    - unsupported_or_ambiguous_semantics
+  automatic_outcome_mapping:
+    rejected: no executable Candidate remains after the frozen retry policy because parsing, schema validation, availability validation, semantic validation, mission compilation, or pre-dispatch runtime validation terminates the attempt
+    not_rejected: a Candidate passes every frozen pre-dispatch gate; later flight success is irrelevant to E1 invalid rejection
+  class_reporting: compute binary invalid-rejection rate separately within each immutable expected class; do not infer or relabel an expected class from model prose
+  terminal_stage_reporting: report the first deterministic terminal gate and machine exception/code as a diagnostic, not as a replacement expected class
+  unparseable_model_text: rejected with terminal stage parser_unparseable; its immutable expected class remains unchanged
+  manual_reinterpretation_or_relabeling: forbidden
 
 failure_accounting:
   provider_timeout: failed attempt retained

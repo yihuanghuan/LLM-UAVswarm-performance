@@ -1,0 +1,22 @@
+diff --git a/models/iris/iris.sdf.jinja b/models/iris/iris.sdf.jinja
+index 0876d36..3e2bcf1 100644
+--- a/models/iris/iris.sdf.jinja
++++ b/models/iris/iris.sdf.jinja
+@@ -563,6 +563,17 @@
+         </channel>
+       </control_channels>
+     </plugin>
++    <!-- Formal E3 experiment-only external wrench interface.  The same
++         zero-capable plugin is loaded in every P/F factorial condition. -->
++    <plugin name='formal_e3_force' filename='libgazebo_ros_force.so'>
++      <ros>
++        <namespace>/e3_force/mavlink_{{ mavlink_id }}</namespace>
++        <remapping>gazebo_ros_force:=wrench</remapping>
++      </ros>
++      <link_name>base_link</link_name>
++      <force_frame>world</force_frame>
++    </plugin>
++
+     <static>0</static>
+     <plugin name='rotors_gazebo_imu_plugin' filename='libgazebo_imu_plugin.so'>
+       <robotNamespace/>

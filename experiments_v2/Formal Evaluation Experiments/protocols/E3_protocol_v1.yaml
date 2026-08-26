@@ -1,8 +1,8 @@
 protocol_id: E3-planning-feedback-safety-factorial-v1
 dataset_class: formal_evaluation
-status: REQUIRES_REVIEW
+status: SEALED_CANDIDATE
 baseline_tag: paper-final-sim-v3
-scenario_registry: ../e2_e5_scenario_seed_registry_v1.yaml
+scenario_registry: ../E3/e3_factorial_registry_v1.yaml
 execution_prohibited_before_final_seal: true
 
 design:
@@ -11,6 +11,9 @@ design:
   Full_Method_condition: P1_F1
   component_modes_must_use_existing_runtime_interfaces: true
   runtime_code_changes_allowed: false
+  paired_seeds_per_scenario_condition: 15
+  fixed_total_attempts: 6 scenarios * 4 conditions * 15 paired seeds = 360 attempts
+  significance_triggered_sample_extension: forbidden
 
 primary_metrics:
   actual_d_min: minimum measured pairwise 3-D distance over the scored interval

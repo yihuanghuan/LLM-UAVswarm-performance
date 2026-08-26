@@ -1,6 +1,7 @@
 preflight_id: formal-preflight-v1
 preflight_type: human_review_candidate
 status: REQUIRES_REVIEW
+ready_for_final_review: true
 dataset_class: formal_evaluation
 
 baseline_tag: paper-final-sim-v3
@@ -11,22 +12,37 @@ canonical_policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0a
 artifacts:
   E1_dataset_registry: E1/e1_dataset_registry_v1.yaml
   E1_dataset: E1/e1_candidate_semantic_dataset_v1.jsonl
+  E1_inference_order: E1/e1_inference_order_v1.yaml
   E1_protocol: E1/e1_protocol_v1.yaml
   LLM_runtime_manifest: llm_runtime_manifest_v1.yaml
   E2_E5_scenario_seed_registry: e2_e5_scenario_seed_registry_v1.yaml
+  E2_exact_registry: E2/e2_scenario_registry_v1.yaml
+  E3_exact_factorial_registry: E3/e3_factorial_registry_v1.yaml
+  E4_motion_style_registry: E4/e4_motion_style_registry_v1.yaml
+  E5_end_to_end_registry: E5/e5_end_to_end_registry_v1.yaml
+  simulation_trial_order: simulation_trial_order_v1.yaml
+  simulation_trial_order_complete_permutation: simulation_trial_order_v1.txt
   E2_protocol: protocols/E2_protocol_v1.yaml
   E3_protocol: protocols/E3_protocol_v1.yaml
   E4_protocol: protocols/E4_protocol_v1.yaml
   E5_protocol: protocols/E5_protocol_v1.yaml
   simulation_environment_manifest: simulation_environment_manifest_v1.yaml
+  workspace_build_lock: environment/workspace_build_lock_v1.yaml
+  experiment_harness:
+    E2_commitment_wrapper: harness/e2_commitment_wrapper.py
+    E3_wrench_driver: harness/e3_wrench_driver.py
+    deterministic_order_generator: harness/generate_simulation_trial_order_v1.py
+  environment_overlays:
+    PX4_seed_runner: environment/patches/px4_runner_gazebo_seed_v1.patch
+    E3_force_endpoint: environment/patches/iris_gazebo_ros_force_v1.patch
 
 E1_dataset_status: SEALED_CANDIDATE
 LLM_manifest_status: REQUIRES_REVIEW
-E2_scenario_registry_status: REQUIRES_REVIEW
-E3_scenario_registry_status: REQUIRES_REVIEW
-E4_scenario_registry_status: REQUIRES_REVIEW
-E5_scenario_registry_status: REQUIRES_REVIEW
-simulation_environment_status: REQUIRES_REVIEW
+E2_scenario_registry_status: SEALED_CANDIDATE
+E3_scenario_registry_status: SEALED_CANDIDATE
+E4_scenario_registry_status: SEALED_CANDIDATE
+E5_scenario_registry_status: SEALED_CANDIDATE
+simulation_environment_status: SEALED_CANDIDATE
 
 rules:
   formal_data_may_not_retune_parameters: true
@@ -50,18 +66,20 @@ review_gate:
   final_seal_required_before_any_formal_run: true
   statuses_must_be_resolved_to_SEALED_before_execution: true
   human_approval_required: true
+  engineering_blockers: []
 
 requires_review:
   - Accept or resolve the MiniMax backend-version reproducibility limitation and seal the E1 client environment.
-  - Seal exact E2 state-shift operators, snapshots, commands, and trial pairing.
-  - Seal exact E3 risk geometry, disturbances, and existing-mode factorial mapping.
-  - BLOCKER: no sealed non-runtime-changing disturbance injection method has been identified for E3 Family B/C.
-  - Seal exact E4-A displacements and feasible T values.
-  - Seal exact E4-B feasible/infeasible/auto/safety-active definitions.
-  - Seal exact E5 English commands, semantic ground truth, geometry, transitions, and timeouts.
-  - Seal one deterministic global trial order and ordering seed.
-  - Resolve the dirty PX4/Gazebo worktrees and locally modified iris model.
-  - Verify and seal Gazebo/PX4 seed support, clock domains, RTF capture, and workspace build/package lock.
+  - Confirm credentials, endpoint availability, provider alias stability, rate limits, and data-retention terms without running E1 commands.
+
+resolved_review_items:
+  E1_metric_order_and_scoring_contract: SEALED_CANDIDATE
+  E2_exact_scenarios_and_commitment_comparison: SEALED_CANDIDATE
+  E3_exact_factorial_disturbance_and_15_paired_seeds: SEALED_CANDIDATE
+  E4_hypotheses_and_authority_contract: SEALED_CANDIDATE
+  E5_exact_end_to_end_registry: SEALED_CANDIDATE
+  simulation_environment_and_build_lock: SEALED_CANDIDATE
+  deterministic_simulation_trial_order: SEALED_CANDIDATE
 
 execution_record:
   llm_calls_run: 0

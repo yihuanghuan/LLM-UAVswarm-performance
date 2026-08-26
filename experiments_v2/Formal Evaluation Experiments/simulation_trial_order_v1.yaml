@@ -1,0 +1,23 @@
+order_id: formal-simulation-trial-order-v1
+status: SEALED_CANDIDATE
+scope: E2 through E5 simulation attempts
+generator: harness/generate_simulation_trial_order_v1.py
+complete_permutation: simulation_trial_order_v1.txt
+ordering_seed: 20260827
+generator_runtime: Python 3 random.Random(seed).shuffle
+canonical_population_count: 610
+canonical_population_sha256: 6e37ae0aa3fa7e24e13f81301c67cdb5dfe3fc24fa148db03d3c680110f081ca
+permutation_sha256: db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce
+serialization_for_hash: each UTF-8 trial ID followed by LF, including the final ID
+population_breakdown:
+  E2: 120
+  E3: 360
+  E4_A: 45
+  E4_B: 60
+  E5: 25
+execution_contract:
+  complete_permutation_file_is_authoritative: true
+  run_in_generated_order: true
+  finish_and_retain_an_attempt_before_advancing: true
+  failed_attempts_are_not_replaced: true
+  order_may_not_change_after_any_formal_outcome: true
