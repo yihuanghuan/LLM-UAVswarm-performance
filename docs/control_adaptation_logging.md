@@ -13,7 +13,7 @@ omega_c = baseline_omega_c * total_gain
 omega_o = baseline_omega_o * total_gain
 ```
 
-The current `paper-current-v7` development values are:
+The current `paper-current-v11-c0-f-frozen` C0-F values are:
 
 | style | style gain | omega_c | omega_o |
 |---|---:|---|---|
@@ -22,7 +22,7 @@ The current `paper-current-v7` development values are:
 | aggressive | 1.1 | `[1.65,1.65,1.925]` | `[5.5,5.5,8.25]` |
 
 All values remain inside the independent 0.75x–1.25x controller hard-clamp
-envelope. These multipliers are provisional, not paper-final.
+envelope. The style multipliers are frozen by the C0-F motion-style artifact.
 
 ## Application path
 

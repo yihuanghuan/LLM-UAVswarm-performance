@@ -31,26 +31,26 @@ consideration, `d_exit` provides the larger hysteresis exit boundary, and
 `k_rep` scales the configured IAPF repulsion gain once at the controller
 boundary. These quantities intentionally have different baselines.
 
-For `paper-current-v7`, with `1 <= s <= 2`, the provisional development mapping
-is:
+For `paper-current-v11-c0-f-frozen`, with `1 <= s <= 2`, the frozen C0-D/C0-E
+mapping is:
 
 ```text
-d_violation = d_hard = 1.0
-d_plan(s)   = d_hard + s * (2.0  - d_hard)
-d_enter(s)  = d_hard + s * (1.50 - d_hard)
-d_exit(s)   = d_hard + s * (1.65 - d_hard)
+d_violation = d_hard = 1.50
+d_plan(s)   = d_hard + s * (1.80 - d_hard)
+d_enter(s)  = d_hard + s * (1.60 - d_hard)
+d_exit(s)   = d_hard + s * (1.70 - d_hard)
 k_rep(s)    = 1.0 + 0.25 * (s - 1)
 ```
 
 | LFS `s` | `d_violation` / `d_hard` | allocator `d_plan` | IAPF `d_enter` | IAPF `d_exit` | IAPF `k_rep` |
 |---:|---:|---:|---:|---:|---:|
-| 1.0 | 1.0 | 2.0 | 1.5 | 1.65 | 1.0 |
-| 1.5 | 1.0 | 2.5 | 1.75 | 1.975 | 1.125 |
-| 2.0 | 1.0 | 3.0 | 2.0 | 2.3 | 1.25 |
+| 1.0 | 1.50 | 1.80 | 1.60 | 1.70 | 1.0 |
+| 1.5 | 1.50 | 1.95 | 1.65 | 1.80 | 1.125 |
+| 2.0 | 1.50 | 2.10 | 1.70 | 1.90 | 1.25 |
 
-The semantic architecture and monotonic direction are frozen. All numeric
-baselines and the `0.25` repulsion margin remain provisional calibration, not
-paper-final values.
+The semantic architecture and monotonic direction are architecture-frozen.
+C0-D froze `d_hard`, `d_plan_base`, and the `s` domain; C0-E froze the IAPF
+enter/exit baselines, repulsion mapping, and runtime filter.
 
 ## Validation and compatibility
 

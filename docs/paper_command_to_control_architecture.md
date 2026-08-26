@@ -1,7 +1,7 @@
 # Paper Command-to-Control Architecture
 
 This is the current entry point for the Paper Candidate implementation. The
-architecture is frozen; policy multipliers remain development calibration.
+architecture and the C0-A through C0-F policy calibration are frozen.
 
 ## Canonical path
 
@@ -36,7 +36,7 @@ omega_c = baseline_omega_c * style_gain
 omega_o = baseline_omega_o * style_gain
 ```
 
-Current provisional development values are:
+The C0-F frozen values are:
 
 | style | style gain | auto-T factor |
 |---|---:|---:|
@@ -74,7 +74,7 @@ runtime-layer IAPF enter distance, exit distance, and repulsion scale.
 `d_violation` (`d_hard`) remains a system-level fixed threshold. The controller
 only validates, clamps, and applies these values; IAPF core does not receive or
 multiply by `s`. See [paper_safety_factor.md](paper_safety_factor.md) for the
-current formulas and development values.
+current frozen formulas and values.
 
 ## Controller application and observability
 
@@ -93,21 +93,21 @@ Targeted unit, controller, and Gazebo validation supports:
 
 ```text
 semantic motion-style architecture: frozen
-parameter calibration: provisional
+parameter calibration: C0-A through C0-F frozen
 ```
 
-The initial aggressive development choice (`style_gain=1.2`, auto factor 1.0)
-put auto trajectories on the jerk boundary and produced targeted LADRC
-saturation. The current conservative values were selected by a recorded
-calibration sequence, not declared paper-final. See
-`paper_parameter_calibration.md` and the current semantic-style result folder.
+The frozen C0-F artifact records style gain `0.8/1.0/1.1`, auto factor
+`1.30/1.15/1.10`, and `smoothing_alpha=1.0`. Its locked candidate and
+confirmation evidence, rather than earlier development trials, are the current
+parameter provenance. See `paper_parameter_calibration.md` and the C0-F freeze
+artifact.
 
 ## Authoritative documentation map
 
 - `README.md`: build, launch, interfaces, and repository navigation.
 - `paper_lfs_spec.md`: Candidate/Executable semantics and frozen boundaries.
 - `paper_candidate_runtime.md`: production runtime and ROS interfaces.
-- `paper_parameter_calibration.md`: value provenance and provisional status.
+- `paper_parameter_calibration.md`: current value and freeze provenance.
 - `safety_aware_topology_assignment.md`: allocator objective and safety gates.
 - `paper_safety_factor.md`: frozen `s` semantics and cross-layer mapping.
 - `minimum_jerk_trajectory_metrics.md`: trajectory equations and metrics.

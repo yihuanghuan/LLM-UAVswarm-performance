@@ -1,8 +1,8 @@
 # Paper Candidate LFS Specification
 
 This document is the authoritative semantic and architecture specification for
-the Paper Candidate path. Architectural freeze does not imply that provisional
-policy values are calibrated or paper-final.
+the Paper Candidate path. Architecture and parameter provenance remain
+distinct; the current canonical policy has completed C0-A through C0-F.
 
 ## Formal representations
 
@@ -117,11 +117,12 @@ separation, late binding, validation layers, ordered sequential/parallel
 missions, task-U centroid, versioned English prompt/hash and fail-closed Paper
 execution.
 
-`lfs_policy.paper_current.yaml` remains runnable, and the semantic-controller
-interface is enabled. Its physical-environment, algorithm and motion-style
-multipliers retain provisional calibration status. See
-`paper_parameter_calibration.md`; no number is made paper-final by this
-architecture freeze.
+`lfs_policy.paper_current.yaml` is the runnable
+`paper-current-v11-c0-f-frozen` policy, and the semantic-controller interface
+is enabled. Its C0-A through C0-F parameter groups are frozen; the physical
+environment remains provisional and must be sealed separately before the
+first applicable formal run. See `paper_parameter_calibration.md`. Calibration
+provenance is not inferred from the architecture freeze.
 
 Legacy is entered only through `lfs_runtime_mode=legacy_v1`. Its implementation
 lives under `location_allocate/legacy/`; compatibility shims preserve historical

@@ -55,11 +55,11 @@ Paper Candidate `F` 是结构化 descriptor，例如 `{"type":"Circle"}` 或 `{"
 ## Policy 层级
 
 - `location_allocate/config/lfs_policy.template.yaml`：完整字段模板，允许 null/TBD，production loader 必须拒绝。
-- `lfs_policy/config/lfs_policy.paper_current.yaml`：当前论文主路径，`configuration_id=paper-current-v7`；包含 provisional 数值。
+- `lfs_policy/config/lfs_policy.paper_current.yaml`：当前论文主路径，`configuration_id=paper-current-v11-c0-f-frozen`；C0-A～C0-F 参数组已冻结。
 - `lfs_policy/config/lfs_policy.legacy.yaml`：只供显式历史兼容。
-- 未来 `lfs_policy_experiment_*.yaml`：实验冻结后另建，本轮不存在 paper-final policy。
 
-paper-current 不等于 paper-final。完整参数状态见 [paper_parameter_calibration.md](paper_parameter_calibration.md)。
+正式仿真基线由 immutable `paper-final-sim-v2` tag 固定；完整参数状态见
+[paper_parameter_calibration.md](paper_parameter_calibration.md)。
 
 启动时 typed loader 会一次性检查 missing/null、NaN/Inf、workspace 顺序、`s` 范围、安全 ordering、IAPF hysteresis、repulsion 非负、controller clamp 覆盖、configuration ID 和 provenance。任何不完整 policy 都在发布 UAV command 前 fail fast。
 
@@ -83,7 +83,8 @@ header.stamp       : controller 收到对应 PX4 sample 时的 ROS clock
 
 PX4 timestamp 是 boot-clock microseconds，不能冒充 ROS epoch/sim time，因此 frame-normalization publisher 在接收 sample 时生成 ROS source stamp。Scheduler 另存 receive stamp，freshness 使用 header source stamp。
 
-当前 paper runtime 使用已经冻结的 C0-A/C0-B policy（`paper-current-v8-c0-b-frozen`）：
+当前 paper runtime 使用 `paper-current-v11-c0-f-frozen` 中已经冻结的
+C0-A/C0-B freshness policy：
 
 - `state_timeout=0.022080s`（C0-B P99 + 固定 10 ms）
 - `snapshot_skew=0.022043s`（C0-B P99 + 固定 10 ms）
@@ -132,7 +133,7 @@ velocity/jerk runtime enforcement。
 ## 当前控制边界
 
 - 显式 `T` 在动态可行时保持不变；style 只改变 controller profile。
-- `T=auto` 使用 provisional factor：smooth/normal/aggressive 为
+- `T=auto` 使用 C0-F frozen factor：smooth/normal/aggressive 为
   `1.30/1.15/1.10`，且始终不小于 `T_min`。
 - Controller 先做 finite check 和 hard clamp，再原子应用 profile；当前
   `smoothing_alpha=1.0`，不做跨周期渐变。
