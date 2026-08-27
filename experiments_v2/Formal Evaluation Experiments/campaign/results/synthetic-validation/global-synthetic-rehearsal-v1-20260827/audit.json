@@ -1,0 +1,146 @@
+{
+  "accepted_formal_result": false,
+  "accounted_attempts": 610,
+  "audit_type": "E2_E5_global_synthetic_campaign_audit_v1",
+  "checks": [
+    {
+      "check": "current_provenance",
+      "details": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "sealed_order_hash",
+      "details": {
+        "run_manifest": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+        "sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "exact_prefix_or_full_order",
+      "details": {
+        "journal_count": 610,
+        "sealed_count": 610
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "complete_610_order",
+      "details": {
+        "count": 610,
+        "required": true
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "journal_chain_integrity",
+      "details": {
+        "records": 610,
+        "tail_hash": "9a571ed3aa00bb546e2d30db8bc4bf2abcfa8457405567aba6e8d3561f7f9c89"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "every_attempt_retained",
+      "details": {
+        "complete": true,
+        "next_position": null,
+        "retained_count": 610,
+        "status_counts": {
+          "infrastructure_failure": 33,
+          "method_failure": 49,
+          "runner_refusal": 21,
+          "success": 481,
+          "timeout": 26
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "no_missing_duplicate_replacement_reorder",
+      "details": {
+        "count": 610,
+        "replacements": 0,
+        "unique": 610
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "correct_runner_routing",
+      "details": {
+        "errors": []
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "synthetic_labels",
+      "details": {
+        "errors": []
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "attempt_artifact_hashes",
+      "details": {
+        "errors": []
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "campaign_source_provenance_match",
+      "details": {
+        "recorded_commit": "c50aeb6d821a644a0ea0d48c40a1e7b471f9cd2b"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "runner_registry_provenance_match",
+      "details": {
+        "sha256": "825abb739da1395b14d62d1c2c968880bae7027a22e0a388d2d85977b0443be7"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "formal_cursor_not_consumed",
+      "details": {
+        "after": {
+          "exists": false,
+          "files": []
+        },
+        "before": {
+          "exists": false,
+          "files": []
+        },
+        "formal_results_path": "/home/yihuang/learning/LLM_swarm_ws/global_campaign_infrastructure/experiments_v2/Formal Evaluation Experiments/campaign/results/formal"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "failure_retention_and_advance",
+      "details": {
+        "infrastructure_failure": 33,
+        "method_failure": 49,
+        "runner_refusal": 21,
+        "success": 481,
+        "timeout": 26
+      },
+      "status": "PASS"
+    }
+  ],
+  "dataset_class": "synthetic_validation",
+  "deterministic_replay": {
+    "primary_trace_sha256": "5397054361815c9126037371f6e1da454a1e4d1f43fde51634c6b8a6401396b9",
+    "replay_trace_sha256": "5397054361815c9126037371f6e1da454a1e4d1f43fde51634c6b8a6401396b9",
+    "status": "PASS"
+  },
+  "generated_at_utc": "2026-08-27T02:54:08.035Z",
+  "result_notice": "NOT_FORMAL_RESULT",
+  "status": "PASS",
+  "status_counts": {
+    "infrastructure_failure": 33,
+    "method_failure": 49,
+    "runner_refusal": 21,
+    "success": 481,
+    "timeout": 26
+  }
+}

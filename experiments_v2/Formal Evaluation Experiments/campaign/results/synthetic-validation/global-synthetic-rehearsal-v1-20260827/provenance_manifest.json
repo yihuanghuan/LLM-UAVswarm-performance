@@ -1,0 +1,173 @@
+{
+  "accepted_formal_result": false,
+  "campaign_infrastructure_commit": "c50aeb6d821a644a0ea0d48c40a1e7b471f9cd2b",
+  "campaign_infrastructure_source_hashes": {
+    "experiments_v2/Formal Evaluation Experiments/campaign/README.md": "0bdada02898aab24c0bcf311f52824f62bec0b6adabb02157bf3b63a42321538",
+    "experiments_v2/Formal Evaluation Experiments/campaign/__init__.py": "5f431ef439d13acb8ba0223038e660831f7520bbd52de28ce916bc914986e9f4",
+    "experiments_v2/Formal Evaluation Experiments/campaign/campaign_audit.py": "9a738b4cf40500f857f2a27a1fe51b9341fcdd7f1fbee9388aef312b4f76cc5c",
+    "experiments_v2/Formal Evaluation Experiments/campaign/campaign_common.py": "d1be5e3a4e1fc992b1a3a1d0defce1d4e30e5ea3ceb7b3ef8281bcc550604225",
+    "experiments_v2/Formal Evaluation Experiments/campaign/campaign_dispatcher.py": "4195f302738440fb7964940c5bcd790a996262f32af854f0900f7f938a98d840",
+    "experiments_v2/Formal Evaluation Experiments/campaign/campaign_journal.py": "a11845d3337cb3ec2592815d90d44af954ceb10a7d0f93bd4383ff370a81c915",
+    "experiments_v2/Formal Evaluation Experiments/campaign/campaign_manifest_v1.json": "80de08ae58f540e270237d850f768256d8ea5a15cfa836cf40be0e6945af399e",
+    "experiments_v2/Formal Evaluation Experiments/campaign/campaign_provenance.py": "ecd0e7b669750f725b273a9780c11c341893561f13babb83c1d23b75698132e3",
+    "experiments_v2/Formal Evaluation Experiments/campaign/mock_runners.py": "1a51d8224b5e5ed9dc89a1fb55aea324cb9414b08118d75be9226272a18fb4fd",
+    "experiments_v2/Formal Evaluation Experiments/campaign/runner_registry.py": "0027ebe6c026d21c52a4546d6c5c1c80013aad7236de39eb935ee76307be5601",
+    "experiments_v2/Formal Evaluation Experiments/campaign/runner_registry_v1.json": "be5f4884f78182aa5f514b72ed43407433d2a12517a7c13cbacdee90ef9467eb",
+    "experiments_v2/Formal Evaluation Experiments/campaign/synthetic_rehearsal.py": "c78777aa35cd82947f0773116bd2a340f4425a5632142ff873b13ef93bb88a40",
+    "experiments_v2/Formal Evaluation Experiments/campaign/test_campaign_infrastructure.py": "a8ba43470343ed71b48d791c2daed703ce235d97f025e27a44b538041d13c39a"
+  },
+  "checks": [
+    {
+      "check": "exact_preflight_source_and_ancestry",
+      "details": {
+        "campaign_infrastructure_commit": "c50aeb6d821a644a0ea0d48c40a1e7b471f9cd2b",
+        "expected_source": "36dba68c6b16681ec98500b49c5a83095de4b634",
+        "resolved_source": "36dba68c6b16681ec98500b49c5a83095de4b634",
+        "source_is_ancestor": true
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "sealed_baseline_tag_resolution",
+      "details": {
+        "expected": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+        "resolved": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+        "tag": "paper-final-sim-v3"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "sealed_inputs_byte_identical_to_preflight_commit",
+      "details": {
+        "experiments_v2/Formal Evaluation Experiments/e2_e5_scenario_seed_registry_v1.yaml": {
+          "byte_identical": true,
+          "sha256": "90313d33793940489edde631d397564378ae54fe3cfddf438e4a895d6132254d"
+        },
+        "experiments_v2/Formal Evaluation Experiments/formal_preflight_v1.yaml": {
+          "byte_identical": true,
+          "sha256": "c9eb9752000d5023f2986ae13f5bf062db20064f29e04f679e92e58a85a1c5a5"
+        },
+        "experiments_v2/Formal Evaluation Experiments/simulation_trial_order_v1.txt": {
+          "byte_identical": true,
+          "sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce"
+        },
+        "experiments_v2/Formal Evaluation Experiments/simulation_trial_order_v1.yaml": {
+          "byte_identical": true,
+          "sha256": "6674b6c2e03278e99590c6d3c9df7ada580180b92f24475a42d396972451b254"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "sealed_610_permutation",
+      "details": {
+        "count": 610,
+        "sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+        "unique": 610
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "sealed_preflight_policy_gate",
+      "details": {
+        "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+        "preflight_status": "SEALED"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "pinned_sealed_artifact_hashes",
+      "details": {
+        "formal_preflight_v1.yaml": {
+          "actual": "c9eb9752000d5023f2986ae13f5bf062db20064f29e04f679e92e58a85a1c5a5",
+          "expected": "c9eb9752000d5023f2986ae13f5bf062db20064f29e04f679e92e58a85a1c5a5"
+        },
+        "global_seed_registry": {
+          "actual": "90313d33793940489edde631d397564378ae54fe3cfddf438e4a895d6132254d",
+          "expected": "90313d33793940489edde631d397564378ae54fe3cfddf438e4a895d6132254d"
+        },
+        "simulation_trial_order_v1.txt": {
+          "actual": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+          "expected": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce"
+        },
+        "simulation_trial_order_v1.yaml": {
+          "actual": "6674b6c2e03278e99590c6d3c9df7ada580180b92f24475a42d396972451b254",
+          "expected": "6674b6c2e03278e99590c6d3c9df7ada580180b92f24475a42d396972451b254"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "pinned_E2_stage_B_reference",
+      "details": {
+        "commit": "22110f3515662d88a9e8482368fad843fff6968a",
+        "source_sha256": "39d3fa0a34b623c46468b62c12da74ace443d360e8f4a84ee20fef9edfa479ac",
+        "validation_scope": "STAGE_B_SYNTHETIC_VALIDATION_ONLY"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "formal_launch_fail_closed_NOT_READY",
+      "details": {
+        "blockers": [
+          "E3 validated runner is NOT_READY",
+          "E4A validated runner is NOT_READY",
+          "E4B validated runner is NOT_READY",
+          "E5 validated runner is NOT_READY",
+          "CURRENT FORMAL CAMPAIGN STATUS is NOT_READY"
+        ],
+        "formal_launch_allowed": false
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "synthetic_only_machine_manifest",
+      "details": {
+        "accepted_formal_result": false,
+        "baseline_commit": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+        "baseline_tag": "paper-final-sim-v3",
+        "canonical_policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+        "current_formal_campaign_status": "NOT_READY",
+        "dataset_class": "synthetic_validation",
+        "formal_launch_requirements": [
+          "E2 READY",
+          "E3 READY",
+          "E4A READY",
+          "E4B READY",
+          "E5 READY",
+          "global infrastructure PASS",
+          "full synthetic campaign rehearsal PASS",
+          "all provenance checks PASS"
+        ],
+        "global_seed_registry_sha256": "90313d33793940489edde631d397564378ae54fe3cfddf438e4a895d6132254d",
+        "manifest_type": "E2_E5_global_campaign_infrastructure_manifest_v1",
+        "preflight_commit": "36dba68c6b16681ec98500b49c5a83095de4b634",
+        "result_notice": "NOT_FORMAL_RESULT",
+        "simulation_trial_order_txt_sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+        "simulation_trial_order_yaml_sha256": "6674b6c2e03278e99590c6d3c9df7ada580180b92f24475a42d396972451b254"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "changes_confined_to_global_campaign_infrastructure",
+      "details": {
+        "changed_count": 14,
+        "prohibited_paths": []
+      },
+      "status": "PASS"
+    }
+  ],
+  "dataset_class": "synthetic_validation",
+  "generated_at_utc": "2026-08-27T02:53:01.015Z",
+  "manifest_type": "E2_E5_global_campaign_provenance_v1",
+  "result_notice": "NOT_FORMAL_RESULT",
+  "runner_registry_sha256": "825abb739da1395b14d62d1c2c968880bae7027a22e0a388d2d85977b0443be7",
+  "sealed_hashes": {
+    "canonical_policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+    "global_seed_registry_sha256": "90313d33793940489edde631d397564378ae54fe3cfddf438e4a895d6132254d",
+    "preflight_sha256": "c9eb9752000d5023f2986ae13f5bf062db20064f29e04f679e92e58a85a1c5a5",
+    "simulation_trial_order_txt_sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+    "simulation_trial_order_yaml_sha256": "6674b6c2e03278e99590c6d3c9df7ada580180b92f24475a42d396972451b254"
+  },
+  "status": "PASS"
+}
