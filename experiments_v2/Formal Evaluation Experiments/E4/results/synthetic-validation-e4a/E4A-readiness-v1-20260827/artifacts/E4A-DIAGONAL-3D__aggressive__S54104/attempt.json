@@ -1,0 +1,200 @@
+{
+  "accepted_formal_result": false,
+  "dataset_class": "synthetic_validation",
+  "execution_spec": {
+    "T_exec_requirement_s": 4.0,
+    "assigned_targets_m": {
+      "1": [
+        0.3,
+        12.0,
+        5.0
+      ],
+      "2": [
+        2.1,
+        12.0,
+        5.0
+      ],
+      "3": [
+        3.9,
+        12.0,
+        5.0
+      ],
+      "4": [
+        5.7,
+        12.0,
+        5.0
+      ]
+    },
+    "availability": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "displacement_m": [
+      3.0,
+      4.0,
+      2.0
+    ],
+    "experiment": "E4A",
+    "frozen_feasibility_terms_s": {
+      "T_min": 3.185053632824656,
+      "acceleration": 2.493642456740583,
+      "jerk": 3.185053632824656,
+      "velocity": 2.019436802675439
+    },
+    "initial_positions_m": {
+      "1": [
+        -2.7,
+        8.0,
+        3.0
+      ],
+      "2": [
+        -0.9,
+        8.0,
+        3.0
+      ],
+      "3": [
+        0.9,
+        8.0,
+        3.0
+      ],
+      "4": [
+        2.7,
+        8.0,
+        3.0
+      ]
+    },
+    "legitimate_style_profile": {
+      "smoothing_alpha": 1.0,
+      "style": "aggressive",
+      "style_gain": 1.1,
+      "task_adaptation": "identity",
+      "task_gain": 1.0
+    },
+    "metric_log_schema": {
+      "acceleration_response_components": [
+        "peak",
+        "RMS",
+        "rise_time"
+      ],
+      "control_effort_definition": "time integral norm commanded LADRC acceleration",
+      "primary_metrics": [
+        "settling_time",
+        "control_effort",
+        "acceleration_response",
+        "tracking_RMSE"
+      ],
+      "raw_required": [
+        "clock",
+        "commanded_ladrc_acceleration_3d",
+        "safe_reference_position_3d",
+        "measured_position_3d",
+        "trajectory_completion",
+        "stable_hover_entry"
+      ],
+      "tracking_RMSE_definition": "safe reference vs measured 3-D position"
+    },
+    "motion_style": "aggressive",
+    "nominal_reference": {
+      "duration_s": 4.0,
+      "p0": {
+        "1": [
+          -2.7,
+          8.0,
+          3.0
+        ],
+        "2": [
+          -0.9,
+          8.0,
+          3.0
+        ],
+        "3": [
+          0.9,
+          8.0,
+          3.0
+        ],
+        "4": [
+          2.7,
+          8.0,
+          3.0
+        ]
+      },
+      "polynomial": "frozen Minimum-Jerk reference",
+      "style_may_regenerate_or_retime": false,
+      "targets": {
+        "1": [
+          0.3,
+          12.0,
+          5.0
+        ],
+        "2": [
+          2.1,
+          12.0,
+          5.0
+        ],
+        "3": [
+          3.9,
+          12.0,
+          5.0
+        ],
+        "4": [
+          5.7,
+          12.0,
+          5.0
+        ]
+      }
+    },
+    "q": {
+      "mode": "direct"
+    },
+    "registered_input_hash": "c7c2bbbd41070d9853a2343aa1efccaf65b81b3035b7b9fd7b4941bfc1adc5a7",
+    "requested_T": {
+      "mode": "explicit",
+      "value_s": 4.0
+    },
+    "resolved_execution_spec_hash": "21c11b3efd0061d01868467baf784309f35b404d29c5885ee9058f69fb639c0d",
+    "safety_s": 1.0,
+    "scenario_id": "E4A-DIAGONAL-3D",
+    "seed": 54104,
+    "seed_pairing": 54104,
+    "spec_type": "E4A_exact_execution_spec_v1",
+    "style": "aggressive",
+    "trial_id": "E4A-DIAGONAL-3D__aggressive__S54104",
+    "uav_ids": [
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "experiment": "E4A",
+  "mock_execution": {
+    "backend": "E4A_synthetic_contract_backend_v1",
+    "nominal_reference_hash": "1dae5858ecc5063523d54e09b622377d5d928fcc1a75b1d2c00c0bddeba62179",
+    "scientific_outcomes": null,
+    "validation_status": "SPEC_VALIDATED"
+  },
+  "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+  "protocol_sha256": "5a7eeb923aebcfb068827c6513a37e856dc8d6f05166a4b84775b33572bd83d0",
+  "record_type": "E4A_synthetic_attempt_v1",
+  "registered_input_hash": "c7c2bbbd41070d9853a2343aa1efccaf65b81b3035b7b9fd7b4941bfc1adc5a7",
+  "registry_sha256": "48779a6667759955dd7dab2d8509f61a5439cca51a4bf98fcb48b6d17c499f95",
+  "resolved_execution_spec_hash": "21c11b3efd0061d01868467baf784309f35b404d29c5885ee9058f69fb639c0d",
+  "result_notice": "NOT_FORMAL_RESULT",
+  "runner": {
+    "branch": "formal/E4A-behavioral-distinguishability-v1",
+    "commit": "95bf5e116dcd441632cb2f468afb3b55dd798f82",
+    "entrypoint": "experiments_v2/Formal Evaluation Experiments/E4/tooling_e4a/e4a_runner.py",
+    "source_sha256": "e1c456e9c6efb6a3b10cdee0a50be6e44435676431cb929033255fc9e5847da0"
+  },
+  "scenario_id": "E4A-DIAGONAL-3D",
+  "seed": 54104,
+  "style": "aggressive",
+  "trial_id": "E4A-DIAGONAL-3D__aggressive__S54104",
+  "validation_status": "SPEC_VALIDATED"
+}
