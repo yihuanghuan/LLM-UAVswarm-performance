@@ -1,0 +1,214 @@
+{
+  "assigned_targets_m": [
+    [
+      0.5,
+      3.0,
+      3.0
+    ],
+    [
+      0.5,
+      6.0,
+      3.0
+    ],
+    [
+      0.5,
+      9.0,
+      3.0
+    ],
+    [
+      0.5,
+      12.0,
+      3.0
+    ]
+  ],
+  "dataset_class": "engineering_validation",
+  "duration_s": 3.5,
+  "fixture_class": "non_registered_engineering_fixture",
+  "initial_positions_m": [
+    [
+      0.0,
+      3.0,
+      3.0
+    ],
+    [
+      0.0,
+      6.0,
+      3.0
+    ],
+    [
+      0.0,
+      9.0,
+      3.0
+    ],
+    [
+      0.0,
+      12.0,
+      3.0
+    ]
+  ],
+  "metric_log_schema": {
+    "raw_required": [
+      "clock",
+      "commanded_ladrc_acceleration_3d",
+      "safe_reference_position_3d",
+      "measured_position_3d",
+      "trajectory_completion",
+      "stable_hover_entry"
+    ]
+  },
+  "nominal_reference": {
+    "duration_s": 3.5,
+    "p0": {
+      "1": [
+        0.0,
+        3.0,
+        3.0
+      ],
+      "2": [
+        0.0,
+        6.0,
+        3.0
+      ],
+      "3": [
+        0.0,
+        9.0,
+        3.0
+      ],
+      "4": [
+        0.0,
+        12.0,
+        3.0
+      ]
+    },
+    "polynomial": "frozen Minimum-Jerk reference",
+    "style_may_regenerate_or_retime": false,
+    "targets": {
+      "1": [
+        0.5,
+        3.0,
+        3.0
+      ],
+      "2": [
+        0.5,
+        6.0,
+        3.0
+      ],
+      "3": [
+        0.5,
+        9.0,
+        3.0
+      ],
+      "4": [
+        0.5,
+        12.0,
+        3.0
+      ]
+    }
+  },
+  "profiles": [
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 3.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.2000000000000002,
+        1.2000000000000002,
+        1.4000000000000001
+      ],
+      "omega_o": [
+        4.0,
+        4.0,
+        6.0
+      ],
+      "style": "smooth",
+      "style_gain": 0.8,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 3.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.2000000000000002,
+        1.2000000000000002,
+        1.4000000000000001
+      ],
+      "omega_o": [
+        4.0,
+        4.0,
+        6.0
+      ],
+      "style": "smooth",
+      "style_gain": 0.8,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 3.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.2000000000000002,
+        1.2000000000000002,
+        1.4000000000000001
+      ],
+      "omega_o": [
+        4.0,
+        4.0,
+        6.0
+      ],
+      "style": "smooth",
+      "style_gain": 0.8,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 3.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.2000000000000002,
+        1.2000000000000002,
+        1.4000000000000001
+      ],
+      "omega_o": [
+        4.0,
+        4.0,
+        6.0
+      ],
+      "style": "smooth",
+      "style_gain": 0.8,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    }
+  ],
+  "runtime_spec_sha256": "762d5ca0e43f99ecf4bbbc35c6c0f1aa62cb2a77db7aadfd98939512bcca55e5",
+  "runtime_spec_type": "E4A_registered_physical_runtime_v1",
+  "safety_s": 1.0,
+  "seed": 990041,
+  "style": "smooth",
+  "trial_id": "ENG-E4A-FIXED-MJ-4UAV-v1",
+  "uav_ids": [
+    1,
+    2,
+    3,
+    4
+  ]
+}
