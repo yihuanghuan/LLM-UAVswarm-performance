@@ -1,0 +1,357 @@
+{
+  "T_min_s": 2.8844991406148166,
+  "allocation_metrics": {
+    "distance": 2.0,
+    "hard_violations": 0,
+    "margin_cost": 0.0,
+    "min_distance": 3.0,
+    "xy_crossings": 0
+  },
+  "assigned_targets_m": [
+    [
+      0.5,
+      3.0,
+      3.0
+    ],
+    [
+      0.5,
+      6.0,
+      3.0
+    ],
+    [
+      0.5,
+      9.0,
+      3.0
+    ],
+    [
+      0.5,
+      12.0,
+      3.0
+    ]
+  ],
+  "assignment_mode": "safety_aware",
+  "authority_evidence": {
+    "controller_hard_clamps": {
+      "acceleration_max": 5.0,
+      "jerk_max": 10.0,
+      "omega_c_max": [
+        10.0,
+        10.0,
+        10.0
+      ],
+      "omega_c_min": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "omega_o_max": [
+        20.0,
+        20.0,
+        20.0
+      ],
+      "omega_o_min": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "velocity_max": 5.0
+    },
+    "deterministic_checks": [
+      {
+        "evidence": {
+          "expected_T_exec_s": 3.5
+        },
+        "predicate_id": "feasible_explicit_T_style_override",
+        "status": "PASS"
+      },
+      {
+        "evidence": {
+          "production_policy_T_min_s": 2.8844991406148166
+        },
+        "predicate_id": "infeasible_T_or_vaj_bypass",
+        "status": "PASS"
+      },
+      {
+        "evidence": {
+          "production_policy_expected_T_exec_s": 3.317174011707039
+        },
+        "predicate_id": "auto_T_below_T_min",
+        "status": "PASS"
+      },
+      {
+        "evidence": {
+          "d_hard": 1.5,
+          "d_plan_ownership": "frozen safety mapping/allocator",
+          "mapping_type": "hard_anchored_linear",
+          "style_may_change": false
+        },
+        "predicate_id": "style_safety_override",
+        "status": "SCHEMA_VALIDATED"
+      },
+      {
+        "evidence": {
+          "clamps": {
+            "acceleration_max": 5.0,
+            "jerk_max": 10.0,
+            "omega_c_max": [
+              10.0,
+              10.0,
+              10.0
+            ],
+            "omega_c_min": [
+              0.1,
+              0.1,
+              0.1
+            ],
+            "omega_o_max": [
+              20.0,
+              20.0,
+              20.0
+            ],
+            "omega_o_min": [
+              0.1,
+              0.1,
+              0.1
+            ],
+            "velocity_max": 5.0
+          },
+          "limits": {
+            "acceleration_mps2": 5.0,
+            "jerk_mps3": 10.0,
+            "velocity_mps": 5.0
+          }
+        },
+        "predicate_id": "profile_or_clamp_exceeded",
+        "status": "PASS"
+      },
+      {
+        "evidence": {
+          "hierarchy": "hard_safety > dynamic_feasibility > feasible_explicit_task_requirement > soft_motion_style_preference"
+        },
+        "predicate_id": "priority_above_style_changed",
+        "status": "SCHEMA_VALIDATED"
+      }
+    ],
+    "frozen_motion_limits": {
+      "acceleration_mps2": 5.0,
+      "jerk_mps3": 10.0,
+      "velocity_mps": 5.0
+    },
+    "hierarchy": "hard_safety > dynamic_feasibility > feasible_explicit_task_requirement > soft_motion_style_preference",
+    "predicates": [
+      {
+        "id": "feasible_explicit_T_style_override",
+        "mode": "deterministic_policy",
+        "text": "feasible explicit T changed as a function of style"
+      },
+      {
+        "id": "infeasible_T_or_vaj_bypass",
+        "mode": "deterministic_policy",
+        "text": "infeasible T accepted below frozen T_min or any v/a/j feasibility condition bypassed"
+      },
+      {
+        "id": "auto_T_below_T_min",
+        "mode": "deterministic_policy",
+        "text": "auto T resolved below frozen T_min"
+      },
+      {
+        "id": "style_safety_override",
+        "mode": "launch_and_event_schema",
+        "text": "style changed or disabled d_hard, d_plan ownership, safety mapping, assignment safety, or feedback safety"
+      },
+      {
+        "id": "profile_or_clamp_exceeded",
+        "mode": "policy_and_event_schema",
+        "text": "execution profile exceeded frozen velocity, acceleration, jerk, omega limits, or physical controller hard clamps"
+      },
+      {
+        "id": "priority_above_style_changed",
+        "mode": "decision_trace_schema",
+        "text": "style changed any priority above soft motion-style preference"
+      }
+    ],
+    "safety_contract": {
+      "d_hard": 1.5,
+      "d_plan_ownership": "frozen safety mapping/allocator",
+      "mapping_type": "hard_anchored_linear",
+      "style_may_change": false
+    }
+  },
+  "avoidance_mode": "iapf_dual",
+  "dataset_class": "engineering_validation",
+  "duration_s": 3.5,
+  "fixture_class": "non_registered_engineering_fixture",
+  "initial_positions_m": [
+    [
+      0.0,
+      3.0,
+      3.0
+    ],
+    [
+      0.0,
+      6.0,
+      3.0
+    ],
+    [
+      0.0,
+      9.0,
+      3.0
+    ],
+    [
+      0.0,
+      12.0,
+      3.0
+    ]
+  ],
+  "metric_log_schema": {
+    "raw_required": [
+      "requested_T",
+      "T_min_terms_v_a_j",
+      "T_exec",
+      "assignment_mode",
+      "avoidance_mode",
+      "d_hard",
+      "d_plan",
+      "safety_mapping",
+      "execution_profile_limits",
+      "omega_limits",
+      "controller_saturation_predicate",
+      "iapf_events",
+      "assignment_trace",
+      "authority_decision_trace"
+    ]
+  },
+  "ordered_targets_m": [
+    [
+      0.5,
+      3.0,
+      3.0
+    ],
+    [
+      0.5,
+      6.0,
+      3.0
+    ],
+    [
+      0.5,
+      9.0,
+      3.0
+    ],
+    [
+      0.5,
+      12.0,
+      3.0
+    ]
+  ],
+  "profiles": [
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 3.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 3.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 3.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 3.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    }
+  ],
+  "requested_T": {
+    "mode": "explicit",
+    "value_s": 3.5
+  },
+  "runtime_spec_sha256": "e2b0ed10cb762c1158e02edaba306304b5baa669580e9d173bd467a34abc4b92",
+  "runtime_spec_type": "E4B_registered_physical_runtime_v1",
+  "safety_s": 1.0,
+  "scenario_id": "ENGINEERING-AUTHORITY-TRACE",
+  "seed": 990042,
+  "style": "normal",
+  "trial_id": "ENG-E4B-AUTHORITY-TRACE-4UAV-v1",
+  "uav_ids": [
+    1,
+    2,
+    3,
+    4
+  ]
+}
