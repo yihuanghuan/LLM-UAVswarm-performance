@@ -1,0 +1,32 @@
+{
+  "checks": {
+    "controller_exists": true,
+    "formal_prefixes": true,
+    "formal_px4_exists": true,
+    "launch_exists": true,
+    "policy_hash": true
+  },
+  "formal_px4_binary": {
+    "path": "/home/yihuang/PX4-Autopilot-formal-v1/build/px4_sitl_default/bin/px4",
+    "sha256": "6e7a0a105cb30cb8e219d21398dbc20f76fd6d5a366b1f52ad29e6eb0fc2f0ac"
+  },
+  "installed_controller": {
+    "path": "/home/yihuang/learning/LLM_swarm_ws/formal_build_v1/ladrc_controller/ladrc_position_controller_node",
+    "sha256": "4efd098c79606d275228893feba1211f2c62a53cfe84e6878b96ea47e98986ea"
+  },
+  "installed_launch": {
+    "path": "/home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/launch/swarm_launch.py",
+    "sha256": "eebe0d26d7d6d9408078c99dd735c4076b36eb79f1ebc8d02be64af24d9782dd"
+  },
+  "installed_policy": {
+    "path": "/home/yihuang/learning/LLM_swarm_ws/formal_install_v1/lfs_policy/share/lfs_policy/config/lfs_policy.paper_current.yaml",
+    "sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858"
+  },
+  "manifest_type": "E5_runtime_provenance_v1",
+  "package_prefixes": {
+    "ladrc_controller": "/home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller",
+    "lfs_policy": "/home/yihuang/learning/LLM_swarm_ws/formal_install_v1/lfs_policy",
+    "uav_swarm_interfaces": "/home/yihuang/learning/LLM_swarm_ws/formal_install_v1/uav_swarm_interfaces"
+  },
+  "status": "PASS"
+}

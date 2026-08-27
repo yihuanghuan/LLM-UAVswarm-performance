@@ -1,0 +1,21 @@
+{
+  "attempt_status": "infrastructure_failure",
+  "candidate_gt_used_as_input": false,
+  "command_byte_identity": true,
+  "counts": {
+    "command_submission": 1,
+    "formal_command_retry": 0
+  },
+  "error": "CandidateParseError: Candidate parsing failed after 3 attempts: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': '\u5df2\u8fbe\u5230 Token Plan \u7528\u91cf\u4e0a\u9650\uff1a\u8bf7\u5347\u7ea7 Token Plan \u5957\u9910\u6216\u8d2d\u4e70\u79ef\u5206\u8865\u5145\u7528\u91cf\u3002 (2056)', 'http_code': '429'}, 'request_id': '06df57a7ff113a4d417ea97a07152d77'}",
+  "fresh_state_before_language_submission": true,
+  "latency_decomposition_s": {
+    "LLM_inference": 0.0,
+    "allocation": 0.0,
+    "dispatch": 0.0,
+    "parse_validation": 0.0,
+    "physical_execution": 0.0,
+    "resolution": 0.0,
+    "snapshot_wait": 0.8532873920048587
+  },
+  "mission_timeout_s": 35.0
+}

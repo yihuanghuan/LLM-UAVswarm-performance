@@ -1,0 +1,42 @@
+{
+  "experiment":"E5",
+  "adapter_branch":"formal/E5-formal-adapter-v1",
+  "adapter_commit":"84268d8b20c58b2c8d2ce1a1cb2b4bd5dec82433",
+  "adapter_entrypoint":"experiments_v2/Formal Evaluation Experiments/E5/tooling/e5_formal_adapter.py",
+  "adapter_source_sha256":"b241308659c544d8b5ae73b6f3d67c728e1164e1fe1101e3f53b52325d77cd4b",
+  "validated_contract_branch":"formal/E5-end-to-end-v1",
+  "validated_contract_commit":"016e5ee573a52a704f6a890e1177b4bab9d489cb",
+  "source_preflight_commit":"36dba68c6b16681ec98500b49c5a83095de4b634",
+  "baseline_tag":"paper-final-sim-v3",
+  "baseline_commit":"6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+  "policy_sha256":"6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+  "protocol_sha256":"116002154cd2395b6a9f55d7c1aae6e0a2c42440f0ceaa827a1a8cb02828319c",
+  "registry_sha256":"9bb6bc9b46b5211c50c8f2e29bd434235424beb2bb0fc36ec857a3298d89511e",
+  "global_trial_order_sha256":"db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+  "registered_attempt_count":25,
+  "spec_reconstruction_status":"PASS",
+  "live_engineering_smoke_status":"FAIL",
+  "live_engineering_smoke_run_id":"E5-formal-adapter-smoke-v1-20260827-r2",
+  "live_engineering_smoke_manifest_sha256":"cb2f7181dbebee105381765c30f3ee1f1dde5af555188d545683b4ff9c99dacc",
+  "live_smoke_partial_checks":{
+    "runtime_provenance":"PASS",
+    "eight_px4_armed_offboard_readiness":"PASS",
+    "frozen_fresh_state_before_language_submission":"PASS",
+    "real_frozen_llm_endpoint_invoked":"PASS",
+    "provider_response":"HTTP_429_TOKEN_PLAN_LIMIT_2056",
+    "candidate_created":false,
+    "execution_commands_dispatched":0
+  },
+  "formal_execution_capability_present":true,
+  "production_semantics_changed":false,
+  "sealed_artifacts_changed":false,
+  "accepted_formal_results_created":false,
+  "formal_global_cursor_consumed":false,
+  "validation_status":"BLOCKED",
+  "blockers":[{
+    "id":"E5-LIVE-LLM-PROVIDER-TOKEN-PLAN-LIMIT",
+    "stage":"frozen Candidate parser real engineering smoke",
+    "error":"HTTP 429 rate_limit_error: Token Plan usage limit reached (provider code 2056)",
+    "why_not_bypassed":"Changing model, provider, prompt, API identity, decoding, or frozen parser retry policy is prohibited. No Candidate or execution command was produced."
+  }]
+}
