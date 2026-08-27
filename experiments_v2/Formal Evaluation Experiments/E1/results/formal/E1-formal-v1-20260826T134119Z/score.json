@@ -1,0 +1,388 @@
+{
+  "score_type": "E1_offline_score_v1",
+  "scored_at_utc": "2026-08-27T00:49:15.793Z",
+  "dataset_class": "formal_evaluation",
+  "terminal_command_count": 120,
+  "all_attempt_count": 163,
+  "primary_metrics": {
+    "schema_valid_rate": {
+      "numerator": 96,
+      "denominator": 96,
+      "rate": 1.0
+    },
+    "semantic_field_accuracy": {
+      "aggregation": "arithmetic mean of U,F,c,r,T,m,s,q task-field accuracies and per-command mission-relation accuracy",
+      "rate": 1.0,
+      "per_field": {
+        "U": {
+          "correct": 120,
+          "denominator": 120,
+          "rate": 1.0
+        },
+        "F": {
+          "correct": 120,
+          "denominator": 120,
+          "rate": 1.0
+        },
+        "c": {
+          "correct": 120,
+          "denominator": 120,
+          "rate": 1.0
+        },
+        "r": {
+          "correct": 120,
+          "denominator": 120,
+          "rate": 1.0
+        },
+        "T": {
+          "correct": 120,
+          "denominator": 120,
+          "rate": 1.0
+        },
+        "m": {
+          "correct": 120,
+          "denominator": 120,
+          "rate": 1.0
+        },
+        "s": {
+          "correct": 120,
+          "denominator": 120,
+          "rate": 1.0
+        },
+        "q": {
+          "correct": 120,
+          "denominator": 120,
+          "rate": 1.0
+        },
+        "mission_relations": {
+          "correct": 96,
+          "denominator": 96,
+          "rate": 1.0
+        }
+      }
+    },
+    "exact_semantic_task_accuracy": {
+      "numerator": 96,
+      "denominator": 96,
+      "rate": 1.0
+    },
+    "invalid_rejection_rate": {
+      "numerator": 19,
+      "denominator": 24,
+      "rate": 0.7916666666666666,
+      "per_expected_class": {
+        "incomplete_instruction": {
+          "rejected": 4,
+          "total": 4,
+          "rate": 1.0
+        },
+        "contradictory_semantics": {
+          "rejected": 3,
+          "total": 4,
+          "rate": 0.75
+        },
+        "unavailable_uav_id": {
+          "rejected": 4,
+          "total": 4,
+          "rate": 1.0
+        },
+        "formation_semantic_violation": {
+          "rejected": 4,
+          "total": 4,
+          "rate": 1.0
+        },
+        "illegal_transition": {
+          "rejected": 0,
+          "total": 4,
+          "rate": 0.0
+        },
+        "unsupported_or_ambiguous_semantics": {
+          "rejected": 4,
+          "total": 4,
+          "rate": 1.0
+        }
+      }
+    },
+    "premature_numerical_commitment_rate": {
+      "numerator": 0,
+      "denominator": 225,
+      "rate": 0.0
+    },
+    "latency_ms": {
+      "provider_call_per_attempt": {
+        "count": 163,
+        "median": 17334.5197689996,
+        "p90": 35175.464563401336,
+        "p95": 39521.77000330231,
+        "p99": 85013.00847091942,
+        "sum": 3477799.132937003,
+        "percentile_method": "linear_interpolation_rank_(n-1)*p"
+      },
+      "total_to_terminal_per_command": {
+        "count": 120,
+        "median": 20962.5,
+        "p90": 57240.700000000004,
+        "p95": 72855.65,
+        "p99": 104153.35,
+        "sum": 3573259.0,
+        "percentile_method": "linear_interpolation_rank_(n-1)*p"
+      }
+    },
+    "provider_reported_tokens_per_attempt": {
+      "prompt_tokens": {
+        "count": 162,
+        "median": 1805.0,
+        "p90": 1846.0,
+        "p95": 1861.0,
+        "p99": 1862.3899999999999,
+        "sum": 292721.0,
+        "percentile_method": "linear_interpolation_rank_(n-1)*p",
+        "missing_attempts": 1
+      },
+      "completion_tokens": {
+        "count": 162,
+        "median": 997.5,
+        "p90": 1887.1000000000008,
+        "p95": 2337.3,
+        "p99": 2815.3099999999995,
+        "sum": 186268.0,
+        "percentile_method": "linear_interpolation_rank_(n-1)*p",
+        "missing_attempts": 1
+      },
+      "total_tokens": {
+        "count": 162,
+        "median": 2801.0,
+        "p90": 3689.1000000000004,
+        "p95": 4198.3,
+        "p99": 4617.57,
+        "sum": 478989.0,
+        "percentile_method": "linear_interpolation_rank_(n-1)*p",
+        "missing_attempts": 1
+      }
+    }
+  },
+  "secondary_diagnostics": {
+    "strict_json_format_compliance": {
+      "compliant": 0,
+      "returned_response_attempts": 162,
+      "rate": 0.0
+    },
+    "retry_count_distribution": {
+      "0": 96,
+      "2": 19,
+      "1": 5
+    },
+    "rejection_class_confusion_matrix": {
+      "incomplete_instruction": {
+        "rejected": 4
+      },
+      "contradictory_semantics": {
+        "rejected": 3,
+        "not_rejected": 1
+      },
+      "unavailable_uav_id": {
+        "rejected": 4
+      },
+      "formation_semantic_violation": {
+        "rejected": 4
+      },
+      "illegal_transition": {
+        "not_rejected": 4
+      },
+      "unsupported_or_ambiguous_semantics": {
+        "rejected": 4
+      }
+    },
+    "exact_accuracy_by_registered_category": {
+      "center": {
+        "absolute": {
+          "exact": 24,
+          "total": 24,
+          "rate": 1.0
+        },
+        "relative": {
+          "exact": 24,
+          "total": 24,
+          "rate": 1.0
+        },
+        "auto": {
+          "exact": 24,
+          "total": 24,
+          "rate": 1.0
+        },
+        "mixed": {
+          "exact": 24,
+          "total": 24,
+          "rate": 1.0
+        }
+      },
+      "scale": {
+        "explicit": {
+          "exact": 15,
+          "total": 15,
+          "rate": 1.0
+        },
+        "compact": {
+          "exact": 15,
+          "total": 15,
+          "rate": 1.0
+        },
+        "normal": {
+          "exact": 14,
+          "total": 14,
+          "rate": 1.0
+        },
+        "spacious": {
+          "exact": 14,
+          "total": 14,
+          "rate": 1.0
+        },
+        "auto": {
+          "exact": 14,
+          "total": 14,
+          "rate": 1.0
+        },
+        "mixed": {
+          "exact": 24,
+          "total": 24,
+          "rate": 1.0
+        }
+      },
+      "timing": {
+        "explicit": {
+          "exact": 36,
+          "total": 36,
+          "rate": 1.0
+        },
+        "auto": {
+          "exact": 36,
+          "total": 36,
+          "rate": 1.0
+        },
+        "mixed": {
+          "exact": 24,
+          "total": 24,
+          "rate": 1.0
+        }
+      },
+      "motion_style": {
+        "smooth": {
+          "exact": 24,
+          "total": 24,
+          "rate": 1.0
+        },
+        "normal": {
+          "exact": 24,
+          "total": 24,
+          "rate": 1.0
+        },
+        "aggressive": {
+          "exact": 24,
+          "total": 24,
+          "rate": 1.0
+        },
+        "mixed": {
+          "exact": 24,
+          "total": 24,
+          "rate": 1.0
+        }
+      },
+      "safety": {
+        "numeric": {
+          "exact": 54,
+          "total": 54,
+          "rate": 1.0
+        },
+        "qualitative_safer": {
+          "exact": 18,
+          "total": 18,
+          "rate": 1.0
+        },
+        "mixed": {
+          "exact": 24,
+          "total": 24,
+          "rate": 1.0
+        }
+      },
+      "transition": {
+        "direct": {
+          "exact": 60,
+          "total": 60,
+          "rate": 1.0
+        },
+        "hover-and-wait": {
+          "exact": 24,
+          "total": 24,
+          "rate": 1.0
+        },
+        "continuous": {
+          "exact": 12,
+          "total": 12,
+          "rate": 1.0
+        }
+      },
+      "mission_structure": {
+        "single": {
+          "exact": 72,
+          "total": 72,
+          "rate": 1.0
+        },
+        "sequential": {
+          "exact": 12,
+          "total": 12,
+          "rate": 1.0
+        },
+        "parallel": {
+          "exact": 12,
+          "total": 12,
+          "rate": 1.0
+        }
+      },
+      "formation": {
+        "Circle": {
+          "exact": 12,
+          "total": 12,
+          "rate": 1.0
+        },
+        "Line": {
+          "exact": 12,
+          "total": 12,
+          "rate": 1.0
+        },
+        "Sphere": {
+          "exact": 12,
+          "total": 12,
+          "rate": 1.0
+        },
+        "Triangle": {
+          "exact": 12,
+          "total": 12,
+          "rate": 1.0
+        },
+        "Polygon": {
+          "exact": 24,
+          "total": 24,
+          "rate": 1.0
+        },
+        "mixed": {
+          "exact": 24,
+          "total": 24,
+          "rate": 1.0
+        }
+      },
+      "parallel_completion": {
+        "independent": {
+          "exact": 6,
+          "total": 6,
+          "rate": 1.0
+        },
+        "synchronized": {
+          "exact": 6,
+          "total": 6,
+          "rate": 1.0
+        }
+      }
+    },
+    "normalization_errors": []
+  }
+}

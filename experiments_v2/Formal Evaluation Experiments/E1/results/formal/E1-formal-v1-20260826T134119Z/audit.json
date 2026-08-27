@@ -1,0 +1,1106 @@
+{
+  "audit_type": "E1_post_run_completeness_audit_v1",
+  "audited_at_utc": "2026-08-27T00:48:57.580Z",
+  "run_dir": "/home/yihuang/learning/LLM_swarm_ws/formal_E1_candidate_semantics_v1/experiments_v2/Formal Evaluation Experiments/E1/results/formal/E1-formal-v1-20260826T134119Z",
+  "status": "PASS",
+  "eligible_for_formal_scoring": true,
+  "accepted_formal_result_created_by_auditor": false,
+  "checks": [
+    {
+      "name": "append_only_hash_chain",
+      "status": "PASS",
+      "evidence": {
+        "event_count": 610,
+        "chain_head_sha256": "e29e1f0b37dd0f84a0e9072e1285a79ca45e6d773797e5c80edfaaecfcc4e566",
+        "sequence_is_contiguous": true
+      }
+    },
+    {
+      "name": "sealed_dataset_denominators",
+      "status": "PASS",
+      "evidence": {
+        "commands": 120,
+        "expected_valid": 96,
+        "expected_invalid": 24
+      }
+    },
+    {
+      "name": "exact_terminal_command_set",
+      "status": "PASS",
+      "evidence": {
+        "terminal_count": 120,
+        "unique_terminal_count": 120
+      }
+    },
+    {
+      "name": "registered_inference_order",
+      "status": "PASS",
+      "evidence": {
+        "observed": [
+          "E1-0046",
+          "E1-0044",
+          "E1-0036",
+          "E1-0007",
+          "E1-0013",
+          "E1-0022",
+          "E1-0109",
+          "E1-0094",
+          "E1-0097",
+          "E1-0099",
+          "E1-0085",
+          "E1-0003",
+          "E1-0025",
+          "E1-0089",
+          "E1-0111",
+          "E1-0056",
+          "E1-0004",
+          "E1-0043",
+          "E1-0103",
+          "E1-0116",
+          "E1-0106",
+          "E1-0072",
+          "E1-0021",
+          "E1-0071",
+          "E1-0057",
+          "E1-0113",
+          "E1-0053",
+          "E1-0050",
+          "E1-0018",
+          "E1-0032",
+          "E1-0058",
+          "E1-0001",
+          "E1-0112",
+          "E1-0039",
+          "E1-0118",
+          "E1-0055",
+          "E1-0002",
+          "E1-0096",
+          "E1-0095",
+          "E1-0074",
+          "E1-0120",
+          "E1-0024",
+          "E1-0009",
+          "E1-0042",
+          "E1-0102",
+          "E1-0041",
+          "E1-0080",
+          "E1-0026",
+          "E1-0047",
+          "E1-0083",
+          "E1-0093",
+          "E1-0114",
+          "E1-0065",
+          "E1-0110",
+          "E1-0054",
+          "E1-0029",
+          "E1-0087",
+          "E1-0091",
+          "E1-0049",
+          "E1-0062",
+          "E1-0101",
+          "E1-0011",
+          "E1-0067",
+          "E1-0034",
+          "E1-0105",
+          "E1-0048",
+          "E1-0060",
+          "E1-0088",
+          "E1-0086",
+          "E1-0045",
+          "E1-0038",
+          "E1-0098",
+          "E1-0076",
+          "E1-0108",
+          "E1-0037",
+          "E1-0090",
+          "E1-0104",
+          "E1-0033",
+          "E1-0068",
+          "E1-0075",
+          "E1-0031",
+          "E1-0082",
+          "E1-0008",
+          "E1-0070",
+          "E1-0035",
+          "E1-0079",
+          "E1-0092",
+          "E1-0064",
+          "E1-0059",
+          "E1-0119",
+          "E1-0084",
+          "E1-0100",
+          "E1-0030",
+          "E1-0063",
+          "E1-0052",
+          "E1-0073",
+          "E1-0005",
+          "E1-0019",
+          "E1-0012",
+          "E1-0016",
+          "E1-0028",
+          "E1-0117",
+          "E1-0077",
+          "E1-0014",
+          "E1-0023",
+          "E1-0115",
+          "E1-0051",
+          "E1-0015",
+          "E1-0017",
+          "E1-0027",
+          "E1-0066",
+          "E1-0020",
+          "E1-0040",
+          "E1-0081",
+          "E1-0010",
+          "E1-0107",
+          "E1-0006",
+          "E1-0078",
+          "E1-0069",
+          "E1-0061"
+        ],
+        "expected": [
+          "E1-0046",
+          "E1-0044",
+          "E1-0036",
+          "E1-0007",
+          "E1-0013",
+          "E1-0022",
+          "E1-0109",
+          "E1-0094",
+          "E1-0097",
+          "E1-0099",
+          "E1-0085",
+          "E1-0003",
+          "E1-0025",
+          "E1-0089",
+          "E1-0111",
+          "E1-0056",
+          "E1-0004",
+          "E1-0043",
+          "E1-0103",
+          "E1-0116",
+          "E1-0106",
+          "E1-0072",
+          "E1-0021",
+          "E1-0071",
+          "E1-0057",
+          "E1-0113",
+          "E1-0053",
+          "E1-0050",
+          "E1-0018",
+          "E1-0032",
+          "E1-0058",
+          "E1-0001",
+          "E1-0112",
+          "E1-0039",
+          "E1-0118",
+          "E1-0055",
+          "E1-0002",
+          "E1-0096",
+          "E1-0095",
+          "E1-0074",
+          "E1-0120",
+          "E1-0024",
+          "E1-0009",
+          "E1-0042",
+          "E1-0102",
+          "E1-0041",
+          "E1-0080",
+          "E1-0026",
+          "E1-0047",
+          "E1-0083",
+          "E1-0093",
+          "E1-0114",
+          "E1-0065",
+          "E1-0110",
+          "E1-0054",
+          "E1-0029",
+          "E1-0087",
+          "E1-0091",
+          "E1-0049",
+          "E1-0062",
+          "E1-0101",
+          "E1-0011",
+          "E1-0067",
+          "E1-0034",
+          "E1-0105",
+          "E1-0048",
+          "E1-0060",
+          "E1-0088",
+          "E1-0086",
+          "E1-0045",
+          "E1-0038",
+          "E1-0098",
+          "E1-0076",
+          "E1-0108",
+          "E1-0037",
+          "E1-0090",
+          "E1-0104",
+          "E1-0033",
+          "E1-0068",
+          "E1-0075",
+          "E1-0031",
+          "E1-0082",
+          "E1-0008",
+          "E1-0070",
+          "E1-0035",
+          "E1-0079",
+          "E1-0092",
+          "E1-0064",
+          "E1-0059",
+          "E1-0119",
+          "E1-0084",
+          "E1-0100",
+          "E1-0030",
+          "E1-0063",
+          "E1-0052",
+          "E1-0073",
+          "E1-0005",
+          "E1-0019",
+          "E1-0012",
+          "E1-0016",
+          "E1-0028",
+          "E1-0117",
+          "E1-0077",
+          "E1-0014",
+          "E1-0023",
+          "E1-0115",
+          "E1-0051",
+          "E1-0015",
+          "E1-0017",
+          "E1-0027",
+          "E1-0066",
+          "E1-0020",
+          "E1-0040",
+          "E1-0081",
+          "E1-0010",
+          "E1-0107",
+          "E1-0006",
+          "E1-0078",
+          "E1-0069",
+          "E1-0061"
+        ]
+      }
+    },
+    {
+      "name": "every_attempt_retained",
+      "status": "PASS",
+      "evidence": {
+        "attempt_count": 163,
+        "all_have_start_provider_result_and_completion": true
+      }
+    },
+    {
+      "name": "retry_accounting",
+      "status": "PASS",
+      "evidence": {
+        "E1-0046": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0044": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0036": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0007": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0013": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0022": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0109": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0094": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0097": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0099": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0085": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0003": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0025": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0089": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0111": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0056": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0004": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0043": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0103": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0116": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0106": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0072": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0021": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0071": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0057": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0113": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0053": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0050": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0018": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0032": {
+          "attempts": 2,
+          "outcome": "accepted"
+        },
+        "E1-0058": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0001": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0112": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0039": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0118": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0055": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0002": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0096": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0095": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0074": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0120": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0024": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0009": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0042": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0102": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0041": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0080": {
+          "attempts": 2,
+          "outcome": "accepted"
+        },
+        "E1-0026": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0047": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0083": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0093": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0114": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0065": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0110": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0054": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0029": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0087": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0091": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0049": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0062": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0101": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0011": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0067": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0034": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0105": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0048": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0060": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0088": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0086": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0045": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0038": {
+          "attempts": 2,
+          "outcome": "accepted"
+        },
+        "E1-0098": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0076": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0108": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0037": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0090": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0104": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0033": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0068": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0075": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0031": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0082": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0008": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0070": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0035": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0079": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0092": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0064": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0059": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0119": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0084": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0100": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0030": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0063": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0052": {
+          "attempts": 2,
+          "outcome": "accepted"
+        },
+        "E1-0073": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0005": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0019": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0012": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0016": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0028": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0117": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0077": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0014": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0023": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0115": {
+          "attempts": 2,
+          "outcome": "accepted"
+        },
+        "E1-0051": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0015": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0017": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0027": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0066": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0020": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0040": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0081": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0010": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0107": {
+          "attempts": 3,
+          "outcome": "rejected"
+        },
+        "E1-0006": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0078": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0069": {
+          "attempts": 1,
+          "outcome": "accepted"
+        },
+        "E1-0061": {
+          "attempts": 1,
+          "outcome": "accepted"
+        }
+      }
+    },
+    {
+      "name": "infrastructure_failures_retained_and_accounted",
+      "status": "PASS",
+      "evidence": {
+        "count": 0,
+        "command_denominator_contribution": 0,
+        "all_attempt_denominator_contribution": 0,
+        "commands": {},
+        "excluded_from_eligibility": false
+      }
+    },
+    {
+      "name": "complete_recorded_provenance",
+      "status": "PASS",
+      "evidence": {
+        "run_mode": "real_provider",
+        "dataset_class": "formal_evaluation",
+        "recorded_check_names": [
+          "active_client_environment_lock",
+          "approved_e1_assets_byte_identical",
+          "branch_descends_from_runtime_baseline",
+          "canonical_policy_sha256",
+          "clean_worktree",
+          "e1_branch_change_scope",
+          "frozen_model_decoding_and_retry_configuration",
+          "frozen_prompt_and_few_shot_hashes",
+          "frozen_schema_parser_and_loader_hashes",
+          "human_approved_final_preflight_gate",
+          "immutable_baseline_tag_and_commit",
+          "production_runtime_tree_unchanged",
+          "real_provider_credential_present",
+          "sealed_client_environment_lock_hashes",
+          "sealed_dataset",
+          "sealed_inference_permutation",
+          "source_final_preflight_commit"
+        ],
+        "pre_audit_result_status": "pending_post_run_completeness_audit"
+      }
+    },
+    {
+      "name": "frozen_artifacts_unchanged_post_run",
+      "status": "PASS",
+      "evidence": {
+        "report_type": "E1_pre_run_provenance_validation_v1",
+        "validated_at_utc": "2026-08-27T00:48:57.580Z",
+        "source_final_preflight_commit": "36dba68c6b16681ec98500b49c5a83095de4b634",
+        "runtime_baseline_tag": "paper-final-sim-v3",
+        "runtime_baseline_commit": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+        "repo_root": "/home/yihuang/learning/LLM_swarm_ws/formal_E1_candidate_semantics_v1",
+        "status": "PASS",
+        "checks": [
+          {
+            "name": "immutable_baseline_tag_and_commit",
+            "status": "PASS",
+            "evidence": {
+              "tag_type": "tag",
+              "resolved_commit": "6cf402debf23851b1eff3edc6f3ab49eae7127c4"
+            }
+          },
+          {
+            "name": "branch_descends_from_runtime_baseline",
+            "status": "PASS",
+            "evidence": {
+              "head": "779b725fe7b335553511c90f98138b12f2c8269b"
+            }
+          },
+          {
+            "name": "source_final_preflight_commit",
+            "status": "PASS",
+            "evidence": {
+              "commit": "36dba68c6b16681ec98500b49c5a83095de4b634",
+              "object_type": "commit"
+            }
+          },
+          {
+            "name": "approved_e1_assets_byte_identical",
+            "status": "PASS",
+            "evidence": {
+              "experiments_v2/Formal Evaluation Experiments/README.md": {
+                "sha256": "d4b0090b0fe8a9d5c6c7e9cb649d2f8def9ceb1ffd1ddd4ec150e1c5bbbfddf2",
+                "approved_sha256": "d4b0090b0fe8a9d5c6c7e9cb649d2f8def9ceb1ffd1ddd4ec150e1c5bbbfddf2",
+                "byte_identical": true
+              },
+              "experiments_v2/Formal Evaluation Experiments/formal_preflight_v1.yaml": {
+                "sha256": "c9eb9752000d5023f2986ae13f5bf062db20064f29e04f679e92e58a85a1c5a5",
+                "approved_sha256": "c9eb9752000d5023f2986ae13f5bf062db20064f29e04f679e92e58a85a1c5a5",
+                "byte_identical": true
+              },
+              "experiments_v2/Formal Evaluation Experiments/llm_runtime_manifest_v1.yaml": {
+                "sha256": "2760697ad2230e335f7955f67b2cac2f4b6d44487743ef760ac6754cb12a3a14",
+                "approved_sha256": "2760697ad2230e335f7955f67b2cac2f4b6d44487743ef760ac6754cb12a3a14",
+                "byte_identical": true
+              },
+              "experiments_v2/Formal Evaluation Experiments/E1/e1_candidate_semantic_dataset_v1.jsonl": {
+                "sha256": "6929f47d125831df2493e72d6c0bb4f68ca32c9f822a96319ba7f40fbee03d9e",
+                "approved_sha256": "6929f47d125831df2493e72d6c0bb4f68ca32c9f822a96319ba7f40fbee03d9e",
+                "byte_identical": true
+              },
+              "experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.sha256": {
+                "sha256": "ddd3c2180eefb975681d12589b1796a71dfdd3cb266749683ea9040a30b581c2",
+                "approved_sha256": "ddd3c2180eefb975681d12589b1796a71dfdd3cb266749683ea9040a30b581c2",
+                "byte_identical": true
+              },
+              "experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.txt": {
+                "sha256": "bcf94474093afed3bbdebef98a5d46640574c2e874594aef8b438037b3dacc41",
+                "approved_sha256": "bcf94474093afed3bbdebef98a5d46640574c2e874594aef8b438037b3dacc41",
+                "byte_identical": true
+              },
+              "experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.yaml": {
+                "sha256": "162d503987b2c155ee9e3bd27951adc3d9a181ce5ebf42a0846c7a411d99313b",
+                "approved_sha256": "162d503987b2c155ee9e3bd27951adc3d9a181ce5ebf42a0846c7a411d99313b",
+                "byte_identical": true
+              },
+              "experiments_v2/Formal Evaluation Experiments/E1/e1_dataset_registry_v1.yaml": {
+                "sha256": "1b579c87d6744ce07ceeafe5fe3f4ff40015791725792ac4ee0a9a5c9fb85bb6",
+                "approved_sha256": "1b579c87d6744ce07ceeafe5fe3f4ff40015791725792ac4ee0a9a5c9fb85bb6",
+                "byte_identical": true
+              },
+              "experiments_v2/Formal Evaluation Experiments/E1/e1_inference_order_v1.yaml": {
+                "sha256": "a923e3b6fa73c7dc9a5524bd24aacfce80305d302cfcf982047b42a8c6adf0ef",
+                "approved_sha256": "a923e3b6fa73c7dc9a5524bd24aacfce80305d302cfcf982047b42a8c6adf0ef",
+                "byte_identical": true
+              },
+              "experiments_v2/Formal Evaluation Experiments/E1/e1_protocol_v1.yaml": {
+                "sha256": "ca3d3f766c52c205c16e5df76ac620ca4c49de3b438176c99e5b656ffe879822",
+                "approved_sha256": "ca3d3f766c52c205c16e5df76ac620ca4c49de3b438176c99e5b656ffe879822",
+                "byte_identical": true
+              }
+            }
+          },
+          {
+            "name": "human_approved_final_preflight_gate",
+            "status": "PASS",
+            "evidence": {
+              "status": "SEALED",
+              "execution_allowed": true,
+              "approval": "APPROVED"
+            }
+          },
+          {
+            "name": "canonical_policy_sha256",
+            "status": "PASS",
+            "evidence": {
+              "path": "lfs_policy/config/lfs_policy.paper_current.yaml",
+              "sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858"
+            }
+          },
+          {
+            "name": "sealed_dataset",
+            "status": "PASS",
+            "evidence": {
+              "sha256": "6929f47d125831df2493e72d6c0bb4f68ca32c9f822a96319ba7f40fbee03d9e",
+              "commands": 120,
+              "valid": 96,
+              "invalid": 24
+            }
+          },
+          {
+            "name": "sealed_inference_permutation",
+            "status": "PASS",
+            "evidence": {
+              "sha256": "9f1eed1cdbba6335ae6f77ed6c8d49964cd009973870bea1080dcd08050b61b4",
+              "command_count": 120
+            }
+          },
+          {
+            "name": "frozen_prompt_and_few_shot_hashes",
+            "status": "PASS",
+            "evidence": {
+              "system_prompt_sha256": "ed9e83e971d05f034065f82298599463d9d3e20f6b79e508f68233da79b0c4da",
+              "few_shot_sha256": "385ab2d0d99bc51c3862c289e28a9a95fa0bd5df1436b68bd0ebf30bb5a83958",
+              "combined_prompt_sha256": "0327c1364145df3b5c990eef3328ee176b12bf496f4a81f7232ce99fb8e4dd91"
+            }
+          },
+          {
+            "name": "frozen_schema_parser_and_loader_hashes",
+            "status": "PASS",
+            "evidence": {
+              "candidate_schema_sha256": "be6063a533f05b8d0b6e87353a40fb294975261fa1514cd5d34ced19ce2bffe7",
+              "candidate_parser_sha256": "f3be633ba9f7f13cd9acb5fbcd3425e88aa1d951a8fb16f333fa104b967f6fd5",
+              "prompt_loader_sha256": "73932f89b1c99d7a09010c5c85caf69a5c20a705648f1405ee9f2d85246b3534"
+            }
+          },
+          {
+            "name": "sealed_client_environment_lock_hashes",
+            "status": "PASS",
+            "evidence": {
+              "experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.txt": "bcf94474093afed3bbdebef98a5d46640574c2e874594aef8b438037b3dacc41",
+              "experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.yaml": "162d503987b2c155ee9e3bd27951adc3d9a181ce5ebf42a0846c7a411d99313b"
+            }
+          },
+          {
+            "name": "active_client_environment_lock",
+            "status": "PASS",
+            "evidence": {
+              "python_version": "3.10.12",
+              "pip_version": "22.0.2",
+              "sys_prefix": "/home/yihuang/learning/LLM_swarm_ws/llm_env",
+              "packages": {
+                "openai": "2.34.0",
+                "httpx": "0.28.1",
+                "httpcore": "1.0.9",
+                "anyio": "4.13.0",
+                "pydantic": "2.13.3",
+                "jiter": "0.14.0",
+                "jsonschema": "4.26.0",
+                "jsonschema-specifications": "2025.9.1",
+                "referencing": "0.37.0",
+                "rpds-py": "0.30.0",
+                "PyYAML": "6.0.3"
+              },
+              "complete_pip_freeze_matches": true
+            }
+          },
+          {
+            "name": "real_provider_credential_present",
+            "status": "PASS",
+            "evidence": {
+              "variable_name": "LLM_API_KEY",
+              "present": true,
+              "secret_value_read_or_recorded": false
+            }
+          },
+          {
+            "name": "frozen_model_decoding_and_retry_configuration",
+            "status": "PASS",
+            "evidence": {
+              "parser_path": "/home/yihuang/learning/LLM_swarm_ws/formal_E1_candidate_semantics_v1/location_allocate/location_allocate/paper_candidate_parser.py",
+              "model": "MiniMax-M2.7-highspeed",
+              "base_url": "https://api.minimax.chat/v1",
+              "temperature": 0.0,
+              "top_p": 0.01,
+              "max_tokens": 4000,
+              "response_format": {
+                "type": "json_object"
+              },
+              "maximum_attempts": 3
+            }
+          },
+          {
+            "name": "production_runtime_tree_unchanged",
+            "status": "PASS",
+            "evidence": {
+              "changed_from_baseline": [
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_candidate_semantic_dataset_v1.jsonl",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.sha256",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.txt",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_dataset_registry_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_inference_order_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_protocol_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_tooling_provenance_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/E1/results/formal/.gitignore",
+                "experiments_v2/Formal Evaluation Experiments/E1/results/synthetic-validation/.gitignore",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/.gitignore",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/README.md",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/e1_audit.py",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/e1_common.py",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/e1_journal.py",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/e1_provenance.py",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/e1_run_state.py",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/e1_runner.py",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/e1_scorer.py",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/test_e1_tooling.py",
+                "experiments_v2/Formal Evaluation Experiments/README.md",
+                "experiments_v2/Formal Evaluation Experiments/formal_preflight_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/llm_runtime_manifest_v1.yaml"
+              ],
+              "allowed_prefix": "experiments_v2/Formal Evaluation Experiments/"
+            }
+          },
+          {
+            "name": "e1_branch_change_scope",
+            "status": "PASS",
+            "evidence": {
+              "changed_from_baseline": [
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_candidate_semantic_dataset_v1.jsonl",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.sha256",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.txt",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_dataset_registry_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_inference_order_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_protocol_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_tooling_provenance_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/E1/results/formal/.gitignore",
+                "experiments_v2/Formal Evaluation Experiments/E1/results/synthetic-validation/.gitignore",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/.gitignore",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/README.md",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/e1_audit.py",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/e1_common.py",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/e1_journal.py",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/e1_provenance.py",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/e1_run_state.py",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/e1_runner.py",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/e1_scorer.py",
+                "experiments_v2/Formal Evaluation Experiments/E1/tooling/test_e1_tooling.py",
+                "experiments_v2/Formal Evaluation Experiments/README.md",
+                "experiments_v2/Formal Evaluation Experiments/formal_preflight_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/llm_runtime_manifest_v1.yaml"
+              ],
+              "sealed_source_paths": [
+                "experiments_v2/Formal Evaluation Experiments/README.md",
+                "experiments_v2/Formal Evaluation Experiments/formal_preflight_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/llm_runtime_manifest_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_candidate_semantic_dataset_v1.jsonl",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.sha256",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.txt",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_client_environment_lock_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_dataset_registry_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_inference_order_v1.yaml",
+                "experiments_v2/Formal Evaluation Experiments/E1/e1_protocol_v1.yaml"
+              ],
+              "tooling_prefix": "experiments_v2/Formal Evaluation Experiments/E1/tooling/"
+            }
+          },
+          {
+            "name": "clean_worktree",
+            "status": "PASS",
+            "evidence": {
+              "dirty": false,
+              "entries": []
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
