@@ -1,0 +1,291 @@
+{
+  "accepted_formal_result": false,
+  "artifact_hashes": {
+    "E2_protocol_sha256": "9ea7234db111b69cccb72315eed26e4abf117955eb20a2d593f2d854ea0b40e3",
+    "E2_registry_sha256": "8215a5d8248c946c480ca4c8cb41e2afac28e6021c9f308a068580da69369bae",
+    "global_registry_sha256": "90313d33793940489edde631d397564378ae54fe3cfddf438e4a895d6132254d",
+    "simulation_trial_order_sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+    "simulation_trial_order_yaml_sha256": "6674b6c2e03278e99590c6d3c9df7ada580180b92f24475a42d396972451b254",
+    "wrapper_sha256": "0cc9416d7467930adb8440c800ac067b6ff75e3841545b154bb8cf472e5a205b"
+  },
+  "baseline_commit": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+  "baseline_tag": "paper-final-sim-v3",
+  "canonical_policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+  "checks": [
+    {
+      "evidence": {
+        "branch": "formal/E2-commitment-timing-v1",
+        "head": "59384ecd6d9f3afaa126783a13b9d5f788f93714",
+        "source_commit": "36dba68c6b16681ec98500b49c5a83095de4b634"
+      },
+      "name": "authoritative_preflight_ancestry_and_branch",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "commit": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+        "tag": "paper-final-sim-v3",
+        "tag_type": "tag"
+      },
+      "name": "frozen_baseline_tag_and_commit",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "baseline_is_ancestor": true,
+        "object_type": "commit"
+      },
+      "name": "authoritative_preflight_commit_available",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "experiments_v2/Formal Evaluation Experiments/E2/e2_scenario_registry_v1.yaml": {
+          "approved_sha256": "8215a5d8248c946c480ca4c8cb41e2afac28e6021c9f308a068580da69369bae",
+          "byte_identical": true,
+          "sha256": "8215a5d8248c946c480ca4c8cb41e2afac28e6021c9f308a068580da69369bae"
+        },
+        "experiments_v2/Formal Evaluation Experiments/e2_e5_scenario_seed_registry_v1.yaml": {
+          "approved_sha256": "90313d33793940489edde631d397564378ae54fe3cfddf438e4a895d6132254d",
+          "byte_identical": true,
+          "sha256": "90313d33793940489edde631d397564378ae54fe3cfddf438e4a895d6132254d"
+        },
+        "experiments_v2/Formal Evaluation Experiments/formal_preflight_v1.yaml": {
+          "approved_sha256": "c9eb9752000d5023f2986ae13f5bf062db20064f29e04f679e92e58a85a1c5a5",
+          "byte_identical": true,
+          "sha256": "c9eb9752000d5023f2986ae13f5bf062db20064f29e04f679e92e58a85a1c5a5"
+        },
+        "experiments_v2/Formal Evaluation Experiments/harness/e2_commitment_wrapper.py": {
+          "approved_sha256": "0cc9416d7467930adb8440c800ac067b6ff75e3841545b154bb8cf472e5a205b",
+          "byte_identical": true,
+          "sha256": "0cc9416d7467930adb8440c800ac067b6ff75e3841545b154bb8cf472e5a205b"
+        },
+        "experiments_v2/Formal Evaluation Experiments/harness/test_e2_commitment_wrapper.py": {
+          "approved_sha256": "2459c1881b70846c98fbc23898bb234eb7024a1242fea4fa5f5bb668cdafd2b3",
+          "byte_identical": true,
+          "sha256": "2459c1881b70846c98fbc23898bb234eb7024a1242fea4fa5f5bb668cdafd2b3"
+        },
+        "experiments_v2/Formal Evaluation Experiments/protocols/E2_protocol_v1.yaml": {
+          "approved_sha256": "9ea7234db111b69cccb72315eed26e4abf117955eb20a2d593f2d854ea0b40e3",
+          "byte_identical": true,
+          "sha256": "9ea7234db111b69cccb72315eed26e4abf117955eb20a2d593f2d854ea0b40e3"
+        },
+        "experiments_v2/Formal Evaluation Experiments/simulation_trial_order_v1.txt": {
+          "approved_sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+          "byte_identical": true,
+          "sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce"
+        },
+        "experiments_v2/Formal Evaluation Experiments/simulation_trial_order_v1.yaml": {
+          "approved_sha256": "6674b6c2e03278e99590c6d3c9df7ada580180b92f24475a42d396972451b254",
+          "byte_identical": true,
+          "sha256": "6674b6c2e03278e99590c6d3c9df7ada580180b92f24475a42d396972451b254"
+        },
+        "lfs_policy/config/lfs_policy.paper_current.yaml": {
+          "approved_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+          "byte_identical": true,
+          "sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858"
+        }
+      },
+      "name": "sealed_protocol_inputs_byte_identical",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "lfs_policy/lfs_policy/__init__.py": {
+          "approved_sha256": "758361f7c27205534b5017e853ec993c9031985e3256d2498023e02dbdd64a93",
+          "byte_identical": true,
+          "sha256": "758361f7c27205534b5017e853ec993c9031985e3256d2498023e02dbdd64a93"
+        },
+        "lfs_policy/lfs_policy/loader.py": {
+          "approved_sha256": "1485454db4a18c662907e9f7f2cc8797cb89ebc2dd48424b2da18b3f62c1a4d7",
+          "byte_identical": true,
+          "sha256": "1485454db4a18c662907e9f7f2cc8797cb89ebc2dd48424b2da18b3f62c1a4d7"
+        },
+        "location_allocate/location_allocate/execution_profile_compiler.py": {
+          "approved_sha256": "e925a364c01a7d02deca3c4605d3bca08dcc58a683cf5c82dd77f900b54c9925",
+          "byte_identical": true,
+          "sha256": "e925a364c01a7d02deca3c4605d3bca08dcc58a683cf5c82dd77f900b54c9925"
+        },
+        "location_allocate/location_allocate/formation_geometry.py": {
+          "approved_sha256": "4312014bbb4fbd988a218a2f68e5d54fff895eaeab60c2a0a11f2564f7c06912",
+          "byte_identical": true,
+          "sha256": "4312014bbb4fbd988a218a2f68e5d54fff895eaeab60c2a0a11f2564f7c06912"
+        },
+        "location_allocate/location_allocate/late_resolution.py": {
+          "approved_sha256": "702958a12fa8e4c3e5d99e3978fee86700b553962a5cc8aeb23cec4cf3d18e66",
+          "byte_identical": true,
+          "sha256": "702958a12fa8e4c3e5d99e3978fee86700b553962a5cc8aeb23cec4cf3d18e66"
+        },
+        "location_allocate/location_allocate/lfs_resolver.py": {
+          "approved_sha256": "b03fb205ffd189c8b3d9fb1314ace910fca48385936bc24c9a1d4d5fa0b5aac9",
+          "byte_identical": true,
+          "sha256": "b03fb205ffd189c8b3d9fb1314ace910fca48385936bc24c9a1d4d5fa0b5aac9"
+        },
+        "location_allocate/location_allocate/lfs_types.py": {
+          "approved_sha256": "7108dc5a88b3b3bcf1f278040dc661027c182a4de3415aa1ac646f097014d232",
+          "byte_identical": true,
+          "sha256": "7108dc5a88b3b3bcf1f278040dc661027c182a4de3415aa1ac646f097014d232"
+        },
+        "location_allocate/location_allocate/motion_limits.py": {
+          "approved_sha256": "9cfd4c56c2990a6c9023d1c1847895c797bca30eabf9a4444592558b5152f6cb",
+          "byte_identical": true,
+          "sha256": "9cfd4c56c2990a6c9023d1c1847895c797bca30eabf9a4444592558b5152f6cb"
+        },
+        "location_allocate/location_allocate/paper_lfs_validator.py": {
+          "approved_sha256": "d166b785b49af8ad91329790a9c8e17239dbe56a4372d565bdf083319041dc08",
+          "byte_identical": true,
+          "sha256": "d166b785b49af8ad91329790a9c8e17239dbe56a4372d565bdf083319041dc08"
+        },
+        "location_allocate/location_allocate/policy_adapter.py": {
+          "approved_sha256": "fc9dc5597550d5734f20c4ca474ef153dc25e7b396f6e00e719f5c6b37694f0a",
+          "byte_identical": true,
+          "sha256": "fc9dc5597550d5734f20c4ca474ef153dc25e7b396f6e00e719f5c6b37694f0a"
+        },
+        "location_allocate/location_allocate/prompt_loader.py": {
+          "approved_sha256": "73932f89b1c99d7a09010c5c85caf69a5c20a705648f1405ee9f2d85246b3534",
+          "byte_identical": true,
+          "sha256": "73932f89b1c99d7a09010c5c85caf69a5c20a705648f1405ee9f2d85246b3534"
+        },
+        "location_allocate/location_allocate/reproducibility.py": {
+          "approved_sha256": "b127e2fd6743d67072946dc4569e79c27e013c0bc8c84cfcef5d52464293acff",
+          "byte_identical": true,
+          "sha256": "b127e2fd6743d67072946dc4569e79c27e013c0bc8c84cfcef5d52464293acff"
+        },
+        "location_allocate/location_allocate/safety_aware_allocator.py": {
+          "approved_sha256": "dd42b3ae96425b72dcd30a218131153201df9d0d63efcd223e2625aa569631d6",
+          "byte_identical": true,
+          "sha256": "dd42b3ae96425b72dcd30a218131153201df9d0d63efcd223e2625aa569631d6"
+        },
+        "location_allocate/location_allocate/timing_resolution.py": {
+          "approved_sha256": "ab101c720a002568b887d6ee6b07379d5eae3f1b47b8fc46fea6033bdc7ea4e3",
+          "byte_identical": true,
+          "sha256": "ab101c720a002568b887d6ee6b07379d5eae3f1b47b8fc46fea6033bdc7ea4e3"
+        },
+        "location_allocate/location_allocate/validation_common.py": {
+          "approved_sha256": "c234281ec9c7c05f803c3855e25abab0731b70d5aa3f7311acc463ccd3d61d8c",
+          "byte_identical": true,
+          "sha256": "c234281ec9c7c05f803c3855e25abab0731b70d5aa3f7311acc463ccd3d61d8c"
+        },
+        "location_allocate/prompts/paper_candidate_en_v2_fewshot.json": {
+          "approved_sha256": "385ab2d0d99bc51c3862c289e28a9a95fa0bd5df1436b68bd0ebf30bb5a83958",
+          "byte_identical": true,
+          "sha256": "385ab2d0d99bc51c3862c289e28a9a95fa0bd5df1436b68bd0ebf30bb5a83958"
+        },
+        "location_allocate/prompts/paper_candidate_en_v2_system.txt": {
+          "approved_sha256": "ed9e83e971d05f034065f82298599463d9d3e20f6b79e508f68233da79b0c4da",
+          "byte_identical": true,
+          "sha256": "ed9e83e971d05f034065f82298599463d9d3e20f6b79e508f68233da79b0c4da"
+        },
+        "schemas/paper_candidate_schema_v2.json": {
+          "approved_sha256": "be6063a533f05b8d0b6e87353a40fb294975261fa1514cd5d34ced19ce2bffe7",
+          "byte_identical": true,
+          "sha256": "be6063a533f05b8d0b6e87353a40fb294975261fa1514cd5d34ced19ce2bffe7"
+        }
+      },
+      "name": "frozen_production_sources_byte_identical",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "final_review_completed": true,
+        "global_registry_status": "SEALED",
+        "preflight_status": "SEALED",
+        "protocol_status": "SEALED",
+        "registry_status": "SEALED"
+      },
+      "name": "final_sealed_E2_gate",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "configuration_id": "paper-current-v11-c0-f-frozen",
+        "expected_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+        "policy_status": "paper_frozen",
+        "sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858"
+      },
+      "name": "frozen_configuration_and_policy_hash",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "global_registry_sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+        "population_count": 610,
+        "sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+        "yaml_sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce"
+      },
+      "name": "sealed_global_trial_order",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "trial_count": 120,
+        "unique_trial_count": 120
+      },
+      "name": "registered_E2_population",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "changed_paths": [
+          "experiments_v2/Formal Evaluation Experiments/E2/results/formal/.gitignore",
+          "experiments_v2/Formal Evaluation Experiments/E2/results/synthetic-validation/.gitignore",
+          "experiments_v2/Formal Evaluation Experiments/E2/tooling/.gitignore",
+          "experiments_v2/Formal Evaluation Experiments/E2/tooling/README.md",
+          "experiments_v2/Formal Evaluation Experiments/E2/tooling/e2_audit.py",
+          "experiments_v2/Formal Evaluation Experiments/E2/tooling/e2_common.py",
+          "experiments_v2/Formal Evaluation Experiments/E2/tooling/e2_journal.py",
+          "experiments_v2/Formal Evaluation Experiments/E2/tooling/e2_provenance.py",
+          "experiments_v2/Formal Evaluation Experiments/E2/tooling/e2_runner.py",
+          "experiments_v2/Formal Evaluation Experiments/E2/tooling/e2_scorer.py",
+          "experiments_v2/Formal Evaluation Experiments/E2/tooling/test_e2_tooling.py"
+        ],
+        "prohibited_paths": []
+      },
+      "name": "branch_changes_confined_to_E2_tooling_and_synthetic_results",
+      "status": "PASS"
+    }
+  ],
+  "configuration_id": "paper-current-v11-c0-f-frozen",
+  "dataset_class": "synthetic_validation",
+  "formal_execution_enabled": false,
+  "generated_at_utc": "2026-08-27T01:55:59.822Z",
+  "global_formal_trial_cursor_consumed": false,
+  "manifest_type": "E2_provenance_manifest_v1",
+  "production_source_hashes": {
+    "lfs_policy/lfs_policy/__init__.py": "758361f7c27205534b5017e853ec993c9031985e3256d2498023e02dbdd64a93",
+    "lfs_policy/lfs_policy/loader.py": "1485454db4a18c662907e9f7f2cc8797cb89ebc2dd48424b2da18b3f62c1a4d7",
+    "location_allocate/location_allocate/execution_profile_compiler.py": "e925a364c01a7d02deca3c4605d3bca08dcc58a683cf5c82dd77f900b54c9925",
+    "location_allocate/location_allocate/formation_geometry.py": "4312014bbb4fbd988a218a2f68e5d54fff895eaeab60c2a0a11f2564f7c06912",
+    "location_allocate/location_allocate/late_resolution.py": "702958a12fa8e4c3e5d99e3978fee86700b553962a5cc8aeb23cec4cf3d18e66",
+    "location_allocate/location_allocate/lfs_resolver.py": "b03fb205ffd189c8b3d9fb1314ace910fca48385936bc24c9a1d4d5fa0b5aac9",
+    "location_allocate/location_allocate/lfs_types.py": "7108dc5a88b3b3bcf1f278040dc661027c182a4de3415aa1ac646f097014d232",
+    "location_allocate/location_allocate/motion_limits.py": "9cfd4c56c2990a6c9023d1c1847895c797bca30eabf9a4444592558b5152f6cb",
+    "location_allocate/location_allocate/paper_lfs_validator.py": "d166b785b49af8ad91329790a9c8e17239dbe56a4372d565bdf083319041dc08",
+    "location_allocate/location_allocate/policy_adapter.py": "fc9dc5597550d5734f20c4ca474ef153dc25e7b396f6e00e719f5c6b37694f0a",
+    "location_allocate/location_allocate/prompt_loader.py": "73932f89b1c99d7a09010c5c85caf69a5c20a705648f1405ee9f2d85246b3534",
+    "location_allocate/location_allocate/reproducibility.py": "b127e2fd6743d67072946dc4569e79c27e013c0bc8c84cfcef5d52464293acff",
+    "location_allocate/location_allocate/safety_aware_allocator.py": "dd42b3ae96425b72dcd30a218131153201df9d0d63efcd223e2625aa569631d6",
+    "location_allocate/location_allocate/timing_resolution.py": "ab101c720a002568b887d6ee6b07379d5eae3f1b47b8fc46fea6033bdc7ea4e3",
+    "location_allocate/location_allocate/validation_common.py": "c234281ec9c7c05f803c3855e25abab0731b70d5aa3f7311acc463ccd3d61d8c",
+    "location_allocate/prompts/paper_candidate_en_v2_fewshot.json": "385ab2d0d99bc51c3862c289e28a9a95fa0bd5df1436b68bd0ebf30bb5a83958",
+    "location_allocate/prompts/paper_candidate_en_v2_system.txt": "ed9e83e971d05f034065f82298599463d9d3e20f6b79e508f68233da79b0c4da",
+    "schemas/paper_candidate_schema_v2.json": "be6063a533f05b8d0b6e87353a40fb294975261fa1514cd5d34ced19ce2bffe7"
+  },
+  "result_notice": "NOT_FORMAL_RESULT",
+  "run_id": "E2-synthetic-v1-20260827T015554Z",
+  "runtime": {
+    "byteorder": "little",
+    "packages": {
+      "PyYAML": "5.4.1",
+      "jsonschema": "4.25.1",
+      "numpy": "1.24.4",
+      "scipy": "1.8.0"
+    },
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "python_executable": "/usr/bin/python3.10",
+    "python_implementation": "CPython",
+    "python_version": "3.10.12"
+  },
+  "source_preflight_commit": "36dba68c6b16681ec98500b49c5a83095de4b634",
+  "status": "PASS"
+}

@@ -1,0 +1,201 @@
+{
+  "accepted_formal_result": false,
+  "by_commitment_and_state": {
+    "Early_Commitment__NO_SHIFT": {
+      "attempt_denominator": 30,
+      "counts": {
+        "correction": 0,
+        "correction_or_rejection": 0,
+        "dynamic_infeasibility": 0,
+        "executable_grounding_success": 30,
+        "rejection": 0,
+        "state_consistency_violation": 0
+      },
+      "rates": {
+        "correction_or_rejection_rate": 0.0,
+        "correction_rate": 0.0,
+        "dynamic_infeasibility_rate": 0.0,
+        "executable_grounding_success": 1.0,
+        "rejection_rate": 0.0,
+        "state_consistency_violation_rate": 0.0
+      }
+    },
+    "Early_Commitment__SHIFT": {
+      "attempt_denominator": 30,
+      "counts": {
+        "correction": 15,
+        "correction_or_rejection": 15,
+        "dynamic_infeasibility": 15,
+        "executable_grounding_success": 30,
+        "rejection": 0,
+        "state_consistency_violation": 25
+      },
+      "rates": {
+        "correction_or_rejection_rate": 0.5,
+        "correction_rate": 0.5,
+        "dynamic_infeasibility_rate": 0.5,
+        "executable_grounding_success": 1.0,
+        "rejection_rate": 0.0,
+        "state_consistency_violation_rate": 0.8333333333333334
+      }
+    },
+    "Information_Aligned_Late_Commitment__NO_SHIFT": {
+      "attempt_denominator": 30,
+      "counts": {
+        "correction": 0,
+        "correction_or_rejection": 0,
+        "dynamic_infeasibility": 0,
+        "executable_grounding_success": 30,
+        "rejection": 0,
+        "state_consistency_violation": 0
+      },
+      "rates": {
+        "correction_or_rejection_rate": 0.0,
+        "correction_rate": 0.0,
+        "dynamic_infeasibility_rate": 0.0,
+        "executable_grounding_success": 1.0,
+        "rejection_rate": 0.0,
+        "state_consistency_violation_rate": 0.0
+      }
+    },
+    "Information_Aligned_Late_Commitment__SHIFT": {
+      "attempt_denominator": 30,
+      "counts": {
+        "correction": 0,
+        "correction_or_rejection": 0,
+        "dynamic_infeasibility": 0,
+        "executable_grounding_success": 30,
+        "rejection": 0,
+        "state_consistency_violation": 0
+      },
+      "rates": {
+        "correction_or_rejection_rate": 0.0,
+        "correction_rate": 0.0,
+        "dynamic_infeasibility_rate": 0.0,
+        "executable_grounding_success": 1.0,
+        "rejection_rate": 0.0,
+        "state_consistency_violation_rate": 0.0
+      }
+    }
+  },
+  "by_commitment_condition": {
+    "Early_Commitment": {
+      "attempt_denominator": 60,
+      "counts": {
+        "correction": 15,
+        "correction_or_rejection": 15,
+        "dynamic_infeasibility": 15,
+        "executable_grounding_success": 60,
+        "rejection": 0,
+        "state_consistency_violation": 25
+      },
+      "rates": {
+        "correction_or_rejection_rate": 0.25,
+        "correction_rate": 0.25,
+        "dynamic_infeasibility_rate": 0.25,
+        "executable_grounding_success": 1.0,
+        "rejection_rate": 0.0,
+        "state_consistency_violation_rate": 0.4166666666666667
+      }
+    },
+    "Information_Aligned_Late_Commitment": {
+      "attempt_denominator": 60,
+      "counts": {
+        "correction": 0,
+        "correction_or_rejection": 0,
+        "dynamic_infeasibility": 0,
+        "executable_grounding_success": 60,
+        "rejection": 0,
+        "state_consistency_violation": 0
+      },
+      "rates": {
+        "correction_or_rejection_rate": 0.0,
+        "correction_rate": 0.0,
+        "dynamic_infeasibility_rate": 0.0,
+        "executable_grounding_success": 1.0,
+        "rejection_rate": 0.0,
+        "state_consistency_violation_rate": 0.0
+      }
+    }
+  },
+  "by_state_condition": {
+    "NO_SHIFT": {
+      "attempt_denominator": 60,
+      "counts": {
+        "correction": 0,
+        "correction_or_rejection": 0,
+        "dynamic_infeasibility": 0,
+        "executable_grounding_success": 60,
+        "rejection": 0,
+        "state_consistency_violation": 0
+      },
+      "rates": {
+        "correction_or_rejection_rate": 0.0,
+        "correction_rate": 0.0,
+        "dynamic_infeasibility_rate": 0.0,
+        "executable_grounding_success": 1.0,
+        "rejection_rate": 0.0,
+        "state_consistency_violation_rate": 0.0
+      }
+    },
+    "SHIFT": {
+      "attempt_denominator": 60,
+      "counts": {
+        "correction": 15,
+        "correction_or_rejection": 15,
+        "dynamic_infeasibility": 15,
+        "executable_grounding_success": 60,
+        "rejection": 0,
+        "state_consistency_violation": 25
+      },
+      "rates": {
+        "correction_or_rejection_rate": 0.25,
+        "correction_rate": 0.25,
+        "dynamic_infeasibility_rate": 0.25,
+        "executable_grounding_success": 1.0,
+        "rejection_rate": 0.0,
+        "state_consistency_violation_rate": 0.4166666666666667
+      }
+    }
+  },
+  "dataset_class": "synthetic_validation",
+  "failed_synthetic_attempts": [],
+  "input_raw_journal": {
+    "head_record_hash": "f7a17c84999e206523e03184aa4c851c2dc810c9fc51ccdae2316a8615be0860",
+    "journal_sha256": "d148a412965684d2afcbfa865454b09f4d874e255d8b5cacc55039de54306ef3",
+    "record_count": 120,
+    "serialization": "filename NUL raw-file-bytes in lexical sequence"
+  },
+  "metric_contract": {
+    "correction_or_rejection_rate": "downstream numerical correction to an already committed request or terminal rejection",
+    "dynamic_infeasibility_rate": "an already numerical request required a frozen feasibility change, or resolution terminated at a dynamic/geometry feasibility gate",
+    "executable_grounding_success": "valid executable mission produced through the frozen resolver at the registered execution snapshot",
+    "normal_late_resolution_is_correction": false,
+    "state_consistency_violation_rate": "selected executable c/r/T differs from untouched-Candidate resolution at the same registered execution snapshot"
+  },
+  "observed_attempt_count": 120,
+  "overall": {
+    "attempt_denominator": 120,
+    "counts": {
+      "correction": 15,
+      "correction_or_rejection": 15,
+      "dynamic_infeasibility": 15,
+      "executable_grounding_success": 120,
+      "rejection": 0,
+      "state_consistency_violation": 25
+    },
+    "rates": {
+      "correction_or_rejection_rate": 0.125,
+      "correction_rate": 0.125,
+      "dynamic_infeasibility_rate": 0.125,
+      "executable_grounding_success": 1.0,
+      "rejection_rate": 0.0,
+      "state_consistency_violation_rate": 0.20833333333333334
+    }
+  },
+  "registered_attempt_count": 120,
+  "result_notice": "NOT_FORMAL_RESULT",
+  "scientific_interpretation_allowed": false,
+  "score_type": "E2_primary_metrics_v1",
+  "scored_at_utc": "2026-08-27T01:56:06.753Z"
+}
