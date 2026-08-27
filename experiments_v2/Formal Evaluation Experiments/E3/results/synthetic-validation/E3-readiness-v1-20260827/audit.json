@@ -1,0 +1,48 @@
+{
+  "accepted_formal_result": false,
+  "audit_type": "E3_synthetic_readiness_audit_v1",
+  "checks": [
+    {
+      "check": "population_accounting",
+      "details": {
+        "duplicate": 0,
+        "missing": 0,
+        "registered": 360,
+        "unregistered": 0,
+        "validated": 360
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "retained_artifacts_and_schema",
+      "details": {
+        "errors": []
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "deterministic_reconstruction",
+      "details": {
+        "count": 360
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "provenance",
+      "details": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "no_formal_output",
+      "details": {
+        "formal_global_cursor_consumed": false
+      },
+      "status": "PASS"
+    }
+  ],
+  "dataset_class": "synthetic_validation",
+  "registered_attempt_count": 360,
+  "result_notice": "NOT_FORMAL_RESULT",
+  "status": "PASS",
+  "synthetic_validated_attempt_count": 360
+}

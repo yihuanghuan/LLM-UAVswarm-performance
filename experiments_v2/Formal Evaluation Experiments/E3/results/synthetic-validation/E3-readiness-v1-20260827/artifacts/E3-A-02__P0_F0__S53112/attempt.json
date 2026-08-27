@@ -1,0 +1,205 @@
+{
+  "accepted_formal_result": false,
+  "condition": "P0_F0",
+  "dataset_class": "synthetic_validation",
+  "execution_spec": {
+    "P0_fixed_target_ownership": false,
+    "assignment_mode": "distance_hungarian",
+    "avoidance_mode": "off",
+    "condition": "P0_F0",
+    "disturbance": {
+      "affected_uavs": [],
+      "duration_s": 1.5,
+      "force_frame": "world",
+      "link": "base_link",
+      "loaded_for_zero_force_family_A": true,
+      "mechanism": "ROS 2 gazebo_plugins GazeboRosForce model plugin plus experiment-only e3_wrench_driver.py",
+      "model_overlay": "../environment/patches/iris_gazebo_ros_force_v1.patch",
+      "onset_s": 2.0,
+      "random_component": null,
+      "timing_basis": "/clock elapsed from /e3/disturbance_arm received at t0",
+      "torque": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "vectors_N": {},
+      "waveform": "rectangular constant force",
+      "zero_wrench_at_end": true
+    },
+    "duration_s": 8.0,
+    "experiment": "E3",
+    "family": "A_predictable_structural_risk",
+    "initial_positions_m": {
+      "1": [
+        6.0,
+        0.0,
+        3.0
+      ],
+      "2": [
+        4.242640687119,
+        4.242640687119,
+        3.0
+      ],
+      "3": [
+        0.0,
+        6.0,
+        3.0
+      ],
+      "4": [
+        -4.242640687119,
+        4.242640687119,
+        3.0
+      ],
+      "5": [
+        -6.0,
+        0.0,
+        3.0
+      ],
+      "6": [
+        -4.242640687119,
+        -4.242640687119,
+        3.0
+      ],
+      "7": [
+        0.0,
+        -6.0,
+        3.0
+      ],
+      "8": [
+        4.242640687119,
+        -4.242640687119,
+        3.0
+      ]
+    },
+    "input_level": "frozen allocator target set plus executable task fields; no LLM call",
+    "invariants": {
+      "control_mode": "ladrc_acceleration",
+      "lfs_runtime_mode": "candidate_v2",
+      "policy": "lfs_policy.paper_current.yaml",
+      "q": {
+        "mode": "direct"
+      },
+      "safety_s": 1.0,
+      "style": "normal"
+    },
+    "metric_log_schema": {
+      "primary_metrics": [
+        "actual_d_min",
+        "predicted_d_min",
+        "hard_risk_events",
+        "hard_risk_exposure_duration",
+        "mission_success",
+        "iapf_activation_time",
+        "integral_delta_p",
+        "integral_delta_a",
+        "trajectory_deviation"
+      ],
+      "raw_required": [
+        "clock",
+        "execution_command_t0",
+        "per_uav_position_3d",
+        "per_uav_nominal_reference",
+        "per_uav_safe_reference",
+        "iapf_active",
+        "iapf_delta_p",
+        "iapf_delta_a",
+        "allocator_prediction",
+        "completion_events",
+        "hard_failures",
+        "wrench_commands"
+      ]
+    },
+    "ordered_targets_m": {
+      "1": [
+        4.242640687119,
+        9.757359312881,
+        3.0
+      ],
+      "2": [
+        0.0,
+        8.0,
+        3.0
+      ],
+      "3": [
+        -4.242640687119,
+        9.757359312881,
+        3.0
+      ],
+      "4": [
+        -6.0,
+        14.0,
+        3.0
+      ],
+      "5": [
+        -4.242640687119,
+        18.242640687119,
+        3.0
+      ],
+      "6": [
+        0.0,
+        20.0,
+        3.0
+      ],
+      "7": [
+        4.242640687119,
+        18.242640687119,
+        3.0
+      ],
+      "8": [
+        6.0,
+        14.0,
+        3.0
+      ]
+    },
+    "registered_input_hash": "406a82e6b04b5a4f065af18db90925885af0e0d31fe554debd65467dc1fd9e21",
+    "resolved_execution_spec_hash": "7c45a7df2dfef642168e86f349a24f4544a44a7cd5cc1b632693c70bda8dd13a",
+    "scenario_id": "E3-A-02",
+    "scoring": {
+      "end_offset_s": 10.0,
+      "t0": "interaction_execution_command_timestamp"
+    },
+    "seed": 53112,
+    "spec_type": "E3_exact_execution_spec_v1",
+    "staging": {
+      "scored": false,
+      "stable_continuous_s": 2.0
+    },
+    "timeout_after_t0_s": 14.0,
+    "trial_id": "E3-A-02__P0_F0__S53112",
+    "uav_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "experiment": "E3",
+  "mock_execution": {
+    "backend": "E3_synthetic_contract_backend_v1",
+    "launch_spec_validated": true,
+    "scientific_outcomes": null,
+    "validation_status": "SPEC_VALIDATED"
+  },
+  "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+  "protocol_sha256": "68f134cbf41a5be30e83a0953daa1a8d74866939d0450f60ebb31298616f56d8",
+  "record_type": "E3_synthetic_attempt_v1",
+  "registered_input_hash": "406a82e6b04b5a4f065af18db90925885af0e0d31fe554debd65467dc1fd9e21",
+  "registry_sha256": "48d66a07c744af4fad0f483ca24c72cf30dfbcaac9468e50ea3252ce6f76ea41",
+  "resolved_execution_spec_hash": "7c45a7df2dfef642168e86f349a24f4544a44a7cd5cc1b632693c70bda8dd13a",
+  "result_notice": "NOT_FORMAL_RESULT",
+  "runner": {
+    "branch": "formal/E3-planning-feedback-safety-v1",
+    "commit": "7872c89a089e142c44029d01e314d37a3ef97cb3",
+    "entrypoint": "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_runner.py",
+    "source_sha256": "543910a1e3e2e578e3f4e3a8f8115ef0354fb0a7e5b26a221bf6f06b46ded879"
+  },
+  "scenario_id": "E3-A-02",
+  "seed": 53112,
+  "trial_id": "E3-A-02__P0_F0__S53112",
+  "validation_status": "SPEC_VALIDATED"
+}
