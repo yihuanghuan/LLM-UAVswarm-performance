@@ -1,0 +1,64 @@
+{
+  "accepted_formal_result": false,
+  "audit_type": "E4B_synthetic_readiness_audit_v1",
+  "checks": [
+    {
+      "check": "population",
+      "details": {
+        "duplicate": 0,
+        "missing": 0,
+        "registered": 60,
+        "unregistered": 0,
+        "validated": 60
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "artifacts_and_predicates",
+      "details": {
+        "errors": [],
+        "predicate_coverage": [
+          "auto_T_below_T_min",
+          "feasible_explicit_T_style_override",
+          "infeasible_T_or_vaj_bypass",
+          "priority_above_style_changed",
+          "profile_or_clamp_exceeded",
+          "style_safety_override"
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "exact_timing_policy",
+      "details": {
+        "T_min_s": 2.8844991406148166,
+        "auto_T_exec_s": {
+          "aggressive": 3.1729490546762986,
+          "normal": 3.317174011707039,
+          "smooth": 3.7498488827992618
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "deterministic",
+      "details": 60,
+      "status": "PASS"
+    },
+    {
+      "check": "provenance",
+      "details": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "no_formal_output",
+      "details": false,
+      "status": "PASS"
+    }
+  ],
+  "dataset_class": "synthetic_validation",
+  "registered_attempt_count": 60,
+  "result_notice": "NOT_FORMAL_RESULT",
+  "status": "PASS",
+  "synthetic_validated_attempt_count": 60
+}

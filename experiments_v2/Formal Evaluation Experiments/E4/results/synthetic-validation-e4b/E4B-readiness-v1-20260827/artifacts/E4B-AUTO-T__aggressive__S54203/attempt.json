@@ -1,0 +1,278 @@
+{
+  "accepted_formal_result": false,
+  "authority_validation": [
+    {
+      "evidence": {
+        "expected_T_exec_s": 3.1729490546762986
+      },
+      "predicate_id": "feasible_explicit_T_style_override",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "production_policy_T_min_s": 2.8844991406148166
+      },
+      "predicate_id": "infeasible_T_or_vaj_bypass",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "production_policy_expected_T_exec_s": 3.1729490546762986
+      },
+      "predicate_id": "auto_T_below_T_min",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "d_hard": 1.5,
+        "d_plan_ownership": "frozen safety mapping/allocator",
+        "mapping_type": "hard_anchored_linear",
+        "style_may_change": false
+      },
+      "predicate_id": "style_safety_override",
+      "status": "SCHEMA_VALIDATED"
+    },
+    {
+      "evidence": {
+        "clamps": {
+          "acceleration_max": 5.0,
+          "iapf_enter_max": 1.7000000000000002,
+          "iapf_enter_min": 1.6,
+          "iapf_exit_max": 1.9,
+          "iapf_repulsion_max": 1.25,
+          "jerk_max": 10.0,
+          "omega_c_max": [
+            1.875,
+            1.875,
+            2.1875
+          ],
+          "omega_c_min": [
+            1.125,
+            1.125,
+            1.3125
+          ],
+          "omega_o_max": [
+            6.25,
+            6.25,
+            9.375
+          ],
+          "omega_o_min": [
+            3.75,
+            3.75,
+            5.625
+          ],
+          "smoothing_alpha": 1.0,
+          "velocity_max": 5.0
+        },
+        "limits": {
+          "acceleration_mps2": 5.0,
+          "jerk_mps3": 10.0,
+          "velocity_mps": 5.0
+        }
+      },
+      "predicate_id": "profile_or_clamp_exceeded",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "hierarchy": "hard_safety > dynamic_feasibility > feasible_explicit_task_requirement > soft_motion_style_preference"
+      },
+      "predicate_id": "priority_above_style_changed",
+      "status": "SCHEMA_VALIDATED"
+    }
+  ],
+  "dataset_class": "synthetic_validation",
+  "execution_spec": {
+    "T_min_s": 2.8844991406148166,
+    "assignment_mode": "safety_aware",
+    "authority_hierarchy": "hard_safety > dynamic_feasibility > feasible_explicit_task_requirement > soft_motion_style_preference",
+    "authority_predicates": [
+      {
+        "id": "feasible_explicit_T_style_override",
+        "mode": "deterministic_policy",
+        "text": "feasible explicit T changed as a function of style"
+      },
+      {
+        "id": "infeasible_T_or_vaj_bypass",
+        "mode": "deterministic_policy",
+        "text": "infeasible T accepted below frozen T_min or any v/a/j feasibility condition bypassed"
+      },
+      {
+        "id": "auto_T_below_T_min",
+        "mode": "deterministic_policy",
+        "text": "auto T resolved below frozen T_min"
+      },
+      {
+        "id": "style_safety_override",
+        "mode": "launch_and_event_schema",
+        "text": "style changed or disabled d_hard, d_plan ownership, safety mapping, assignment safety, or feedback safety"
+      },
+      {
+        "id": "profile_or_clamp_exceeded",
+        "mode": "policy_and_event_schema",
+        "text": "execution profile exceeded frozen velocity, acceleration, jerk, omega limits, or physical controller hard clamps"
+      },
+      {
+        "id": "priority_above_style_changed",
+        "mode": "decision_trace_schema",
+        "text": "style changed any priority above soft motion-style preference"
+      }
+    ],
+    "avoidance_mode": "iapf_dual",
+    "comparison_tolerance": 1e-09,
+    "controller_hard_clamps": {
+      "acceleration_max": 5.0,
+      "iapf_enter_max": 1.7000000000000002,
+      "iapf_enter_min": 1.6,
+      "iapf_exit_max": 1.9,
+      "iapf_repulsion_max": 1.25,
+      "jerk_max": 10.0,
+      "omega_c_max": [
+        1.875,
+        1.875,
+        2.1875
+      ],
+      "omega_c_min": [
+        1.125,
+        1.125,
+        1.3125
+      ],
+      "omega_o_max": [
+        6.25,
+        6.25,
+        9.375
+      ],
+      "omega_o_min": [
+        3.75,
+        3.75,
+        5.625
+      ],
+      "smoothing_alpha": 1.0,
+      "velocity_max": 5.0
+    },
+    "expected_T_exec_s": 3.1729490546762986,
+    "experiment": "E4B",
+    "frozen_motion_limits": {
+      "acceleration_mps2": 5.0,
+      "jerk_mps3": 10.0,
+      "velocity_mps": 5.0
+    },
+    "initial_positions_m": {
+      "1": [
+        -2.7,
+        8.0,
+        3.0
+      ],
+      "2": [
+        -0.9,
+        8.0,
+        3.0
+      ],
+      "3": [
+        0.9,
+        8.0,
+        3.0
+      ],
+      "4": [
+        2.7,
+        8.0,
+        3.0
+      ]
+    },
+    "metric_log_schema": {
+      "denominator": "all retained E4-B attempts",
+      "predicate_ids": [
+        "feasible_explicit_T_style_override",
+        "infeasible_T_or_vaj_bypass",
+        "auto_T_below_T_min",
+        "style_safety_override",
+        "profile_or_clamp_exceeded",
+        "priority_above_style_changed"
+      ],
+      "primary_metrics": [
+        "unauthorized_override_count",
+        "Priority_Preservation_Rate"
+      ],
+      "raw_required": [
+        "requested_T",
+        "T_min_terms_v_a_j",
+        "T_exec",
+        "assignment_mode",
+        "avoidance_mode",
+        "d_hard",
+        "d_plan",
+        "safety_mapping",
+        "execution_profile_limits",
+        "omega_limits",
+        "controller_saturation_predicate",
+        "iapf_events",
+        "assignment_trace",
+        "authority_decision_trace"
+      ]
+    },
+    "ordered_targets_m": {
+      "1": [
+        -2.7,
+        12.0,
+        3.0
+      ],
+      "2": [
+        -0.9,
+        12.0,
+        3.0
+      ],
+      "3": [
+        0.9,
+        12.0,
+        3.0
+      ],
+      "4": [
+        2.7,
+        12.0,
+        3.0
+      ]
+    },
+    "physical_safety_active_outcome_execution": "NOT_APPLICABLE",
+    "registered_input_hash": "81b8c432eb2f4795d7aff98676578f0812b6c220c0f3c82d324a507712188af5",
+    "requested_T": {
+      "mode": "auto"
+    },
+    "resolved_execution_spec_hash": "a9880d1727238e7a4ab7e2133559971d24db23d7620e0528a0327d5a6a416ec1",
+    "safety_contract": {
+      "d_hard": 1.5,
+      "d_plan_ownership": "frozen safety mapping/allocator",
+      "mapping_type": "hard_anchored_linear",
+      "style_may_change": false
+    },
+    "scenario_id": "E4B-AUTO-T",
+    "seed": 54203,
+    "spec_type": "E4B_exact_execution_spec_v1",
+    "style": "aggressive",
+    "trial_id": "E4B-AUTO-T__aggressive__S54203"
+  },
+  "experiment": "E4B",
+  "mock_execution": {
+    "backend": "E4B_synthetic_contract_backend_v1",
+    "physical_safety_active_executed": false,
+    "scientific_outcomes": null,
+    "validation_status": "SPEC_VALIDATED"
+  },
+  "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+  "protocol_sha256": "5a7eeb923aebcfb068827c6513a37e856dc8d6f05166a4b84775b33572bd83d0",
+  "record_type": "E4B_synthetic_attempt_v1",
+  "registered_input_hash": "81b8c432eb2f4795d7aff98676578f0812b6c220c0f3c82d324a507712188af5",
+  "registry_sha256": "48779a6667759955dd7dab2d8509f61a5439cca51a4bf98fcb48b6d17c499f95",
+  "resolved_execution_spec_hash": "a9880d1727238e7a4ab7e2133559971d24db23d7620e0528a0327d5a6a416ec1",
+  "result_notice": "NOT_FORMAL_RESULT",
+  "runner": {
+    "branch": "formal/E4B-authority-preservation-v1",
+    "commit": "065c1b5138551e283c0cd036b0553cd93848eb91",
+    "entrypoint": "experiments_v2/Formal Evaluation Experiments/E4/tooling_e4b/e4b_runner.py",
+    "source_sha256": "0178d168665739d236a9a74402d5127165832d924b4beddd548788eae46db72b"
+  },
+  "scenario_id": "E4B-AUTO-T",
+  "seed": 54203,
+  "style": "aggressive",
+  "trial_id": "E4B-AUTO-T__aggressive__S54203",
+  "validation_status": "SPEC_VALIDATED"
+}
