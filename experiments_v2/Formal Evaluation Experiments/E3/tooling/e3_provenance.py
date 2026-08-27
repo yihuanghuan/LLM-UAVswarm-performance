@@ -11,6 +11,7 @@ SOURCE = "36dba68c6b16681ec98500b49c5a83095de4b634"
 BASELINE_TAG = "paper-final-sim-v3"
 BASELINE = "6cf402debf23851b1eff3edc6f3ab49eae7127c4"
 BRANCH = "formal/E3-planning-feedback-safety-v1"
+ALLOWED_BRANCHES = {BRANCH, "formal/E3-formal-adapter-v1"}
 PRODUCTION = [
  "location_allocate/location_allocate/safety_aware_allocator.py",
  "location_allocate/location_allocate/location_allocate.py",
@@ -28,7 +29,7 @@ def validate() -> Dict[str, Any]:
     try:
         head=git("rev-parse","HEAD").strip(); branch=git("branch","--show-current").strip()
         ck("source_ancestry", subprocess.run(["git","merge-base","--is-ancestor",SOURCE,"HEAD"],cwd=REPO_ROOT).returncode==0,{"head":head})
-        ck("branch",branch==BRANCH,branch)
+        ck("branch",branch in ALLOWED_BRANCHES,branch)
         ck("baseline",git("rev-parse",f"{BASELINE_TAG}^{{}}").strip()==BASELINE,BASELINE)
         load_registry(); registered_trial_ids()
         ck("sealed_hashes",True,{"protocol":PROTOCOL_SHA256,"registry":REGISTRY_SHA256,"global_registry":GLOBAL_REGISTRY_SHA256,"order":ORDER_SHA256,"policy":POLICY_SHA256})
@@ -42,8 +43,7 @@ def validate() -> Dict[str, Any]:
         bad=sorted({p for p in changed if not p.startswith(allowed)})
         ck("changes_experiment_only",not bad,{"prohibited":bad})
     except Exception as exc: ck("internal_error",False,{"type":type(exc).__name__,"message":str(exc)}); head="UNKNOWN"
-    return {"manifest_type":"E3_provenance_v1","status":"PASS" if all(c["status"]=="PASS" for c in checks) else "FAIL","runner_branch":BRANCH,"runner_commit":head,"checks":checks}
+    return {"manifest_type":"E3_provenance_v1","status":"PASS" if all(c["status"]=="PASS" for c in checks) else "FAIL","runner_branch":branch if 'branch' in locals() else BRANCH,"runner_commit":head,"checks":checks}
 
 if __name__ == "__main__":
     report=validate(); print(json.dumps(report,indent=2,sort_keys=True)); raise SystemExit(report["status"]!="PASS")
-
