@@ -1,0 +1,312 @@
+{
+  "accepted_formal_result": false,
+  "condition": "Full_Method",
+  "dataset_class": "synthetic_validation",
+  "execution_spec": {
+    "candidate_semantic_ground_truth": {
+      "usage": "audit_and_scoring_only_not_runtime_input",
+      "value": {
+        "lfs_version": "2.1",
+        "mission": {
+          "nodes": [
+            {
+              "task": {
+                "F": {
+                  "type": "Sphere"
+                },
+                "T": {
+                  "mode": "auto"
+                },
+                "U": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8
+                ],
+                "c": {
+                  "frame": "world",
+                  "mode": "relative",
+                  "offset": [
+                    2,
+                    0,
+                    1
+                  ],
+                  "reference": "current_swarm_centroid"
+                },
+                "m": "smooth",
+                "q": {
+                  "mode": "continuous"
+                },
+                "r": {
+                  "mode": "qualitative",
+                  "value": "spacious"
+                },
+                "s": 1.0,
+                "task_id": 1
+              },
+              "type": "task"
+            },
+            {
+              "completion_mode": "synchronized",
+              "tasks": [
+                {
+                  "F": {
+                    "type": "Circle"
+                  },
+                  "T": {
+                    "mode": "explicit",
+                    "value": 7
+                  },
+                  "U": [
+                    1,
+                    2,
+                    3,
+                    4
+                  ],
+                  "c": {
+                    "mode": "absolute",
+                    "value": [
+                      -4,
+                      18,
+                      4
+                    ]
+                  },
+                  "m": "normal",
+                  "q": {
+                    "duration": 2,
+                    "mode": "hover-and-wait"
+                  },
+                  "r": {
+                    "mode": "explicit",
+                    "value": 2
+                  },
+                  "s": 1.25,
+                  "task_id": 2
+                },
+                {
+                  "F": {
+                    "sides": 4,
+                    "type": "Polygon"
+                  },
+                  "T": {
+                    "mode": "auto"
+                  },
+                  "U": [
+                    5,
+                    6,
+                    7,
+                    8
+                  ],
+                  "c": {
+                    "mode": "absolute",
+                    "value": [
+                      4,
+                      18,
+                      4
+                    ]
+                  },
+                  "m": "aggressive",
+                  "q": {
+                    "duration": 2,
+                    "mode": "hover-and-wait"
+                  },
+                  "r": {
+                    "mode": "qualitative",
+                    "value": "normal"
+                  },
+                  "s": 1.0,
+                  "task_id": 3
+                }
+              ],
+              "type": "parallel"
+            }
+          ]
+        }
+      }
+    },
+    "cold_start_required": true,
+    "cold_start_spawn_m": {
+      "1": [
+        0.0,
+        3.0,
+        0.83
+      ],
+      "2": [
+        0.0,
+        6.0,
+        0.83
+      ],
+      "3": [
+        0.0,
+        9.0,
+        0.83
+      ],
+      "4": [
+        0.0,
+        12.0,
+        0.83
+      ],
+      "5": [
+        0.0,
+        15.0,
+        0.83
+      ],
+      "6": [
+        0.0,
+        18.0,
+        0.83
+      ],
+      "7": [
+        0.0,
+        21.0,
+        0.83
+      ],
+      "8": [
+        0.0,
+        24.0,
+        0.83
+      ]
+    },
+    "command_source": "sealed_registry_exact_command",
+    "completion_mode": "synchronized parallel stable completion followed by 2.0 second wait",
+    "condition": "Full_Method",
+    "exact_command": "First, have UAVs 1 through 8 form a spacious sphere centered at world-frame offset [2, 0, 1] meters from their current swarm centroid with automatic duration, smooth motion, and safety factor 1.0, continuing as soon as the trajectory completes. Then, in parallel and synchronously, have UAVs 1 through 4 form a circle centered at [-4, 18, 4] with radius 2 meters in 7 seconds using normal motion and safety factor 1.25, while UAVs 5 through 8 form a normal-scale square centered at [4, 18, 4] with automatic duration using aggressive motion and safety factor 1.0; after completion, hover and wait for 2 seconds.",
+    "exact_command_utf8_sha256": "e8196f082555658e622aaf8250fb997bc0cb5932ffd13173d25d3fb511832190",
+    "experiment": "E5",
+    "frozen_language_runtime": {
+      "candidate_gt_used_as_input": false,
+      "few_shot_sha256": "385ab2d0d99bc51c3862c289e28a9a95fa0bd5df1436b68bd0ebf30bb5a83958",
+      "max_tokens": 4000,
+      "model": "MiniMax-M2.7-highspeed",
+      "prompt_version": "paper-candidate-en-v2",
+      "response_format": {
+        "type": "json_object"
+      },
+      "schema_sha256": "be6063a533f05b8d0b6e87353a40fb294975261fa1514cd5d34ced19ce2bffe7",
+      "system_prompt_sha256": "ed9e83e971d05f034065f82298599463d9d3e20f6b79e508f68233da79b0c4da",
+      "temperature": 0.0,
+      "top_p": 0.01
+    },
+    "full_method_modes": {
+      "assignment_mode": "safety_aware",
+      "avoidance_mode": "iapf_dual",
+      "control_mode": "ladrc_acceleration",
+      "lfs_runtime_mode": "candidate_v2"
+    },
+    "metric_log_schema": {
+      "latency_components": [
+        "LLM_inference",
+        "parse_validation",
+        "snapshot_wait",
+        "resolution",
+        "allocation",
+        "dispatch",
+        "physical_execution"
+      ],
+      "primary_metrics": [
+        "all_attempt_mission_success",
+        "tracking_RMSE",
+        "final_error",
+        "actual_d_min",
+        "iapf_burden",
+        "latency_decomposition"
+      ],
+      "raw_required": [
+        "raw_llm_request_response_metadata",
+        "candidate_validation",
+        "state_snapshots",
+        "resolution_trace",
+        "assignment_trace",
+        "dispatch_events",
+        "task_completion_events",
+        "per_uav_measured_position_3d",
+        "nominal_reference",
+        "safe_reference",
+        "iapf_active",
+        "iapf_delta_p",
+        "iapf_delta_a",
+        "hard_failures",
+        "px4_readiness"
+      ]
+    },
+    "mission_graph": {
+      "node_types": [
+        "task",
+        "parallel"
+      ],
+      "parallel_completion_mode": "synchronized",
+      "parallel_task_ids": [
+        2,
+        3
+      ],
+      "synchronized": true,
+      "task_count": 3,
+      "transition": "task_1_TRAJECTORY_completion_to_parallel_group"
+    },
+    "mission_timeout_s": 45.0,
+    "readiness_gate": {
+      "all_px4_ready": true,
+      "armed_offboard": true,
+      "before_command_submission": true,
+      "frozen_fresh_state_predicate": true,
+      "required_uav_count": 8,
+      "uav_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "registered_input_hash": "ed283e671cdbf13737448e6ec10595cdbf9c300d6e6021a6c546b0e6ab5139d4",
+    "resolved_execution_spec_hash": "5fd7935f2e7541f4da9ca3d4bc6e1b1f219e1036a6c497c4c594714886b392b0",
+    "scenario_id": "E5-MIXED-HIGH",
+    "seed": 55101,
+    "spec_type": "E5_exact_execution_spec_v1",
+    "success_contract": {
+      "d_hard_m": 1.5,
+      "denominator": "all retained attempts",
+      "predicates": [
+        "every registered task is accepted, dispatched, and reaches its registered completion event before mission timeout",
+        "no controller, PX4, allocator, parser, resolver, or infrastructure hard failure",
+        "actual d_min is at least frozen d_hard 1.50 m over the scored mission",
+        "no manual retry, trial deletion, or replacement seed"
+      ],
+      "retry_or_replacement_allowed": false
+    },
+    "trial_id": "E5-MIXED-HIGH__Full_Method__S55101"
+  },
+  "experiment": "E5",
+  "mock_execution": {
+    "backend": "E5_synthetic_contract_backend_v1",
+    "exact_command_hash_observed": "e8196f082555658e622aaf8250fb997bc0cb5932ffd13173d25d3fb511832190",
+    "gazebo_px4_started": false,
+    "llm_called": false,
+    "scientific_outcomes": null,
+    "validation_status": "SPEC_VALIDATED"
+  },
+  "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+  "protocol_sha256": "116002154cd2395b6a9f55d7c1aae6e0a2c42440f0ceaa827a1a8cb02828319c",
+  "record_type": "E5_synthetic_attempt_v1",
+  "registered_input_hash": "ed283e671cdbf13737448e6ec10595cdbf9c300d6e6021a6c546b0e6ab5139d4",
+  "registry_sha256": "9bb6bc9b46b5211c50c8f2e29bd434235424beb2bb0fc36ec857a3298d89511e",
+  "resolved_execution_spec_hash": "5fd7935f2e7541f4da9ca3d4bc6e1b1f219e1036a6c497c4c594714886b392b0",
+  "result_notice": "NOT_FORMAL_RESULT",
+  "runner": {
+    "branch": "formal/E5-end-to-end-v1",
+    "commit": "f246dd147e3479a6d9bf65f95b4d141bac796a3f",
+    "entrypoint": "experiments_v2/Formal Evaluation Experiments/E5/tooling/e5_runner.py",
+    "source_sha256": "e9c497c0ddc52de8133dcdce0fe7dd6541c0810b6c8b3bf5a0eebac878cf66b2"
+  },
+  "scenario_id": "E5-MIXED-HIGH",
+  "seed": 55101,
+  "trial_id": "E5-MIXED-HIGH__Full_Method__S55101",
+  "validation_status": "SPEC_VALIDATED"
+}

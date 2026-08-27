@@ -1,0 +1,70 @@
+{
+  "accepted_formal_result": false,
+  "audit_type": "E5_synthetic_readiness_audit_v1",
+  "checks": [
+    {
+      "check": "population",
+      "details": {
+        "duplicate": 0,
+        "missing": 0,
+        "registered": 25,
+        "unregistered": 0,
+        "validated": 25
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "artifacts_schema",
+      "details": [],
+      "status": "PASS"
+    },
+    {
+      "check": "exact_command_identity",
+      "details": 25,
+      "status": "PASS"
+    },
+    {
+      "check": "mission_graphs",
+      "details": 25,
+      "status": "PASS"
+    },
+    {
+      "check": "cold_start_readiness",
+      "details": 25,
+      "status": "PASS"
+    },
+    {
+      "check": "full_method_only",
+      "details": 25,
+      "status": "PASS"
+    },
+    {
+      "check": "deterministic",
+      "details": 25,
+      "status": "PASS"
+    },
+    {
+      "check": "provenance",
+      "details": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "no_llm_gazebo_formal",
+      "details": {
+        "accepted_formal_result": false,
+        "dataset_class": "synthetic_validation",
+        "gazebo_px4_runs": 0,
+        "llm_calls": 0,
+        "notice": "LOCAL SYNTHETIC ENUMERATION IS NOT FORMAL DATA-COLLECTION ORDER.",
+        "result_notice": "NOT_FORMAL_RESULT",
+        "run_id": "E5-readiness-v1-20260827"
+      },
+      "status": "PASS"
+    }
+  ],
+  "dataset_class": "synthetic_validation",
+  "registered_attempt_count": 25,
+  "result_notice": "NOT_FORMAL_RESULT",
+  "status": "PASS",
+  "synthetic_validated_attempt_count": 25
+}
