@@ -1,0 +1,116 @@
+{
+  "accepted_formal_result": false,
+  "audit_type": "E3_formal_adapter_live_smoke_audit_v1",
+  "checks": [
+    {
+      "check": "nonformal_labels",
+      "details": {
+        "fixture_id": "ENG-E3-PLUMBING-2UAV-ZERO-SCIENCE-v1"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "runtime_provenance",
+      "details": {
+        "binary_execution_profile_capability_present": true,
+        "every_controller_endpoint_visible_separately_from_rosbag": true,
+        "every_controller_node_subscribes": true,
+        "execution_profiles_enabled_for_every_controller": true,
+        "installed_controller_binary_exists": true,
+        "installed_interface_definition_exists": true,
+        "installed_launch_matches_frozen_source": true,
+        "installed_policy_hash_matches": true,
+        "package_prefixes_are_formal_install_v1": true,
+        "production_sources_match_preflight": true
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "endpoint_identity",
+      "details": {
+        "phases": 2
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "single_publish_and_acceptance",
+      "details": {
+        "uavs": [
+          1,
+          2
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "command_payload_guards",
+      "details": {},
+      "status": "PASS"
+    },
+    {
+      "check": "sealed_staging_gate",
+      "details": {
+        "stable_continuous_observed_s": 2.019475961002172
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "interaction_execution",
+      "details": {
+        "mission_id": 3703413007
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "rosbag_command_retention",
+      "details": {
+        "uav1": 2,
+        "uav2": 2
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "registered_wrench_transport",
+      "details": {
+        "message_count": 6,
+        "topic": "/e3_force/mavlink_2/wrench"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "smoke_self_audit",
+      "details": {
+        "backend_success": true,
+        "clock_qos_compatible": true,
+        "command_payload_guard_pass": true,
+        "command_seen_by_rosbag": true,
+        "controller_acceptance_event_every_uav": true,
+        "controller_endpoint_present_every_phase": true,
+        "controller_mission_status_seen_every_uav": true,
+        "controller_profile_application_log": true,
+        "dataset_class_propagated": true,
+        "exactly_one_command_per_uav_per_phase": true,
+        "fixture_is_non_registered": true,
+        "formal_output_absent": true,
+        "interaction_completed": true,
+        "recorder_endpoint_present_every_phase": true,
+        "required_files_present": true,
+        "runtime_provenance_pass": true,
+        "runtime_spec_labels_propagated": true,
+        "staging_completed": true,
+        "staging_geometry_reached": true,
+        "staging_stable_continuous_2s": true,
+        "suite_journal_absent": true,
+        "wrench_topic_retained": true
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "formal_outputs_absent",
+      "details": {},
+      "status": "PASS"
+    }
+  ],
+  "dataset_class": "engineering_validation",
+  "status": "PASS"
+}

@@ -1,0 +1,60 @@
+{
+  "accepted_formal_result": false,
+  "backend_result": {
+    "attempt_status": "success",
+    "cold_start": true,
+    "dataset_class": "engineering_validation",
+    "finished_utc": "2026-08-27T07:53:44.704782+00:00",
+    "fixture_class": "non_registered_engineering_fixture",
+    "harness_returncode": 0,
+    "raw_evidence": {
+      "command_validation": "command_validation.json",
+      "interaction": "interaction_result.json",
+      "rosbag": "rosbag",
+      "runtime_provenance": "runtime_provenance.json",
+      "staging": "stage_result.json",
+      "wrench_log": "wrench.log"
+    },
+    "retry_performed": false,
+    "started_utc": "2026-08-27T07:52:36.859186+00:00"
+  },
+  "coverage": {
+    "assignment_mode_switch_plumbing": true,
+    "disturbance_plugin_driver": true,
+    "raw_logging": true,
+    "ros_gazebo_px4": true,
+    "staging_detection": true
+  },
+  "dataset_class": "engineering_validation",
+  "evidence_checks": {
+    "backend_success": true,
+    "clock_qos_compatible": true,
+    "command_payload_guard_pass": true,
+    "command_seen_by_rosbag": false,
+    "controller_acceptance_event_every_uav": true,
+    "controller_endpoint_present_every_phase": true,
+    "controller_mission_status_seen_every_uav": true,
+    "controller_profile_application_log": true,
+    "dataset_class_propagated": true,
+    "exactly_one_command_per_uav_per_phase": true,
+    "fixture_is_non_registered": true,
+    "formal_output_absent": true,
+    "interaction_completed": true,
+    "required_files_present": true,
+    "runtime_provenance_pass": true,
+    "runtime_spec_labels_propagated": true,
+    "staging_completed": true,
+    "staging_geometry_reached": true,
+    "staging_stable_continuous_2s": true,
+    "suite_journal_absent": true,
+    "wrench_topic_retained": true
+  },
+  "finished_utc": "2026-08-27T07:53:44.723128+00:00",
+  "fixture_id": "ENG-E3-PLUMBING-2UAV-ZERO-SCIENCE-v1",
+  "fixture_registered_formal_trial": false,
+  "manifest_type": "E3_live_engineering_smoke_v1",
+  "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+  "result_notice": "NOT_FORMAL_RESULT",
+  "scientific_interpretation": null,
+  "status": "FAIL"
+}
