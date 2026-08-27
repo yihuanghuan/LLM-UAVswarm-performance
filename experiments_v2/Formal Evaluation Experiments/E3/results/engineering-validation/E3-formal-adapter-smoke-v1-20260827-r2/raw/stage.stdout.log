@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/yihuang/learning/LLM_swarm_ws/e3_adapter_worktree/experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_physical_trial.py", line 263, in <module>
+    raise SystemExit(main())
+  File "/home/yihuang/learning/LLM_swarm_ws/e3_adapter_worktree/experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_physical_trial.py", line 255, in main
+    args = parser.parse_args(); spec = json.loads(args.runtime_spec.read_text())
+  File "/usr/lib/python3.10/pathlib.py", line 1134, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/usr/lib/python3.10/pathlib.py", line 1119, in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+FileNotFoundError: [Errno 2] No such file or directory: 'experiments_v2/Formal Evaluation Experiments/E3/results/engineering-validation/E3-formal-adapter-smoke-v1-20260827-r2/raw/runtime_spec.json'

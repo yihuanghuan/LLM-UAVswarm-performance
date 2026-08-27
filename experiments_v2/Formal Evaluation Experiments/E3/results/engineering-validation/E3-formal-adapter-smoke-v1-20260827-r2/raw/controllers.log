@@ -1,0 +1,52 @@
+[INFO] [launch]: All log files can be found below /home/yihuang/.ros/log/2026-08-27-15-02-25-105819-JIAOLONG-Series-830173
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [ladrc_position_controller_node-1]: process started with pid [830207]
+[INFO] [ladrc_position_controller_node-2]: process started with pid [830209]
+[ladrc_position_controller_node-1] [0m[INFO] [1787814145.164512148] [uav1.ladrc_position_controller]: 已创建 1 个邻居 Odom 订阅[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814145.165352675] [uav2.ladrc_position_controller]: 已创建 1 个邻居 Odom 订阅[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814145.167532600] [uav1.ladrc_position_controller]: LADRC 集群执行节点已初始化 (命名空间: /uav1), ENU偏移=[0.0, 3.0, 0.0][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814145.167557216] [uav1.ladrc_position_controller]: 等待 swarm_command 和 vehicle_odometry 消息...[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814145.167563868] [uav1.ladrc_position_controller]: 控制模式: ladrc_acceleration[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814145.168564454] [uav2.ladrc_position_controller]: LADRC 集群执行节点已初始化 (命名空间: /uav2), ENU偏移=[0.0, 6.0, 0.0][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814145.168584972] [uav2.ladrc_position_controller]: 等待 swarm_command 和 vehicle_odometry 消息...[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814145.168592266] [uav2.ladrc_position_controller]: 控制模式: ladrc_acceleration[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814145.180995513] [uav2.ladrc_position_controller]: 已接收到 vehicle_odometry 消息[0m
+[ladrc_position_controller_node-1] [33m[WARN] [1787814145.187652626] [uav1.ladrc_position_controller]: 等待新鲜 VehicleOdometry（startup=WAIT_ESTIMATOR_READY armed=0 offboard=0）[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814145.219867153] [uav1.ladrc_position_controller]: 已接收到 vehicle_odometry 消息[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814156.967377986] [uav1.ladrc_position_controller]: 请求 ARM（第 1 次）[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814156.968415671] [uav2.ladrc_position_controller]: 请求 ARM（第 1 次）[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814157.067430549] [uav1.ladrc_position_controller]: 请求 OFFBOARD（第 1 次）[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814157.068426326] [uav2.ladrc_position_controller]: 请求 OFFBOARD（第 1 次）[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814157.187460864] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,0.01,-0.15] Cmd[0.0,0.0,4.7][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814157.188467030] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.01,0.19] Cmd[-0.0,0.0,1.6][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814158.207422565] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.01,0.01,-0.16] Cmd[0.1,-0.1,8.0][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814158.208449500] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.00,-0.00,0.17] Cmd[0.1,0.0,8.0][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814159.227360356] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.03,-0.05,1.02] Cmd[-0.2,0.5,3.0][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814159.228385257] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.06,-0.05,1.19] Cmd[-0.5,0.5,3.5][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814160.247346861] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.06,-0.03,1.40] Cmd[0.4,0.1,3.9][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814160.248371452] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.04,-0.04,1.45] Cmd[0.8,0.2,3.9][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814160.667408774] [uav1.ladrc_position_controller]: 自动起飞稳定保持完成，进入 READY[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814161.248382704] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.05,0.02,1.51] Cmd[-0.1,0.1,4.1][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814161.267319304] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.05,0.04,1.51] Cmd[0.2,-0.2,3.8][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814162.268337849] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.07,0.01,1.86] Cmd[-0.1,0.2,0.5][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814162.287334040] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.06,0.01,1.81] Cmd[-0.3,0.3,1.2][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814163.287346803] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,-0.00,1.69] Cmd[0.2,0.1,-1.2][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814163.288317152] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.01,1.69] Cmd[0.2,0.1,0.0][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814164.307270196] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.01,0.05,1.58] Cmd[0.0,-0.2,-0.2][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814164.308301008] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.04,0.01,1.57] Cmd[-0.1,0.1,0.4][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814164.368323060] [uav2.ladrc_position_controller]: 自动起飞稳定保持完成，进入 READY[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814165.327235551] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.04,0.00,1.49] Cmd[-0.2,0.3,1.1][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814165.328270531] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,0.01,1.52] Cmd[0.0,0.1,-0.0][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814166.327258434] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.01,1.49] Cmd[-0.0,0.1,0.1][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814166.348278399] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,0.01,1.50] Cmd[-0.1,0.1,0.1][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814167.347203829] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,0.03,1.52] Cmd[-0.1,-0.0,-0.3][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1787814167.368242690] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.04,0.02,1.50] Cmd[-0.2,0.1,0.1][0m
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[ladrc_position_controller_node-2] [0m[INFO] [1787814167.710725854] [rclcpp]: signal_handler(signum=2)[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814167.710756601] [rclcpp]: signal_handler(signum=2)[0m
+[INFO] [ladrc_position_controller_node-2]: sending signal 'SIGINT' to process[ladrc_position_controller_node-2]
+[INFO] [ladrc_position_controller_node-1]: sending signal 'SIGINT' to process[ladrc_position_controller_node-1]
+[ladrc_position_controller_node-2] [0m[INFO] [1787814167.712272197] [rclcpp]: signal_handler(signum=2)[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1787814167.712513026] [rclcpp]: signal_handler(signum=2)[0m
+[INFO] [ladrc_position_controller_node-1]: process has finished cleanly [pid 830207]
+[INFO] [ladrc_position_controller_node-2]: process has finished cleanly [pid 830209]

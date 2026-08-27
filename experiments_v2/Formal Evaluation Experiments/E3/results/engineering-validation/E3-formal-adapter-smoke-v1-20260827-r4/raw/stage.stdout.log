@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/yihuang/learning/LLM_swarm_ws/e3_adapter_worktree/experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_physical_trial.py", line 265, in <module>
+    raise SystemExit(main())
+  File "/home/yihuang/learning/LLM_swarm_ws/e3_adapter_worktree/experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_physical_trial.py", line 259, in main
+    return direct_driver(spec, args.phase, args.result)
+  File "/home/yihuang/learning/LLM_swarm_ws/e3_adapter_worktree/experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_physical_trial.py", line 138, in direct_driver
+    node = Driver(); started = time.monotonic(); published = None; stable_since = None
+  File "/home/yihuang/learning/LLM_swarm_ws/e3_adapter_worktree/experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_physical_trial.py", line 116, in __init__
+    self.subscriptions = []
+AttributeError: can't set attribute 'subscriptions'

@@ -1,0 +1,35 @@
+{
+  "experiment": "E3",
+  "adapter_branch": "formal/E3-formal-adapter-v1",
+  "adapter_commit": "21a0d2a4055fbccef778bd329105a9592cebfe3e",
+  "adapter_entrypoint": "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_formal_adapter.py",
+  "adapter_source_sha256": "930a55f8569a9ff3aa1d9ecfb8b35388726053dcd850a8aac1bd4b3da0263f46",
+  "validated_contract_branch": "formal/E3-planning-feedback-safety-v1",
+  "validated_contract_commit": "dc1c7e82dd02341994eabd60e5585f99777a0954",
+  "source_preflight_commit": "36dba68c6b16681ec98500b49c5a83095de4b634",
+  "baseline_tag": "paper-final-sim-v3",
+  "baseline_commit": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+  "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+  "protocol_sha256": "68f134cbf41a5be30e83a0953daa1a8d74866939d0450f60ebb31298616f56d8",
+  "registry_sha256": "48d66a07c744af4fad0f483ca24c72cf30dfbcaac9468e50ea3252ce6f76ea41",
+  "global_trial_order_sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+  "registered_attempt_count": 360,
+  "spec_reconstruction_status": "PASS",
+  "live_engineering_smoke_status": "FAIL",
+  "formal_execution_capability_present": true,
+  "production_semantics_changed": false,
+  "sealed_artifacts_changed": false,
+  "accepted_formal_results_created": false,
+  "formal_global_cursor_consumed": false,
+  "validation_status": "BLOCKED",
+  "blockers": [
+    {
+      "id": "E3-LIVE-STAGING-COMMAND-DELIVERY",
+      "fixture_id": "ENG-E3-PLUMBING-2UAV-ZERO-SCIENCE-v1",
+      "evidence_path": "results/engineering-validation/E3-formal-adapter-smoke-v1-20260827-r6",
+      "exact_failure": "The real two-UAV ROS/Gazebo/PX4 backend reached armed/offboard readiness, but the staging execution command produced no mission-scoped startup/status events and the sealed 2.0-second continuous stable predicate timed out.",
+      "production_observation": "Both LADRC controller logs remained on the startup hover reference [0,0,1.5] rather than the non-registered staging targets; stage_result.json contains empty event lists for UAV1 and UAV2.",
+      "why_launch_is_blocked": "Required real execution-path smoke coverage for E3 has not passed, so this adapter cannot be pinned into a formal launch gate without bypassing a mandatory launch prerequisite."
+    }
+  ]
+}

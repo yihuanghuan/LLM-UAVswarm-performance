@@ -1,0 +1,11 @@
+[ERROR] [1787814249.796518522] [rcl]: Failed to parse global arguments
+Traceback (most recent call last):
+  File "/home/yihuang/learning/LLM_swarm_ws/e3_adapter_worktree/experiments_v2/Formal Evaluation Experiments/harness/e3_wrench_driver.py", line 90, in <module>
+    main()
+  File "/home/yihuang/learning/LLM_swarm_ws/e3_adapter_worktree/experiments_v2/Formal Evaluation Experiments/harness/e3_wrench_driver.py", line 80, in main
+    rclpy.init()
+  File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 88, in init
+    context.init(args, domain_id=domain_id)
+  File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/context.py", line 72, in init
+    self.__context = _rclpy.Context(
+rclpy._rclpy_pybind11.RCLError: failed to initialize rcl: Couldn't parse parameter override rule: '-p wrenches_json:={"1": [0.1, 0.0, 0.0]}'. Error: Unknown YAML event, at ./src/parse.c:952, at ./src/rcl/arguments.c:343
