@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+"""Retain one non-registered E4A real style/LADRC plumbing smoke."""
+import argparse,json
+from pathlib import Path
+import yaml
+from e4a_formal_backend import build_runtime_spec,execute_registered_trial
+FIXTURE='ENG-E4A-FIXED-MJ-4UAV-v1'
+def fixture():
+ initial={i:[0.,3.*i,3.] for i in (1,2,3,4)};targets={i:[.5,3.*i,3.] for i in (1,2,3,4)}
+ return {'trial_id':FIXTURE,'fixture_class':'non_registered_engineering_fixture','dataset_class':'engineering_validation','seed':990041,'uav_ids':[1,2,3,4],'initial_positions_m':initial,'assigned_targets_m':targets,'T_exec_requirement_s':3.5,'style':'smooth','safety_s':1.0,'q':{'mode':'direct'},'nominal_reference':{'polynomial':'frozen Minimum-Jerk reference','p0':initial,'targets':targets,'duration_s':3.5,'style_may_regenerate_or_retime':False},'metric_log_schema':{'raw_required':['clock','commanded_ladrc_acceleration_3d','safe_reference_position_3d','measured_position_3d','trajectory_completion','stable_hover_entry']}}
+def main():
+ p=argparse.ArgumentParser();p.add_argument('--output',type=Path,required=True);a=p.parse_args()
+ if a.output.exists():raise SystemExit('output exists')
+ a.output.mkdir(parents=True);runtime=build_runtime_spec(fixture());result=execute_registered_trial(fixture(),a.output/'raw');raw=a.output/'raw';stage=json.loads((raw/'stage_result.json').read_text()) if (raw/'stage_result.json').exists() else {};inter=json.loads((raw/'interaction_result.json').read_text()) if (raw/'interaction_result.json').exists() else {};metadata=yaml.safe_load((raw/'rosbag/metadata.yaml').read_text()) if (raw/'rosbag/metadata.yaml').exists() else {};counts={x['topic_metadata']['name']:x['message_count'] for x in metadata.get('rosbag2_bagfile_information',{}).get('topics_with_message_count',[])};checks={'backend_success':result.get('attempt_status')=='success','nonregistered_labels':runtime.get('fixture_class')=='non_registered_engineering_fixture' and runtime.get('dataset_class')=='engineering_validation','fixed_nominal_reference':runtime['nominal_reference']['duration_s']==runtime['duration_s'] and not runtime['nominal_reference']['style_may_regenerate_or_retime'],'single_publish':all(set(x.get('publish_count',{}).values())=={1} for x in (stage,inter)),'controller_acceptance':stage.get('acceptance') is True and inter.get('acceptance') is True,'staging':stage.get('success') is True and stage.get('stable_continuous_s',0)>=2,'interaction':inter.get('success') is True,'ladrc_trace_retained':all(counts.get(f'/uav{i}/control_tracking_debug',0)>0 for i in (1,2,3,4)),'commands_retained':all(counts.get(f'/uav{i}/execution_command',0)==2 for i in (1,2,3,4))}
+ m={'manifest_type':'E4A_live_engineering_smoke_v1','fixture_id':FIXTURE,'fixture_registered_formal_trial':False,'dataset_class':'engineering_validation','accepted_formal_result':False,'result_notice':'NOT_FORMAL_RESULT','scientific_interpretation':None,'status':'PASS' if all(checks.values()) else 'FAIL','checks':checks,'backend_result':result};(a.output/'smoke_manifest.json').write_text(json.dumps(m,indent=2,sort_keys=True)+'\n');print(json.dumps(m,sort_keys=True));return m['status']!='PASS'
+if __name__=='__main__':raise SystemExit(main())
