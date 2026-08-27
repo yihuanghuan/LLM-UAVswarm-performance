@@ -20,3 +20,21 @@ from the byte-unchanged sealed `harness/e3_wrench_driver.py`.
 
 The engineering smoke fixture ID starts with `ENG-`, is absent from the sealed
 610 permutation, and has no scientific interpretation.
+
+Command handoff readiness is based on ROS graph endpoint identity, not a raw
+subscription count: every `/uavN/execution_command` publisher must observe the
+`ladrc_position_controller` endpoint in namespace `/uavN`.  A rosbag recorder
+therefore cannot satisfy readiness.  The adapter retains endpoint/QoS
+snapshots and validates the complete command payload before its single publish;
+it never republishes a command as a delivery workaround.  The raw-evidence
+recorder endpoint is an independent gate, so controller delivery and rosbag
+retention cannot be conflated or race one another.
+
+Every live smoke also retains `runtime_provenance.json`, including the actual
+ROS package prefixes, installed launch/policy/controller hashes, frozen-source
+byte comparisons, binary capability evidence, live node subscriptions,
+verbose topic endpoint output, and the live `enable_execution_profiles=true`
+parameter gate.  Engineering fixture class and dataset class are propagated
+through the physical runtime specification, and the registered disturbance
+evidence topic is derived as `/e3_force/mavlink_<MAV_SYS_ID>/wrench` from the
+frozen UAV-to-system mapping.

@@ -52,6 +52,8 @@ def build_runtime_spec(spec: Dict[str, Any]) -> Dict[str, Any]:
     )
     runtime = {
         "runtime_spec_type": "E3_registered_physical_runtime_spec_v1",
+        "fixture_class": spec.get("fixture_class", "registered_formal_spec"),
+        "dataset_class": spec.get("dataset_class", "formal_evaluation"),
         "trial_id": spec["trial_id"], "seed": spec["seed"],
         "uav_ids": spec["uav_ids"], "initial_positions_m": initial,
         "ordered_targets_m": ordered_targets,

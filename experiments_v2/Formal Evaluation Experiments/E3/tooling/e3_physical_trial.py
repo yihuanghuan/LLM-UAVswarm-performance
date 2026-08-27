@@ -15,6 +15,11 @@ import sys
 import time
 from types import SimpleNamespace
 
+from e3_runtime_diagnostics import (
+    collect_runtime_provenance, endpoint_snapshot, expected_wrench_topic,
+    runtime_provenance_gate, validate_command, write_json,
+)
+
 WORKSPACE = Path("/home/yihuang/learning/LLM_swarm_ws")
 PX4 = Path("/home/yihuang/PX4-Autopilot-formal-v1")
 FORMAL_INSTALL = WORKSPACE / "formal_install_v1/setup.bash"
@@ -80,7 +85,7 @@ def bag_topics(ids):
                    f"/uav{uid}/control_tracking_debug", f"/uav{uid}/iapf_debug",
                    f"/uav{uid}/swarm_state", f"/px4_{uid}/fmu/out/vehicle_odometry",
                    f"/px4_{uid}/fmu/out/vehicle_status",
-                   f"/e3_force/mavlink_{uid + 1}/wrench"]
+                   expected_wrench_topic(uid)]
     return topics
 
 
@@ -110,6 +115,7 @@ def direct_driver(spec, phase, result_path):
         def __init__(self):
             super().__init__("e3_exact_command_driver", parameter_overrides=[])
             self.status = {}; self.events = {uid: [] for uid in ids}
+            self.mission_status_seen = {uid: False for uid in ids}
             self.command_publishers = {uid: self.create_publisher(UAVExecutionCommand,
                               f"/uav{uid}/execution_command", 10) for uid in ids}
             self.arm = self.create_publisher(Empty, "/e3/disturbance_arm", 10)
@@ -117,11 +123,16 @@ def direct_driver(spec, phase, result_path):
             for uid in ids:
                 self.status_subscriptions.append(self.create_subscription(
                     UAVStatus, f"/uav{uid}/status",
-                    lambda msg, value=uid: self.status.__setitem__(value, msg), 20))
+                    lambda msg, value=uid: self._status(value, msg), 20))
                 self.status_subscriptions.append(self.create_subscription(
                     StartupEvent, f"/uav{uid}/startup_event",
                     lambda msg, value=uid: self.events[value].append(msg.event)
                     if int(msg.mission_id) == mission else None, 20))
+
+        def _status(self, uid, msg):
+            self.status[uid] = msg
+            if int(msg.mission_id) == mission:
+                self.mission_status_seen[uid] = True
 
         def commands(self):
             executable = ExecutableLFS(
@@ -138,23 +149,60 @@ def direct_driver(spec, phase, result_path):
     node = Driver(); started = time.monotonic(); published = None; stable_since = None
     timeout = (duration + 30.0) if phase == "stage" else float(spec["timeout_after_t0_s"])
     result = {"phase": phase, "success": False, "started_utc": utc_now(),
-              "mission_id": mission, "execution_command_t0_monotonic": None}
+              "mission_id": mission, "execution_command_t0_monotonic": None,
+              "command_publish_count_by_uav": {str(uid): 0 for uid in ids}}
     try:
-        deadline = time.monotonic() + 8
+        deadline = time.monotonic() + 20
+        snapshots = {}
         while time.monotonic() < deadline:
             rclpy.spin_once(node, timeout_sec=0.05)
-            if all(p.get_subscription_count() for p in node.command_publishers.values()): break
-        if not all(p.get_subscription_count() for p in node.command_publishers.values()):
-            raise RuntimeError("execution command subscriber missing")
-        # DDS discovery may report a match just before the endpoint is ready
-        # to receive its first sample.  This fixed plumbing settle does not
-        # alter the execution-command timestamp or any scored interval.
-        time.sleep(0.5)
+            snapshots = {
+                str(uid): endpoint_snapshot(
+                    node, node.command_publishers[uid],
+                    f"/uav{uid}/execution_command", uid,
+                ) for uid in ids
+            }
+            if all(
+                item["controller_endpoint_present"] and item["recorder_endpoint_present"]
+                for item in snapshots.values()
+            ):
+                break
+        write_json(result_path.parent / f"{phase}_endpoint_snapshot.json", {
+            "phase": phase, "captured_immediately_before_single_publish": True,
+            "endpoints": snapshots,
+        })
+        if not all(item["controller_endpoint_present"] for item in snapshots.values()):
+            raise RuntimeError("expected LADRC controller execution-command endpoint missing")
+        if not all(item["recorder_endpoint_present"] for item in snapshots.values()):
+            raise RuntimeError("required execution-command recorder endpoint missing")
+
+        commands = node.commands()
+        validations = {
+            str(command.uav_id): validate_command(command, int(command.uav_id))
+            for command in commands
+        }
+        validation_path = result_path.parent / "command_validation.json"
+        combined = (json.loads(validation_path.read_text())
+                    if validation_path.exists() else {"phases": {}})
+        combined["phases"][phase] = {
+            "mission_id": mission, "commands": validations,
+            "all_frozen_controller_metadata_guards_pass": all(
+                item["frozen_controller_metadata_guard_pass"]
+                for item in validations.values()
+            ),
+        }
+        write_json(validation_path, combined)
+        if len(commands) != len(ids) or set(validations) != {str(uid) for uid in ids}:
+            raise RuntimeError("exactly one command per participating UAV was not constructed")
+        if not combined["phases"][phase]["all_frozen_controller_metadata_guards_pass"]:
+            raise RuntimeError("command payload failed frozen controller metadata guard")
         if phase == "interaction":
             node.arm.publish(Empty())
-        for command in node.commands():
+        published = time.monotonic()
+        result["execution_command_t0_monotonic"] = published
+        for command in commands:
             node.command_publishers[int(command.uav_id)].publish(command)
-        published = time.monotonic(); result["execution_command_t0_monotonic"] = published
+            result["command_publish_count_by_uav"][str(command.uav_id)] += 1
         deadline = published + timeout
         required_stable = 2.0
         while time.monotonic() < deadline:
@@ -171,6 +219,27 @@ def direct_driver(spec, phase, result_path):
         else:
             result["termination_reason"] = "SUCCESS"
         result["events"] = node.events
+        result["controller_acceptance_event"] = {
+            str(uid): "command_accepted" in node.events[uid] for uid in ids
+        }
+        result["mission_trajectory_started_event"] = {
+            str(uid): "mission_trajectory_started" in node.events[uid] for uid in ids
+        }
+        result["controller_mission_status_seen"] = {
+            str(uid): node.mission_status_seen[uid] for uid in ids
+        }
+        result["final_mission_status"] = {
+            str(uid): {
+                "mission_id": int(node.status[uid].mission_id),
+                "is_hover_stable": bool(node.status[uid].is_hover_stable),
+                "stability_state": int(node.status[uid].stability_state),
+                "position_error": float(node.status[uid].position_error),
+                "speed": float(node.status[uid].speed),
+            } if uid in node.status else None for uid in ids
+        }
+        result["stable_continuous_observed_s"] = (
+            time.monotonic() - stable_since if stable_since is not None else 0.0
+        )
     except Exception as exc:
         result["termination_reason"] = "DRIVER_FAILURE"
         result["error"] = f"{type(exc).__name__}: {exc}"
@@ -191,6 +260,7 @@ def orchestrate(spec, output, result_path):
         "attempt_status": "infrastructure_failure", "started_utc": utc_now(),
         "cold_start": True,
         "fixture_class": spec.get("fixture_class", "registered_formal_spec"),
+        "dataset_class": spec.get("dataset_class", "formal_evaluation"),
         "retry_performed": False,
     }
     try:
@@ -227,6 +297,10 @@ def orchestrate(spec, output, result_path):
         bag = ["ros2", "bag", "record", "-o", str(output / "rosbag"), *bag_topics(ids)]
         process, stream = start(bag, output / "rosbag.log", cwd=WORKSPACE, env=env)
         processes.append(process); streams.append(stream); time.sleep(2)
+        runtime_provenance = collect_runtime_provenance(REPO, env, ids)
+        write_json(output / "runtime_provenance.json", runtime_provenance)
+        if not runtime_provenance_gate(runtime_provenance):
+            raise RuntimeError("installed runtime provenance gate failed")
         for phase in ("stage", "interaction"):
             phase_result = output / f"{phase}_result.json"
             command = [str(VENV_PYTHON), str(Path(__file__).resolve()), "--direct-driver",
@@ -239,7 +313,9 @@ def orchestrate(spec, output, result_path):
         result["attempt_status"] = "success"
         result["raw_evidence"] = {"rosbag": "rosbag", "staging": "stage_result.json",
                                   "interaction": "interaction_result.json",
-                                  "wrench_log": "wrench.log"}
+                                  "wrench_log": "wrench.log",
+                                  "runtime_provenance": "runtime_provenance.json",
+                                  "command_validation": "command_validation.json"}
     except subprocess.TimeoutExpired as exc:
         result["attempt_status"] = "timeout"; result["error"] = str(exc)
     except Exception as exc:

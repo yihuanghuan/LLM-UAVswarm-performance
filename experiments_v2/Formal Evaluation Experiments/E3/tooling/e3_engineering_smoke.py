@@ -10,6 +10,7 @@ from pathlib import Path
 import yaml
 
 from e3_formal_backend import build_runtime_spec, execute_registered_trial
+from e3_runtime_diagnostics import expected_wrench_topic
 from e3_trial_registry import POLICY_SHA256
 
 
@@ -51,31 +52,117 @@ def main():
                 args.output / "raw/stage_result.json",
                 args.output / "raw/interaction_result.json",
                 args.output / "raw/rosbag/metadata.yaml",
-                args.output / "raw/wrench.log"]
+                args.output / "raw/wrench.log",
+                args.output / "raw/runtime_provenance.json",
+                args.output / "raw/command_validation.json",
+                args.output / "raw/stage_endpoint_snapshot.json",
+                args.output / "raw/interaction_endpoint_snapshot.json"]
     evidence = {
         "backend_success": result.get("attempt_status") == "success",
         "required_files_present": all(p.exists() for p in required),
         "fixture_is_non_registered": result.get("fixture_class") ==
             "non_registered_engineering_fixture",
+        "dataset_class_propagated": result.get("dataset_class") == "engineering_validation",
+        "runtime_spec_labels_propagated": False,
+        "runtime_provenance_pass": False,
+        "controller_endpoint_present_every_phase": False,
+        "recorder_endpoint_present_every_phase": False,
+        "command_payload_guard_pass": False,
+        "exactly_one_command_per_uav_per_phase": False,
+        "controller_acceptance_event_every_uav": False,
+        "controller_profile_application_log": False,
+        "controller_mission_status_seen_every_uav": False,
         "staging_completed": False,
+        "staging_geometry_reached": False,
+        "staging_stable_continuous_2s": False,
         "interaction_completed": False,
         "clock_qos_compatible": False,
         "wrench_topic_retained": False,
+        "command_seen_by_rosbag": False,
+        "formal_output_absent": True,
+        "suite_journal_absent": not list(args.output.rglob("*journal*")),
     }
+    runtime_spec_path = args.output / "raw/runtime_spec.json"
+    if runtime_spec_path.exists():
+        runtime_spec = json.loads(runtime_spec_path.read_text())
+        evidence["runtime_spec_labels_propagated"] = (
+            runtime_spec.get("fixture_class") == "non_registered_engineering_fixture"
+            and runtime_spec.get("dataset_class") == "engineering_validation"
+        )
+    if required[5].exists():
+        evidence["runtime_provenance_pass"] = (
+            json.loads(required[5].read_text()).get("status") == "PASS"
+        )
+    if required[6].exists():
+        validation = json.loads(required[6].read_text())
+        phases = validation.get("phases", {})
+        evidence["command_payload_guard_pass"] = set(phases) == {"stage", "interaction"} and all(
+            item.get("all_frozen_controller_metadata_guards_pass") is True
+            for item in phases.values()
+        )
+    if required[7].exists() and required[8].exists():
+        endpoint_documents = [json.loads(path.read_text()) for path in required[7:9]]
+        evidence["controller_endpoint_present_every_phase"] = all(
+            all(item.get("controller_endpoint_present") is True
+                for item in document.get("endpoints", {}).values())
+            for document in endpoint_documents
+        )
+        evidence["recorder_endpoint_present_every_phase"] = all(
+            all(item.get("recorder_endpoint_present") is True
+                for item in document.get("endpoints", {}).values())
+            for document in endpoint_documents
+        )
+    phase_results = []
     if required[1].exists():
-        evidence["staging_completed"] = json.loads(required[1].read_text()).get("success") is True
+        stage = json.loads(required[1].read_text()); phase_results.append(stage)
+        evidence["staging_completed"] = stage.get("success") is True
+        final = stage.get("final_mission_status", {})
+        evidence["staging_geometry_reached"] = bool(final) and all(
+            item is not None and item.get("is_hover_stable") is True
+            and item.get("position_error", float("inf")) <= 0.40
+            for item in final.values()
+        )
+        evidence["staging_stable_continuous_2s"] = (
+            stage.get("stable_continuous_observed_s", 0.0) >= 2.0
+        )
     if required[2].exists():
-        evidence["interaction_completed"] = json.loads(required[2].read_text()).get("success") is True
+        interaction = json.loads(required[2].read_text()); phase_results.append(interaction)
+        evidence["interaction_completed"] = interaction.get("success") is True
+    if len(phase_results) == 2:
+        evidence["exactly_one_command_per_uav_per_phase"] = all(
+            set(item.get("command_publish_count_by_uav", {}).values()) == {1}
+            and len(item["command_publish_count_by_uav"]) == 2
+            for item in phase_results
+        )
+        evidence["controller_acceptance_event_every_uav"] = all(
+            all(item.get("controller_acceptance_event", {}).values())
+            and all(item.get("mission_trajectory_started_event", {}).values())
+            for item in phase_results
+        )
+        evidence["controller_mission_status_seen_every_uav"] = all(
+            all(item.get("controller_mission_status_seen", {}).values())
+            for item in phase_results
+        )
+        controller_log = args.output / "raw/controllers.log"
+        if controller_log.exists():
+            log_text = controller_log.read_text(errors="replace")
+            evidence["controller_profile_application_log"] = all(
+                f"Execution Profile mission={item['mission_id']}" in log_text
+                for item in phase_results
+            )
     if required[4].exists():
         wrench_log = required[4].read_text(errors="replace")
         evidence["clock_qos_compatible"] = "incompatible QoS" not in wrench_log
     if required[3].exists():
         bag_metadata = yaml.safe_load(required[3].read_text())
-        topics = {
-            item["topic_metadata"]["name"]
+        topic_counts = {
+            item["topic_metadata"]["name"]: int(item["message_count"])
             for item in bag_metadata["rosbag2_bagfile_information"]["topics_with_message_count"]
         }
-        evidence["wrench_topic_retained"] = "/gazebo/force/uav1/wrench" in topics
+        evidence["wrench_topic_retained"] = topic_counts.get(expected_wrench_topic(1), 0) > 0
+        evidence["command_seen_by_rosbag"] = all(
+            topic_counts.get(f"/uav{uid}/execution_command") == 2 for uid in (1, 2)
+        )
     status = "PASS" if all(evidence.values()) else "FAIL"
     manifest = {
         "manifest_type": "E3_live_engineering_smoke_v1",
