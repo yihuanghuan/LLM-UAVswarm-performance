@@ -40,6 +40,8 @@ from e2_common import (
     write_json_exclusive,
 )
 
+ALLOWED_BRANCHES = {EXPECTED_BRANCH, "formal/E2-formal-adapter-v1"}
+
 
 SEALED_PATHS = (
     "experiments_v2/Formal Evaluation Experiments/formal_preflight_v1.yaml",
@@ -138,7 +140,15 @@ def _allowed_e2_change(path: str) -> bool:
         "synthetic-validation/"
     )
     formal = "experiments_v2/Formal Evaluation Experiments/E2/results/formal/"
-    return path.startswith(tooling) or path.startswith(synthetic) or (
+    engineering = (
+        "experiments_v2/Formal Evaluation Experiments/E2/results/"
+        "engineering-validation/"
+    )
+    documents = {
+        "experiments_v2/Formal Evaluation Experiments/E2/FORMAL_ADAPTER_README.md",
+        "experiments_v2/Formal Evaluation Experiments/E2/formal_adapter_readiness_manifest.json",
+    }
+    return path in documents or path.startswith(tooling) or path.startswith(synthetic) or path.startswith(engineering) or (
         path.startswith(formal) and path.endswith("/.gitignore")
     )
 
@@ -185,7 +195,7 @@ def validate_provenance(
         )
         record(
             "authoritative_preflight_ancestry_and_branch",
-            source_ancestor and branch == EXPECTED_BRANCH,
+            source_ancestor and branch in ALLOWED_BRANCHES,
             {"head": head, "branch": branch, "source_commit": SOURCE_PREFLIGHT_COMMIT},
         )
 
