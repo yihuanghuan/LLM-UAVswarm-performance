@@ -1,12 +1,12 @@
 # E2--E5 sealed global campaign infrastructure
 
-CURRENT FORMAL CAMPAIGN STATUS: **READY_FOR_LAUNCH_GATE**
+CURRENT FORMAL CAMPAIGN STATUS: **READY_FOR_FORMAL_LAUNCH**
 
 All five formal-capable adapters are pinned by branch, commit, source hash,
-protocol/registry hash, and readiness-manifest hash. This status still does not
-authorize cursor #1: the final 610 pinned-entrypoint rehearsal and offline audit
-must be retained before `formal_launch_gate_v1.json` may say
-`READY_FOR_FORMAL_LAUNCH`.
+protocol/registry hash, and readiness-manifest hash. The final 610
+pinned-entrypoint rehearsal and independent offline audit passed. This is
+launch readiness only: cursor #1 is not authorized by this repository change,
+the formal campaign has not started, and the formal suite journal is empty.
 
 ## Authority and execution boundary
 

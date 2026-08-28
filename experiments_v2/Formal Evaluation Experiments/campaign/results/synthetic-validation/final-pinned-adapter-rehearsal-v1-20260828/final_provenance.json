@@ -1,0 +1,226 @@
+{
+  "accepted_formal_result": false,
+  "campaign_infrastructure_commit": "afe43fb54c6f084e1c8abc3f95cc8d2a77f307ec",
+  "campaign_infrastructure_source_hashes": {
+    "experiments_v2/Formal Evaluation Experiments/campaign/README.md": "7b1823f2aae07771a98b4ec4de00bbaea8b6321969eb83a835c981d91432c1c8",
+    "experiments_v2/Formal Evaluation Experiments/campaign/__init__.py": "5f431ef439d13acb8ba0223038e660831f7520bbd52de28ce916bc914986e9f4",
+    "experiments_v2/Formal Evaluation Experiments/campaign/campaign_audit.py": "9a738b4cf40500f857f2a27a1fe51b9341fcdd7f1fbee9388aef312b4f76cc5c",
+    "experiments_v2/Formal Evaluation Experiments/campaign/campaign_common.py": "d1be5e3a4e1fc992b1a3a1d0defce1d4e30e5ea3ceb7b3ef8281bcc550604225",
+    "experiments_v2/Formal Evaluation Experiments/campaign/campaign_dispatcher.py": "4195f302738440fb7964940c5bcd790a996262f32af854f0900f7f938a98d840",
+    "experiments_v2/Formal Evaluation Experiments/campaign/campaign_journal.py": "a11845d3337cb3ec2592815d90d44af954ceb10a7d0f93bd4383ff370a81c915",
+    "experiments_v2/Formal Evaluation Experiments/campaign/campaign_manifest_v1.json": "c75a82c814aef2596cebbcda02fe634f7e7d82b94070ffaaf38807496493f1a8",
+    "experiments_v2/Formal Evaluation Experiments/campaign/campaign_provenance.py": "3be212718f19180fcf69fa678e1c53e93e0ab8bd126e2dfb9efeda29e852112b",
+    "experiments_v2/Formal Evaluation Experiments/campaign/formal_campaign_launcher.py": "9cf0f3378716b28c6ff1600443d147bf73bc2a6050cbf4ae1a7a1ec120991cf9",
+    "experiments_v2/Formal Evaluation Experiments/campaign/formal_launch_audit.py": "f626f95bcaa49230b809c56702076e5056b8dcc19cc9e5343b5a5b053d13a0e8",
+    "experiments_v2/Formal Evaluation Experiments/campaign/formal_launch_gate_v1.json": "ab0c66ff5afc3d46c03e9802a6896d0e74c232bfbd146a9b6d4683c46263f1c4",
+    "experiments_v2/Formal Evaluation Experiments/campaign/level_a_live_backend_smoke_integration_v1.json": "b31e4df21eadf645327dd54e81a4a23660d431d3794dbfdd0257d26ad53763b8",
+    "experiments_v2/Formal Evaluation Experiments/campaign/mock_runners.py": "1a51d8224b5e5ed9dc89a1fb55aea324cb9414b08118d75be9226272a18fb4fd",
+    "experiments_v2/Formal Evaluation Experiments/campaign/pinned_adapter_loader.py": "cec090bf399e501bff89d8baeeb5b3510916972768d426441d30e2dea3987676",
+    "experiments_v2/Formal Evaluation Experiments/campaign/pinned_adapter_rehearsal.py": "8063ffa2d61d40ebfd534c62132e102fc269257753864771b3c4a479ee24e34d",
+    "experiments_v2/Formal Evaluation Experiments/campaign/runner_registry.py": "c29951612e47e3ab13f1b9c32be39577306b5cecdc689badac085547c2c1d307",
+    "experiments_v2/Formal Evaluation Experiments/campaign/runner_registry_v1.json": "410d5a26b44054457bf74e718c1c146d4abe6f845d9b6907efa25aa0fa0de7ab",
+    "experiments_v2/Formal Evaluation Experiments/campaign/synthetic_rehearsal.py": "c78777aa35cd82947f0773116bd2a340f4425a5632142ff873b13ef93bb88a40",
+    "experiments_v2/Formal Evaluation Experiments/campaign/test_campaign_infrastructure.py": "90fdb319b1ffa40a5e7e54f285b74ac298fc391843ad71b285e60a430b00b771",
+    "experiments_v2/Formal Evaluation Experiments/campaign/test_formal_campaign_launcher.py": "1dae101516df69ad93adf5a7eb5c35f8cf973563a20a32923a745a59d9dee7b2"
+  },
+  "checks": [
+    {
+      "check": "launch_branch_exact_base",
+      "details": {
+        "base": "d2edd0cfef87b4485a35a8b762733fe702e63396",
+        "branch": "formal/global-campaign-launch-v1",
+        "head": "afe43fb54c6f084e1c8abc3f95cc8d2a77f307ec"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "validated_infrastructure_source_retained",
+      "details": "c50aeb6d821a644a0ea0d48c40a1e7b471f9cd2b",
+      "status": "PASS"
+    },
+    {
+      "check": "baseline",
+      "details": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+      "status": "PASS"
+    },
+    {
+      "check": "sealed_files_unchanged",
+      "details": {
+        "experiments_v2/Formal Evaluation Experiments/e2_e5_scenario_seed_registry_v1.yaml": {
+          "byte_identical": true,
+          "sha256": "90313d33793940489edde631d397564378ae54fe3cfddf438e4a895d6132254d"
+        },
+        "experiments_v2/Formal Evaluation Experiments/formal_preflight_v1.yaml": {
+          "byte_identical": true,
+          "sha256": "c9eb9752000d5023f2986ae13f5bf062db20064f29e04f679e92e58a85a1c5a5"
+        },
+        "experiments_v2/Formal Evaluation Experiments/simulation_trial_order_v1.txt": {
+          "byte_identical": true,
+          "sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce"
+        },
+        "experiments_v2/Formal Evaluation Experiments/simulation_trial_order_v1.yaml": {
+          "byte_identical": true,
+          "sha256": "6674b6c2e03278e99590c6d3c9df7ada580180b92f24475a42d396972451b254"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "sealed_610_order",
+      "details": {
+        "count": 610,
+        "first": "E2-RSV-01__SHIFT__LATE__S52105",
+        "sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "policy_unchanged",
+      "details": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+      "status": "PASS"
+    },
+    {
+      "check": "five_adapter_pins",
+      "details": {
+        "families": [
+          {
+            "checks": {
+              "adapter_branch_head": true,
+              "adapter_manifest": true,
+              "adapter_source": true,
+              "contract_branch_head": true,
+              "manifest_implementation_commit": true,
+              "manifest_smoke": true,
+              "manifest_source": true,
+              "manifest_status": true,
+              "protocol": true,
+              "registry": true
+            },
+            "family": "E2",
+            "status": "PASS"
+          },
+          {
+            "checks": {
+              "adapter_branch_head": true,
+              "adapter_manifest": true,
+              "adapter_source": true,
+              "contract_branch_head": true,
+              "manifest_implementation_commit": true,
+              "manifest_smoke": true,
+              "manifest_source": true,
+              "manifest_status": true,
+              "protocol": true,
+              "registry": true
+            },
+            "family": "E3",
+            "status": "PASS"
+          },
+          {
+            "checks": {
+              "adapter_branch_head": true,
+              "adapter_manifest": true,
+              "adapter_source": true,
+              "contract_branch_head": true,
+              "manifest_implementation_commit": true,
+              "manifest_smoke": true,
+              "manifest_source": true,
+              "manifest_status": true,
+              "protocol": true,
+              "registry": true
+            },
+            "family": "E4A",
+            "status": "PASS"
+          },
+          {
+            "checks": {
+              "adapter_branch_head": true,
+              "adapter_manifest": true,
+              "adapter_source": true,
+              "contract_branch_head": true,
+              "manifest_implementation_commit": true,
+              "manifest_smoke": true,
+              "manifest_source": true,
+              "manifest_status": true,
+              "protocol": true,
+              "registry": true
+            },
+            "family": "E4B",
+            "status": "PASS"
+          },
+          {
+            "checks": {
+              "adapter_branch_head": true,
+              "adapter_manifest": true,
+              "adapter_source": true,
+              "contract_branch_head": true,
+              "manifest_implementation_commit": true,
+              "manifest_smoke": true,
+              "manifest_source": true,
+              "manifest_status": true,
+              "protocol": true,
+              "registry": true
+            },
+            "family": "E5",
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "machine_manifest_ready_for_launch",
+      "details": {
+        "accepted_formal_result": false,
+        "baseline_commit": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+        "baseline_tag": "paper-final-sim-v3",
+        "canonical_policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+        "current_formal_campaign_status": "READY_FOR_FORMAL_LAUNCH",
+        "dataset_class": "engineering_validation",
+        "formal_campaign_started": false,
+        "formal_launch_requirements": [
+          "E2 READY",
+          "E3 READY",
+          "E4A READY",
+          "E4B READY",
+          "E5 READY",
+          "global infrastructure PASS",
+          "full synthetic campaign rehearsal PASS",
+          "all provenance checks PASS"
+        ],
+        "global_seed_registry_sha256": "90313d33793940489edde631d397564378ae54fe3cfddf438e4a895d6132254d",
+        "manifest_type": "E2_E5_global_campaign_infrastructure_manifest_v1",
+        "preflight_commit": "36dba68c6b16681ec98500b49c5a83095de4b634",
+        "result_notice": "NOT_FORMAL_RESULT",
+        "simulation_trial_order_txt_sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+        "simulation_trial_order_yaml_sha256": "6674b6c2e03278e99590c6d3c9df7ada580180b92f24475a42d396972451b254"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "formal_output_absent",
+      "details": [],
+      "status": "PASS"
+    },
+    {
+      "check": "launch_changes_confined_to_campaign",
+      "details": [],
+      "status": "PASS"
+    }
+  ],
+  "dataset_class": "engineering_validation",
+  "generated_at_utc": "2026-08-28T01:16:22.275Z",
+  "global_infrastructure_rehearsal_head": "d2edd0cfef87b4485a35a8b762733fe702e63396",
+  "global_infrastructure_source_commit": "c50aeb6d821a644a0ea0d48c40a1e7b471f9cd2b",
+  "manifest_type": "E2_E5_global_launch_provenance_v1",
+  "result_notice": "NOT_FORMAL_RESULT",
+  "runner_registry_sha256": "3359e0f63ceb28b48769c0e9f3230d193cb52389abbb00fa50220dc072399c3b",
+  "sealed_hashes": {
+    "global_registry_sha256": "90313d33793940489edde631d397564378ae54fe3cfddf438e4a895d6132254d",
+    "order_txt_sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+    "order_yaml_sha256": "6674b6c2e03278e99590c6d3c9df7ada580180b92f24475a42d396972451b254",
+    "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+    "preflight_sha256": "c9eb9752000d5023f2986ae13f5bf062db20064f29e04f679e92e58a85a1c5a5"
+  },
+  "status": "PASS"
+}
