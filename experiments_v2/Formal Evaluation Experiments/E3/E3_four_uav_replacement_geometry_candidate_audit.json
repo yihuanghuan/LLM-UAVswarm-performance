@@ -1,0 +1,6637 @@
+{
+  "accepted_formal_result": false,
+  "audit_sha256": "341cfb05ade322fb1f8c6b5ee3c833ea71f6465dcc88f3608329b66a3cb72e9b",
+  "audit_type": "E3_four_uav_replacement_geometry_candidate_audit_v1",
+  "candidate_generation": {
+    "additional_exhaustive_validity_requirement": "production P1 must match the globally best N_hard, J_margin, J_distance tuple among all 24 assignments",
+    "selection_rule": [
+      "all hard scientific validity filters pass",
+      "P0 has predicted hard conflict",
+      "P1 strictly reduces N_hard",
+      "maximize P0-to-P1 N_hard improvement",
+      "maximize P0-to-P1 J_margin improvement",
+      "prefer a unique P0 distance optimum",
+      "minimize combined P0/P1 travel and geometry extremity",
+      "prefer simple interpretable coordinates"
+    ],
+    "stage_1": {
+      "exhaustive_global_P1_consistency_pass": 38,
+      "families": [
+        "axis-aligned rectangles",
+        "diamonds",
+        "symmetric trapezoids",
+        "integer rotated rectangles"
+      ],
+      "generated_before_deduplication": 4980,
+      "strict_scientific_and_motion_filter_pass": 91,
+      "unique_target_sets": 4440
+    },
+    "stage_2": {
+      "family": "integer offset two-row trapezoids",
+      "parameter_grid": {
+        "bottom_center_x": [
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3
+        ],
+        "bottom_half_width": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "bottom_y": [
+          0,
+          2,
+          4
+        ],
+        "top_center_x": [
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3
+        ],
+        "top_half_width": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "top_y": [
+          6,
+          8,
+          10,
+          12
+        ]
+      },
+      "strict_scientific_motion_and_global_P1_pass": 302,
+      "unique_target_sets": 14700
+    }
+  },
+  "candidates": [
+    {
+      "P0_distance_optimum_count": 1,
+      "P0_distance_optimum_unique": true,
+      "P0_to_P1_hard_risk_improvement": 2,
+      "P0_to_P1_margin_cost_improvement": 0.672365532501112,
+      "acceptance_checks": {
+        "P0_all_UAVs_move": true,
+        "P0_distance_optimum_unique": true,
+        "P0_has_hard_conflict": true,
+        "P0_motion_feasible": true,
+        "P1_all_UAVs_move": true,
+        "P1_eliminates_hard_conflict": true,
+        "P1_motion_feasible": true,
+        "P1_strictly_reduces_hard_conflict": true,
+        "distinct_targets": true,
+        "production_P1_matches_global_exhaustive_objective": true,
+        "static_hard_separation": true,
+        "workspace": true
+      },
+      "assignments": {
+        "P0": {
+          "J_distance": 32.33035491915126,
+          "J_margin": 0.672365532501112,
+          "N_hard": 2,
+          "assignment_mode": "distance_hungarian",
+          "hungarian_initial_permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "maximum_displacement_m": 15.297058540778355,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.453266907313291,
+            "jerk": 4.249182927993988,
+            "velocity": 4.780330793993236
+          },
+          "motion_feasibility": "PASS",
+          "per_uav": [
+            {
+              "displacement_m": 15.033296378372908,
+              "displacement_vector_m": [
+                1.0,
+                15.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 2,
+              "target_label": 3,
+              "target_m": [
+                -2.0,
+                12.0,
+                3.0
+              ],
+              "uav_id": 1
+            },
+            {
+              "displacement_m": 15.297058540778355,
+              "displacement_vector_m": [
+                -3.0,
+                15.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 3,
+              "target_label": 4,
+              "target_m": [
+                0.0,
+                12.0,
+                3.0
+              ],
+              "uav_id": 2
+            },
+            {
+              "displacement_m": 1.0,
+              "displacement_vector_m": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 0,
+              "target_label": 1,
+              "target_m": [
+                -3.0,
+                4.0,
+                3.0
+              ],
+              "uav_id": 3
+            },
+            {
+              "displacement_m": 1.0,
+              "displacement_vector_m": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 1,
+              "target_label": 2,
+              "target_m": [
+                3.0,
+                4.0,
+                3.0
+              ],
+              "uav_id": 4
+            }
+          ],
+          "permutation_target_labels": [
+            3,
+            4,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.42748229992745784,
+          "refinement_iterations": 0,
+          "xy_crossings": 0
+        },
+        "P1": {
+          "J_distance": 32.54221811864255,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "assignment_mode": "safety_aware",
+          "hungarian_initial_permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "maximum_displacement_m": 9.486832980505138,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.5214515486254616,
+            "jerk": 2.6352313834736494,
+            "velocity": 2.9646353064078554
+          },
+          "motion_feasibility": "PASS",
+          "per_uav": [
+            {
+              "displacement_m": 7.0,
+              "displacement_vector_m": [
+                0.0,
+                7.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 0,
+              "target_label": 1,
+              "target_m": [
+                -3.0,
+                4.0,
+                3.0
+              ],
+              "uav_id": 1
+            },
+            {
+              "displacement_m": 7.0,
+              "displacement_vector_m": [
+                0.0,
+                7.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 1,
+              "target_label": 2,
+              "target_m": [
+                3.0,
+                4.0,
+                3.0
+              ],
+              "uav_id": 2
+            },
+            {
+              "displacement_m": 9.055385138137417,
+              "displacement_vector_m": [
+                1.0,
+                9.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 2,
+              "target_label": 3,
+              "target_m": [
+                -2.0,
+                12.0,
+                3.0
+              ],
+              "uav_id": 3
+            },
+            {
+              "displacement_m": 9.486832980505138,
+              "displacement_vector_m": [
+                -3.0,
+                9.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 3,
+              "target_label": 4,
+              "target_m": [
+                0.0,
+                12.0,
+                3.0
+              ],
+              "uav_id": 4
+            }
+          ],
+          "permutation_target_labels": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 2.0,
+          "refinement_iterations": 1,
+          "xy_crossings": 0
+        }
+      },
+      "candidate_id": "G1_OFFSET_TRAPEZOID_SELECTED",
+      "candidate_sha256": "e0a93c3d285f6e06a20d91b991f3d257981b7cf7a173e7f4d887f357db4a3f4e",
+      "disposition": "ACCEPTED_RECOMMENDED",
+      "distinct_targets": true,
+      "duration_s": 6.0,
+      "exhaustive_24_assignments": [
+        {
+          "J_distance": 32.54221811864255,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 9.486832980505138,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.5214515486254616,
+            "jerk": 2.6352313834736494,
+            "velocity": 2.9646353064078554
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 2.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 33.78246312149214,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 10.295630140987,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.6511624537154639,
+            "jerk": 2.8598972613852784,
+            "velocity": 3.217384419058438
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            2,
+            4,
+            3
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            3,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 38.38098381164525,
+          "J_margin": 0.19214550064575045,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            3,
+            2,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            2,
+            1,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 1.0109807213431148,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 33.29822128134704,
+          "J_margin": 0.11111111111111122,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            3,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            0,
+            2,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 1.1999999999999997,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 38.67545121206358,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.297058540778355,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.453266907313291,
+            "jerk": 4.249182927993988,
+            "velocity": 4.780330793993236
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            4,
+            2,
+            3
+          ],
+          "permutation_zero_based": [
+            0,
+            3,
+            1,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 1.802525304378329,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 32.352443678915776,
+          "J_margin": 0.09094428650962408,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.297058540778355,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.453266907313291,
+            "jerk": 4.249182927993988,
+            "velocity": 4.780330793993236
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            4,
+            3,
+            2
+          ],
+          "permutation_zero_based": [
+            0,
+            3,
+            2,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 1.2571745323852408,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 36.98130703322833,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 9.486832980505138,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.5214515486254616,
+            "jerk": 2.6352313834736494,
+            "velocity": 2.9646353064078554
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            1,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            1,
+            0,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 38.22155203607791,
+          "J_margin": 2.0,
+          "N_hard": 2,
+          "maximum_displacement_m": 10.295630140987,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.6511624537154639,
+            "jerk": 2.8598972613852784,
+            "velocity": 3.217384419058438
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            1,
+            4,
+            3
+          ],
+          "permutation_zero_based": [
+            1,
+            0,
+            3,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 4
+        },
+        {
+          "J_distance": 35.51776573863992,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            3,
+            1,
+            4
+          ],
+          "permutation_zero_based": [
+            1,
+            2,
+            0,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 1.8973665961010275,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 40.60052826893814,
+          "J_margin": 0.6925323571025992,
+          "N_hard": 2,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            3,
+            4,
+            1
+          ],
+          "permutation_zero_based": [
+            1,
+            2,
+            3,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.42748229992745784,
+          "xy_crossings": 5
+        },
+        {
+          "J_distance": 35.81223313905824,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.297058540778355,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.453266907313291,
+            "jerk": 4.249182927993988,
+            "velocity": 4.780330793993236
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            4,
+            1,
+            3
+          ],
+          "permutation_zero_based": [
+            1,
+            3,
+            0,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 1.8973665961010275,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 39.65475066650688,
+          "J_margin": 0.09094428650962408,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.297058540778355,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.453266907313291,
+            "jerk": 4.249182927993988,
+            "velocity": 4.780330793993236
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            4,
+            3,
+            1
+          ],
+          "permutation_zero_based": [
+            1,
+            3,
+            2,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 1.2571745323852408,
+          "xy_crossings": 4
+        },
+        {
+          "J_distance": 39.822436346469146,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.033296378372908,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.410966030794729,
+            "jerk": 4.175915660659141,
+            "velocity": 4.6979051182415335
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            1,
+            2,
+            4
+          ],
+          "permutation_zero_based": [
+            2,
+            0,
+            1,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 2.0,
+          "xy_crossings": 4
+        },
+        {
+          "J_distance": 34.739673816170935,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.033296378372908,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.410966030794729,
+            "jerk": 4.175915660659141,
+            "velocity": 4.6979051182415335
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            1,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 1.8973665961010275,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 32.52012935887805,
+          "J_margin": 0.5814212459914879,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.033296378372908,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.410966030794729,
+            "jerk": 4.175915660659141,
+            "velocity": 4.6979051182415335
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            2,
+            1,
+            4
+          ],
+          "permutation_zero_based": [
+            2,
+            1,
+            0,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.42748229992745784,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 37.60289188917627,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.033296378372908,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.410966030794729,
+            "jerk": 4.175915660659141,
+            "velocity": 4.6979051182415335
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            2,
+            4,
+            1
+          ],
+          "permutation_zero_based": [
+            2,
+            1,
+            3,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 1.8973665961010275,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 32.33035491915126,
+          "J_margin": 0.672365532501112,
+          "N_hard": 2,
+          "maximum_displacement_m": 15.297058540778355,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.453266907313291,
+            "jerk": 4.249182927993988,
+            "velocity": 4.780330793993236
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            4,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.42748229992745784,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 42.4958799797477,
+          "J_margin": 1.0909442865096242,
+          "N_hard": 2,
+          "maximum_displacement_m": 15.297058540778355,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.453266907313291,
+            "jerk": 4.249182927993988,
+            "velocity": 4.780330793993236
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            4,
+            2,
+            1
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            1,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 5
+        },
+        {
+          "J_distance": 40.89499566935646,
+          "J_margin": 0.2020553976207353,
+          "N_hard": 2,
+          "maximum_displacement_m": 15.297058540778355,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.453266907313291,
+            "jerk": 4.249182927993988,
+            "velocity": 4.780330793993236
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            1,
+            2,
+            3
+          ],
+          "permutation_zero_based": [
+            3,
+            0,
+            1,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 1.1999999999999997,
+          "xy_crossings": 5
+        },
+        {
+          "J_distance": 34.57198813620866,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.297058540778355,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.453266907313291,
+            "jerk": 4.249182927993988,
+            "velocity": 4.780330793993236
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            1,
+            3,
+            2
+          ],
+          "permutation_zero_based": [
+            3,
+            0,
+            2,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 1.8973665961010275,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 33.59268868176535,
+          "J_margin": 0.2020553976207353,
+          "N_hard": 2,
+          "maximum_displacement_m": 15.297058540778355,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.453266907313291,
+            "jerk": 4.249182927993988,
+            "velocity": 4.780330793993236
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            2,
+            1,
+            3
+          ],
+          "permutation_zero_based": [
+            3,
+            1,
+            0,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 1.1999999999999997,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 37.435206209213995,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.297058540778355,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.453266907313291,
+            "jerk": 4.249182927993988,
+            "velocity": 4.780330793993236
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            2,
+            3,
+            1
+          ],
+          "permutation_zero_based": [
+            3,
+            1,
+            2,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 1.802525304378329,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 33.10844684162025,
+          "J_margin": 1.0909442865096242,
+          "N_hard": 2,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            3,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            3,
+            2,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 43.27397190221669,
+          "J_margin": 2.8645110331468624,
+          "N_hard": 5,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            3,
+            2,
+            1
+          ],
+          "permutation_zero_based": [
+            3,
+            2,
+            1,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 6
+        }
+      ],
+      "geometric_interpretation": "upward-shifted offset trapezoid; six-metre bottom edge and two-metre top edge centred at x=-1",
+      "global_lexicographic_best_permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "production_P1_matches_global_exhaustive_objective": true,
+      "scientific_validity_pass": true,
+      "static_hard_separation_pass": true,
+      "static_target_minimum_separation_m": 2.0,
+      "targets_m": [
+        [
+          -3.0,
+          4.0,
+          3.0
+        ],
+        [
+          3.0,
+          4.0,
+          3.0
+        ],
+        [
+          -2.0,
+          12.0,
+          3.0
+        ],
+        [
+          0.0,
+          12.0,
+          3.0
+        ]
+      ],
+      "workspace_pass": true
+    },
+    {
+      "P0_distance_optimum_count": 1,
+      "P0_distance_optimum_unique": true,
+      "P0_to_P1_hard_risk_improvement": 2,
+      "P0_to_P1_margin_cost_improvement": 0.5596824244650986,
+      "acceptance_checks": {
+        "P0_all_UAVs_move": true,
+        "P0_distance_optimum_unique": true,
+        "P0_has_hard_conflict": true,
+        "P0_motion_feasible": true,
+        "P1_all_UAVs_move": true,
+        "P1_eliminates_hard_conflict": true,
+        "P1_motion_feasible": true,
+        "P1_strictly_reduces_hard_conflict": true,
+        "distinct_targets": true,
+        "production_P1_matches_global_exhaustive_objective": true,
+        "static_hard_separation": true,
+        "workspace": true
+      },
+      "assignments": {
+        "P0": {
+          "J_distance": 28.38006887453163,
+          "J_margin": 0.5596824244650986,
+          "N_hard": 2,
+          "assignment_mode": "distance_hungarian",
+          "hungarian_initial_permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "maximum_displacement_m": 13.341664064126334,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.1396703719058046,
+            "jerk": 3.706017795590648,
+            "velocity": 4.169270020039479
+          },
+          "motion_feasibility": "PASS",
+          "per_uav": [
+            {
+              "displacement_m": 13.038404810405298,
+              "displacement_vector_m": [
+                1.0,
+                13.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 2,
+              "target_label": 3,
+              "target_m": [
+                -2.0,
+                10.0,
+                3.0
+              ],
+              "uav_id": 1
+            },
+            {
+              "displacement_m": 13.341664064126334,
+              "displacement_vector_m": [
+                -3.0,
+                13.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 3,
+              "target_label": 4,
+              "target_m": [
+                0.0,
+                10.0,
+                3.0
+              ],
+              "uav_id": 2
+            },
+            {
+              "displacement_m": 1.0,
+              "displacement_vector_m": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 0,
+              "target_label": 1,
+              "target_m": [
+                -3.0,
+                4.0,
+                3.0
+              ],
+              "uav_id": 3
+            },
+            {
+              "displacement_m": 1.0,
+              "displacement_vector_m": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 1,
+              "target_label": 2,
+              "target_m": [
+                3.0,
+                4.0,
+                3.0
+              ],
+              "uav_id": 4
+            }
+          ],
+          "permutation_target_labels": [
+            3,
+            4,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.49827287912243984,
+          "refinement_iterations": 0,
+          "xy_crossings": 0
+        },
+        "P1": {
+          "J_distance": 28.686840917729384,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "assignment_mode": "safety_aware",
+          "hungarian_initial_permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "maximum_displacement_m": 7.615773105863909,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.2213801813215668,
+            "jerk": 2.1154925294066413,
+            "velocity": 2.3799290955824715
+          },
+          "motion_feasibility": "PASS",
+          "per_uav": [
+            {
+              "displacement_m": 7.0,
+              "displacement_vector_m": [
+                0.0,
+                7.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 0,
+              "target_label": 1,
+              "target_m": [
+                -3.0,
+                4.0,
+                3.0
+              ],
+              "uav_id": 1
+            },
+            {
+              "displacement_m": 7.0,
+              "displacement_vector_m": [
+                0.0,
+                7.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 1,
+              "target_label": 2,
+              "target_m": [
+                3.0,
+                4.0,
+                3.0
+              ],
+              "uav_id": 2
+            },
+            {
+              "displacement_m": 7.0710678118654755,
+              "displacement_vector_m": [
+                1.0,
+                7.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 2,
+              "target_label": 3,
+              "target_m": [
+                -2.0,
+                10.0,
+                3.0
+              ],
+              "uav_id": 3
+            },
+            {
+              "displacement_m": 7.615773105863909,
+              "displacement_vector_m": [
+                -3.0,
+                7.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 3,
+              "target_label": 4,
+              "target_m": [
+                0.0,
+                10.0,
+                3.0
+              ],
+              "uav_id": 4
+            }
+          ],
+          "permutation_target_labels": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 2.0,
+          "refinement_iterations": 1,
+          "xy_crossings": 0
+        }
+      },
+      "candidate_id": "G2_LOWER_OFFSET_TRAPEZOID",
+      "candidate_sha256": "98169f5aff3b1699cf39c68a6351e953b928e550c32f1ddb43fa087fb34efe2d",
+      "disposition": "ACCEPTED_NOT_SELECTED_LOWER_MARGIN_IMPROVEMENT",
+      "distinct_targets": true,
+      "duration_s": 6.0,
+      "exhaustive_24_assignments": [
+        {
+          "J_distance": 28.686840917729384,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 7.615773105863909,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.2213801813215668,
+            "jerk": 2.1154925294066413,
+            "velocity": 2.3799290955824715
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 2.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 30.218098372906535,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 8.602325267042627,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.379598557939939,
+            "jerk": 2.3895347964007296,
+            "velocity": 2.6882266459508206
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            2,
+            4,
+            3
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            3,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 34.626923913346246,
+          "J_margin": 0.6323986432847031,
+          "N_hard": 1,
+          "maximum_displacement_m": 13.92838827718412,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.233766311447189,
+            "jerk": 3.868996743662255,
+            "velocity": 4.352621336620037
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            3,
+            2,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            2,
+            1,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.36857707010037094,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 29.544161383048028,
+          "J_margin": 0.11111111111111122,
+          "N_hard": 1,
+          "maximum_displacement_m": 13.92838827718412,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.233766311447189,
+            "jerk": 3.868996743662255,
+            "velocity": 4.352621336620037
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            3,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            0,
+            2,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 1.1999999999999997,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 35.026751861467176,
+          "J_margin": 0.11111111111111133,
+          "N_hard": 1,
+          "maximum_displacement_m": 13.341664064126334,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.1396703719058046,
+            "jerk": 3.706017795590648,
+            "velocity": 4.169270020039479
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            4,
+            2,
+            3
+          ],
+          "permutation_zero_based": [
+            0,
+            3,
+            1,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 1.1999999999999995,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 28.41273187599181,
+          "J_margin": 0.036690604332943584,
+          "N_hard": 1,
+          "maximum_displacement_m": 13.341664064126334,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.1396703719058046,
+            "jerk": 3.706017795590648,
+            "velocity": 4.169270020039479
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            4,
+            3,
+            2
+          ],
+          "permutation_zero_based": [
+            0,
+            3,
+            2,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 33.12592983231516,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 9.219544457292887,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.4785851317288252,
+            "jerk": 2.560984571470246,
+            "velocity": 2.881107642904027
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            1,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            1,
+            0,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 34.657187287492306,
+          "J_margin": 2.0,
+          "N_hard": 2,
+          "maximum_displacement_m": 9.219544457292887,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.4785851317288252,
+            "jerk": 2.560984571470246,
+            "velocity": 2.881107642904027
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            1,
+            4,
+            3
+          ],
+          "permutation_zero_based": [
+            1,
+            0,
+            3,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 4
+        },
+        {
+          "J_distance": 31.763705840340915,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 13.92838827718412,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.233766311447189,
+            "jerk": 3.868996743662255,
+            "velocity": 4.352621336620037
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            3,
+            1,
+            4
+          ],
+          "permutation_zero_based": [
+            1,
+            2,
+            0,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 1.8973665961010275,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 36.84646837063914,
+          "J_margin": 0.6341029312432662,
+          "N_hard": 2,
+          "maximum_displacement_m": 13.92838827718412,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.233766311447189,
+            "jerk": 3.868996743662255,
+            "velocity": 4.352621336620037
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            3,
+            4,
+            1
+          ],
+          "permutation_zero_based": [
+            1,
+            2,
+            3,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.49827287912243984,
+          "xy_crossings": 5
+        },
+        {
+          "J_distance": 32.16353378846185,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 13.341664064126334,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.1396703719058046,
+            "jerk": 3.706017795590648,
+            "velocity": 4.169270020039479
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            4,
+            1,
+            3
+          ],
+          "permutation_zero_based": [
+            1,
+            3,
+            0,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 1.8973665961010275,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 35.71503886358292,
+          "J_margin": 0.036690604332943584,
+          "N_hard": 1,
+          "maximum_displacement_m": 13.341664064126334,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.1396703719058046,
+            "jerk": 3.706017795590648,
+            "velocity": 4.169270020039479
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            4,
+            3,
+            1
+          ],
+          "permutation_zero_based": [
+            1,
+            3,
+            2,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 4
+        },
+        {
+          "J_distance": 35.956484903860314,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 13.038404810405298,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.0910351464141144,
+            "jerk": 3.621779114001472,
+            "velocity": 4.074501503251656
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            1,
+            2,
+            4
+          ],
+          "permutation_zero_based": [
+            2,
+            0,
+            1,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 2.0,
+          "xy_crossings": 4
+        },
+        {
+          "J_distance": 30.873722373562096,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 13.038404810405298,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.0910351464141144,
+            "jerk": 3.621779114001472,
+            "velocity": 4.074501503251656
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            1,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 1.8973665961010275,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 28.654177916269205,
+          "J_margin": 0.5229918201321551,
+          "N_hard": 1,
+          "maximum_displacement_m": 13.038404810405298,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.0910351464141144,
+            "jerk": 3.621779114001472,
+            "velocity": 4.074501503251656
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            2,
+            1,
+            4
+          ],
+          "permutation_zero_based": [
+            2,
+            1,
+            0,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.49827287912243984,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 33.736940446567424,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 13.038404810405298,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.0910351464141144,
+            "jerk": 3.621779114001472,
+            "velocity": 4.074501503251656
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            2,
+            4,
+            1
+          ],
+          "permutation_zero_based": [
+            2,
+            1,
+            3,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 1.8973665961010275,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 28.38006887453163,
+          "J_margin": 0.5596824244650986,
+          "N_hard": 2,
+          "maximum_displacement_m": 13.341664064126334,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.1396703719058046,
+            "jerk": 3.706017795590648,
+            "velocity": 4.169270020039479
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            4,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.49827287912243984,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 38.54559393512807,
+          "J_margin": 1.147801715444055,
+          "N_hard": 3,
+          "maximum_displacement_m": 13.341664064126334,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.1396703719058046,
+            "jerk": 3.706017795590648,
+            "velocity": 4.169270020039479
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            4,
+            2,
+            1
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            1,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 5
+        },
+        {
+          "J_distance": 37.246296318760066,
+          "J_margin": 0.1478017154440548,
+          "N_hard": 2,
+          "maximum_displacement_m": 13.341664064126334,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.1396703719058046,
+            "jerk": 3.706017795590648,
+            "velocity": 4.169270020039479
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            1,
+            2,
+            3
+          ],
+          "permutation_zero_based": [
+            3,
+            0,
+            1,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 1.1999999999999997,
+          "xy_crossings": 5
+        },
+        {
+          "J_distance": 30.632276333284697,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 13.341664064126334,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.1396703719058046,
+            "jerk": 3.706017795590648,
+            "velocity": 4.169270020039479
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            1,
+            3,
+            2
+          ],
+          "permutation_zero_based": [
+            3,
+            0,
+            2,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 1.8973665961010275,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 29.94398933116896,
+          "J_margin": 0.1478017154440548,
+          "N_hard": 2,
+          "maximum_displacement_m": 13.341664064126334,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.1396703719058046,
+            "jerk": 3.706017795590648,
+            "velocity": 4.169270020039479
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            2,
+            1,
+            3
+          ],
+          "permutation_zero_based": [
+            3,
+            1,
+            0,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 1.1999999999999997,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 33.49549440629003,
+          "J_margin": 0.11111111111111133,
+          "N_hard": 1,
+          "maximum_displacement_m": 13.341664064126334,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.1396703719058046,
+            "jerk": 3.706017795590648,
+            "velocity": 4.169270020039479
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            2,
+            3,
+            1
+          ],
+          "permutation_zero_based": [
+            3,
+            1,
+            2,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 1.1999999999999995,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 29.270052341310453,
+          "J_margin": 1.0366906043329436,
+          "N_hard": 2,
+          "maximum_displacement_m": 13.92838827718412,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.233766311447189,
+            "jerk": 3.868996743662255,
+            "velocity": 4.352621336620037
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            3,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            3,
+            2,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 39.43557740190689,
+          "J_margin": 3.303192178860913,
+          "N_hard": 6,
+          "maximum_displacement_m": 13.92838827718412,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.233766311447189,
+            "jerk": 3.868996743662255,
+            "velocity": 4.352621336620037
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            3,
+            2,
+            1
+          ],
+          "permutation_zero_based": [
+            3,
+            2,
+            1,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 6
+        }
+      ],
+      "geometric_interpretation": "lower-height version of the selected offset trapezoid",
+      "global_lexicographic_best_permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "production_P1_matches_global_exhaustive_objective": true,
+      "scientific_validity_pass": true,
+      "static_hard_separation_pass": true,
+      "static_target_minimum_separation_m": 2.0,
+      "targets_m": [
+        [
+          -3.0,
+          4.0,
+          3.0
+        ],
+        [
+          3.0,
+          4.0,
+          3.0
+        ],
+        [
+          -2.0,
+          10.0,
+          3.0
+        ],
+        [
+          0.0,
+          10.0,
+          3.0
+        ]
+      ],
+      "workspace_pass": true
+    },
+    {
+      "P0_distance_optimum_count": 1,
+      "P0_distance_optimum_unique": true,
+      "P0_to_P1_hard_risk_improvement": 2,
+      "P0_to_P1_margin_cost_improvement": 0.07338120866588717,
+      "acceptance_checks": {
+        "P0_all_UAVs_move": true,
+        "P0_distance_optimum_unique": true,
+        "P0_has_hard_conflict": true,
+        "P0_motion_feasible": true,
+        "P1_all_UAVs_move": true,
+        "P1_eliminates_hard_conflict": true,
+        "P1_motion_feasible": true,
+        "P1_strictly_reduces_hard_conflict": true,
+        "distinct_targets": true,
+        "production_P1_matches_global_exhaustive_objective": true,
+        "static_hard_separation": true,
+        "workspace": true
+      },
+      "assignments": {
+        "P0": {
+          "J_distance": 29.770403248128833,
+          "J_margin": 0.07338120866588717,
+          "N_hard": 2,
+          "assignment_mode": "distance_hungarian",
+          "hungarian_initial_permutation_zero_based": [
+            3,
+            1,
+            2,
+            0
+          ],
+          "maximum_displacement_m": 13.038404810405298,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.0910351464141144,
+            "jerk": 3.621779114001472,
+            "velocity": 4.074501503251656
+          },
+          "motion_feasibility": "PASS",
+          "per_uav": [
+            {
+              "displacement_m": 13.038404810405298,
+              "displacement_vector_m": [
+                7.0,
+                11.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 3,
+              "target_label": 4,
+              "target_m": [
+                4.0,
+                8.0,
+                3.0
+              ],
+              "uav_id": 1
+            },
+            {
+              "displacement_m": 9.486832980505138,
+              "displacement_vector_m": [
+                3.0,
+                9.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 1,
+              "target_label": 2,
+              "target_m": [
+                6.0,
+                6.0,
+                3.0
+              ],
+              "uav_id": 2
+            },
+            {
+              "displacement_m": 5.830951894845301,
+              "displacement_vector_m": [
+                5.0,
+                3.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 2,
+              "target_label": 3,
+              "target_m": [
+                2.0,
+                6.0,
+                3.0
+              ],
+              "uav_id": 3
+            },
+            {
+              "displacement_m": 1.4142135623730951,
+              "displacement_vector_m": [
+                1.0,
+                1.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 0,
+              "target_label": 1,
+              "target_m": [
+                4.0,
+                4.0,
+                3.0
+              ],
+              "uav_id": 4
+            }
+          ],
+          "permutation_target_labels": [
+            4,
+            2,
+            3,
+            1
+          ],
+          "permutation_zero_based": [
+            3,
+            1,
+            2,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "refinement_iterations": 0,
+          "xy_crossings": 0
+        },
+        "P1": {
+          "J_distance": 30.211663907014387,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "assignment_mode": "safety_aware",
+          "hungarian_initial_permutation_zero_based": [
+            3,
+            1,
+            2,
+            0
+          ],
+          "maximum_displacement_m": 10.295630140987,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.6511624537154639,
+            "jerk": 2.8598972613852784,
+            "velocity": 3.217384419058438
+          },
+          "motion_feasibility": "PASS",
+          "per_uav": [
+            {
+              "displacement_m": 10.295630140987,
+              "displacement_vector_m": [
+                5.0,
+                9.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 2,
+              "target_label": 3,
+              "target_m": [
+                2.0,
+                6.0,
+                3.0
+              ],
+              "uav_id": 1
+            },
+            {
+              "displacement_m": 7.0710678118654755,
+              "displacement_vector_m": [
+                1.0,
+                7.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 0,
+              "target_label": 1,
+              "target_m": [
+                4.0,
+                4.0,
+                3.0
+              ],
+              "uav_id": 2
+            },
+            {
+              "displacement_m": 8.602325267042627,
+              "displacement_vector_m": [
+                7.0,
+                5.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 3,
+              "target_label": 4,
+              "target_m": [
+                4.0,
+                8.0,
+                3.0
+              ],
+              "uav_id": 3
+            },
+            {
+              "displacement_m": 4.242640687119285,
+              "displacement_vector_m": [
+                3.0,
+                3.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 1,
+              "target_label": 2,
+              "target_m": [
+                6.0,
+                6.0,
+                3.0
+              ],
+              "uav_id": 4
+            }
+          ],
+          "permutation_target_labels": [
+            3,
+            1,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 2.8284271247461903,
+          "refinement_iterations": 1,
+          "xy_crossings": 0
+        }
+      },
+      "candidate_id": "G3_TRANSLATED_COMPACT_DIAMOND",
+      "candidate_sha256": "53d94acf2f3e14a68f23631db5411b1a4341833f21d69dc1834cf8edfdfc16b4",
+      "disposition": "ACCEPTED_NOT_SELECTED_THRESHOLD_FRAGILE_P0_CONFLICT",
+      "distinct_targets": true,
+      "duration_s": 6.0,
+      "exhaustive_24_assignments": [
+        {
+          "J_distance": 30.316299325554887,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 9.899494936611665,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.587632240692801,
+            "jerk": 2.7498597046143516,
+            "velocity": 3.0935921676911455
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 2.8284271247461903,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 31.150930844327807,
+          "J_margin": 0.036690604332943584,
+          "N_hard": 1,
+          "maximum_displacement_m": 9.899494936611665,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.587632240692801,
+            "jerk": 2.7498597046143516,
+            "velocity": 3.0935921676911455
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            2,
+            4,
+            3
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            3,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 33.540732568847005,
+          "J_margin": 0.07338120866588717,
+          "N_hard": 2,
+          "maximum_displacement_m": 9.899494936611665,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.587632240692801,
+            "jerk": 2.7498597046143516,
+            "velocity": 3.0935921676911455
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            3,
+            2,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            2,
+            1,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 31.799846028910995,
+          "J_margin": 0.036690604332943584,
+          "N_hard": 1,
+          "maximum_displacement_m": 9.899494936611665,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.587632240692801,
+            "jerk": 2.7498597046143516,
+            "velocity": 3.0935921676911455
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            3,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            0,
+            2,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 33.59396659447245,
+          "J_margin": 2.036690604332944,
+          "N_hard": 3,
+          "maximum_displacement_m": 11.045361017187261,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.771400599047129,
+            "jerk": 3.0681558381075726,
+            "velocity": 3.4516753178710196
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            4,
+            2,
+            3
+          ],
+          "permutation_zero_based": [
+            0,
+            3,
+            1,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 31.01844853576351,
+          "J_margin": 0.036690604332943584,
+          "N_hard": 1,
+          "maximum_displacement_m": 11.045361017187261,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.771400599047129,
+            "jerk": 3.0681558381075726,
+            "velocity": 3.4516753178710196
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            4,
+            3,
+            2
+          ],
+          "permutation_zero_based": [
+            0,
+            3,
+            2,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 30.72896128166142,
+          "J_margin": 0.036690604332943584,
+          "N_hard": 1,
+          "maximum_displacement_m": 12.727922061357855,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.041241452319315,
+            "jerk": 3.5355339059327378,
+            "velocity": 3.97747564417433
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            1,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            1,
+            0,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 31.563592800434336,
+          "J_margin": 0.07338120866588717,
+          "N_hard": 2,
+          "maximum_displacement_m": 12.727922061357855,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.041241452319315,
+            "jerk": 3.5355339059327378,
+            "velocity": 3.97747564417433
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            1,
+            4,
+            3
+          ],
+          "permutation_zero_based": [
+            1,
+            0,
+            3,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 33.95339452495353,
+          "J_margin": 2.036690604332944,
+          "N_hard": 3,
+          "maximum_displacement_m": 12.727922061357855,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.041241452319315,
+            "jerk": 3.5355339059327378,
+            "velocity": 3.97747564417433
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            3,
+            1,
+            4
+          ],
+          "permutation_zero_based": [
+            1,
+            2,
+            0,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 31.799846028910995,
+          "J_margin": 2.036690604332944,
+          "N_hard": 3,
+          "maximum_displacement_m": 12.727922061357855,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.041241452319315,
+            "jerk": 3.5355339059327378,
+            "velocity": 3.97747564417433
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            3,
+            4,
+            1
+          ],
+          "permutation_zero_based": [
+            1,
+            2,
+            3,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 34.006628550578974,
+          "J_margin": 0.14676241733177434,
+          "N_hard": 4,
+          "maximum_displacement_m": 12.727922061357855,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.041241452319315,
+            "jerk": 3.5355339059327378,
+            "velocity": 3.97747564417433
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            4,
+            1,
+            3
+          ],
+          "permutation_zero_based": [
+            1,
+            3,
+            0,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 31.018448535763515,
+          "J_margin": 2.036690604332944,
+          "N_hard": 3,
+          "maximum_displacement_m": 12.727922061357855,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.041241452319315,
+            "jerk": 3.5355339059327378,
+            "velocity": 3.97747564417433
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            4,
+            3,
+            1
+          ],
+          "permutation_zero_based": [
+            1,
+            3,
+            2,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 31.952550446950397,
+          "J_margin": 0.036690604332943584,
+          "N_hard": 1,
+          "maximum_displacement_m": 10.295630140987,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.6511624537154639,
+            "jerk": 2.8598972613852784,
+            "velocity": 3.217384419058438
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            1,
+            2,
+            4
+          ],
+          "permutation_zero_based": [
+            2,
+            0,
+            1,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 30.211663907014387,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 10.295630140987,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.6511624537154639,
+            "jerk": 2.8598972613852784,
+            "velocity": 3.217384419058438
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            1,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 2.8284271247461903,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 31.952550446950397,
+          "J_margin": 0.036690604332943584,
+          "N_hard": 1,
+          "maximum_displacement_m": 10.295630140987,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.6511624537154639,
+            "jerk": 2.8598972613852784,
+            "velocity": 3.217384419058438
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            2,
+            1,
+            4
+          ],
+          "permutation_zero_based": [
+            2,
+            1,
+            0,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 29.79900195090786,
+          "J_margin": 0.036690604332943584,
+          "N_hard": 1,
+          "maximum_displacement_m": 10.295630140987,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.6511624537154639,
+            "jerk": 2.8598972613852784,
+            "velocity": 3.217384419058438
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            2,
+            4,
+            1
+          ],
+          "permutation_zero_based": [
+            2,
+            1,
+            3,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 32.65469965715902,
+          "J_margin": 0.07338120866588717,
+          "N_hard": 2,
+          "maximum_displacement_m": 11.045361017187261,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.771400599047129,
+            "jerk": 3.0681558381075726,
+            "velocity": 3.4516753178710196
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            4,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 32.242037701052496,
+          "J_margin": 2.036690604332944,
+          "N_hard": 3,
+          "maximum_displacement_m": 11.045361017187261,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.771400599047129,
+            "jerk": 3.0681558381075726,
+            "velocity": 3.4516753178710196
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            4,
+            2,
+            1
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            1,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 32.75858326294429,
+          "J_margin": 2.036690604332944,
+          "N_hard": 3,
+          "maximum_displacement_m": 13.038404810405298,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.0910351464141144,
+            "jerk": 3.621779114001472,
+            "velocity": 4.074501503251656
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            1,
+            2,
+            3
+          ],
+          "permutation_zero_based": [
+            3,
+            0,
+            1,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 30.183065204235355,
+          "J_margin": 0.036690604332943584,
+          "N_hard": 1,
+          "maximum_displacement_m": 13.038404810405298,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.0910351464141144,
+            "jerk": 3.621779114001472,
+            "velocity": 4.074501503251656
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            1,
+            3,
+            2
+          ],
+          "permutation_zero_based": [
+            3,
+            0,
+            2,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 32.75858326294429,
+          "J_margin": 2.036690604332944,
+          "N_hard": 3,
+          "maximum_displacement_m": 13.038404810405298,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.0910351464141144,
+            "jerk": 3.621779114001472,
+            "velocity": 4.074501503251656
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            2,
+            1,
+            3
+          ],
+          "permutation_zero_based": [
+            3,
+            1,
+            0,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 29.770403248128833,
+          "J_margin": 0.07338120866588717,
+          "N_hard": 2,
+          "maximum_displacement_m": 13.038404810405298,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.0910351464141144,
+            "jerk": 3.621779114001472,
+            "velocity": 4.074501503251656
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            2,
+            3,
+            1
+          ],
+          "permutation_zero_based": [
+            3,
+            1,
+            2,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 33.40749844752747,
+          "J_margin": 2.036690604332944,
+          "N_hard": 3,
+          "maximum_displacement_m": 13.038404810405298,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.0910351464141144,
+            "jerk": 3.621779114001472,
+            "velocity": 4.074501503251656
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            3,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            3,
+            2,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 32.99483649142095,
+          "J_margin": 0.14676241733177434,
+          "N_hard": 4,
+          "maximum_displacement_m": 13.038404810405298,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.0910351464141144,
+            "jerk": 3.621779114001472,
+            "velocity": 4.074501503251656
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            3,
+            2,
+            1
+          ],
+          "permutation_zero_based": [
+            3,
+            2,
+            1,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 1.4552137502179978,
+          "xy_crossings": 3
+        }
+      ],
+      "geometric_interpretation": "compact diamond translated to centre [4,6,3]",
+      "global_lexicographic_best_permutation_zero_based": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "production_P1_matches_global_exhaustive_objective": true,
+      "scientific_validity_pass": true,
+      "static_hard_separation_pass": true,
+      "static_target_minimum_separation_m": 2.8284271247461903,
+      "targets_m": [
+        [
+          4.0,
+          4.0,
+          3.0
+        ],
+        [
+          6.0,
+          6.0,
+          3.0
+        ],
+        [
+          2.0,
+          6.0,
+          3.0
+        ],
+        [
+          4.0,
+          8.0,
+          3.0
+        ]
+      ],
+      "workspace_pass": true
+    },
+    {
+      "P0_distance_optimum_count": 1,
+      "P0_distance_optimum_unique": true,
+      "P0_to_P1_hard_risk_improvement": 0,
+      "P0_to_P1_margin_cost_improvement": 0.0,
+      "acceptance_checks": {
+        "P0_all_UAVs_move": false,
+        "P0_distance_optimum_unique": true,
+        "P0_has_hard_conflict": false,
+        "P0_motion_feasible": true,
+        "P1_all_UAVs_move": false,
+        "P1_eliminates_hard_conflict": true,
+        "P1_motion_feasible": true,
+        "P1_strictly_reduces_hard_conflict": false,
+        "distinct_targets": true,
+        "production_P1_matches_global_exhaustive_objective": true,
+        "static_hard_separation": true,
+        "workspace": true
+      },
+      "assignments": {
+        "P0": {
+          "J_distance": 0.0,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "assignment_mode": "distance_hungarian",
+          "hungarian_initial_permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "maximum_displacement_m": 0.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 0.0,
+            "jerk": 0.0,
+            "velocity": 0.0
+          },
+          "motion_feasibility": "PASS",
+          "per_uav": [
+            {
+              "displacement_m": 0.0,
+              "displacement_vector_m": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 2,
+              "target_label": 3,
+              "target_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "uav_id": 1
+            },
+            {
+              "displacement_m": 0.0,
+              "displacement_vector_m": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 3,
+              "target_label": 4,
+              "target_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "uav_id": 2
+            },
+            {
+              "displacement_m": 0.0,
+              "displacement_vector_m": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 0,
+              "target_label": 1,
+              "target_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "uav_id": 3
+            },
+            {
+              "displacement_m": 0.0,
+              "displacement_vector_m": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 1,
+              "target_label": 2,
+              "target_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "uav_id": 4
+            }
+          ],
+          "permutation_target_labels": [
+            3,
+            4,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 6.0,
+          "refinement_iterations": 0,
+          "xy_crossings": 0
+        },
+        "P1": {
+          "J_distance": 0.0,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "assignment_mode": "safety_aware",
+          "hungarian_initial_permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "maximum_displacement_m": 0.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 0.0,
+            "jerk": 0.0,
+            "velocity": 0.0
+          },
+          "motion_feasibility": "PASS",
+          "per_uav": [
+            {
+              "displacement_m": 0.0,
+              "displacement_vector_m": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 2,
+              "target_label": 3,
+              "target_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "uav_id": 1
+            },
+            {
+              "displacement_m": 0.0,
+              "displacement_vector_m": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 3,
+              "target_label": 4,
+              "target_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "uav_id": 2
+            },
+            {
+              "displacement_m": 0.0,
+              "displacement_vector_m": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 0,
+              "target_label": 1,
+              "target_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "uav_id": 3
+            },
+            {
+              "displacement_m": 0.0,
+              "displacement_vector_m": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 1,
+              "target_label": 2,
+              "target_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "uav_id": 4
+            }
+          ],
+          "permutation_target_labels": [
+            3,
+            4,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 6.0,
+          "refinement_iterations": 0,
+          "xy_crossings": 0
+        }
+      },
+      "candidate_id": "R1_SUPERSEDED_ZERO_MOTION",
+      "candidate_sha256": "4a9b5ef21918bc4d524ebb8d23576879920a55afd3859da3e63f607f79412228",
+      "disposition": "REJECTED_ZERO_MOTION",
+      "distinct_targets": true,
+      "duration_s": 6.0,
+      "exhaustive_24_assignments": [
+        {
+          "J_distance": 24.0,
+          "J_margin": 2.0,
+          "N_hard": 2,
+          "maximum_displacement_m": 6.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 0.9622504486493764,
+            "jerk": 1.6666666666666667,
+            "velocity": 1.875
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 28.970562748477136,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 8.48528137423857,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.3608276348795434,
+            "jerk": 2.357022603955158,
+            "velocity": 2.651650429449553
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            2,
+            4,
+            3
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            3,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 24.0,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 6.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 0.9622504486493764,
+            "jerk": 1.6666666666666667,
+            "velocity": 1.875
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            3,
+            2,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            2,
+            1,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 4.242640687119285,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 20.485281374238568,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 8.48528137423857,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.3608276348795434,
+            "jerk": 2.357022603955158,
+            "velocity": 2.651650429449553
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            3,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            0,
+            2,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 20.485281374238568,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 8.48528137423857,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.3608276348795434,
+            "jerk": 2.357022603955158,
+            "velocity": 2.651650429449553
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            4,
+            2,
+            3
+          ],
+          "permutation_zero_based": [
+            0,
+            3,
+            1,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 12.0,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 6.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 0.9622504486493764,
+            "jerk": 1.6666666666666667,
+            "velocity": 1.875
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            4,
+            3,
+            2
+          ],
+          "permutation_zero_based": [
+            0,
+            3,
+            2,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 28.97056274847714,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 8.48528137423857,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.3608276348795434,
+            "jerk": 2.357022603955158,
+            "velocity": 2.651650429449553
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            1,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            1,
+            0,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 33.94112549695428,
+          "J_margin": 6.0,
+          "N_hard": 6,
+          "maximum_displacement_m": 8.48528137423857,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.3608276348795434,
+            "jerk": 2.357022603955158,
+            "velocity": 2.651650429449553
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            1,
+            4,
+            3
+          ],
+          "permutation_zero_based": [
+            1,
+            0,
+            3,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 4
+        },
+        {
+          "J_distance": 20.485281374238568,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 8.48528137423857,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.3608276348795434,
+            "jerk": 2.357022603955158,
+            "velocity": 2.651650429449553
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            3,
+            1,
+            4
+          ],
+          "permutation_zero_based": [
+            1,
+            2,
+            0,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 28.97056274847714,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 8.48528137423857,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.3608276348795434,
+            "jerk": 2.357022603955158,
+            "velocity": 2.651650429449553
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            3,
+            4,
+            1
+          ],
+          "permutation_zero_based": [
+            1,
+            2,
+            3,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 16.97056274847714,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 8.48528137423857,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.3608276348795434,
+            "jerk": 2.357022603955158,
+            "velocity": 2.651650429449553
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            4,
+            1,
+            3
+          ],
+          "permutation_zero_based": [
+            1,
+            3,
+            0,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 20.485281374238568,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 8.48528137423857,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.3608276348795434,
+            "jerk": 2.357022603955158,
+            "velocity": 2.651650429449553
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            4,
+            3,
+            1
+          ],
+          "permutation_zero_based": [
+            1,
+            3,
+            2,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 20.485281374238568,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 8.48528137423857,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.3608276348795434,
+            "jerk": 2.357022603955158,
+            "velocity": 2.651650429449553
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            1,
+            2,
+            4
+          ],
+          "permutation_zero_based": [
+            2,
+            0,
+            1,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 16.97056274847714,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 8.48528137423857,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.3608276348795434,
+            "jerk": 2.357022603955158,
+            "velocity": 2.651650429449553
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            1,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 12.0,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 6.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 0.9622504486493764,
+            "jerk": 1.6666666666666667,
+            "velocity": 1.875
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            2,
+            1,
+            4
+          ],
+          "permutation_zero_based": [
+            2,
+            1,
+            0,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 20.485281374238568,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 8.48528137423857,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.3608276348795434,
+            "jerk": 2.357022603955158,
+            "velocity": 2.651650429449553
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            2,
+            4,
+            1
+          ],
+          "permutation_zero_based": [
+            2,
+            1,
+            3,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 0.0,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 0.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 0.0,
+            "jerk": 0.0,
+            "velocity": 0.0
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            4,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 6.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 12.0,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 6.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 0.9622504486493764,
+            "jerk": 1.6666666666666667,
+            "velocity": 1.875
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            4,
+            2,
+            1
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            1,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 28.970562748477136,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 8.48528137423857,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.3608276348795434,
+            "jerk": 2.357022603955158,
+            "velocity": 2.651650429449553
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            1,
+            2,
+            3
+          ],
+          "permutation_zero_based": [
+            3,
+            0,
+            1,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 20.485281374238568,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 8.48528137423857,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.3608276348795434,
+            "jerk": 2.357022603955158,
+            "velocity": 2.651650429449553
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            1,
+            3,
+            2
+          ],
+          "permutation_zero_based": [
+            3,
+            0,
+            2,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 20.485281374238568,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 8.48528137423857,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.3608276348795434,
+            "jerk": 2.357022603955158,
+            "velocity": 2.651650429449553
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            2,
+            1,
+            3
+          ],
+          "permutation_zero_based": [
+            3,
+            1,
+            0,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 24.0,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 6.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 0.9622504486493764,
+            "jerk": 1.6666666666666667,
+            "velocity": 1.875
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            2,
+            3,
+            1
+          ],
+          "permutation_zero_based": [
+            3,
+            1,
+            2,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 4.242640687119285,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 12.0,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 6.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 0.9622504486493764,
+            "jerk": 1.6666666666666667,
+            "velocity": 1.875
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            3,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            3,
+            2,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 24.0,
+          "J_margin": 2.0,
+          "N_hard": 2,
+          "maximum_displacement_m": 6.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 0.9622504486493764,
+            "jerk": 1.6666666666666667,
+            "velocity": 1.875
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            3,
+            2,
+            1
+          ],
+          "permutation_zero_based": [
+            3,
+            2,
+            1,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 0
+        }
+      ],
+      "geometric_interpretation": "v1/v2 target set, permutation-equivalent to initial positions",
+      "global_lexicographic_best_permutation_zero_based": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "production_P1_matches_global_exhaustive_objective": true,
+      "scientific_validity_pass": false,
+      "static_hard_separation_pass": true,
+      "static_target_minimum_separation_m": 6.0,
+      "targets_m": [
+        [
+          -3.0,
+          3.0,
+          3.0
+        ],
+        [
+          3.0,
+          3.0,
+          3.0
+        ],
+        [
+          -3.0,
+          -3.0,
+          3.0
+        ],
+        [
+          3.0,
+          -3.0,
+          3.0
+        ]
+      ],
+      "workspace_pass": true
+    },
+    {
+      "P0_distance_optimum_count": 4,
+      "P0_distance_optimum_unique": false,
+      "P0_to_P1_hard_risk_improvement": 0,
+      "P0_to_P1_margin_cost_improvement": 0.0,
+      "acceptance_checks": {
+        "P0_all_UAVs_move": true,
+        "P0_distance_optimum_unique": false,
+        "P0_has_hard_conflict": false,
+        "P0_motion_feasible": true,
+        "P1_all_UAVs_move": true,
+        "P1_eliminates_hard_conflict": true,
+        "P1_motion_feasible": true,
+        "P1_strictly_reduces_hard_conflict": false,
+        "distinct_targets": true,
+        "production_P1_matches_global_exhaustive_objective": true,
+        "static_hard_separation": true,
+        "workspace": true
+      },
+      "assignments": {
+        "P0": {
+          "J_distance": 32.0,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "assignment_mode": "distance_hungarian",
+          "hungarian_initial_permutation_zero_based": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "maximum_displacement_m": 8.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.2830005981991686,
+            "jerk": 2.2222222222222223,
+            "velocity": 2.5
+          },
+          "motion_feasibility": "PASS",
+          "per_uav": [
+            {
+              "displacement_m": 8.0,
+              "displacement_vector_m": [
+                0.0,
+                8.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 0,
+              "target_label": 1,
+              "target_m": [
+                -3.0,
+                5.0,
+                3.0
+              ],
+              "uav_id": 1
+            },
+            {
+              "displacement_m": 8.0,
+              "displacement_vector_m": [
+                0.0,
+                8.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 1,
+              "target_label": 2,
+              "target_m": [
+                3.0,
+                5.0,
+                3.0
+              ],
+              "uav_id": 2
+            },
+            {
+              "displacement_m": 8.0,
+              "displacement_vector_m": [
+                0.0,
+                8.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 2,
+              "target_label": 3,
+              "target_m": [
+                -3.0,
+                11.0,
+                3.0
+              ],
+              "uav_id": 3
+            },
+            {
+              "displacement_m": 8.0,
+              "displacement_vector_m": [
+                0.0,
+                8.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 3,
+              "target_label": 4,
+              "target_m": [
+                3.0,
+                11.0,
+                3.0
+              ],
+              "uav_id": 4
+            }
+          ],
+          "permutation_target_labels": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 6.0,
+          "refinement_iterations": 0,
+          "xy_crossings": 0
+        },
+        "P1": {
+          "J_distance": 32.0,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "assignment_mode": "safety_aware",
+          "hungarian_initial_permutation_zero_based": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "maximum_displacement_m": 8.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.2830005981991686,
+            "jerk": 2.2222222222222223,
+            "velocity": 2.5
+          },
+          "motion_feasibility": "PASS",
+          "per_uav": [
+            {
+              "displacement_m": 8.0,
+              "displacement_vector_m": [
+                0.0,
+                8.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 0,
+              "target_label": 1,
+              "target_m": [
+                -3.0,
+                5.0,
+                3.0
+              ],
+              "uav_id": 1
+            },
+            {
+              "displacement_m": 8.0,
+              "displacement_vector_m": [
+                0.0,
+                8.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 1,
+              "target_label": 2,
+              "target_m": [
+                3.0,
+                5.0,
+                3.0
+              ],
+              "uav_id": 2
+            },
+            {
+              "displacement_m": 8.0,
+              "displacement_vector_m": [
+                0.0,
+                8.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 2,
+              "target_label": 3,
+              "target_m": [
+                -3.0,
+                11.0,
+                3.0
+              ],
+              "uav_id": 3
+            },
+            {
+              "displacement_m": 8.0,
+              "displacement_vector_m": [
+                0.0,
+                8.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 3,
+              "target_label": 4,
+              "target_m": [
+                3.0,
+                11.0,
+                3.0
+              ],
+              "uav_id": 4
+            }
+          ],
+          "permutation_target_labels": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 6.0,
+          "refinement_iterations": 0,
+          "xy_crossings": 0
+        }
+      },
+      "candidate_id": "R2_TRANSLATED_SQUARE",
+      "candidate_sha256": "ab4c35e2bd0e9f1d73a89c8b68ea8c7111a9b7f98804f359f30ae53a41d049ff",
+      "disposition": "REJECTED_NO_P0_STRUCTURAL_RISK",
+      "distinct_targets": true,
+      "duration_s": 6.0,
+      "exhaustive_24_assignments": [
+        {
+          "J_distance": 32.0,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 8.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.2830005981991686,
+            "jerk": 2.2222222222222223,
+            "velocity": 2.5
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 6.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 36.0,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 10.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.6037507477489605,
+            "jerk": 2.7777777777777777,
+            "velocity": 3.125
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            2,
+            4,
+            3
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            3,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 37.556101532064574,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.231546211727817,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.4427603626431336,
+            "jerk": 4.230985058813283,
+            "velocity": 4.759858191164943
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            3,
+            2,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            2,
+            1,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 35.23154621172782,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.231546211727817,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.4427603626431336,
+            "jerk": 4.230985058813283,
+            "velocity": 4.759858191164943
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            3,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            0,
+            2,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 38.324555320336756,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 14.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.245251046848545,
+            "jerk": 3.888888888888889,
+            "velocity": 4.375
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            4,
+            2,
+            3
+          ],
+          "permutation_zero_based": [
+            0,
+            3,
+            1,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 32.0,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 14.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.245251046848545,
+            "jerk": 3.888888888888889,
+            "velocity": 4.375
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            4,
+            3,
+            2
+          ],
+          "permutation_zero_based": [
+            0,
+            3,
+            2,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 36.0,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 10.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.6037507477489605,
+            "jerk": 2.7777777777777777,
+            "velocity": 3.125
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            1,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            1,
+            0,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 40.0,
+          "J_margin": 2.0,
+          "N_hard": 2,
+          "maximum_displacement_m": 10.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.6037507477489605,
+            "jerk": 2.7777777777777777,
+            "velocity": 3.125
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            1,
+            4,
+            3
+          ],
+          "permutation_zero_based": [
+            1,
+            0,
+            3,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 4
+        },
+        {
+          "J_distance": 35.23154621172782,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.231546211727817,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.4427603626431336,
+            "jerk": 4.230985058813283,
+            "velocity": 4.759858191164943
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            3,
+            1,
+            4
+          ],
+          "permutation_zero_based": [
+            1,
+            2,
+            0,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 41.556101532064574,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.231546211727817,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.4427603626431336,
+            "jerk": 4.230985058813283,
+            "velocity": 4.759858191164943
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            3,
+            4,
+            1
+          ],
+          "permutation_zero_based": [
+            1,
+            2,
+            3,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 5
+        },
+        {
+          "J_distance": 36.0,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 14.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.245251046848545,
+            "jerk": 3.888888888888889,
+            "velocity": 4.375
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            4,
+            1,
+            3
+          ],
+          "permutation_zero_based": [
+            1,
+            3,
+            0,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 4.242640687119285,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 38.324555320336756,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 14.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.245251046848545,
+            "jerk": 3.888888888888889,
+            "velocity": 4.375
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            4,
+            3,
+            1
+          ],
+          "permutation_zero_based": [
+            1,
+            3,
+            2,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 38.324555320336756,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 14.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.245251046848545,
+            "jerk": 3.888888888888889,
+            "velocity": 4.375
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            1,
+            2,
+            4
+          ],
+          "permutation_zero_based": [
+            2,
+            0,
+            1,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 36.0,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 14.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.245251046848545,
+            "jerk": 3.888888888888889,
+            "velocity": 4.375
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            1,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 4.242640687119285,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 32.0,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 14.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.245251046848545,
+            "jerk": 3.888888888888889,
+            "velocity": 4.375
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            2,
+            1,
+            4
+          ],
+          "permutation_zero_based": [
+            2,
+            1,
+            0,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 38.324555320336756,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 14.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.245251046848545,
+            "jerk": 3.888888888888889,
+            "velocity": 4.375
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            2,
+            4,
+            1
+          ],
+          "permutation_zero_based": [
+            2,
+            1,
+            3,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 32.0,
+          "J_margin": 2.0,
+          "N_hard": 2,
+          "maximum_displacement_m": 14.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.245251046848545,
+            "jerk": 3.888888888888889,
+            "velocity": 4.375
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            4,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 40.64911064067351,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 14.0,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.245251046848545,
+            "jerk": 3.888888888888889,
+            "velocity": 4.375
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            4,
+            2,
+            1
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            1,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 41.556101532064574,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.231546211727817,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.4427603626431336,
+            "jerk": 4.230985058813283,
+            "velocity": 4.759858191164943
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            1,
+            2,
+            3
+          ],
+          "permutation_zero_based": [
+            3,
+            0,
+            1,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 5
+        },
+        {
+          "J_distance": 35.23154621172782,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.231546211727817,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.4427603626431336,
+            "jerk": 4.230985058813283,
+            "velocity": 4.759858191164943
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            1,
+            3,
+            2
+          ],
+          "permutation_zero_based": [
+            3,
+            0,
+            2,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 35.23154621172782,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.231546211727817,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.4427603626431336,
+            "jerk": 4.230985058813283,
+            "velocity": 4.759858191164943
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            2,
+            1,
+            3
+          ],
+          "permutation_zero_based": [
+            3,
+            1,
+            0,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 37.556101532064574,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.231546211727817,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.4427603626431336,
+            "jerk": 4.230985058813283,
+            "velocity": 4.759858191164943
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            2,
+            3,
+            1
+          ],
+          "permutation_zero_based": [
+            3,
+            1,
+            2,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 34.463092423455635,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.231546211727817,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.4427603626431336,
+            "jerk": 4.230985058813283,
+            "velocity": 4.759858191164943
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            3,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            3,
+            2,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 43.11220306412915,
+          "J_margin": 6.0,
+          "N_hard": 6,
+          "maximum_displacement_m": 15.231546211727817,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.4427603626431336,
+            "jerk": 4.230985058813283,
+            "velocity": 4.759858191164943
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            3,
+            2,
+            1
+          ],
+          "permutation_zero_based": [
+            3,
+            2,
+            1,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 6
+        }
+      ],
+      "geometric_interpretation": "square translated upward by eight metres",
+      "global_lexicographic_best_permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "production_P1_matches_global_exhaustive_objective": true,
+      "scientific_validity_pass": false,
+      "static_hard_separation_pass": true,
+      "static_target_minimum_separation_m": 6.0,
+      "targets_m": [
+        [
+          -3.0,
+          5.0,
+          3.0
+        ],
+        [
+          3.0,
+          5.0,
+          3.0
+        ],
+        [
+          -3.0,
+          11.0,
+          3.0
+        ],
+        [
+          3.0,
+          11.0,
+          3.0
+        ]
+      ],
+      "workspace_pass": true
+    },
+    {
+      "P0_distance_optimum_count": 1,
+      "P0_distance_optimum_unique": true,
+      "P0_to_P1_hard_risk_improvement": 2,
+      "P0_to_P1_margin_cost_improvement": 1.1628424919829758,
+      "acceptance_checks": {
+        "P0_all_UAVs_move": true,
+        "P0_distance_optimum_unique": true,
+        "P0_has_hard_conflict": true,
+        "P0_motion_feasible": true,
+        "P1_all_UAVs_move": true,
+        "P1_eliminates_hard_conflict": true,
+        "P1_motion_feasible": true,
+        "P1_strictly_reduces_hard_conflict": true,
+        "distinct_targets": true,
+        "production_P1_matches_global_exhaustive_objective": false,
+        "static_hard_separation": true,
+        "workspace": true
+      },
+      "assignments": {
+        "P0": {
+          "J_distance": 32.06659275674582,
+          "J_margin": 1.1628424919829758,
+          "N_hard": 2,
+          "assignment_mode": "distance_hungarian",
+          "hungarian_initial_permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "maximum_displacement_m": 15.033296378372908,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.410966030794729,
+            "jerk": 4.175915660659141,
+            "velocity": 4.6979051182415335
+          },
+          "motion_feasibility": "PASS",
+          "per_uav": [
+            {
+              "displacement_m": 15.033296378372908,
+              "displacement_vector_m": [
+                1.0,
+                15.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 2,
+              "target_label": 3,
+              "target_m": [
+                -2.0,
+                12.0,
+                3.0
+              ],
+              "uav_id": 1
+            },
+            {
+              "displacement_m": 15.033296378372908,
+              "displacement_vector_m": [
+                -1.0,
+                15.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 3,
+              "target_label": 4,
+              "target_m": [
+                2.0,
+                12.0,
+                3.0
+              ],
+              "uav_id": 2
+            },
+            {
+              "displacement_m": 1.0,
+              "displacement_vector_m": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 0,
+              "target_label": 1,
+              "target_m": [
+                -3.0,
+                4.0,
+                3.0
+              ],
+              "uav_id": 3
+            },
+            {
+              "displacement_m": 1.0,
+              "displacement_vector_m": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 1,
+              "target_label": 2,
+              "target_m": [
+                3.0,
+                4.0,
+                3.0
+              ],
+              "uav_id": 4
+            }
+          ],
+          "permutation_target_labels": [
+            3,
+            4,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.42748229992745784,
+          "refinement_iterations": 0,
+          "xy_crossings": 0
+        },
+        "P1": {
+          "J_distance": 34.1070184418289,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "assignment_mode": "safety_aware",
+          "hungarian_initial_permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "per_uav": [
+            {
+              "displacement_m": 7.0,
+              "displacement_vector_m": [
+                0.0,
+                7.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 0,
+              "target_label": 1,
+              "target_m": [
+                -3.0,
+                4.0,
+                3.0
+              ],
+              "uav_id": 1
+            },
+            {
+              "displacement_m": 15.811388300841896,
+              "displacement_vector_m": [
+                -5.0,
+                15.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 2,
+              "target_label": 3,
+              "target_m": [
+                -2.0,
+                12.0,
+                3.0
+              ],
+              "uav_id": 2
+            },
+            {
+              "displacement_m": 10.295630140987,
+              "displacement_vector_m": [
+                5.0,
+                9.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 3,
+              "target_label": 4,
+              "target_m": [
+                2.0,
+                12.0,
+                3.0
+              ],
+              "uav_id": 3
+            },
+            {
+              "displacement_m": 1.0,
+              "displacement_vector_m": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 1,
+              "target_label": 2,
+              "target_m": [
+                3.0,
+                4.0,
+                3.0
+              ],
+              "uav_id": 4
+            }
+          ],
+          "permutation_target_labels": [
+            1,
+            3,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            0,
+            2,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 2.0180183819889375,
+          "refinement_iterations": 1,
+          "xy_crossings": 1
+        }
+      },
+      "candidate_id": "R3_SYMMETRIC_TRAPEZOID",
+      "candidate_sha256": "f0bfc2fae8489d0e26598463c323528560794e9970c1794b7baef1aec745111b",
+      "disposition": "REJECTED_P1_NOT_EXHAUSTIVE_GLOBAL_LEXICOGRAPHIC_OPTIMUM",
+      "distinct_targets": true,
+      "duration_s": 6.0,
+      "exhaustive_24_assignments": [
+        {
+          "J_distance": 32.110770276274835,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 9.055385138137417,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.4522580686442708,
+            "jerk": 2.515384760593727,
+            "velocity": 2.829807855667943
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 4.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 34.591260281974,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 10.295630140987,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.6511624537154639,
+            "jerk": 2.8598972613852784,
+            "velocity": 3.217384419058438
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            2,
+            4,
+            3
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            3,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 37.949535969277534,
+          "J_margin": 0.19214550064575045,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            3,
+            2,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            2,
+            1,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 1.0109807213431148,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 34.1070184418289,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            3,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            0,
+            2,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 2.0180183819889375,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 38.41168904965813,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.033296378372908,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.410966030794729,
+            "jerk": 4.175915660659141,
+            "velocity": 4.6979051182415335
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            4,
+            2,
+            3
+          ],
+          "permutation_zero_based": [
+            0,
+            3,
+            1,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 32.08868151651033,
+          "J_margin": 0.5814212459914879,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.033296378372908,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.410966030794729,
+            "jerk": 4.175915660659141,
+            "velocity": 4.6979051182415335
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            4,
+            3,
+            2
+          ],
+          "permutation_zero_based": [
+            0,
+            3,
+            2,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.42748229992745784,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 36.54985919086061,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 9.219544457292887,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.4785851317288252,
+            "jerk": 2.560984571470246,
+            "velocity": 2.881107642904027
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            1,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            1,
+            0,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 39.030349196559776,
+          "J_margin": 2.0,
+          "N_hard": 2,
+          "maximum_displacement_m": 10.295630140987,
+          "minimum_jerk_peaks": {
+            "acceleration": 1.6511624537154639,
+            "jerk": 2.8598972613852784,
+            "velocity": 3.217384419058438
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            1,
+            4,
+            3
+          ],
+          "permutation_zero_based": [
+            1,
+            0,
+            3,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 4
+        },
+        {
+          "J_distance": 35.0863178962722,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            3,
+            1,
+            4
+          ],
+          "permutation_zero_based": [
+            1,
+            2,
+            0,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 3.328201177351375,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 41.40932542942,
+          "J_margin": 0.5814212459914879,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            3,
+            4,
+            1
+          ],
+          "permutation_zero_based": [
+            1,
+            2,
+            3,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.42748229992745784,
+          "xy_crossings": 5
+        },
+        {
+          "J_distance": 35.548470976652794,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.033296378372908,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.410966030794729,
+            "jerk": 4.175915660659141,
+            "velocity": 4.6979051182415335
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            4,
+            1,
+            3
+          ],
+          "permutation_zero_based": [
+            1,
+            3,
+            0,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 3.328201177351375,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 39.39098850410143,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.033296378372908,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.410966030794729,
+            "jerk": 4.175915660659141,
+            "velocity": 4.6979051182415335
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            4,
+            3,
+            1
+          ],
+          "permutation_zero_based": [
+            1,
+            3,
+            2,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 2.0180183819889375,
+          "xy_crossings": 4
+        },
+        {
+          "J_distance": 39.39098850410143,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.033296378372908,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.410966030794729,
+            "jerk": 4.175915660659141,
+            "velocity": 4.6979051182415335
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            1,
+            2,
+            4
+          ],
+          "permutation_zero_based": [
+            2,
+            0,
+            1,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 2.0180183819889375,
+          "xy_crossings": 4
+        },
+        {
+          "J_distance": 35.548470976652794,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.033296378372908,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.410966030794729,
+            "jerk": 4.175915660659141,
+            "velocity": 4.6979051182415335
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            1,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 3.328201177351375,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 32.08868151651033,
+          "J_margin": 0.5814212459914879,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.033296378372908,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.410966030794729,
+            "jerk": 4.175915660659141,
+            "velocity": 4.6979051182415335
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            2,
+            1,
+            4
+          ],
+          "permutation_zero_based": [
+            2,
+            1,
+            0,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.42748229992745784,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 38.41168904965813,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.033296378372908,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.410966030794729,
+            "jerk": 4.175915660659141,
+            "velocity": 4.6979051182415335
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            2,
+            4,
+            1
+          ],
+          "permutation_zero_based": [
+            2,
+            1,
+            3,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 2.6832815729997477,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 32.06659275674582,
+          "J_margin": 1.1628424919829758,
+          "N_hard": 2,
+          "maximum_displacement_m": 15.033296378372908,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.410966030794729,
+            "jerk": 4.175915660659141,
+            "velocity": 4.6979051182415335
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            4,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.42748229992745784,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 42.23211781734226,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.033296378372908,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.410966030794729,
+            "jerk": 4.175915660659141,
+            "velocity": 4.6979051182415335
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            3,
+            4,
+            2,
+            1
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            1,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 5
+        },
+        {
+          "J_distance": 41.40932542942,
+          "J_margin": 0.5814212459914879,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            1,
+            2,
+            3
+          ],
+          "permutation_zero_based": [
+            3,
+            0,
+            1,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.42748229992745784,
+          "xy_crossings": 5
+        },
+        {
+          "J_distance": 35.0863178962722,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            1,
+            3,
+            2
+          ],
+          "permutation_zero_based": [
+            3,
+            0,
+            2,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 3.328201177351375,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 34.1070184418289,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            2,
+            1,
+            3
+          ],
+          "permutation_zero_based": [
+            3,
+            1,
+            0,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 2.0180183819889375,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 37.949535969277534,
+          "J_margin": 0.19214550064575045,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            2,
+            3,
+            1
+          ],
+          "permutation_zero_based": [
+            3,
+            1,
+            2,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 1.0109807213431148,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 33.622776601683796,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            3,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            3,
+            2,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 43.78830166228023,
+          "J_margin": 3.5471334932744765,
+          "N_hard": 6,
+          "maximum_displacement_m": 15.811388300841896,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.535752581042436,
+            "jerk": 4.392052305789416,
+            "velocity": 4.941058844013093
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            4,
+            3,
+            2,
+            1
+          ],
+          "permutation_zero_based": [
+            3,
+            2,
+            1,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 6
+        }
+      ],
+      "geometric_interpretation": "symmetric upward-shifted trapezoid",
+      "global_lexicographic_best_permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "production_P1_matches_global_exhaustive_objective": false,
+      "scientific_validity_pass": false,
+      "static_hard_separation_pass": true,
+      "static_target_minimum_separation_m": 4.0,
+      "targets_m": [
+        [
+          -3.0,
+          4.0,
+          3.0
+        ],
+        [
+          3.0,
+          4.0,
+          3.0
+        ],
+        [
+          -2.0,
+          12.0,
+          3.0
+        ],
+        [
+          2.0,
+          12.0,
+          3.0
+        ]
+      ],
+      "workspace_pass": true
+    },
+    {
+      "P0_distance_optimum_count": 1,
+      "P0_distance_optimum_unique": true,
+      "P0_to_P1_hard_risk_improvement": 2,
+      "P0_to_P1_margin_cost_improvement": 1.2547573086788726,
+      "acceptance_checks": {
+        "P0_all_UAVs_move": true,
+        "P0_distance_optimum_unique": true,
+        "P0_has_hard_conflict": true,
+        "P0_motion_feasible": false,
+        "P1_all_UAVs_move": true,
+        "P1_eliminates_hard_conflict": true,
+        "P1_motion_feasible": false,
+        "P1_strictly_reduces_hard_conflict": true,
+        "distinct_targets": true,
+        "production_P1_matches_global_exhaustive_objective": false,
+        "static_hard_separation": true,
+        "workspace": true
+      },
+      "assignments": {
+        "P0": {
+          "J_distance": 44.05259518088089,
+          "J_margin": 1.2547573086788726,
+          "N_hard": 2,
+          "assignment_mode": "distance_hungarian",
+          "hungarian_initial_permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "maximum_displacement_m": 19.026297590440446,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.0513438987563113,
+            "jerk": 5.285082664011235,
+            "velocity": 5.94571799701264
+          },
+          "motion_feasibility": "FAIL",
+          "per_uav": [
+            {
+              "displacement_m": 19.026297590440446,
+              "displacement_vector_m": [
+                1.0,
+                19.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 2,
+              "target_label": 3,
+              "target_m": [
+                -2.0,
+                16.0,
+                3.0
+              ],
+              "uav_id": 1
+            },
+            {
+              "displacement_m": 19.026297590440446,
+              "displacement_vector_m": [
+                -1.0,
+                19.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 3,
+              "target_label": 4,
+              "target_m": [
+                2.0,
+                16.0,
+                3.0
+              ],
+              "uav_id": 2
+            },
+            {
+              "displacement_m": 3.0,
+              "displacement_vector_m": [
+                0.0,
+                3.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 0,
+              "target_label": 1,
+              "target_m": [
+                -3.0,
+                6.0,
+                3.0
+              ],
+              "uav_id": 3
+            },
+            {
+              "displacement_m": 3.0,
+              "displacement_vector_m": [
+                0.0,
+                3.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 1,
+              "target_label": 2,
+              "target_m": [
+                3.0,
+                6.0,
+                3.0
+              ],
+              "uav_id": 4
+            }
+          ],
+          "permutation_target_labels": [
+            3,
+            4,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.3742697169310832,
+          "refinement_iterations": 0,
+          "xy_crossings": 0
+        },
+        "P1": {
+          "J_distance": 46.50194134118576,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "assignment_mode": "safety_aware",
+          "hungarian_initial_permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "maximum_displacement_m": 19.6468827043885,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.1508702828099175,
+            "jerk": 5.457467417885694,
+            "velocity": 6.139650845121406
+          },
+          "motion_feasibility": "FAIL",
+          "per_uav": [
+            {
+              "displacement_m": 19.6468827043885,
+              "displacement_vector_m": [
+                5.0,
+                19.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 3,
+              "target_label": 4,
+              "target_m": [
+                2.0,
+                16.0,
+                3.0
+              ],
+              "uav_id": 1
+            },
+            {
+              "displacement_m": 10.816653826391969,
+              "displacement_vector_m": [
+                -6.0,
+                9.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                -3.0,
+                3.0
+              ],
+              "target_index_zero_based": 0,
+              "target_label": 1,
+              "target_m": [
+                -3.0,
+                6.0,
+                3.0
+              ],
+              "uav_id": 2
+            },
+            {
+              "displacement_m": 13.038404810405298,
+              "displacement_vector_m": [
+                1.0,
+                13.0,
+                0.0
+              ],
+              "initial_m": [
+                -3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 2,
+              "target_label": 3,
+              "target_m": [
+                -2.0,
+                16.0,
+                3.0
+              ],
+              "uav_id": 3
+            },
+            {
+              "displacement_m": 3.0,
+              "displacement_vector_m": [
+                0.0,
+                3.0,
+                0.0
+              ],
+              "initial_m": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "target_index_zero_based": 1,
+              "target_label": 2,
+              "target_m": [
+                3.0,
+                6.0,
+                3.0
+              ],
+              "uav_id": 4
+            }
+          ],
+          "permutation_target_labels": [
+            4,
+            1,
+            3,
+            2
+          ],
+          "permutation_zero_based": [
+            3,
+            0,
+            2,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 3.328201177351375,
+          "refinement_iterations": 2,
+          "xy_crossings": 2
+        }
+      },
+      "candidate_id": "R4_HIGH_TRAPEZOID",
+      "candidate_sha256": "b09e29520471d1a0ad7977f9d3cfacd4bc382f65d3be3230b3cd9795f0b4a7d7",
+      "disposition": "REJECTED_MINIMUM_JERK_VELOCITY_INFEASIBLE",
+      "distinct_targets": true,
+      "duration_s": 6.0,
+      "exhaustive_24_assignments": [
+        {
+          "J_distance": 44.07680962081059,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 13.038404810405298,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.0910351464141144,
+            "jerk": 3.621779114001472,
+            "velocity": 4.074501503251656
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 4.0,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 45.85677655436824,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 13.92838827718412,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.233766311447189,
+            "jerk": 3.868996743662255,
+            "velocity": 4.352621336620037
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            1,
+            2,
+            4,
+            3
+          ],
+          "permutation_zero_based": [
+            0,
+            1,
+            3,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 48.393491447293165,
+          "J_margin": 0.020057072889985348,
+          "N_hard": 0,
+          "maximum_displacement_m": 19.6468827043885,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.1508702828099175,
+            "jerk": 5.457467417885694,
+            "velocity": 6.139650845121406
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            1,
+            3,
+            2,
+            4
+          ],
+          "permutation_zero_based": [
+            0,
+            2,
+            1,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 1.5450786078738143,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 45.575270981572615,
+          "J_margin": 3.30627631225625e-05,
+          "N_hard": 0,
+          "maximum_displacement_m": 19.6468827043885,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.1508702828099175,
+            "jerk": 5.457467417885694,
+            "velocity": 6.139650845121406
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            1,
+            3,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            0,
+            2,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 1.789649958815681,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 48.662889800123935,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 19.026297590440446,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.0513438987563113,
+            "jerk": 5.285082664011235,
+            "velocity": 5.94571799701264
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            1,
+            4,
+            2,
+            3
+          ],
+          "permutation_zero_based": [
+            0,
+            3,
+            1,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 3.0920310052948885,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 44.064702400845746,
+          "J_margin": 0.6273786543394363,
+          "N_hard": 1,
+          "maximum_displacement_m": 19.026297590440446,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.0513438987563113,
+            "jerk": 5.285082664011235,
+            "velocity": 5.94571799701264
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            1,
+            4,
+            3,
+            2
+          ],
+          "permutation_zero_based": [
+            0,
+            3,
+            2,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.3742697169310832,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 47.710117273594534,
+          "J_margin": 1.0,
+          "N_hard": 1,
+          "maximum_displacement_m": 13.038404810405298,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.0910351464141144,
+            "jerk": 3.621779114001472,
+            "velocity": 4.074501503251656
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            1,
+            3,
+            4
+          ],
+          "permutation_zero_based": [
+            1,
+            0,
+            2,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 49.49008420715217,
+          "J_margin": 2.0,
+          "N_hard": 2,
+          "maximum_displacement_m": 13.92838827718412,
+          "minimum_jerk_peaks": {
+            "acceleration": 2.233766311447189,
+            "jerk": 3.868996743662255,
+            "velocity": 4.352621336620037
+          },
+          "motion_feasibility": "PASS",
+          "permutation_target_labels": [
+            2,
+            1,
+            4,
+            3
+          ],
+          "permutation_zero_based": [
+            1,
+            0,
+            3,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 4
+        },
+        {
+          "J_distance": 46.50194134118576,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 19.6468827043885,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.1508702828099175,
+            "jerk": 5.457467417885694,
+            "velocity": 6.139650845121406
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            2,
+            3,
+            1,
+            4
+          ],
+          "permutation_zero_based": [
+            1,
+            2,
+            0,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 3.328201177351375,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 51.10012874046396,
+          "J_margin": 0.6273786543394363,
+          "N_hard": 1,
+          "maximum_displacement_m": 19.6468827043885,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.1508702828099175,
+            "jerk": 5.457467417885694,
+            "velocity": 6.139650845121406
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            2,
+            3,
+            4,
+            1
+          ],
+          "permutation_zero_based": [
+            1,
+            2,
+            3,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.3742697169310832,
+          "xy_crossings": 5
+        },
+        {
+          "J_distance": 46.77133969401653,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 19.026297590440446,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.0513438987563113,
+            "jerk": 5.285082664011235,
+            "velocity": 5.94571799701264
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            2,
+            4,
+            1,
+            3
+          ],
+          "permutation_zero_based": [
+            1,
+            3,
+            0,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 3.328201177351375,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 49.589560159737076,
+          "J_margin": 3.30627631225625e-05,
+          "N_hard": 0,
+          "maximum_displacement_m": 19.026297590440446,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.0513438987563113,
+            "jerk": 5.285082664011235,
+            "velocity": 5.94571799701264
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            2,
+            4,
+            3,
+            1
+          ],
+          "permutation_zero_based": [
+            1,
+            3,
+            2,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 1.789649958815681,
+          "xy_crossings": 4
+        },
+        {
+          "J_distance": 49.589560159737076,
+          "J_margin": 3.30627631225625e-05,
+          "N_hard": 0,
+          "maximum_displacement_m": 19.026297590440446,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.0513438987563113,
+            "jerk": 5.285082664011235,
+            "velocity": 5.94571799701264
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            3,
+            1,
+            2,
+            4
+          ],
+          "permutation_zero_based": [
+            2,
+            0,
+            1,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 1.789649958815681,
+          "xy_crossings": 4
+        },
+        {
+          "J_distance": 46.77133969401653,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 19.026297590440446,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.0513438987563113,
+            "jerk": 5.285082664011235,
+            "velocity": 5.94571799701264
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            3,
+            1,
+            4,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 3.328201177351375,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 44.064702400845746,
+          "J_margin": 0.6273786543394363,
+          "N_hard": 1,
+          "maximum_displacement_m": 19.026297590440446,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.0513438987563113,
+            "jerk": 5.285082664011235,
+            "velocity": 5.94571799701264
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            3,
+            2,
+            1,
+            4
+          ],
+          "permutation_zero_based": [
+            2,
+            1,
+            0,
+            3
+          ],
+          "predicted_minimum_3d_distance_m": 0.3742697169310832,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 48.662889800123935,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 19.026297590440446,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.0513438987563113,
+            "jerk": 5.285082664011235,
+            "velocity": 5.94571799701264
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            3,
+            2,
+            4,
+            1
+          ],
+          "permutation_zero_based": [
+            2,
+            1,
+            3,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 3.0920310052948885,
+          "xy_crossings": 3
+        },
+        {
+          "J_distance": 44.05259518088089,
+          "J_margin": 1.2547573086788726,
+          "N_hard": 2,
+          "maximum_displacement_m": 19.026297590440446,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.0513438987563113,
+            "jerk": 5.285082664011235,
+            "velocity": 5.94571799701264
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            3,
+            4,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.3742697169310832,
+          "xy_crossings": 0
+        },
+        {
+          "J_distance": 51.46900304587963,
+          "J_margin": 1.000066125526245,
+          "N_hard": 1,
+          "maximum_displacement_m": 19.026297590440446,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.0513438987563113,
+            "jerk": 5.285082664011235,
+            "velocity": 5.94571799701264
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            3,
+            4,
+            2,
+            1
+          ],
+          "permutation_zero_based": [
+            2,
+            3,
+            1,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 5
+        },
+        {
+          "J_distance": 51.10012874046395,
+          "J_margin": 0.6273786543394363,
+          "N_hard": 1,
+          "maximum_displacement_m": 19.6468827043885,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.1508702828099175,
+            "jerk": 5.457467417885694,
+            "velocity": 6.139650845121406
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            4,
+            1,
+            2,
+            3
+          ],
+          "permutation_zero_based": [
+            3,
+            0,
+            1,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 0.3742697169310832,
+          "xy_crossings": 5
+        },
+        {
+          "J_distance": 46.50194134118576,
+          "J_margin": 0.0,
+          "N_hard": 0,
+          "maximum_displacement_m": 19.6468827043885,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.1508702828099175,
+            "jerk": 5.457467417885694,
+            "velocity": 6.139650845121406
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            4,
+            1,
+            3,
+            2
+          ],
+          "permutation_zero_based": [
+            3,
+            0,
+            2,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 3.328201177351375,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 45.575270981572615,
+          "J_margin": 3.30627631225625e-05,
+          "N_hard": 0,
+          "maximum_displacement_m": 19.6468827043885,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.1508702828099175,
+            "jerk": 5.457467417885694,
+            "velocity": 6.139650845121406
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            4,
+            2,
+            1,
+            3
+          ],
+          "permutation_zero_based": [
+            3,
+            1,
+            0,
+            2
+          ],
+          "predicted_minimum_3d_distance_m": 1.789649958815681,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 48.39349144729317,
+          "J_margin": 0.020057072889985348,
+          "N_hard": 0,
+          "maximum_displacement_m": 19.6468827043885,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.1508702828099175,
+            "jerk": 5.457467417885694,
+            "velocity": 6.139650845121406
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            4,
+            2,
+            3,
+            1
+          ],
+          "permutation_zero_based": [
+            3,
+            1,
+            2,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 1.5450786078738143,
+          "xy_crossings": 2
+        },
+        {
+          "J_distance": 45.293765408777,
+          "J_margin": 1.0000661255262453,
+          "N_hard": 1,
+          "maximum_displacement_m": 19.6468827043885,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.1508702828099175,
+            "jerk": 5.457467417885694,
+            "velocity": 6.139650845121406
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            4,
+            3,
+            1,
+            2
+          ],
+          "permutation_zero_based": [
+            3,
+            2,
+            0,
+            1
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 1
+        },
+        {
+          "J_distance": 52.71017327377574,
+          "J_margin": 3.294871454458843,
+          "N_hard": 4,
+          "maximum_displacement_m": 19.6468827043885,
+          "minimum_jerk_peaks": {
+            "acceleration": 3.1508702828099175,
+            "jerk": 5.457467417885694,
+            "velocity": 6.139650845121406
+          },
+          "motion_feasibility": "FAIL",
+          "permutation_target_labels": [
+            4,
+            3,
+            2,
+            1
+          ],
+          "permutation_zero_based": [
+            3,
+            2,
+            1,
+            0
+          ],
+          "predicted_minimum_3d_distance_m": 0.0,
+          "xy_crossings": 6
+        }
+      ],
+      "geometric_interpretation": "higher symmetric trapezoid",
+      "global_lexicographic_best_permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "production_P1_matches_global_exhaustive_objective": false,
+      "scientific_validity_pass": false,
+      "static_hard_separation_pass": true,
+      "static_target_minimum_separation_m": 4.0,
+      "targets_m": [
+        [
+          -3.0,
+          6.0,
+          3.0
+        ],
+        [
+          3.0,
+          6.0,
+          3.0
+        ],
+        [
+          -2.0,
+          16.0,
+          3.0
+        ],
+        [
+          2.0,
+          16.0,
+          3.0
+        ]
+      ],
+      "workspace_pass": true
+    }
+  ],
+  "dataset_class": "engineering_validation",
+  "formal_cursor_consumed": false,
+  "frozen_duration_s": 6.0,
+  "frozen_initial_positions_m": [
+    [
+      -3.0,
+      -3.0,
+      3.0
+    ],
+    [
+      3.0,
+      -3.0,
+      3.0
+    ],
+    [
+      -3.0,
+      3.0,
+      3.0
+    ],
+    [
+      3.0,
+      3.0,
+      3.0
+    ]
+  ],
+  "frozen_limits": {
+    "acceleration": 5.0,
+    "jerk": 10.0,
+    "velocity": 5.0
+  },
+  "frozen_safety": {
+    "d_hard": 1.5,
+    "d_plan": 1.8
+  },
+  "live_execution_performed": false,
+  "production_environment": {
+    "numpy_version": "1.24.4",
+    "python_executable": "/usr/bin/python3",
+    "python_version": "3.10.12",
+    "scipy_version": "1.8.0"
+  },
+  "recommended_candidate_id": "G1_OFFSET_TRAPEZOID_SELECTED",
+  "recommended_targets_m": [
+    [
+      -3,
+      4,
+      3
+    ],
+    [
+      3,
+      4,
+      3
+    ],
+    [
+      -2,
+      12,
+      3
+    ],
+    [
+      0,
+      12,
+      3
+    ]
+  ],
+  "result_notice": "NOT_FORMAL_RESULT",
+  "status": "PASS"
+}

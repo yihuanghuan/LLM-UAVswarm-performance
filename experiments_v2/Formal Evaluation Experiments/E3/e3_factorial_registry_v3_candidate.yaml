@@ -1,0 +1,231 @@
+registry_id: E3-exact-factorial-v3-candidate
+status: CANDIDATE_FOR_HUMAN_REVIEW_NOT_ACTIVE
+baseline_tag: paper-final-sim-v3
+configuration_id: paper-current-v11-c0-f-frozen
+activation_prohibited_without_human_review: true
+duration_correction_inherited_from_v2:
+  classification: protocol_correction_due_to_preregistered_feasibility_inconsistency
+  superseded_registry_v1_sha256: 48d66a07c744af4fad0f483ca24c72cf30dfbcaac9468e50ea3252ce6f76ea41
+  affected_scenarios: [E3-A-02, E3-C-02]
+  old_duration_s: 8.0
+  corrected_duration_s: 9.5
+  exact_analytic_minimum_s: 9.229157809087656
+  limiting_constraint: velocity
+  duration_quantization_s: 0.5
+  quantization_rule: round upward
+geometry_correction_candidate:
+  classification: protocol_correction_due_to_invalid_free-assignment_structural-risk_geometry
+  supersedes_registry_id_if_approved: E3-exact-factorial-v2
+  superseded_registry_sha256: f722d8a917ed6af57a3f75a79ef62720fdafb5835115a66d8e0582eb453d36a3
+  affected_scenarios: [E3-A-01, E3-C-01]
+  old_ordered_targets_m: {1: [-3, 3, 3], 2: [3, 3, 3], 3: [-3, -3, 3], 4: [3, -3, 3]}
+  candidate_ordered_targets_m: {1: [-3, 4, 3], 2: [3, 4, 3], 3: [-2, 12, 3], 4: [0, 12, 3]}
+  candidate_not_frozen_or_activated: true
+  all_other_scientific_semantics_unchanged: true
+  global_population_order_and_seeds_unchanged: true
+scenario_count: 6
+paired_seeds: [53101, 53102, 53103, 53104, 53105, 53106, 53107, 53108, 53109, 53110, 53111, 53112, 53113, 53114, 53115]
+paired_seeds_per_scenario_condition: 15
+sample_size_rule: fixed before formal execution; no significance-triggered extension
+
+common_execution:
+  input_level: frozen allocator target set plus executable task fields; no LLM call
+  frame: world ENU
+  style: normal
+  safety_s: 1.0
+  q: {mode: direct}
+  staging: move to exact initial geometry, require all UAVs stable for 2.0 continuous seconds, then start a new scored interaction command
+  staging_is_scored: false
+  scoring_start: interaction execution-command timestamp t0
+  scoring_end: t0 plus registered duration plus 2.0 seconds
+  timeout: registered duration plus 6.0 seconds after t0
+  target_order: authoritative allocator input order shown per scenario
+  target_labels_define_input_order_not_uav_ownership: true
+  scenario_or_sample_extension_after_results: forbidden
+
+factorial_mapping:
+  P1:
+    assignment_mode: safety_aware
+    meaning: frozen safety-aware lexicographic assignment
+    allocator: lexicographic-safety-aware-v2
+  P0:
+    assignment_mode: distance_hungarian
+    meaning: standard distance-only Hungarian assignment without safety-aware lexicographic refinement
+  F1:
+    meaning: feedback safety ON
+    avoidance_mode: iapf_dual
+    iapf_escape_mode: id_order
+    iapf_filter_alpha: 0.20
+  F0:
+    meaning: feedback safety OFF
+    avoidance_mode: 'off'
+    iapf_escape_mode: id_order
+    iapf_filter_alpha: 0.20
+  conditions:
+    P1_F1: {assignment_mode: safety_aware, avoidance_mode: iapf_dual}
+    P1_F0: {assignment_mode: safety_aware, avoidance_mode: 'off'}
+    P0_F1: {assignment_mode: distance_hungarian, avoidance_mode: iapf_dual}
+    P0_F0: {assignment_mode: distance_hungarian, avoidance_mode: 'off'}
+  invariant_flags: {lfs_runtime_mode: candidate_v2, control_mode: ladrc_acceleration, policy: lfs_policy.paper_current.yaml}
+  planning_assignment_comparison: distance-only Hungarian vs safety-aware lexicographic refinement
+  paired_invariants:
+    - same initial state
+    - same target set
+    - same seed
+    - same controller
+    - same timing
+    - same feedback condition
+  only_planning_difference: assignment rule
+  fixed_target_ownership_for_P0: false
+  no_condition_specific_tuning: true
+
+disturbance_contract:
+  mechanism: ROS 2 gazebo_plugins GazeboRosForce model plugin plus experiment-only e3_wrench_driver.py
+  plugin_package_version: ros-humble-gazebo-plugins 3.9.0-1jammy.20260606.075130
+  model_overlay: ../environment/patches/iris_gazebo_ros_force_v1.patch
+  link: base_link
+  force_frame: world
+  waveform: rectangular constant force; zero torque
+  timing_basis: /clock elapsed from /e3/disturbance_arm received at t0
+  publish_behavior: publish registered wrench on every /clock callback during interval and one zero wrench at end
+  random_component: none
+  seed_relationship: identical scenario disturbance and paired seed in all four P/F conditions
+  production_runtime_semantics_changed: false
+  fairness: identical plugin and driver are loaded in every condition, including zero-disturbance Family A
+
+scenarios:
+  - scenario_id: E3-A-01
+    family: A_predictable_structural_risk
+    label: four-UAV offset-trapezoid assignment-conflict target set
+    command_text_for_manifest: Execute the registered four-UAV offset-trapezoid assignment-conflict target set in 6 seconds using normal motion and safety factor 1.0.
+    uav_ids: [1, 2, 3, 4]
+    duration_s: 6.0
+    initial_positions_m: {1: [-3, -3, 3], 2: [3, -3, 3], 3: [-3, 3, 3], 4: [3, 3, 3]}
+    ordered_targets_m: {1: [-3, 4, 3], 2: [3, 4, 3], 3: [-2, 12, 3], 4: [0, 12, 3]}
+    structural_risk: free distance-only assignment has two predicted hard conflicts; the frozen safety-aware lexicographic assignment removes both while receiving the identical target set and input order
+    disturbance: {affected_uavs: [], axis: none, vector_N: {}, onset_s: 2.0, duration_s: 1.5}
+
+  - scenario_id: E3-A-02
+    family: A_predictable_structural_risk
+    label: eight-UAV reversed-circle target set
+    command_text_for_manifest: Execute the registered reversed eight-UAV circle target set in 9.5 seconds using normal motion and safety factor 1.0.
+    uav_ids: [1, 2, 3, 4, 5, 6, 7, 8]
+    duration_s: 9.5
+    initial_positions_m:
+      1: [6.000000000000, 0.000000000000, 3.0]
+      2: [4.242640687119, 4.242640687119, 3.0]
+      3: [0.000000000000, 6.000000000000, 3.0]
+      4: [-4.242640687119, 4.242640687119, 3.0]
+      5: [-6.000000000000, 0.000000000000, 3.0]
+      6: [-4.242640687119, -4.242640687119, 3.0]
+      7: [0.000000000000, -6.000000000000, 3.0]
+      8: [4.242640687119, -4.242640687119, 3.0]
+    ordered_targets_m:
+      1: [4.242640687119, 9.757359312881, 3.0]
+      2: [0.000000000000, 8.000000000000, 3.0]
+      3: [-4.242640687119, 9.757359312881, 3.0]
+      4: [-6.000000000000, 14.000000000000, 3.0]
+      5: [-4.242640687119, 18.242640687119, 3.0]
+      6: [0.000000000000, 20.000000000000, 3.0]
+      7: [4.242640687119, 18.242640687119, 3.0]
+      8: [6.000000000000, 14.000000000000, 3.0]
+    structural_risk: the reversed target geometry admits assignment-dependent multi-path conflict; both planning modes receive the identical target set and input order
+    disturbance: {affected_uavs: [], axis: none, vector_N: {}, onset_s: 2.0, duration_s: 1.5}
+
+  - scenario_id: E3-B-01
+    family: B_residual_execution_risk
+    label: lateral inward wrench during safe parallel translation
+    command_text_for_manifest: Execute the registered four-UAV parallel translation in 8 seconds using normal motion and safety factor 1.0.
+    uav_ids: [1, 2, 3, 4]
+    duration_s: 8.0
+    initial_positions_m: {1: [-3, -1.4, 3], 2: [-1, -1.4, 3], 3: [1, 1.4, 3], 4: [3, 1.4, 3]}
+    ordered_targets_m: {1: [5, -1.4, 3], 2: [7, -1.4, 3], 3: [9, 1.4, 3], 4: [11, 1.4, 3]}
+    structural_risk: none registered; ordered paths are parallel
+    disturbance:
+      affected_uavs: [2, 3]
+      axis: world_y inward
+      vector_N: {2: [0.0, 2.0, 0.0], 3: [0.0, -2.0, 0.0]}
+      magnitude_N_per_uav: 2.0
+      onset_s: 2.0
+      duration_s: 1.5
+
+  - scenario_id: E3-B-02
+    family: B_residual_execution_risk
+    label: vertical inward wrench during safe translation
+    command_text_for_manifest: Execute the registered four-UAV vertically separated translation in 8 seconds using normal motion and safety factor 1.0.
+    uav_ids: [1, 2, 3, 4]
+    duration_s: 8.0
+    initial_positions_m: {1: [-3, -1.4, 2], 2: [-1, -1.4, 2], 3: [1, 1.4, 5], 4: [3, 1.4, 5]}
+    ordered_targets_m: {1: [5, -1.4, 2], 2: [7, -1.4, 2], 3: [9, 1.4, 5], 4: [11, 1.4, 5]}
+    structural_risk: none registered; ordered paths retain vertical separation
+    disturbance:
+      affected_uavs: [2, 3]
+      axis: world_z inward
+      vector_N: {2: [0.0, 0.0, 2.0], 3: [0.0, 0.0, -2.0]}
+      magnitude_N_per_uav: 2.0
+      onset_s: 2.0
+      duration_s: 1.5
+
+  - scenario_id: E3-C-01
+    family: C_mixed_risk
+    label: four-UAV offset-trapezoid assignment conflict plus lateral wrench
+    command_text_for_manifest: Execute the registered four-UAV offset-trapezoid assignment-conflict target set with the registered lateral disturbance in 6 seconds.
+    uav_ids: [1, 2, 3, 4]
+    duration_s: 6.0
+    initial_positions_m: {1: [-3, -3, 3], 2: [3, -3, 3], 3: [-3, 3, 3], 4: [3, 3, 3]}
+    ordered_targets_m: {1: [-3, 4, 3], 2: [3, 4, 3], 3: [-2, 12, 3], 4: [0, 12, 3]}
+    structural_risk: same free-assignment structural conflict and P1 mitigation as E3-A-01
+    disturbance:
+      affected_uavs: [1, 3]
+      axis: world_y toward crossing center
+      vector_N: {1: [0.0, 2.0, 0.0], 3: [0.0, -2.0, 0.0]}
+      magnitude_N_per_uav: 2.0
+      onset_s: 2.0
+      duration_s: 1.5
+
+  - scenario_id: E3-C-02
+    family: C_mixed_risk
+    label: eight-UAV reversed-circle plus lateral wrench
+    command_text_for_manifest: Execute the registered reversed eight-UAV circle target set with the registered lateral disturbance in 9.5 seconds.
+    uav_ids: [1, 2, 3, 4, 5, 6, 7, 8]
+    duration_s: 9.5
+    initial_positions_m:
+      1: [6.000000000000, 0.000000000000, 3.0]
+      2: [4.242640687119, 4.242640687119, 3.0]
+      3: [0.000000000000, 6.000000000000, 3.0]
+      4: [-4.242640687119, 4.242640687119, 3.0]
+      5: [-6.000000000000, 0.000000000000, 3.0]
+      6: [-4.242640687119, -4.242640687119, 3.0]
+      7: [0.000000000000, -6.000000000000, 3.0]
+      8: [4.242640687119, -4.242640687119, 3.0]
+    ordered_targets_m:
+      1: [4.242640687119, 9.757359312881, 3.0]
+      2: [0.000000000000, 8.000000000000, 3.0]
+      3: [-4.242640687119, 9.757359312881, 3.0]
+      4: [-6.000000000000, 14.000000000000, 3.0]
+      5: [-4.242640687119, 18.242640687119, 3.0]
+      6: [0.000000000000, 20.000000000000, 3.0]
+      7: [4.242640687119, 18.242640687119, 3.0]
+      8: [6.000000000000, 14.000000000000, 3.0]
+    structural_risk: same assignment-dependent target-set conflict as E3-A-02
+    disturbance:
+      affected_uavs: [4, 8]
+      axis: world_x inward
+      vector_N: {4: [2.0, 0.0, 0.0], 8: [-2.0, 0.0, 0.0]}
+      magnitude_N_per_uav: 2.0
+      onset_s: 2.0
+      duration_s: 1.5
+
+failure_accounting:
+  every_attempt_retained: true
+  all_attempt_denominator: true
+  no_replacement_seed: true
+  setup_or_infrastructure_failure: retained and separately labeled
+  no_manual_trial_deletion: true
+
+governance:
+  scenario_selection_may_not_change_after_any_formal_outcome: true
+  Full_Method_is_P1_F1: true
+  production_runtime_modified: false
+  accepted_formal_results_created: false
+  candidate_not_activated: true

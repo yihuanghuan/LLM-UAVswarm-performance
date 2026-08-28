@@ -1,0 +1,102 @@
+record_id: E3-geometry-replacement-v3-candidate-review-record-v1
+status: CANDIDATE_FOR_HUMAN_REVIEW_NOT_ACTIVE
+dataset_class: engineering_validation
+accepted_formal_result: false
+result_notice: NOT_FORMAL_RESULT
+formal_cursor_consumed: false
+live_execution_performed: false
+classification: protocol_correction_due_to_invalid_free-assignment_structural-risk_geometry
+activation_prohibited_without_human_review: true
+
+superseded_history:
+  E3_protocol_v1_sha256: 68f134cbf41a5be30e83a0953daa1a8d74866939d0450f60ebb31298616f56d8
+  E3_registry_v1_sha256: 48d66a07c744af4fad0f483ca24c72cf30dfbcaac9468e50ea3252ce6f76ea41
+  E3_protocol_v2_sha256: 3b1177983058351a443395966fce92ddb91e990e10a1b9b10d44921d8b854ecf
+  E3_registry_v2_sha256: f722d8a917ed6af57a3f75a79ef62720fdafb5835115a66d8e0582eb453d36a3
+  failure_mechanism: A-01/C-01 v1/v2 target coordinates are the same set as the initial positions up to relabeling; free P0 and P1 assignment correctly produce a unique zero-motion optimum, so the intended structural-risk mechanism is absent
+  allocator_behavior_was_correct: true
+  infrastructure_was_not_responsible: true
+
+candidate_identity:
+  protocol_id: E3-planning-feedback-safety-factorial-v3-candidate
+  protocol_sha256: 978063c29e591c0fa70c1c9b0fdb9a100c19fd9fb710964f9289c2369c9b621c
+  registry_id: E3-exact-factorial-v3-candidate
+  registry_sha256: e09f7c159af5159f3e826986f14cc075c026e92067653fb18e6d9de0d0857ff3
+  frozen_policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+  global_order_sha256: db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce
+
+scope:
+  affected_scenarios: [E3-A-01, E3-C-01]
+  initial_positions_m: {1: [-3, -3, 3], 2: [3, -3, 3], 3: [-3, 3, 3], 4: [3, 3, 3]}
+  old_ordered_targets_m: {1: [-3, 3, 3], 2: [3, 3, 3], 3: [-3, -3, 3], 4: [3, -3, 3]}
+  candidate_ordered_targets_m: {1: [-3, 4, 3], 2: [3, 4, 3], 3: [-2, 12, 3], 4: [0, 12, 3]}
+  geometry_interpretation: upward-shifted offset trapezoid with a six-metre bottom edge and a two-metre top edge centred at x=-1
+  A01_and_C01_share_identical_geometry: true
+  C01_disturbance_unchanged: true
+  duration_s_unchanged: 6.0
+  target_labels_define_input_order_not_uav_ownership: true
+  P0_assignment_mode_unchanged: distance_hungarian
+  P1_assignment_mode_unchanged: safety_aware
+  all_other_scientific_semantics_unchanged: true
+  no_live_outcome_used_for_selection: true
+
+deterministic_search:
+  authoritative_environment: {python: 3.10.12, numpy: 1.24.4, scipy: 1.8.0}
+  broad_unique_candidates_checked: 4440
+  offset_trapezoid_unique_candidates_checked: 14700
+  accepted_offset_trapezoid_candidates: 302
+  every_shortlisted_candidate_assignments_enumerated: 24
+  selection_rule: [scientific validity, P0 hard conflict, P1 N_hard reduction, maximum hard-risk improvement, maximum margin improvement, unique P0 optimum, limited travel and extremity, interpretable coordinates]
+  selected_candidate_id: G1_OFFSET_TRAPEZOID_SELECTED
+  numerical_reproducibility_crosscheck:
+    alternate_environment: {python: 3.10.12, numpy: 2.2.6, scipy: 1.15.3}
+    P0_permutation_zero_based: [2, 3, 0, 1]
+    P1_permutation_zero_based: [0, 1, 2, 3]
+    matches_authoritative_environment: true
+    note: authoritative result remains the production SciPy 1.8.0 result; this crosscheck confirms that the selected unique optimum does not reproduce the v1/v2 equal-cost tie sensitivity
+
+selected_diagnostics:
+  static_target_minimum_separation_m: 2.0
+  workspace_status: PASS
+  P0:
+    permutation_zero_based: [2, 3, 0, 1]
+    permutation_target_labels: [3, 4, 1, 2]
+    unique_distance_optimum: true
+    N_hard: 2
+    J_margin: 0.672365532501112
+    J_distance: 32.33035491915126
+    predicted_minimum_3d_distance_m: 0.42748229992745784
+    maximum_displacement_m: 15.297058540778355
+    minimum_jerk_peaks: {velocity: 4.780330793993236, acceleration: 2.453266907313291, jerk: 4.249182927993988}
+  P1:
+    permutation_zero_based: [0, 1, 2, 3]
+    permutation_target_labels: [1, 2, 3, 4]
+    matches_global_exhaustive_lexicographic_optimum: true
+    N_hard: 0
+    J_margin: 0.0
+    J_distance: 32.54221811864255
+    predicted_minimum_3d_distance_m: 2.0
+    maximum_displacement_m: 9.486832980505138
+    minimum_jerk_peaks: {velocity: 2.9646353064078554, acceleration: 1.5214515486254616, jerk: 2.6352313834736494}
+
+audit_artifacts:
+  candidate_geometry_audit_json_sha256: edcf06a3a8dae09e7eec32d6c8079dc0c973b09d837da20eb258f1d398d5780d
+  candidate_geometry_audit_markdown_sha256: 18ca3f05c95f6f3333c72bf486819e294dcc454aa21070238946c9bf5572a6fd
+  candidate_consistency_audit_json_sha256: 457332955368406e7028cc64f31ff6873d3dc03d6cd0222018d0f06343c75c8c
+  candidate_consistency_audit_markdown_sha256: f5705727d50a2efe2da46c646207a313f92d65cb3bd0f0805afc7ae7e41b3058
+  compile_only_registered_specs: {checked: 360, pass: 360, fail: 0}
+
+population_invariants:
+  scenarios: 6
+  conditions: 4
+  seeds: 15
+  registered_E3_trials: 360
+  trial_ids_unchanged: true
+  global_610_order_unchanged: true
+
+stop_point:
+  protocol_v3_frozen: false
+  live_demos_resumed: false
+  Campaign_v1_resumed: false
+  Campaign_v2_created: false
+  analysis_freeze_entered: false

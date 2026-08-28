@@ -1,0 +1,689 @@
+{
+  "accepted_formal_result": false,
+  "affected_scenario_invariants": {
+    "E3-A-01": {
+      "candidate_targets_m": {
+        "1": [
+          -3,
+          4,
+          3
+        ],
+        "2": [
+          3,
+          4,
+          3
+        ],
+        "3": [
+          -2,
+          12,
+          3
+        ],
+        "4": [
+          0,
+          12,
+          3
+        ]
+      },
+      "disturbance_unchanged": true,
+      "duration_unchanged": true,
+      "initial_positions_unchanged": true,
+      "uav_ids_unchanged": true
+    },
+    "E3-C-01": {
+      "candidate_targets_m": {
+        "1": [
+          -3,
+          4,
+          3
+        ],
+        "2": [
+          3,
+          4,
+          3
+        ],
+        "3": [
+          -2,
+          12,
+          3
+        ],
+        "4": [
+          0,
+          12,
+          3
+        ]
+      },
+      "disturbance_unchanged": true,
+      "duration_unchanged": true,
+      "initial_positions_unchanged": true,
+      "uav_ids_unchanged": true
+    }
+  },
+  "audit_sha256": "954690cc07c5322216961a9827d16396452a0c062ef304dff87ac1d774bfaee5",
+  "audit_type": "E3_protocol_v3_candidate_compile_only_consistency_audit_v1",
+  "candidate_not_frozen_or_activated": true,
+  "compile_validation": {
+    "fail_count": 0,
+    "failures": [],
+    "pass_count": 360,
+    "registered_specs_checked": 360
+  },
+  "dataset_class": "engineering_validation",
+  "family_consistency": [
+    {
+      "P0_N_hard": 2,
+      "P0_predicted_minimum_3d_distance_m": 0.42748229992745784,
+      "P1_N_hard": 0,
+      "P1_predicted_minimum_3d_distance_m": 2.0,
+      "family": "A_predictable_structural_risk",
+      "family_consistency": "PASS",
+      "interpretation": "predictable structural risk with P1 mitigation",
+      "registered_disturbance_present": false,
+      "scenario_id": "E3-A-01"
+    },
+    {
+      "P0_N_hard": 2,
+      "P0_predicted_minimum_3d_distance_m": 0.0,
+      "P1_N_hard": 0,
+      "P1_predicted_minimum_3d_distance_m": 2.2483866045465772,
+      "family": "A_predictable_structural_risk",
+      "family_consistency": "PASS",
+      "interpretation": "predictable structural risk with P1 mitigation",
+      "registered_disturbance_present": false,
+      "scenario_id": "E3-A-02"
+    },
+    {
+      "P0_N_hard": 0,
+      "P0_predicted_minimum_3d_distance_m": 2.0,
+      "P1_N_hard": 0,
+      "P1_predicted_minimum_3d_distance_m": 2.0,
+      "family": "B_residual_execution_risk",
+      "family_consistency": "PASS",
+      "interpretation": "nominally safe assignment plus registered disturbance",
+      "registered_disturbance_present": true,
+      "scenario_id": "E3-B-01"
+    },
+    {
+      "P0_N_hard": 0,
+      "P0_predicted_minimum_3d_distance_m": 2.0,
+      "P1_N_hard": 0,
+      "P1_predicted_minimum_3d_distance_m": 2.0,
+      "family": "B_residual_execution_risk",
+      "family_consistency": "PASS",
+      "interpretation": "nominally safe assignment plus registered disturbance",
+      "registered_disturbance_present": true,
+      "scenario_id": "E3-B-02"
+    },
+    {
+      "P0_N_hard": 2,
+      "P0_predicted_minimum_3d_distance_m": 0.42748229992745784,
+      "P1_N_hard": 0,
+      "P1_predicted_minimum_3d_distance_m": 2.0,
+      "family": "C_mixed_risk",
+      "family_consistency": "PASS",
+      "interpretation": "structural risk with P1 mitigation plus disturbance",
+      "registered_disturbance_present": true,
+      "scenario_id": "E3-C-01"
+    },
+    {
+      "P0_N_hard": 2,
+      "P0_predicted_minimum_3d_distance_m": 0.0,
+      "P1_N_hard": 0,
+      "P1_predicted_minimum_3d_distance_m": 2.2483866045465772,
+      "family": "C_mixed_risk",
+      "family_consistency": "PASS",
+      "interpretation": "structural risk with P1 mitigation plus disturbance",
+      "registered_disturbance_present": true,
+      "scenario_id": "E3-C-02"
+    }
+  ],
+  "formal_cursor_consumed": false,
+  "identities": {
+    "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+    "v2_protocol_sha256": "3b1177983058351a443395966fce92ddb91e990e10a1b9b10d44921d8b854ecf",
+    "v2_registry_sha256": "f722d8a917ed6af57a3f75a79ef62720fdafb5835115a66d8e0582eb453d36a3",
+    "v3_candidate_protocol_sha256": "978063c29e591c0fa70c1c9b0fdb9a100c19fd9fb710964f9289c2369c9b621c",
+    "v3_candidate_registry_sha256": "e09f7c159af5159f3e826986f14cc075c026e92067653fb18e6d9de0d0857ff3"
+  },
+  "live_execution_performed": false,
+  "population_invariants": {
+    "condition_count": 4,
+    "global_610_line_count": 610,
+    "global_E3_membership_unchanged": true,
+    "global_E3_order_unchanged": true,
+    "global_order_sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+    "scenario_count": 6,
+    "seed_count": 15,
+    "seeds_unchanged": true,
+    "trial_count": 360,
+    "trial_ids_unchanged": true,
+    "unique_trial_count": 360
+  },
+  "production_environment": {
+    "numpy_version": "1.24.4",
+    "python_executable": "/usr/bin/python3",
+    "python_version": "3.10.12",
+    "scipy_version": "1.8.0"
+  },
+  "result_notice": "NOT_FORMAL_RESULT",
+  "scenario_condition_cells": [
+    {
+      "J_distance": 32.54221811864255,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "safety_aware",
+      "avoidance_mode": "iapf_dual",
+      "compile_status": "PASS",
+      "condition": "P1_F1",
+      "duration_s": 6.0,
+      "family": "A_predictable_structural_risk",
+      "permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "predicted_minimum_3d_distance_m": 2.0,
+      "profile_count": 4,
+      "scenario_id": "E3-A-01"
+    },
+    {
+      "J_distance": 32.54221811864255,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "safety_aware",
+      "avoidance_mode": "off",
+      "compile_status": "PASS",
+      "condition": "P1_F0",
+      "duration_s": 6.0,
+      "family": "A_predictable_structural_risk",
+      "permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "predicted_minimum_3d_distance_m": 2.0,
+      "profile_count": 4,
+      "scenario_id": "E3-A-01"
+    },
+    {
+      "J_distance": 32.33035491915126,
+      "J_margin": 0.672365532501112,
+      "N_hard": 2,
+      "assignment_mode": "distance_hungarian",
+      "avoidance_mode": "iapf_dual",
+      "compile_status": "PASS",
+      "condition": "P0_F1",
+      "duration_s": 6.0,
+      "family": "A_predictable_structural_risk",
+      "permutation_zero_based": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "predicted_minimum_3d_distance_m": 0.42748229992745784,
+      "profile_count": 4,
+      "scenario_id": "E3-A-01"
+    },
+    {
+      "J_distance": 32.33035491915126,
+      "J_margin": 0.672365532501112,
+      "N_hard": 2,
+      "assignment_mode": "distance_hungarian",
+      "avoidance_mode": "off",
+      "compile_status": "PASS",
+      "condition": "P0_F0",
+      "duration_s": 6.0,
+      "family": "A_predictable_structural_risk",
+      "permutation_zero_based": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "predicted_minimum_3d_distance_m": 0.42748229992745784,
+      "profile_count": 4,
+      "scenario_id": "E3-A-01"
+    },
+    {
+      "J_distance": 112.92961599426846,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "safety_aware",
+      "avoidance_mode": "iapf_dual",
+      "compile_status": "PASS",
+      "condition": "P1_F1",
+      "duration_s": 9.5,
+      "family": "A_predictable_structural_risk",
+      "permutation_zero_based": [
+        7,
+        6,
+        1,
+        4,
+        3,
+        5,
+        2,
+        0
+      ],
+      "predicted_minimum_3d_distance_m": 2.2483866045465772,
+      "profile_count": 8,
+      "scenario_id": "E3-A-02"
+    },
+    {
+      "J_distance": 112.92961599426846,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "safety_aware",
+      "avoidance_mode": "off",
+      "compile_status": "PASS",
+      "condition": "P1_F0",
+      "duration_s": 9.5,
+      "family": "A_predictable_structural_risk",
+      "permutation_zero_based": [
+        7,
+        6,
+        1,
+        4,
+        3,
+        5,
+        2,
+        0
+      ],
+      "predicted_minimum_3d_distance_m": 2.2483866045465772,
+      "profile_count": 8,
+      "scenario_id": "E3-A-02"
+    },
+    {
+      "J_distance": 112.0,
+      "J_margin": 2.002244726170346,
+      "N_hard": 2,
+      "assignment_mode": "distance_hungarian",
+      "avoidance_mode": "iapf_dual",
+      "compile_status": "PASS",
+      "condition": "P0_F1",
+      "duration_s": 9.5,
+      "family": "A_predictable_structural_risk",
+      "permutation_zero_based": [
+        7,
+        0,
+        5,
+        2,
+        3,
+        4,
+        1,
+        6
+      ],
+      "predicted_minimum_3d_distance_m": 0.0,
+      "profile_count": 8,
+      "scenario_id": "E3-A-02"
+    },
+    {
+      "J_distance": 112.0,
+      "J_margin": 2.002244726170346,
+      "N_hard": 2,
+      "assignment_mode": "distance_hungarian",
+      "avoidance_mode": "off",
+      "compile_status": "PASS",
+      "condition": "P0_F0",
+      "duration_s": 9.5,
+      "family": "A_predictable_structural_risk",
+      "permutation_zero_based": [
+        7,
+        0,
+        5,
+        2,
+        3,
+        4,
+        1,
+        6
+      ],
+      "predicted_minimum_3d_distance_m": 0.0,
+      "profile_count": 8,
+      "scenario_id": "E3-A-02"
+    },
+    {
+      "J_distance": 32.0,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "safety_aware",
+      "avoidance_mode": "iapf_dual",
+      "compile_status": "PASS",
+      "condition": "P1_F1",
+      "duration_s": 8.0,
+      "family": "B_residual_execution_risk",
+      "permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "predicted_minimum_3d_distance_m": 2.0,
+      "profile_count": 4,
+      "scenario_id": "E3-B-01"
+    },
+    {
+      "J_distance": 32.0,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "safety_aware",
+      "avoidance_mode": "off",
+      "compile_status": "PASS",
+      "condition": "P1_F0",
+      "duration_s": 8.0,
+      "family": "B_residual_execution_risk",
+      "permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "predicted_minimum_3d_distance_m": 2.0,
+      "profile_count": 4,
+      "scenario_id": "E3-B-01"
+    },
+    {
+      "J_distance": 32.0,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "distance_hungarian",
+      "avoidance_mode": "iapf_dual",
+      "compile_status": "PASS",
+      "condition": "P0_F1",
+      "duration_s": 8.0,
+      "family": "B_residual_execution_risk",
+      "permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "predicted_minimum_3d_distance_m": 2.0,
+      "profile_count": 4,
+      "scenario_id": "E3-B-01"
+    },
+    {
+      "J_distance": 32.0,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "distance_hungarian",
+      "avoidance_mode": "off",
+      "compile_status": "PASS",
+      "condition": "P0_F0",
+      "duration_s": 8.0,
+      "family": "B_residual_execution_risk",
+      "permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "predicted_minimum_3d_distance_m": 2.0,
+      "profile_count": 4,
+      "scenario_id": "E3-B-01"
+    },
+    {
+      "J_distance": 32.0,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "safety_aware",
+      "avoidance_mode": "iapf_dual",
+      "compile_status": "PASS",
+      "condition": "P1_F1",
+      "duration_s": 8.0,
+      "family": "B_residual_execution_risk",
+      "permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "predicted_minimum_3d_distance_m": 2.0,
+      "profile_count": 4,
+      "scenario_id": "E3-B-02"
+    },
+    {
+      "J_distance": 32.0,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "safety_aware",
+      "avoidance_mode": "off",
+      "compile_status": "PASS",
+      "condition": "P1_F0",
+      "duration_s": 8.0,
+      "family": "B_residual_execution_risk",
+      "permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "predicted_minimum_3d_distance_m": 2.0,
+      "profile_count": 4,
+      "scenario_id": "E3-B-02"
+    },
+    {
+      "J_distance": 32.0,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "distance_hungarian",
+      "avoidance_mode": "iapf_dual",
+      "compile_status": "PASS",
+      "condition": "P0_F1",
+      "duration_s": 8.0,
+      "family": "B_residual_execution_risk",
+      "permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "predicted_minimum_3d_distance_m": 2.0,
+      "profile_count": 4,
+      "scenario_id": "E3-B-02"
+    },
+    {
+      "J_distance": 32.0,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "distance_hungarian",
+      "avoidance_mode": "off",
+      "compile_status": "PASS",
+      "condition": "P0_F0",
+      "duration_s": 8.0,
+      "family": "B_residual_execution_risk",
+      "permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "predicted_minimum_3d_distance_m": 2.0,
+      "profile_count": 4,
+      "scenario_id": "E3-B-02"
+    },
+    {
+      "J_distance": 32.54221811864255,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "safety_aware",
+      "avoidance_mode": "iapf_dual",
+      "compile_status": "PASS",
+      "condition": "P1_F1",
+      "duration_s": 6.0,
+      "family": "C_mixed_risk",
+      "permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "predicted_minimum_3d_distance_m": 2.0,
+      "profile_count": 4,
+      "scenario_id": "E3-C-01"
+    },
+    {
+      "J_distance": 32.54221811864255,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "safety_aware",
+      "avoidance_mode": "off",
+      "compile_status": "PASS",
+      "condition": "P1_F0",
+      "duration_s": 6.0,
+      "family": "C_mixed_risk",
+      "permutation_zero_based": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "predicted_minimum_3d_distance_m": 2.0,
+      "profile_count": 4,
+      "scenario_id": "E3-C-01"
+    },
+    {
+      "J_distance": 32.33035491915126,
+      "J_margin": 0.672365532501112,
+      "N_hard": 2,
+      "assignment_mode": "distance_hungarian",
+      "avoidance_mode": "iapf_dual",
+      "compile_status": "PASS",
+      "condition": "P0_F1",
+      "duration_s": 6.0,
+      "family": "C_mixed_risk",
+      "permutation_zero_based": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "predicted_minimum_3d_distance_m": 0.42748229992745784,
+      "profile_count": 4,
+      "scenario_id": "E3-C-01"
+    },
+    {
+      "J_distance": 32.33035491915126,
+      "J_margin": 0.672365532501112,
+      "N_hard": 2,
+      "assignment_mode": "distance_hungarian",
+      "avoidance_mode": "off",
+      "compile_status": "PASS",
+      "condition": "P0_F0",
+      "duration_s": 6.0,
+      "family": "C_mixed_risk",
+      "permutation_zero_based": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "predicted_minimum_3d_distance_m": 0.42748229992745784,
+      "profile_count": 4,
+      "scenario_id": "E3-C-01"
+    },
+    {
+      "J_distance": 112.92961599426846,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "safety_aware",
+      "avoidance_mode": "iapf_dual",
+      "compile_status": "PASS",
+      "condition": "P1_F1",
+      "duration_s": 9.5,
+      "family": "C_mixed_risk",
+      "permutation_zero_based": [
+        7,
+        6,
+        1,
+        4,
+        3,
+        5,
+        2,
+        0
+      ],
+      "predicted_minimum_3d_distance_m": 2.2483866045465772,
+      "profile_count": 8,
+      "scenario_id": "E3-C-02"
+    },
+    {
+      "J_distance": 112.92961599426846,
+      "J_margin": 0.0,
+      "N_hard": 0,
+      "assignment_mode": "safety_aware",
+      "avoidance_mode": "off",
+      "compile_status": "PASS",
+      "condition": "P1_F0",
+      "duration_s": 9.5,
+      "family": "C_mixed_risk",
+      "permutation_zero_based": [
+        7,
+        6,
+        1,
+        4,
+        3,
+        5,
+        2,
+        0
+      ],
+      "predicted_minimum_3d_distance_m": 2.2483866045465772,
+      "profile_count": 8,
+      "scenario_id": "E3-C-02"
+    },
+    {
+      "J_distance": 112.0,
+      "J_margin": 2.002244726170346,
+      "N_hard": 2,
+      "assignment_mode": "distance_hungarian",
+      "avoidance_mode": "iapf_dual",
+      "compile_status": "PASS",
+      "condition": "P0_F1",
+      "duration_s": 9.5,
+      "family": "C_mixed_risk",
+      "permutation_zero_based": [
+        7,
+        0,
+        5,
+        2,
+        3,
+        4,
+        1,
+        6
+      ],
+      "predicted_minimum_3d_distance_m": 0.0,
+      "profile_count": 8,
+      "scenario_id": "E3-C-02"
+    },
+    {
+      "J_distance": 112.0,
+      "J_margin": 2.002244726170346,
+      "N_hard": 2,
+      "assignment_mode": "distance_hungarian",
+      "avoidance_mode": "off",
+      "compile_status": "PASS",
+      "condition": "P0_F0",
+      "duration_s": 9.5,
+      "family": "C_mixed_risk",
+      "permutation_zero_based": [
+        7,
+        0,
+        5,
+        2,
+        3,
+        4,
+        1,
+        6
+      ],
+      "predicted_minimum_3d_distance_m": 0.0,
+      "profile_count": 8,
+      "scenario_id": "E3-C-02"
+    }
+  ],
+  "status": "PASS",
+  "unaffected_scenarios_byte_semantically_identical": {
+    "E3-A-02": true,
+    "E3-B-01": true,
+    "E3-B-02": true,
+    "E3-C-02": true
+  }
+}

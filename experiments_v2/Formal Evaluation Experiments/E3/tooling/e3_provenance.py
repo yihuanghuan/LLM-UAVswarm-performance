@@ -50,6 +50,10 @@ def validate() -> Dict[str, Any]:
         )
         allowed_files={
             "experiments_v2/Formal Evaluation Experiments/protocols/E3_protocol_v2.yaml",
+            # Review-only scientific correction candidate.  Its presence is
+            # allowed, but e3_trial_registry continues to resolve and hash-gate
+            # the SEALED v2 protocol/registry until a separate human freeze.
+            "experiments_v2/Formal Evaluation Experiments/protocols/E3_protocol_v3_candidate.yaml",
         }
         bad=sorted({p for p in changed if not p.startswith(allowed_roots) and p not in allowed_files})
         ck("changes_experiment_only",not bad,{"prohibited":bad})

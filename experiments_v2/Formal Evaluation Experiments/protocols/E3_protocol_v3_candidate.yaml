@@ -1,0 +1,66 @@
+protocol_id: E3-planning-feedback-safety-factorial-v3-candidate
+dataset_class: engineering_validation
+status: CANDIDATE_FOR_HUMAN_REVIEW_NOT_ACTIVE
+baseline_tag: paper-final-sim-v3
+scenario_registry: ../E3/e3_factorial_registry_v3_candidate.yaml
+execution_prohibited_before_final_seal: true
+activation_prohibited_without_human_review: true
+supersession_candidate:
+  classification: protocol_correction_due_to_invalid_free-assignment_structural-risk_geometry
+  supersedes_protocol_id_if_approved: E3-planning-feedback-safety-factorial-v2
+  superseded_protocol_sha256: 3b1177983058351a443395966fce92ddb91e990e10a1b9b10d44921d8b854ecf
+  reason: E3-A-01 and E3-C-01 v1/v2 targets are permutation-equivalent to the initial positions, so correct free assignment yields a unique zero-motion optimum and removes the intended structural-risk mechanism
+  affected_scenarios: [E3-A-01, E3-C-01]
+  old_ordered_targets_m: {1: [-3, 3, 3], 2: [3, 3, 3], 3: [-3, -3, 3], 4: [3, -3, 3]}
+  candidate_ordered_targets_m: {1: [-3, 4, 3], 2: [3, 4, 3], 3: [-2, 12, 3], 4: [0, 12, 3]}
+  geometry_interpretation: upward-shifted offset trapezoid with a six-metre bottom edge and a two-metre top edge centred at x=-1
+  allocator_behavior_was_correct: true
+  infrastructure_was_not_responsible: true
+  no_live_execution_used_for_selection: true
+  no_result_driven_tuning: true
+  A01_and_C01_share_identical_replacement_geometry: true
+  all_other_scientific_semantics_unchanged: true
+  global_population_order_and_seeds_unchanged: true
+  candidate_not_frozen_or_activated: true
+
+design:
+  factorial: planning_safety [P1, P0] by feedback_safety [F1, F0]
+  paired_seeds: true
+  Full_Method_condition: P1_F1
+  component_modes_must_use_existing_runtime_interfaces: true
+  runtime_code_changes_allowed: false
+  paired_seeds_per_scenario_condition: 15
+  fixed_total_attempts: 6 scenarios * 4 conditions * 15 paired seeds = 360 attempts
+  significance_triggered_sample_extension: forbidden
+  planning_assignment_comparison:
+    P1:
+      assignment_mode: safety_aware
+      meaning: frozen safety-aware lexicographic assignment
+    P0:
+      assignment_mode: distance_hungarian
+      meaning: standard distance-only Hungarian assignment without safety-aware lexicographic refinement
+  condition_mapping:
+    P1_F1: {assignment_mode: safety_aware, avoidance_mode: iapf_dual}
+    P1_F0: {assignment_mode: safety_aware, avoidance_mode: 'off'}
+    P0_F1: {assignment_mode: distance_hungarian, avoidance_mode: iapf_dual}
+    P0_F0: {assignment_mode: distance_hungarian, avoidance_mode: 'off'}
+  paired_invariants:
+    - same initial state
+    - same target set
+    - same seed
+    - same controller
+    - same timing
+    - same feedback condition
+  only_planning_difference: assignment rule; P0 does not preserve or impose target ownership
+
+primary_metrics:
+  actual_d_min: minimum measured pairwise 3-D distance over the scored interval
+  predicted_d_min: allocator-predicted minimum pairwise 3-D distance recorded before execution
+  hard_risk_events: count and exposure duration for actual distance below frozen d_hard
+  mission_success: all required tasks complete within the preregistered timeout with no hard failure
+  iapf_activation_time: total seconds IAPF is active over all UAVs; also report per-UAV
+  integral_delta_p: time integral of norm of IAPF position modulation
+  integral_delta_a: time integral of norm of IAPF acceleration modulation
+  trajectory_deviation: time integral and RMS distance between nominal and safe references
+
+failure_accounting: inherit registry global_failure_accounting
