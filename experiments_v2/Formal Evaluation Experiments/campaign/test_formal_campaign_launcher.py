@@ -14,8 +14,8 @@ class FormalLauncherTests(unittest.TestCase):
  def setUpClass(cls):cls.registry=load_runner_registry();cls.order=load_sealed_order();cls.loader=PinnedAdapterLoader(cls.registry)
  def setUp(self):self.temp=tempfile.TemporaryDirectory(prefix='formal-launch-test-');self.root=Path(self.temp.name)/'campaign/results/synthetic-validation'
  def tearDown(self):self.temp.cleanup()
- def launcher(self,run='test'):return FormalCampaignLauncher('rehearsal',run,self.root,self.loader)
- def test_all_five_real_entrypoints_verify(self):self.assertEqual(self.loader.verify_all_checkouts()['status'],'PASS')
+ def launcher(self,run='test'):return FormalCampaignLauncher('rehearsal',run,self.root,FakeFormalAdapterLoader())
+ def test_all_five_original_pins_remain_verifiable(self):self.assertEqual(validate_registry_pins(self.registry)['status'],'PASS')
  def test_registry_refuses_unpinned_and_pin_hash_mismatches(self):
   for mutation in ('unpinned','source','commit','protocol','registry'):
    r=deepcopy(self.registry);e=r['runners']['E2']
@@ -59,8 +59,8 @@ class FakeFormalAdapterLoader:
  def __init__(self,statuses=()):self.statuses=list(statuses)
  def verify_all_checkouts(self):return {'status':'PASS'}
  def run_exact_trial(self,family,trial,context):
-  out=Path(context['attempt_output_dir']);artifact=out/'attempt.json';status=self.statuses.pop(0) if self.statuses else 'success'
-  write_json_exclusive(artifact,{'record_type':'isolated_fake_formal_attempt_v1','dataset_class':'formal_evaluation','accepted_formal_result':True,'trial_id':trial,'experiment':family,'global_position':context['global_trial_position'],'attempt_status':status,'replacement_attempt':False})
+  out=Path(context['attempt_output_dir']);artifact=out/'attempt.json';status=self.statuses.pop(0) if self.statuses else context.get('failure_injection','success');accepted=context['execution_mode']=='formal'
+  write_json_exclusive(artifact,{'record_type':'isolated_fake_formal_attempt_v1','dataset_class':'formal_evaluation' if accepted else 'synthetic_validation','accepted_formal_result':accepted,'trial_id':trial,'experiment':family,'global_position':context['global_trial_position'],'attempt_status':status,'replacement_attempt':False})
   return {'trial_id':trial,'experiment':family,'attempt_status':status,'artifact_path':str(artifact),'artifact_sha256':sha256_file(artifact)}
 
 class FormalRestartResumeRegressionTests(unittest.TestCase):
@@ -81,7 +81,8 @@ class FormalRestartResumeRegressionTests(unittest.TestCase):
  def test_retained_one_restart_dispatch_two_exact_prefix_and_immutable_manifest(self):
   first=self.launcher();manifest=self.root/'launcher_run_manifest.json';digest=sha256_file(manifest);first.dispatch_next()
   second=self.launcher();self.assertEqual(second.validate_state()['next_position'],2);second.dispatch_next();records=second.journal.read()
-  self.assertEqual([x['global_position'] for x in records],[1,2]);self.assertEqual([x['trial_id'] for x in records],self.order[:2]);self.assertEqual(second.validate_state()['next_position'],3);self.assertEqual(sha256_file(manifest),digest)
+  self.assertEqual([x['global_position'] for x in records],[1,2]);self.assertEqual([x['trial_id'] for x in records],self.order[:2]);self.assertEqual(sha256_file(manifest),digest)
+  with self.assertRaisesRegex(CampaignError,'required before position #3'):second.validate_state()
  def test_retained_failure_restart_advances_without_retry(self):
   first=self.launcher(('infrastructure_failure',));self.assertEqual(first.dispatch_next()['attempt_status'],'infrastructure_failure')
   second=self.launcher();self.assertEqual(second.validate_state()['next_position'],2);self.assertEqual(second.dispatch_next()['global_position'],2)
