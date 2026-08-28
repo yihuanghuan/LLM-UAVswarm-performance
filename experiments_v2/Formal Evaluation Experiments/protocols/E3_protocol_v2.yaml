@@ -1,0 +1,62 @@
+protocol_id: E3-planning-feedback-safety-factorial-v2
+dataset_class: formal_evaluation
+status: SEALED
+baseline_tag: paper-final-sim-v3
+scenario_registry: ../E3/e3_factorial_registry_v2.yaml
+execution_prohibited_before_final_seal: true
+supersession:
+  classification: protocol_correction_due_to_preregistered_feasibility_inconsistency
+  supersedes_protocol_id: E3-planning-feedback-safety-factorial-v1
+  superseded_protocol_sha256: 68f134cbf41a5be30e83a0953daa1a8d74866939d0450f60ebb31298616f56d8
+  reason: E3-A-02 and E3-C-02 at 8.0 seconds violate the frozen Minimum-Jerk velocity limit after the frozen P0/P1 assignment rules are applied
+  affected_scenarios: [E3-A-02, E3-C-02]
+  old_duration_s: 8.0
+  new_duration_s: 9.5
+  duration_selection: exact worst-case analytic minimum rounded upward to the nearest 0.5 seconds
+  no_result_driven_tuning: true
+  valid_formal_results_previously_collected_for_affected_scenarios: false
+  all_other_scientific_semantics_unchanged: true
+  global_population_order_and_seeds_unchanged: true
+
+design:
+  factorial: planning_safety [P1, P0] by feedback_safety [F1, F0]
+  paired_seeds: true
+  Full_Method_condition: P1_F1
+  component_modes_must_use_existing_runtime_interfaces: true
+  runtime_code_changes_allowed: false
+  paired_seeds_per_scenario_condition: 15
+  fixed_total_attempts: 6 scenarios * 4 conditions * 15 paired seeds = 360 attempts
+  significance_triggered_sample_extension: forbidden
+  planning_assignment_comparison:
+    P1:
+      assignment_mode: safety_aware
+      meaning: frozen safety-aware lexicographic assignment
+    P0:
+      assignment_mode: distance_hungarian
+      meaning: standard distance-only Hungarian assignment without safety-aware lexicographic refinement
+  condition_mapping:
+    P1_F1: {assignment_mode: safety_aware, avoidance_mode: iapf_dual}
+    P1_F0: {assignment_mode: safety_aware, avoidance_mode: 'off'}
+    P0_F1: {assignment_mode: distance_hungarian, avoidance_mode: iapf_dual}
+    P0_F0: {assignment_mode: distance_hungarian, avoidance_mode: 'off'}
+  paired_invariants:
+    - same initial state
+    - same target set
+    - same seed
+    - same controller
+    - same timing
+    - same feedback condition
+  only_planning_difference: assignment rule; P0 does not preserve or impose target ownership
+
+primary_metrics:
+  actual_d_min: minimum measured pairwise 3-D distance over the scored interval
+  predicted_d_min: allocator-predicted minimum pairwise 3-D distance recorded before execution
+  hard_risk_events: count and exposure duration for actual distance below frozen d_hard
+  mission_success: all required tasks complete within the preregistered timeout with no hard failure
+  iapf_activation_time: total seconds IAPF is active over all UAVs; also report per-UAV
+  integral_delta_p: time integral of norm of IAPF position modulation
+  integral_delta_a: time integral of norm of IAPF acceleration modulation
+  trajectory_deviation: time integral and RMS distance between nominal and safe references
+
+failure_accounting: inherit registry global_failure_accounting
+

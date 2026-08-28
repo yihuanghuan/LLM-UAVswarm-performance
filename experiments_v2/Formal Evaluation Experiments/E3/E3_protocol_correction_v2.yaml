@@ -1,0 +1,87 @@
+correction_id: E3-duration-feasibility-correction-v2
+status: READY_FOR_HUMAN_REVIEW
+classification: protocol_correction_due_to_preregistered_feasibility_inconsistency
+formal_execution_authorized: false
+campaign_v1_retrofit_forbidden: true
+
+superseded_identity:
+  protocol_id: E3-planning-feedback-safety-factorial-v1
+  protocol_path: ../protocols/E3_protocol_v1.yaml
+  protocol_sha256: 68f134cbf41a5be30e83a0953daa1a8d74866939d0450f60ebb31298616f56d8
+  registry_id: E3-exact-factorial-v1
+  registry_path: e3_factorial_registry_v1.yaml
+  registry_sha256: 48d66a07c744af4fad0f483ca24c72cf30dfbcaac9468e50ea3252ce6f76ea41
+
+corrected_identity:
+  protocol_id: E3-planning-feedback-safety-factorial-v2
+  protocol_path: ../protocols/E3_protocol_v2.yaml
+  protocol_sha256: 3b1177983058351a443395966fce92ddb91e990e10a1b9b10d44921d8b854ecf
+  registry_id: E3-exact-factorial-v2
+  registry_path: e3_factorial_registry_v2.yaml
+  registry_sha256: f722d8a917ed6af57a3f75a79ef62720fdafb5835115a66d8e0582eb453d36a3
+
+root_cause:
+  trajectory_convention: frozen zero-end-derivative Minimum-Jerk quintic
+  formulas:
+    velocity_peak: 1.875 * D / T
+    acceleration_peak: (10 / sqrt(3)) * D / T^2
+    jerk_peak: 60 * D / T^3
+  frozen_limits: {velocity_mps: 5.0, acceleration_mps2: 5.0, jerk_mps3: 10.0}
+  affected_scenarios: [E3-A-02, E3-C-02]
+  old_duration_s: 8.0
+  P0:
+    assignment_mode: distance_hungarian
+    maximum_assigned_displacement_m: 22.485281374238
+    minimum_duration_by_velocity_s: 8.43198051533925
+    minimum_duration_by_acceleration_s: 5.095465288709322
+    minimum_duration_by_jerk_s: 5.128808996203398
+    exact_minimum_duration_s: 8.43198051533925
+  P1:
+    assignment_mode: safety_aware
+    maximum_assigned_displacement_m: 24.61108749090042
+    minimum_duration_by_velocity_s: 9.229157809087656
+    minimum_duration_by_acceleration_s: 5.330894481777104
+    minimum_duration_by_jerk_s: 5.2855966461791
+    exact_minimum_duration_s: 9.229157809087656
+  global_exact_minimum_duration_s: 9.229157809087656
+  limiting_constraint: velocity
+
+correction:
+  deterministic_rule: round exact global minimum upward to nearest 0.5 seconds
+  quantum_s: 0.5
+  new_duration_s: 9.5
+  changed_registry_fields:
+    - E3-A-02.duration_s
+    - E3-A-02.command_text_for_manifest duration rendering
+    - E3-C-02.duration_s
+    - E3-C-02.command_text_for_manifest duration rendering
+  mechanically_derived_spec_fields:
+    scoring_end_offset_s: duration_s + 2.0
+    timeout_after_t0_s: duration_s + 6.0
+    hashes: registered input and resolved execution spec hashes
+
+scientific_scope:
+  no_result_driven_tuning: true
+  valid_formal_results_collected_for_affected_scenarios_before_correction: false
+  duration_identical_across_P0_P1_F0_F1_within_each_scenario: true
+  motion_limits_unchanged: true
+  assignments_unchanged: true
+  geometry_unchanged: true
+  disturbances_unchanged: true
+  seeds_unchanged: true
+  sample_size_unchanged: true
+  trial_ids_unchanged: true
+  global_610_order_unchanged: true
+  all_other_scientific_semantics_unchanged: true
+
+preserved_nonformal_demo_history:
+  - demo_instance_id: E3-P0-F0-C01-S53101-r1
+    role: failed integer-representation demo retained unchanged
+    manifest_sha256: 8cb6661ae01aa0c92aaa057cfed0498e52b58d348a01ee5ba8228d8c57f82d58
+  - demo_instance_id: E3-P0-F0-C01-S53101-r2
+    role: successful corrected-representation C-01 demo retained unchanged
+    manifest_sha256: b2263dc97daeffe0ec1e45ed293c61f79c52839063f15a5afad01ef07ee173b4
+  - demo_instance_id: E3-P0-F0-A02-S53101-r1
+    role: pre-launch feasibility failure; evidence for superseded protocol-v1, not a method failure
+    protocol_history: superseded E3 protocol v1
+    manifest_sha256: 59a4e7861728942a0742e10f92108ddf1e18cb46afb90d72d12308476bc19899
