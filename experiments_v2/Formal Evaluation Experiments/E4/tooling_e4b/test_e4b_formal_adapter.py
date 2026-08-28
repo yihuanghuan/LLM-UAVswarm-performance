@@ -26,3 +26,6 @@ def test_failure_injection_retained(tmp_path):
 def test_engineering_fixture_is_not_registered():
  from e4b_engineering_smoke import fixture
  f=fixture();assert f['trial_id'] not in registered_trial_ids();r=build_runtime_spec(f);assert r['fixture_class']=='non_registered_engineering_fixture';assert r['dataset_class']=='engineering_validation'
+def test_registered_integral_coordinates_are_ros_floats():
+ t='E4B-SAFETY-ACTIVE__normal__S54201';r=build_runtime_spec(build_exact_spec(t))
+ assert all(isinstance(x,float) for v in r['initial_positions_m']+r['ordered_targets_m'] for x in v)
