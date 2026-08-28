@@ -273,14 +273,31 @@ def raw_audit(family: str, spec: Dict[str, Any], raw: Path) -> Dict[str, Any]:
         tracking = _all_topics(counts, ids, "/uav{uid}/control_tracking_debug")
         iapf = _all_topics(counts, ids, "/uav{uid}/iapf_debug")
         resolution = raw / "ros_home/candidate_resolution_trace.jsonl"
+        language_path = raw / "language_result.json"
+        language = json.loads(language_path.read_text()) if language_path.exists() else {}
+        method_terminated_before_dispatch = (
+            language.get("attempt_status") == "method_failure"
+            and language.get("mission_termination") == "frozen_method_rejection"
+            and bool(language.get("failure_stage"))
+        )
+        dispatch_topics = _all_topics(counts, ids, "/uav{uid}/execution_command")
+        completion_topics = _all_topics(counts, ids, "/uav{uid}/trajectory_metrics")
+        dispatch_source = (
+            "language_result.json retained zero-dispatch method termination"
+            if method_terminated_before_dispatch else "rosbag UAVExecutionCommand"
+        )
+        completion_source = (
+            "language_result.json retained pre-dispatch mission termination"
+            if method_terminated_before_dispatch else "rosbag TrajectoryMetrics + UAVStatus"
+        )
         fields = [
             _evidence("raw_llm_request_response_metadata", (raw / "llm_raw_responses.append.jsonl").exists() and (raw / "llm_raw_responses.append.jsonl").stat().st_size > 0, "provider append log", "provider wall timestamp/latency"),
             _evidence("candidate_validation", (raw / "validated_candidate.json").exists(), "validated_candidate.json", "post-provider parse/validation"),
             _evidence("state_snapshots", _all_topics(counts, ids, "/uav{uid}/swarm_state") and resolution.exists(), "rosbag SwarmState + resolution trace snapshot timestamps", "ROS/source/receive timestamps"),
             _evidence("resolution_trace", resolution.exists() and resolution.stat().st_size > 0, "candidate_resolution_trace.jsonl", "snapshot epoch"),
             _evidence("assignment_trace", resolution.exists() and resolution.stat().st_size > 0, "candidate_resolution_trace.jsonl assignment metrics", "pre-dispatch snapshot epoch"),
-            _evidence("dispatch_events", _all_topics(counts, ids, "/uav{uid}/execution_command"), "rosbag UAVExecutionCommand", "ROS header stamp"),
-            _evidence("task_completion_events", _all_topics(counts, ids, "/uav{uid}/trajectory_metrics"), "rosbag TrajectoryMetrics + UAVStatus", "ROS header stamp"),
+            _evidence("dispatch_events", dispatch_topics or method_terminated_before_dispatch, dispatch_source, "ROS header stamp or retained method-termination wall timestamp", notes="zero dispatch is expected only for an explicitly classified pre-dispatch frozen-method rejection" if method_terminated_before_dispatch else None),
+            _evidence("task_completion_events", completion_topics or method_terminated_before_dispatch, completion_source, "ROS header stamp or retained method-termination wall timestamp", notes="pre-dispatch method termination is the terminal event" if method_terminated_before_dispatch else None),
             _evidence("per_uav_measured_position_3d", tracking, "rosbag ControlTrackingDebug.actual_position", "ROS header stamp"),
             _evidence("nominal_reference", tracking, "rosbag ControlTrackingDebug.nominal_position", "ROS header stamp"),
             _evidence("safe_reference", tracking, "rosbag ControlTrackingDebug.safe_position", "ROS header stamp"),
@@ -321,6 +338,15 @@ def scientific_classification(family: str, spec: Dict[str, Any], backend: Dict[s
         return {"classification": "expected_frozen_feasibility_correction",
                 "T_exec_s": t_exec, "T_min_s": t_min,
                 "correction_contract_pass": t_exec is not None and t_min is not None and t_exec >= t_min}
+    if family == "E5" and (raw / "language_result.json").exists():
+        language = json.loads((raw / "language_result.json").read_text())
+        if language.get("attempt_status") == "method_failure":
+            return {
+                "classification": "frozen_method_failure",
+                "failure_stage": language.get("failure_stage"),
+                "termination": language.get("mission_termination"),
+                "reason": language.get("error"),
+            }
     return {"classification": "not_scored_analysis_freeze_pending",
             "backend_terminal_status": backend.get("attempt_status")}
 
