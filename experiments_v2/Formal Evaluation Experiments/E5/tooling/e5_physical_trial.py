@@ -3,6 +3,7 @@
 from __future__ import annotations
 import argparse,hashlib,json,os,signal,subprocess,time
 from pathlib import Path
+from e5_runtime_provenance import collect_runtime_provenance,runtime_provenance_gate
 WORK=Path('/home/yihuang/learning/LLM_swarm_ws');PX4=Path('/home/yihuang/PX4-Autopilot-formal-v1');INSTALL=WORK/'formal_install_v1/setup.bash';PY=WORK/'llm_env/bin/python';POLICY=WORK/'formal_install_v1/lfs_policy/share/lfs_policy/config/lfs_policy.paper_current.yaml';REPO=Path(__file__).resolve().parents[4];READY=REPO/'experiments-legacy/system_8uav/scripts/wait_swarm_ready.py'
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def env(seed,output):
@@ -17,16 +18,10 @@ def clean():
  for sig in ('INT','TERM'):
   for pat in ('(^|/)px4( |$)','(^|/)gzserver( |$)','MicroXRCEAgent','ladrc_position_controller_node','location_allocate'):subprocess.run(['pkill',f'-{sig}','-f',pat],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
   time.sleep(2)
-def provenance(e):
- prefixes={}
- for pkg in ('ladrc_controller','uav_swarm_interfaces','lfs_policy'):
-  x=subprocess.run(['ros2','pkg','prefix',pkg],env=e,cwd=WORK,text=True,capture_output=True,timeout=20);prefixes[pkg]=x.stdout.strip() if x.returncode==0 else ''
- launch=Path(prefixes['ladrc_controller'])/'share/ladrc_controller/launch/swarm_launch.py';policy=Path(prefixes['lfs_policy'])/'share/lfs_policy/config/lfs_policy.paper_current.yaml';exe=(Path(prefixes['ladrc_controller'])/'lib/ladrc_controller/ladrc_position_controller_node').resolve();jinja=subprocess.run(['/usr/bin/python3','-c','import jinja2'],env=e,text=True,capture_output=True);checks={'formal_prefixes':all(x.startswith(str(WORK/'formal_install_v1')) for x in prefixes.values()),'policy_hash':policy.is_file() and sha(policy)=='6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858','launch_exists':launch.is_file(),'controller_exists':exe.is_file(),'formal_px4_exists':(PX4/'build/px4_sitl_default/bin/px4').is_file(),'px4_sdf_generator_python_ready':jinja.returncode==0 and e['PATH'].split(':')[0]=='/usr/bin'};return {'manifest_type':'E5_runtime_provenance_v1','status':'PASS' if all(checks.values()) else 'FAIL','package_prefixes':prefixes,'px4_sdf_generator_python':'/usr/bin/python3','installed_launch':{'path':str(launch),'sha256':sha(launch) if launch.is_file() else None},'installed_policy':{'path':str(policy),'sha256':sha(policy) if policy.is_file() else None},'installed_controller':{'path':str(exe),'sha256':sha(exe) if exe.is_file() else None},'formal_px4_binary':{'path':str(PX4/'build/px4_sitl_default/bin/px4'),'sha256':sha(PX4/'build/px4_sitl_default/bin/px4')},'checks':checks}
 def orchestrate(s,output,result):
  output=Path(output).resolve();result=Path(result).resolve();output.mkdir(parents=True,exist_ok=True);e=env(s['seed'],output);ids=s['uav_ids'];procs=[];logs=[];out={'attempt_status':'infrastructure_failure','fixture_class':s.get('fixture_class','registered_formal_spec'),'dataset_class':s.get('dataset_class','formal_evaluation'),'retry_performed':False,'cold_start':True,'full_method_modes':s['full_method_modes'],'accepted_formal_result':s.get('dataset_class')=='formal_evaluation'}
  try:
-  clean();rp=provenance(e);(output/'runtime_provenance.json').write_text(json.dumps(rp,indent=2,sort_keys=True)+'\n')
-  if rp['status']!='PASS':raise RuntimeError('runtime provenance failed')
+  clean()
   for cmd,name,cwd in [(['MicroXRCEAgent','udp4','-p','8888'],'agent',None),(['bash',str(PX4/'Tools/simulation/gazebo-classic/sitl_multiple_run.sh'),'-n','8','-m','iris','-w','empty'],'sitl',PX4)]:p,f=start(cmd,output/f'{name}.log',cwd,e);procs.append(p);logs.append(f)
   time.sleep(24);p,f=start(['ros2','launch','ladrc_controller','swarm_launch.py','uav_ids:=[1,2,3,4,5,6,7,8]','control_mode:=ladrc_acceleration','avoidance_mode:=iapf_dual',f'lfs_policy_file:={POLICY}'],output/'controllers.log',WORK,e);procs.append(p);logs.append(f)
   ready=subprocess.run([str(PY),str(READY),'--uav-ids','1,2,3,4,5,6,7,8','--timeout','180'],cwd=WORK,env=e,text=True,capture_output=True,timeout=195);(output/'readiness.log').write_text(ready.stdout+ready.stderr)
@@ -34,6 +29,8 @@ def orchestrate(s,output,result):
   topics=['/clock']
   for i in ids:topics += [f'/uav{i}/status',f'/uav{i}/startup_event',f'/uav{i}/swarm_state',f'/uav{i}/execution_command',f'/uav{i}/trajectory_metrics',f'/uav{i}/control_adaptation',f'/uav{i}/control_tracking_debug',f'/uav{i}/iapf_debug',f'/px4_{i}/fmu/out/vehicle_status']
   p,f=start(['ros2','bag','record','-o',str(output/'rosbag'),*topics],output/'rosbag.log',WORK,e);procs.append(p);logs.append(f);time.sleep(3)
+  rp=collect_runtime_provenance(REPO,e,ids);(output/'runtime_provenance.json').write_text(json.dumps(rp,indent=2,sort_keys=True)+'\n')
+  if not runtime_provenance_gate(rp):raise RuntimeError('installed runtime provenance gate failed')
   lr=output/'language_result.json';run=subprocess.run([str(PY),str(Path(__file__).with_name('e5_language_driver.py')),'--runtime-spec',str(output/'runtime_spec.json'),'--output',str(output),'--result',str(lr)],cwd=REPO,env=e,text=True,capture_output=True,timeout=float(s['mission_timeout_s'])+150);(output/'language_driver.log').write_text(run.stdout+run.stderr)
   if not lr.exists():raise RuntimeError('language result missing')
   language=json.loads(lr.read_text())
