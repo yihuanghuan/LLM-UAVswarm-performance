@@ -9,6 +9,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import platform
 import subprocess
 import sys
 import traceback
@@ -45,7 +46,11 @@ def canonical(value: Any) -> bytes:
 
 
 def sha256_file(path: Path) -> str:
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def write_exclusive(path: Path, value: Any) -> None:
@@ -424,39 +429,180 @@ def run_demo(entry: Dict[str, Any]) -> Dict[str, Any]:
     return manifest
 
 
+def _artifact_inventory(demo_directory: Path) -> Dict[str, Any]:
+    files = []
+    for path in sorted(item for item in demo_directory.rglob("*") if item.is_file()):
+        relative = path.relative_to(DEMO_ROOT).as_posix()
+        files.append({"path": relative, "size_bytes": path.stat().st_size,
+                      "sha256": sha256_file(path)})
+    return {
+        "artifact_count": len(files),
+        "rosbag_paths": [item for item in files if "/raw/rosbag/" in item["path"]],
+        "log_paths": [item for item in files if item["path"].endswith(".log")],
+        "all_artifacts": files,
+        "inventory_sha256": hashlib.sha256(canonical(files)).hexdigest(),
+    }
+
+
+def _discovery_summary(manifest: Dict[str, Any]) -> Dict[str, Any]:
+    dynamic = (manifest.get("runtime_provenance") or {}).get("dynamic_runtime_checks", {})
+    selected = {
+        str(uid): observation.get("selected_observation_sequence")
+        for uid, observation in dynamic.items()
+        if isinstance(observation, dict) and "selected_observation_sequence" in observation
+    }
+    bounds = {
+        str(uid): observation.get("stabilization_bounds")
+        for uid, observation in dynamic.items()
+        if isinstance(observation, dict) and observation.get("stabilization_bounds")
+    }
+    return {
+        "selected_observation_sequence_by_controller": selected,
+        "maximum_selected_observation_sequence": max(selected.values(), default=None),
+        "stabilization_bounds_by_controller": bounds,
+    }
+
+
+def _completion_record(entry: Dict[str, Any], manifest: Dict[str, Any],
+                       manifest_path: Path) -> Dict[str, Any]:
+    spec = manifest.get("execution_spec", {})
+    runtime_provenance = manifest.get("runtime_provenance") or {}
+    return {
+        "family": entry["family"],
+        "registered_trial_id": entry["trial_id"],
+        "demo_instance_id": entry["demo_instance_id"],
+        "matrix_role": entry.get("matrix_role", "primary"),
+        "rerun_of": entry.get("rerun_of"),
+        "rerun_reason": entry.get("rerun_reason"),
+        "runtime_class": entry["runtime_class"],
+        "scenario": spec.get("scenario_id"),
+        "condition_or_style": spec.get("condition", spec.get("style")),
+        "seed": spec.get("seed"),
+        "authoritative_identity": {
+            "E3_protocol_version": entry.get("protocol_version"),
+            "E3_protocol_sha256": (
+                "2eea03e2bb33aa1c10c1ae104b965f909690f00c8caee4446291faf2c9893013"
+                if entry["family"] == "E3" else None
+            ),
+            "E3_registry_sha256": (
+                "b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2"
+                if entry["family"] == "E3" else None
+            ),
+            "registered_input_hash": spec.get("registered_input_hash"),
+            "resolved_execution_spec_hash": spec.get("resolved_execution_spec_hash"),
+        },
+        "adapter_tooling_identity": manifest.get("source_identity"),
+        "frozen_policy": runtime_provenance.get("installed_policy"),
+        "numeric_runtime_environment": {
+            "python": platform.python_version(),
+            "python_executable": sys.executable,
+            "numpy": __import__("numpy").__version__,
+            "scipy": __import__("scipy").__version__,
+            "ros_distro": os.environ.get("ROS_DISTRO"),
+        },
+        "dataset_class": manifest.get("dataset_class"),
+        "accepted_formal_result": manifest.get("accepted_formal_result"),
+        "result_notice": manifest.get("result_notice"),
+        "formal_cursor_consumed": manifest.get("formal_cursor_consumed"),
+        "physical_execution_performed": manifest.get("physical_execution_performed"),
+        "cold_start": manifest.get("cold_start"),
+        "static_provenance_result": manifest.get("static_provenance", {}).get("status", "NOT_RECORDED"),
+        "runtime_provenance_result": runtime_provenance.get(
+            "status", "NOT_APPLICABLE" if entry["family"] == "E2" else "NOT_COMPLETED"
+        ),
+        "provenance_result": (
+            manifest.get("static_provenance", {}).get("status", "NOT_RECORDED")
+            if entry["family"] == "E2"
+            else runtime_provenance.get("status", "NOT_COMPLETED")
+        ),
+        "infrastructure_status": manifest.get("infrastructure_status"),
+        "scientific_outcome": manifest.get("scientific_outcome"),
+        "raw_evidence_status": "COMPLETE" if manifest.get("raw_evidence_audit", {}).get("complete") else "INCOMPLETE",
+        "raw_requirement_count": manifest.get("raw_evidence_audit", {}).get("sealed_raw_requirement_count"),
+        "discovery": _discovery_summary(manifest),
+        "teardown_status": manifest.get("process_cleanup", {}).get("status"),
+        "manifest_path": manifest_path.relative_to(DEMO_ROOT).as_posix(),
+        "manifest_sha256": sha256_file(manifest_path),
+        "artifacts": _artifact_inventory(manifest_path.parent),
+    }
+
+
 def aggregate() -> Dict[str, Any]:
-    planned = matrix()["demos"]
+    plan = matrix()
+    planned = plan["demos"]
     primary_planned = [item for item in planned if item.get("matrix_role", "primary") == "primary"]
-    manifests = []
-    for path in sorted(DEMO_ROOT.glob("E*/**/demo_manifest.json")):
-        manifests.append(json.loads(path.read_text()))
+    manifest_paths = sorted(DEMO_ROOT.glob("E*/**/demo_manifest.json"))
+    all_by_id = {
+        json.loads(path.read_text())["demo_instance_id"]: (json.loads(path.read_text()), path)
+        for path in manifest_paths
+    }
+    plan_ids = {item["demo_instance_id"] for item in planned}
+    missing = [item["demo_instance_id"] for item in planned if item["demo_instance_id"] not in all_by_id]
+    records = [
+        _completion_record(item, *all_by_id[item["demo_instance_id"]])
+        for item in planned if item["demo_instance_id"] in all_by_id
+    ]
     by_family = {}
     for family in FAMILIES:
-        selected = [item for item in manifests if item["family"] == family]
+        family_plan = [item for item in planned if item["family"] == family]
+        family_primary = [item for item in family_plan if item.get("matrix_role", "primary") == "primary"]
+        family_diagnostic = [item for item in family_plan if item.get("matrix_role") == "diagnostic_rerun"]
+        selected = [item for item in records if item["family"] == family]
+        selected_primary = [item for item in selected if item["matrix_role"] == "primary"]
+        selected_diagnostic = [item for item in selected if item["matrix_role"] == "diagnostic_rerun"]
+        resolved, unresolved = [], []
+        for entry in family_primary:
+            candidates = [item for item in selected if item["registered_trial_id"] == entry["trial_id"]]
+            destination = resolved if any(
+                item["infrastructure_status"] == "PASS"
+                and item["raw_evidence_status"] == "COMPLETE"
+                for item in candidates
+            ) else unresolved
+            destination.append(entry["trial_id"])
+        selected_sequences = [
+            sequence
+            for item in selected if item["infrastructure_status"] == "PASS"
+            for sequence in item["discovery"]["selected_observation_sequence_by_controller"].values()
+        ]
         by_family[family] = {
-            "planned": sum(item["family"] == family for item in primary_planned),
-            "diagnostic_reruns_planned": sum(
-                item["family"] == family and item.get("matrix_role") == "diagnostic_rerun"
-                for item in planned
-            ),
-            "completed": len(selected),
-            "infrastructure_pass": sum(item["infrastructure_status"] == "PASS" for item in selected),
-            "infrastructure_fail": sum(item["infrastructure_status"] != "PASS" for item in selected),
-            "cold_starts": sum(item["cold_start"] for item in selected),
-            "raw_complete": sum(item["raw_evidence_audit"].get("complete") is True for item in selected),
+            "planned_primary": len(family_primary),
+            "primary_completed": len(selected_primary),
+            "primary_infrastructure_pass": sum(item["infrastructure_status"] == "PASS" for item in selected_primary),
+            "primary_infrastructure_fail_retained": sum(item["infrastructure_status"] != "PASS" for item in selected_primary),
+            "diagnostic_reruns_planned": len(family_diagnostic),
+            "diagnostic_reruns_completed": len(selected_diagnostic),
+            "diagnostic_infrastructure_pass": sum(item["infrastructure_status"] == "PASS" for item in selected_diagnostic),
+            "diagnostic_infrastructure_fail": sum(item["infrastructure_status"] != "PASS" for item in selected_diagnostic),
+            "registered_paths_resolved": len(resolved),
+            "resolved_trial_ids": resolved,
+            "unresolved_trial_ids": unresolved,
+            "cold_starts": sum(bool(item["cold_start"]) for item in selected),
+            "raw_complete_attempts": sum(item["raw_evidence_status"] == "COMPLETE" for item in selected),
+            "provenance_pass_attempts": sum(item["provenance_result"] == "PASS" for item in selected),
+            "cleanup_pass_attempts": sum(item["teardown_status"] == "PASS" for item in selected),
+            "discovery_selected_observation_histogram": {
+                str(sequence): selected_sequences.count(sequence)
+                for sequence in sorted(set(selected_sequences))
+            },
+            "maximum_discovery_selected_observation": max(selected_sequences, default=None),
             "demo_instance_ids": [item["demo_instance_id"] for item in selected],
         }
+    current_phase = [item for item in primary_planned if item["family"] in {"E3", "E4A", "E4B", "E5"}]
     result = {
-        "matrix_id": matrix()["matrix_id"],
+        "matrix_id": plan["matrix_id"],
         "generated_utc": utc_now(),
         "dataset_class": "engineering_validation",
         "accepted_formal_result": False,
         "result_notice": NOTICE,
         "formal_cursor_consumed": False,
         "planned_count": len(primary_planned),
+        "current_phase_planned_primary_count": len(current_phase),
         "diagnostic_rerun_plan_count": len(planned) - len(primary_planned),
-        "completed_count": len(manifests),
+        "completed_planned_attempt_count": len(records),
+        "missing_planned_demo_instance_ids": missing,
+        "historical_evidence_excluded": sorted(set(all_by_id) - plan_ids),
         "by_family": by_family,
+        "demo_records": records,
         "campaign_v1_integrity": assert_campaign_guard(),
     }
     target = DEMO_ROOT / "formal_equivalent_demo_matrix.json"
