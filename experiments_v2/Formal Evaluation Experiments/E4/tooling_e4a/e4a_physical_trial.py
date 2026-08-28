@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse,hashlib,json,os,signal,subprocess,sys,time
 from pathlib import Path
 from types import SimpleNamespace
+from e4a_runtime_provenance import collect_runtime_provenance,runtime_provenance_gate
 WORK=Path('/home/yihuang/learning/LLM_swarm_ws');PX4=Path('/home/yihuang/PX4-Autopilot-formal-v1');INSTALL=WORK/'formal_install_v1/setup.bash';PY=WORK/'llm_env/bin/python';POLICY=WORK/'formal_install_v1/lfs_policy/share/lfs_policy/config/lfs_policy.paper_current.yaml';REPO=Path(__file__).resolve().parents[4];READY=REPO/'experiments-legacy/system_8uav/scripts/wait_swarm_ready.py'
 def env(seed):
  raw=subprocess.check_output(['bash','-lc',f'source /opt/ros/humble/setup.bash && source {INSTALL} && env -0']);e={a.decode():b.decode() for x in raw.split(b'\0') if b'=' in x for a,b in [x.split(b'=',1)]};e.update({'ROS_DOMAIN_ID':'43','RMW_IMPLEMENTATION':'rmw_fastrtps_cpp','FORMAL_GAZEBO_SEED':str(seed)});e['GAZEBO_PLUGIN_PATH']='/opt/ros/humble/lib:'+e.get('GAZEBO_PLUGIN_PATH','');return e
@@ -66,10 +67,12 @@ def orchestrate(spec,output,result):
   topics=['/clock']
   for i in ids:topics += [f'/uav{i}/status',f'/uav{i}/startup_event',f'/uav{i}/execution_command',f'/uav{i}/trajectory_metrics',f'/uav{i}/control_adaptation',f'/uav{i}/control_tracking_debug',f'/uav{i}/iapf_debug',f'/px4_{i}/fmu/out/vehicle_status']
   p,f=start(['ros2','bag','record','-o',str(output/'rosbag'),*topics],output/'rosbag.log',WORK,e);procs.append(p);logs.append(f);time.sleep(2)
+  provenance=collect_runtime_provenance(REPO,e,ids);(output/'runtime_provenance.json').write_text(json.dumps(provenance,indent=2,sort_keys=True)+'\n')
+  if not runtime_provenance_gate(provenance):raise RuntimeError('installed runtime provenance gate failed')
   for phase in ('stage','interaction'):
    rr=output/f'{phase}_result.json';run=subprocess.run([str(PY),str(Path(__file__).resolve()),'--direct','--runtime-spec',str(output/'runtime_spec.json'),'--phase',phase,'--result',str(rr)],cwd=WORK,env=e,text=True,capture_output=True,timeout=120);(output/f'{phase}.log').write_text(run.stdout+run.stderr)
    if run.returncode:raise RuntimeError(f'{phase} failed')
-  out['attempt_status']='success';out['raw_evidence']={'rosbag':'rosbag','staging':'stage_result.json','interaction':'interaction_result.json','controllers':'controllers.log'}
+  out['attempt_status']='success';out['raw_evidence']={'rosbag':'rosbag','staging':'stage_result.json','interaction':'interaction_result.json','controllers':'controllers.log','runtime_provenance':'runtime_provenance.json'}
  except Exception as x:out['error']=f'{type(x).__name__}: {x}'
  finally:
   for p in reversed(procs):stop(p)
