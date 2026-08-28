@@ -23,8 +23,9 @@ from e3_trial_registry import (
 
 
 E3_DIR = Path(__file__).resolve().parent.parent
-V3_PROTOCOL = E3_DIR.parent / "protocols" / "E3_protocol_v3_candidate.yaml"
-V3_REGISTRY = E3_DIR / "e3_factorial_registry_v3_candidate.yaml"
+CANDIDATE_PROTOCOL = E3_DIR.parent / "protocols" / "E3_protocol_v3_candidate.yaml"
+CANDIDATE_REGISTRY = E3_DIR / "e3_factorial_registry_v3_candidate.yaml"
+V2_REGISTRY = E3_DIR / "e3_factorial_registry_v2.yaml"
 EXPECTED_TARGETS = {
     1: [-3, 4, 3],
     2: [3, 4, 3],
@@ -46,22 +47,22 @@ def _runtime(registry, scenario_id, condition):
     return build_runtime_spec(build_exact_spec(trial_id, registry=registry))
 
 
-def test_candidate_is_explicitly_unactivated_and_defaults_remain_v2():
-    protocol = _yaml(V3_PROTOCOL)
-    registry = _yaml(V3_REGISTRY)
+def test_candidate_is_preserved_and_defaults_are_active_v3():
+    protocol = _yaml(CANDIDATE_PROTOCOL)
+    registry = _yaml(CANDIDATE_REGISTRY)
     assert protocol["status"] == "CANDIDATE_FOR_HUMAN_REVIEW_NOT_ACTIVE"
     assert registry["status"] == "CANDIDATE_FOR_HUMAN_REVIEW_NOT_ACTIVE"
     assert protocol["activation_prohibited_without_human_review"] is True
     assert registry["activation_prohibited_without_human_review"] is True
-    assert PROTOCOL_PATH.name == "E3_protocol_v2.yaml"
-    assert REGISTRY_PATH.name == "e3_factorial_registry_v2.yaml"
+    assert PROTOCOL_PATH.name == "E3_protocol_v3.yaml"
+    assert REGISTRY_PATH.name == "e3_factorial_registry_v3.yaml"
     assert hashlib.sha256(PROTOCOL_PATH.read_bytes()).hexdigest() == PROTOCOL_SHA256
     assert hashlib.sha256(REGISTRY_PATH.read_bytes()).hexdigest() == REGISTRY_SHA256
 
 
 def test_A01_and_C01_share_only_the_candidate_structural_geometry():
-    v2 = _scenario_map(_yaml(REGISTRY_PATH))
-    v3 = _scenario_map(_yaml(V3_REGISTRY))
+    v2 = _scenario_map(_yaml(V2_REGISTRY))
+    v3 = _scenario_map(_yaml(CANDIDATE_REGISTRY))
     a01, c01 = v3["E3-A-01"], v3["E3-C-01"]
     assert a01["ordered_targets_m"] == c01["ordered_targets_m"] == EXPECTED_TARGETS
     for scenario_id in ("E3-A-01", "E3-C-01"):
@@ -76,7 +77,7 @@ def test_A01_and_C01_share_only_the_candidate_structural_geometry():
 
 @pytest.mark.parametrize("scenario_id", ["E3-A-01", "E3-C-01"])
 def test_production_P0_and_P1_restore_the_planning_safety_contrast(scenario_id):
-    registry = _yaml(V3_REGISTRY)
+    registry = _yaml(CANDIDATE_REGISTRY)
     p0 = _runtime(registry, scenario_id, "P0_F0")
     p1 = _runtime(registry, scenario_id, "P1_F0")
     d0, d1 = p0["allocator_diagnostics"], p1["allocator_diagnostics"]
@@ -131,7 +132,7 @@ def test_minimum_jerk_static_separation_and_workspace_filters_pass():
             sys.path.insert(0, str(path))
     from location_allocate.motion_limits import minimum_jerk_peaks
 
-    registry = _yaml(V3_REGISTRY)
+    registry = _yaml(CANDIDATE_REGISTRY)
     targets = [[float(value) for value in EXPECTED_TARGETS[index]] for index in range(1, 5)]
     assert min(math.dist(a, b) for a, b in itertools.combinations(targets, 2)) == 2.0
     assert all(-15 <= x <= 15 and -10 <= y <= 35 and 0.5 <= z <= 15 for x, y, z in targets)
@@ -150,8 +151,8 @@ def test_minimum_jerk_static_separation_and_workspace_filters_pass():
 
 
 def test_unaffected_scenarios_and_population_are_preserved():
-    v2 = _yaml(REGISTRY_PATH)
-    v3 = _yaml(V3_REGISTRY)
+    v2 = _yaml(V2_REGISTRY)
+    v3 = _yaml(CANDIDATE_REGISTRY)
     old, new = _scenario_map(v2), _scenario_map(v3)
     for scenario_id in ("E3-A-02", "E3-B-01", "E3-B-02", "E3-C-02"):
         assert old[scenario_id] == new[scenario_id]
@@ -177,7 +178,7 @@ def test_unaffected_scenarios_and_population_are_preserved():
 
 
 def test_all_360_candidate_specs_compile_without_physical_execution():
-    registry = _yaml(V3_REGISTRY)
+    registry = _yaml(CANDIDATE_REGISTRY)
     count = 0
     for scenario in registry["scenarios"]:
         for condition in CONDITIONS:

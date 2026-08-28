@@ -1,0 +1,1510 @@
+{
+  "accepted_formal_result": false,
+  "active_identity": {
+    "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+    "protocol_path": "experiments_v2/Formal Evaluation Experiments/protocols/E3_protocol_v3.yaml",
+    "protocol_sha256": "2eea03e2bb33aa1c10c1ae104b965f909690f00c8caee4446291faf2c9893013",
+    "registry_path": "experiments_v2/Formal Evaluation Experiments/E3/e3_factorial_registry_v3.yaml",
+    "registry_sha256": "b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2"
+  },
+  "audit_sha256": "bc3ff7a75ee4dcf55c49e2043e33529b216c108c993880eaf65206951cefb4e6",
+  "audit_type": "E3_protocol_v3_active_compile_only_audit_v1",
+  "dataset_class": "engineering_validation",
+  "demo_harness_compile_only_compatibility": {
+    "classes_checked": [
+      {
+        "dataset_class": "engineering_validation",
+        "profile_count": 4,
+        "runtime_spec_type": "E3_registered_physical_runtime_spec_v3",
+        "spec_type": "E3_exact_execution_spec_v3",
+        "status": "PASS",
+        "trial_id": "E3-A-01__P0_F0__S53101"
+      },
+      {
+        "dataset_class": "engineering_validation",
+        "profile_count": 4,
+        "runtime_spec_type": "E3_registered_physical_runtime_spec_v3",
+        "spec_type": "E3_exact_execution_spec_v3",
+        "status": "PASS",
+        "trial_id": "E3-A-01__P1_F0__S53101"
+      },
+      {
+        "dataset_class": "engineering_validation",
+        "profile_count": 8,
+        "runtime_spec_type": "E3_registered_physical_runtime_spec_v3",
+        "spec_type": "E3_exact_execution_spec_v3",
+        "status": "PASS",
+        "trial_id": "E3-A-02__P0_F0__S53101"
+      },
+      {
+        "dataset_class": "engineering_validation",
+        "profile_count": 8,
+        "runtime_spec_type": "E3_registered_physical_runtime_spec_v3",
+        "spec_type": "E3_exact_execution_spec_v3",
+        "status": "PASS",
+        "trial_id": "E3-A-02__P1_F0__S53101"
+      },
+      {
+        "dataset_class": "engineering_validation",
+        "profile_count": 4,
+        "runtime_spec_type": "E3_registered_physical_runtime_spec_v3",
+        "spec_type": "E3_exact_execution_spec_v3",
+        "status": "PASS",
+        "trial_id": "E3-C-01__P0_F0__S53101"
+      },
+      {
+        "dataset_class": "engineering_validation",
+        "profile_count": 4,
+        "runtime_spec_type": "E3_registered_physical_runtime_spec_v3",
+        "spec_type": "E3_exact_execution_spec_v3",
+        "status": "PASS",
+        "trial_id": "E3-C-01__P1_F0__S53101"
+      },
+      {
+        "dataset_class": "engineering_validation",
+        "profile_count": 8,
+        "runtime_spec_type": "E3_registered_physical_runtime_spec_v3",
+        "spec_type": "E3_exact_execution_spec_v3",
+        "status": "PASS",
+        "trial_id": "E3-C-02__P0_F0__S53101"
+      },
+      {
+        "dataset_class": "engineering_validation",
+        "profile_count": 8,
+        "runtime_spec_type": "E3_registered_physical_runtime_spec_v3",
+        "spec_type": "E3_exact_execution_spec_v3",
+        "status": "PASS",
+        "trial_id": "E3-C-02__P1_F0__S53101"
+      }
+    ],
+    "label_checks": {
+      "accepted_formal_result_false": true,
+      "dataset_class_engineering_validation": true,
+      "formal_cursor_consumed_false": true,
+      "result_notice": true
+    }
+  },
+  "formal_cursor_consumed": false,
+  "live_execution_performed": false,
+  "population_invariants": {
+    "condition_count": 4,
+    "global_E3_membership_matches": true,
+    "global_order_count": 610,
+    "global_order_hash_matches": true,
+    "global_order_sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+    "global_seed_registry_hash_matches": true,
+    "global_seed_registry_sha256": "90313d33793940489edde631d397564378ae54fe3cfddf438e4a895d6132254d",
+    "scenario_count": 6,
+    "seed_count": 15,
+    "trial_count": 360,
+    "unique_trial_count": 360
+  },
+  "production_compile_validation": {
+    "checked": 360,
+    "fail_count": 0,
+    "failures": [],
+    "pass_count": 360
+  },
+  "production_numeric_environment": {
+    "numpy_version": "1.24.4",
+    "python_executable": "/usr/bin/python3",
+    "python_version": "3.10.12",
+    "scipy_version": "1.8.0"
+  },
+  "production_numeric_environment_status": "PASS",
+  "result_notice": "NOT_FORMAL_RESULT",
+  "reviewed_geometry_revalidation": {
+    "P0_distance_optimum_count": 1,
+    "assignments": {
+      "P0": {
+        "J_distance": 32.33035491915126,
+        "J_margin": 0.672365532501112,
+        "N_hard": 2,
+        "assignment_mode": "distance_hungarian",
+        "maximum_displacement_m": 15.297058540778355,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.453266907313291,
+          "jerk": 4.249182927993988,
+          "velocity": 4.780330793993236
+        },
+        "motion_feasibility": true,
+        "per_uav": [
+          {
+            "displacement_m": 15.033296378372908,
+            "displacement_vector_m": [
+              1.0,
+              15.0,
+              0.0
+            ],
+            "initial_m": [
+              -3.0,
+              -3.0,
+              3.0
+            ],
+            "target_index_zero_based": 2,
+            "target_label": 3,
+            "target_m": [
+              -2.0,
+              12.0,
+              3.0
+            ],
+            "uav_id": 1
+          },
+          {
+            "displacement_m": 15.297058540778355,
+            "displacement_vector_m": [
+              -3.0,
+              15.0,
+              0.0
+            ],
+            "initial_m": [
+              3.0,
+              -3.0,
+              3.0
+            ],
+            "target_index_zero_based": 3,
+            "target_label": 4,
+            "target_m": [
+              0.0,
+              12.0,
+              3.0
+            ],
+            "uav_id": 2
+          },
+          {
+            "displacement_m": 1.0,
+            "displacement_vector_m": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "initial_m": [
+              -3.0,
+              3.0,
+              3.0
+            ],
+            "target_index_zero_based": 0,
+            "target_label": 1,
+            "target_m": [
+              -3.0,
+              4.0,
+              3.0
+            ],
+            "uav_id": 3
+          },
+          {
+            "displacement_m": 1.0,
+            "displacement_vector_m": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "initial_m": [
+              3.0,
+              3.0,
+              3.0
+            ],
+            "target_index_zero_based": 1,
+            "target_label": 2,
+            "target_m": [
+              3.0,
+              4.0,
+              3.0
+            ],
+            "uav_id": 4
+          }
+        ],
+        "permutation_target_labels": [
+          3,
+          4,
+          1,
+          2
+        ],
+        "permutation_zero_based": [
+          2,
+          3,
+          0,
+          1
+        ],
+        "predicted_minimum_3d_distance_m": 0.42748229992745784
+      },
+      "P1": {
+        "J_distance": 32.54221811864255,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "safety_aware",
+        "maximum_displacement_m": 9.486832980505138,
+        "minimum_jerk_peaks": {
+          "acceleration": 1.5214515486254616,
+          "jerk": 2.6352313834736494,
+          "velocity": 2.9646353064078554
+        },
+        "motion_feasibility": true,
+        "per_uav": [
+          {
+            "displacement_m": 7.0,
+            "displacement_vector_m": [
+              0.0,
+              7.0,
+              0.0
+            ],
+            "initial_m": [
+              -3.0,
+              -3.0,
+              3.0
+            ],
+            "target_index_zero_based": 0,
+            "target_label": 1,
+            "target_m": [
+              -3.0,
+              4.0,
+              3.0
+            ],
+            "uav_id": 1
+          },
+          {
+            "displacement_m": 7.0,
+            "displacement_vector_m": [
+              0.0,
+              7.0,
+              0.0
+            ],
+            "initial_m": [
+              3.0,
+              -3.0,
+              3.0
+            ],
+            "target_index_zero_based": 1,
+            "target_label": 2,
+            "target_m": [
+              3.0,
+              4.0,
+              3.0
+            ],
+            "uav_id": 2
+          },
+          {
+            "displacement_m": 9.055385138137417,
+            "displacement_vector_m": [
+              1.0,
+              9.0,
+              0.0
+            ],
+            "initial_m": [
+              -3.0,
+              3.0,
+              3.0
+            ],
+            "target_index_zero_based": 2,
+            "target_label": 3,
+            "target_m": [
+              -2.0,
+              12.0,
+              3.0
+            ],
+            "uav_id": 3
+          },
+          {
+            "displacement_m": 9.486832980505138,
+            "displacement_vector_m": [
+              -3.0,
+              9.0,
+              0.0
+            ],
+            "initial_m": [
+              3.0,
+              3.0,
+              3.0
+            ],
+            "target_index_zero_based": 3,
+            "target_label": 4,
+            "target_m": [
+              0.0,
+              12.0,
+              3.0
+            ],
+            "uav_id": 4
+          }
+        ],
+        "permutation_target_labels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "permutation_zero_based": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 2.0
+      }
+    },
+    "checks": {
+      "A01_C01_targets_identical": true,
+      "P0_N_hard_2": true,
+      "P0_motion_feasible": true,
+      "P0_nonzero_motion": true,
+      "P0_unique_distance_optimum": true,
+      "P1_N_hard_0": true,
+      "P1_global_lexicographic_optimum": true,
+      "P1_motion_feasible": true,
+      "P1_nonzero_motion": true,
+      "active_targets_equal_reviewed_targets": true
+    },
+    "exhaustive_24_assignments": [
+      {
+        "J_distance": 32.54221811864255,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "maximum_displacement_m": 9.486832980505138,
+        "minimum_jerk_peaks": {
+          "acceleration": 1.5214515486254616,
+          "jerk": 2.6352313834736494,
+          "velocity": 2.9646353064078554
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "permutation_zero_based": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 2.0
+      },
+      {
+        "J_distance": 33.78246312149214,
+        "J_margin": 1.0,
+        "N_hard": 1,
+        "maximum_displacement_m": 10.295630140987,
+        "minimum_jerk_peaks": {
+          "acceleration": 1.6511624537154639,
+          "jerk": 2.8598972613852784,
+          "velocity": 3.217384419058438
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          1,
+          2,
+          4,
+          3
+        ],
+        "permutation_zero_based": [
+          0,
+          1,
+          3,
+          2
+        ],
+        "predicted_minimum_3d_distance_m": 0.0
+      },
+      {
+        "J_distance": 38.38098381164525,
+        "J_margin": 0.19214550064575045,
+        "N_hard": 1,
+        "maximum_displacement_m": 15.811388300841896,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.535752581042436,
+          "jerk": 4.392052305789416,
+          "velocity": 4.941058844013093
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          1,
+          3,
+          2,
+          4
+        ],
+        "permutation_zero_based": [
+          0,
+          2,
+          1,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 1.0109807213431148
+      },
+      {
+        "J_distance": 33.29822128134704,
+        "J_margin": 0.11111111111111122,
+        "N_hard": 1,
+        "maximum_displacement_m": 15.811388300841896,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.535752581042436,
+          "jerk": 4.392052305789416,
+          "velocity": 4.941058844013093
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          1,
+          3,
+          4,
+          2
+        ],
+        "permutation_zero_based": [
+          0,
+          2,
+          3,
+          1
+        ],
+        "predicted_minimum_3d_distance_m": 1.1999999999999997
+      },
+      {
+        "J_distance": 38.67545121206358,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "maximum_displacement_m": 15.297058540778355,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.453266907313291,
+          "jerk": 4.249182927993988,
+          "velocity": 4.780330793993236
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          1,
+          4,
+          2,
+          3
+        ],
+        "permutation_zero_based": [
+          0,
+          3,
+          1,
+          2
+        ],
+        "predicted_minimum_3d_distance_m": 1.802525304378329
+      },
+      {
+        "J_distance": 32.352443678915776,
+        "J_margin": 0.09094428650962408,
+        "N_hard": 1,
+        "maximum_displacement_m": 15.297058540778355,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.453266907313291,
+          "jerk": 4.249182927993988,
+          "velocity": 4.780330793993236
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          1,
+          4,
+          3,
+          2
+        ],
+        "permutation_zero_based": [
+          0,
+          3,
+          2,
+          1
+        ],
+        "predicted_minimum_3d_distance_m": 1.2571745323852408
+      },
+      {
+        "J_distance": 36.98130703322833,
+        "J_margin": 1.0,
+        "N_hard": 1,
+        "maximum_displacement_m": 9.486832980505138,
+        "minimum_jerk_peaks": {
+          "acceleration": 1.5214515486254616,
+          "jerk": 2.6352313834736494,
+          "velocity": 2.9646353064078554
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          2,
+          1,
+          3,
+          4
+        ],
+        "permutation_zero_based": [
+          1,
+          0,
+          2,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 0.0
+      },
+      {
+        "J_distance": 38.22155203607791,
+        "J_margin": 2.0,
+        "N_hard": 2,
+        "maximum_displacement_m": 10.295630140987,
+        "minimum_jerk_peaks": {
+          "acceleration": 1.6511624537154639,
+          "jerk": 2.8598972613852784,
+          "velocity": 3.217384419058438
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          2,
+          1,
+          4,
+          3
+        ],
+        "permutation_zero_based": [
+          1,
+          0,
+          3,
+          2
+        ],
+        "predicted_minimum_3d_distance_m": 0.0
+      },
+      {
+        "J_distance": 35.51776573863992,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "maximum_displacement_m": 15.811388300841896,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.535752581042436,
+          "jerk": 4.392052305789416,
+          "velocity": 4.941058844013093
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          2,
+          3,
+          1,
+          4
+        ],
+        "permutation_zero_based": [
+          1,
+          2,
+          0,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 1.8973665961010275
+      },
+      {
+        "J_distance": 40.60052826893814,
+        "J_margin": 0.6925323571025992,
+        "N_hard": 2,
+        "maximum_displacement_m": 15.811388300841896,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.535752581042436,
+          "jerk": 4.392052305789416,
+          "velocity": 4.941058844013093
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          2,
+          3,
+          4,
+          1
+        ],
+        "permutation_zero_based": [
+          1,
+          2,
+          3,
+          0
+        ],
+        "predicted_minimum_3d_distance_m": 0.42748229992745784
+      },
+      {
+        "J_distance": 35.81223313905824,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "maximum_displacement_m": 15.297058540778355,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.453266907313291,
+          "jerk": 4.249182927993988,
+          "velocity": 4.780330793993236
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          2,
+          4,
+          1,
+          3
+        ],
+        "permutation_zero_based": [
+          1,
+          3,
+          0,
+          2
+        ],
+        "predicted_minimum_3d_distance_m": 1.8973665961010275
+      },
+      {
+        "J_distance": 39.65475066650688,
+        "J_margin": 0.09094428650962408,
+        "N_hard": 1,
+        "maximum_displacement_m": 15.297058540778355,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.453266907313291,
+          "jerk": 4.249182927993988,
+          "velocity": 4.780330793993236
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          2,
+          4,
+          3,
+          1
+        ],
+        "permutation_zero_based": [
+          1,
+          3,
+          2,
+          0
+        ],
+        "predicted_minimum_3d_distance_m": 1.2571745323852408
+      },
+      {
+        "J_distance": 39.822436346469146,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "maximum_displacement_m": 15.033296378372908,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.410966030794729,
+          "jerk": 4.175915660659141,
+          "velocity": 4.6979051182415335
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          3,
+          1,
+          2,
+          4
+        ],
+        "permutation_zero_based": [
+          2,
+          0,
+          1,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 2.0
+      },
+      {
+        "J_distance": 34.739673816170935,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "maximum_displacement_m": 15.033296378372908,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.410966030794729,
+          "jerk": 4.175915660659141,
+          "velocity": 4.6979051182415335
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          3,
+          1,
+          4,
+          2
+        ],
+        "permutation_zero_based": [
+          2,
+          0,
+          3,
+          1
+        ],
+        "predicted_minimum_3d_distance_m": 1.8973665961010275
+      },
+      {
+        "J_distance": 32.52012935887805,
+        "J_margin": 0.5814212459914879,
+        "N_hard": 1,
+        "maximum_displacement_m": 15.033296378372908,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.410966030794729,
+          "jerk": 4.175915660659141,
+          "velocity": 4.6979051182415335
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          3,
+          2,
+          1,
+          4
+        ],
+        "permutation_zero_based": [
+          2,
+          1,
+          0,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 0.42748229992745784
+      },
+      {
+        "J_distance": 37.60289188917627,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "maximum_displacement_m": 15.033296378372908,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.410966030794729,
+          "jerk": 4.175915660659141,
+          "velocity": 4.6979051182415335
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          3,
+          2,
+          4,
+          1
+        ],
+        "permutation_zero_based": [
+          2,
+          1,
+          3,
+          0
+        ],
+        "predicted_minimum_3d_distance_m": 1.8973665961010275
+      },
+      {
+        "J_distance": 32.33035491915126,
+        "J_margin": 0.672365532501112,
+        "N_hard": 2,
+        "maximum_displacement_m": 15.297058540778355,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.453266907313291,
+          "jerk": 4.249182927993988,
+          "velocity": 4.780330793993236
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          3,
+          4,
+          1,
+          2
+        ],
+        "permutation_zero_based": [
+          2,
+          3,
+          0,
+          1
+        ],
+        "predicted_minimum_3d_distance_m": 0.42748229992745784
+      },
+      {
+        "J_distance": 42.4958799797477,
+        "J_margin": 1.0909442865096242,
+        "N_hard": 2,
+        "maximum_displacement_m": 15.297058540778355,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.453266907313291,
+          "jerk": 4.249182927993988,
+          "velocity": 4.780330793993236
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          3,
+          4,
+          2,
+          1
+        ],
+        "permutation_zero_based": [
+          2,
+          3,
+          1,
+          0
+        ],
+        "predicted_minimum_3d_distance_m": 0.0
+      },
+      {
+        "J_distance": 40.89499566935646,
+        "J_margin": 0.2020553976207353,
+        "N_hard": 2,
+        "maximum_displacement_m": 15.297058540778355,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.453266907313291,
+          "jerk": 4.249182927993988,
+          "velocity": 4.780330793993236
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          4,
+          1,
+          2,
+          3
+        ],
+        "permutation_zero_based": [
+          3,
+          0,
+          1,
+          2
+        ],
+        "predicted_minimum_3d_distance_m": 1.1999999999999997
+      },
+      {
+        "J_distance": 34.57198813620866,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "maximum_displacement_m": 15.297058540778355,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.453266907313291,
+          "jerk": 4.249182927993988,
+          "velocity": 4.780330793993236
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          4,
+          1,
+          3,
+          2
+        ],
+        "permutation_zero_based": [
+          3,
+          0,
+          2,
+          1
+        ],
+        "predicted_minimum_3d_distance_m": 1.8973665961010275
+      },
+      {
+        "J_distance": 33.59268868176535,
+        "J_margin": 0.2020553976207353,
+        "N_hard": 2,
+        "maximum_displacement_m": 15.297058540778355,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.453266907313291,
+          "jerk": 4.249182927993988,
+          "velocity": 4.780330793993236
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          4,
+          2,
+          1,
+          3
+        ],
+        "permutation_zero_based": [
+          3,
+          1,
+          0,
+          2
+        ],
+        "predicted_minimum_3d_distance_m": 1.1999999999999997
+      },
+      {
+        "J_distance": 37.435206209213995,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "maximum_displacement_m": 15.297058540778355,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.453266907313291,
+          "jerk": 4.249182927993988,
+          "velocity": 4.780330793993236
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          4,
+          2,
+          3,
+          1
+        ],
+        "permutation_zero_based": [
+          3,
+          1,
+          2,
+          0
+        ],
+        "predicted_minimum_3d_distance_m": 1.802525304378329
+      },
+      {
+        "J_distance": 33.10844684162025,
+        "J_margin": 1.0909442865096242,
+        "N_hard": 2,
+        "maximum_displacement_m": 15.811388300841896,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.535752581042436,
+          "jerk": 4.392052305789416,
+          "velocity": 4.941058844013093
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          4,
+          3,
+          1,
+          2
+        ],
+        "permutation_zero_based": [
+          3,
+          2,
+          0,
+          1
+        ],
+        "predicted_minimum_3d_distance_m": 0.0
+      },
+      {
+        "J_distance": 43.27397190221669,
+        "J_margin": 2.8645110331468624,
+        "N_hard": 5,
+        "maximum_displacement_m": 15.811388300841896,
+        "minimum_jerk_peaks": {
+          "acceleration": 2.535752581042436,
+          "jerk": 4.392052305789416,
+          "velocity": 4.941058844013093
+        },
+        "motion_feasibility": true,
+        "permutation_target_labels": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "permutation_zero_based": [
+          3,
+          2,
+          1,
+          0
+        ],
+        "predicted_minimum_3d_distance_m": 0.0
+      }
+    ],
+    "global_lexicographic_best_permutation_zero_based": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "status": "PASS"
+  },
+  "scenario_condition_audit": {
+    "cell_count": 24,
+    "cells": [
+      {
+        "J_distance": 32.54221811864255,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "safety_aware",
+        "avoidance_mode": "iapf_dual",
+        "condition": "P1_F1",
+        "duration_s": 6.0,
+        "family": "A_predictable_structural_risk",
+        "intended_role": "predictable structural risk",
+        "permutation_zero_based": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 2.0,
+        "registered_disturbance_present": false,
+        "scenario_id": "E3-A-01",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 32.54221811864255,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "safety_aware",
+        "avoidance_mode": "off",
+        "condition": "P1_F0",
+        "duration_s": 6.0,
+        "family": "A_predictable_structural_risk",
+        "intended_role": "predictable structural risk",
+        "permutation_zero_based": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 2.0,
+        "registered_disturbance_present": false,
+        "scenario_id": "E3-A-01",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 32.33035491915126,
+        "J_margin": 0.672365532501112,
+        "N_hard": 2,
+        "assignment_mode": "distance_hungarian",
+        "avoidance_mode": "iapf_dual",
+        "condition": "P0_F1",
+        "duration_s": 6.0,
+        "family": "A_predictable_structural_risk",
+        "intended_role": "predictable structural risk",
+        "permutation_zero_based": [
+          2,
+          3,
+          0,
+          1
+        ],
+        "predicted_minimum_3d_distance_m": 0.42748229992745784,
+        "registered_disturbance_present": false,
+        "scenario_id": "E3-A-01",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 32.33035491915126,
+        "J_margin": 0.672365532501112,
+        "N_hard": 2,
+        "assignment_mode": "distance_hungarian",
+        "avoidance_mode": "off",
+        "condition": "P0_F0",
+        "duration_s": 6.0,
+        "family": "A_predictable_structural_risk",
+        "intended_role": "predictable structural risk",
+        "permutation_zero_based": [
+          2,
+          3,
+          0,
+          1
+        ],
+        "predicted_minimum_3d_distance_m": 0.42748229992745784,
+        "registered_disturbance_present": false,
+        "scenario_id": "E3-A-01",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 112.92961599426846,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "safety_aware",
+        "avoidance_mode": "iapf_dual",
+        "condition": "P1_F1",
+        "duration_s": 9.5,
+        "family": "A_predictable_structural_risk",
+        "intended_role": "predictable structural risk",
+        "permutation_zero_based": [
+          7,
+          6,
+          1,
+          4,
+          3,
+          5,
+          2,
+          0
+        ],
+        "predicted_minimum_3d_distance_m": 2.2483866045465772,
+        "registered_disturbance_present": false,
+        "scenario_id": "E3-A-02",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 112.92961599426846,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "safety_aware",
+        "avoidance_mode": "off",
+        "condition": "P1_F0",
+        "duration_s": 9.5,
+        "family": "A_predictable_structural_risk",
+        "intended_role": "predictable structural risk",
+        "permutation_zero_based": [
+          7,
+          6,
+          1,
+          4,
+          3,
+          5,
+          2,
+          0
+        ],
+        "predicted_minimum_3d_distance_m": 2.2483866045465772,
+        "registered_disturbance_present": false,
+        "scenario_id": "E3-A-02",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 112.0,
+        "J_margin": 2.002244726170346,
+        "N_hard": 2,
+        "assignment_mode": "distance_hungarian",
+        "avoidance_mode": "iapf_dual",
+        "condition": "P0_F1",
+        "duration_s": 9.5,
+        "family": "A_predictable_structural_risk",
+        "intended_role": "predictable structural risk",
+        "permutation_zero_based": [
+          7,
+          0,
+          5,
+          2,
+          3,
+          4,
+          1,
+          6
+        ],
+        "predicted_minimum_3d_distance_m": 0.0,
+        "registered_disturbance_present": false,
+        "scenario_id": "E3-A-02",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 112.0,
+        "J_margin": 2.002244726170346,
+        "N_hard": 2,
+        "assignment_mode": "distance_hungarian",
+        "avoidance_mode": "off",
+        "condition": "P0_F0",
+        "duration_s": 9.5,
+        "family": "A_predictable_structural_risk",
+        "intended_role": "predictable structural risk",
+        "permutation_zero_based": [
+          7,
+          0,
+          5,
+          2,
+          3,
+          4,
+          1,
+          6
+        ],
+        "predicted_minimum_3d_distance_m": 0.0,
+        "registered_disturbance_present": false,
+        "scenario_id": "E3-A-02",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 32.0,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "safety_aware",
+        "avoidance_mode": "iapf_dual",
+        "condition": "P1_F1",
+        "duration_s": 8.0,
+        "family": "B_residual_execution_risk",
+        "intended_role": "nominal-safe plus disturbance",
+        "permutation_zero_based": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 2.0,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-B-01",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 32.0,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "safety_aware",
+        "avoidance_mode": "off",
+        "condition": "P1_F0",
+        "duration_s": 8.0,
+        "family": "B_residual_execution_risk",
+        "intended_role": "nominal-safe plus disturbance",
+        "permutation_zero_based": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 2.0,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-B-01",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 32.0,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "distance_hungarian",
+        "avoidance_mode": "iapf_dual",
+        "condition": "P0_F1",
+        "duration_s": 8.0,
+        "family": "B_residual_execution_risk",
+        "intended_role": "nominal-safe plus disturbance",
+        "permutation_zero_based": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 2.0,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-B-01",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 32.0,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "distance_hungarian",
+        "avoidance_mode": "off",
+        "condition": "P0_F0",
+        "duration_s": 8.0,
+        "family": "B_residual_execution_risk",
+        "intended_role": "nominal-safe plus disturbance",
+        "permutation_zero_based": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 2.0,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-B-01",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 32.0,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "safety_aware",
+        "avoidance_mode": "iapf_dual",
+        "condition": "P1_F1",
+        "duration_s": 8.0,
+        "family": "B_residual_execution_risk",
+        "intended_role": "nominal-safe plus disturbance",
+        "permutation_zero_based": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 2.0,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-B-02",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 32.0,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "safety_aware",
+        "avoidance_mode": "off",
+        "condition": "P1_F0",
+        "duration_s": 8.0,
+        "family": "B_residual_execution_risk",
+        "intended_role": "nominal-safe plus disturbance",
+        "permutation_zero_based": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 2.0,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-B-02",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 32.0,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "distance_hungarian",
+        "avoidance_mode": "iapf_dual",
+        "condition": "P0_F1",
+        "duration_s": 8.0,
+        "family": "B_residual_execution_risk",
+        "intended_role": "nominal-safe plus disturbance",
+        "permutation_zero_based": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 2.0,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-B-02",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 32.0,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "distance_hungarian",
+        "avoidance_mode": "off",
+        "condition": "P0_F0",
+        "duration_s": 8.0,
+        "family": "B_residual_execution_risk",
+        "intended_role": "nominal-safe plus disturbance",
+        "permutation_zero_based": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 2.0,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-B-02",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 32.54221811864255,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "safety_aware",
+        "avoidance_mode": "iapf_dual",
+        "condition": "P1_F1",
+        "duration_s": 6.0,
+        "family": "C_mixed_risk",
+        "intended_role": "structural risk plus disturbance",
+        "permutation_zero_based": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 2.0,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-C-01",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 32.54221811864255,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "safety_aware",
+        "avoidance_mode": "off",
+        "condition": "P1_F0",
+        "duration_s": 6.0,
+        "family": "C_mixed_risk",
+        "intended_role": "structural risk plus disturbance",
+        "permutation_zero_based": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "predicted_minimum_3d_distance_m": 2.0,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-C-01",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 32.33035491915126,
+        "J_margin": 0.672365532501112,
+        "N_hard": 2,
+        "assignment_mode": "distance_hungarian",
+        "avoidance_mode": "iapf_dual",
+        "condition": "P0_F1",
+        "duration_s": 6.0,
+        "family": "C_mixed_risk",
+        "intended_role": "structural risk plus disturbance",
+        "permutation_zero_based": [
+          2,
+          3,
+          0,
+          1
+        ],
+        "predicted_minimum_3d_distance_m": 0.42748229992745784,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-C-01",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 32.33035491915126,
+        "J_margin": 0.672365532501112,
+        "N_hard": 2,
+        "assignment_mode": "distance_hungarian",
+        "avoidance_mode": "off",
+        "condition": "P0_F0",
+        "duration_s": 6.0,
+        "family": "C_mixed_risk",
+        "intended_role": "structural risk plus disturbance",
+        "permutation_zero_based": [
+          2,
+          3,
+          0,
+          1
+        ],
+        "predicted_minimum_3d_distance_m": 0.42748229992745784,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-C-01",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 112.92961599426846,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "safety_aware",
+        "avoidance_mode": "iapf_dual",
+        "condition": "P1_F1",
+        "duration_s": 9.5,
+        "family": "C_mixed_risk",
+        "intended_role": "structural risk plus disturbance",
+        "permutation_zero_based": [
+          7,
+          6,
+          1,
+          4,
+          3,
+          5,
+          2,
+          0
+        ],
+        "predicted_minimum_3d_distance_m": 2.2483866045465772,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-C-02",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 112.92961599426846,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "assignment_mode": "safety_aware",
+        "avoidance_mode": "off",
+        "condition": "P1_F0",
+        "duration_s": 9.5,
+        "family": "C_mixed_risk",
+        "intended_role": "structural risk plus disturbance",
+        "permutation_zero_based": [
+          7,
+          6,
+          1,
+          4,
+          3,
+          5,
+          2,
+          0
+        ],
+        "predicted_minimum_3d_distance_m": 2.2483866045465772,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-C-02",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 112.0,
+        "J_margin": 2.002244726170346,
+        "N_hard": 2,
+        "assignment_mode": "distance_hungarian",
+        "avoidance_mode": "iapf_dual",
+        "condition": "P0_F1",
+        "duration_s": 9.5,
+        "family": "C_mixed_risk",
+        "intended_role": "structural risk plus disturbance",
+        "permutation_zero_based": [
+          7,
+          0,
+          5,
+          2,
+          3,
+          4,
+          1,
+          6
+        ],
+        "predicted_minimum_3d_distance_m": 0.0,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-C-02",
+        "status": "PASS"
+      },
+      {
+        "J_distance": 112.0,
+        "J_margin": 2.002244726170346,
+        "N_hard": 2,
+        "assignment_mode": "distance_hungarian",
+        "avoidance_mode": "off",
+        "condition": "P0_F0",
+        "duration_s": 9.5,
+        "family": "C_mixed_risk",
+        "intended_role": "structural risk plus disturbance",
+        "permutation_zero_based": [
+          7,
+          0,
+          5,
+          2,
+          3,
+          4,
+          1,
+          6
+        ],
+        "predicted_minimum_3d_distance_m": 0.0,
+        "registered_disturbance_present": true,
+        "scenario_id": "E3-C-02",
+        "status": "PASS"
+      }
+    ],
+    "fail_count": 0,
+    "pass_count": 24
+  },
+  "status": "PASS"
+}

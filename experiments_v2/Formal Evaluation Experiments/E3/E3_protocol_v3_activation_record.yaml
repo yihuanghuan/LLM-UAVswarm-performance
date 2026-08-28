@@ -1,0 +1,91 @@
+record_id: E3-protocol-v3-authoritative-activation-v1
+status: ACTIVE
+human_review_decision: ACCEPT
+activation_branch: formal/E3-protocol-v3-active
+reviewed_candidate_commit: 414304277452b90dcc8f72d07cc66268bc394225
+activation_scope: authoritative identity promotion, hash-gate update, provenance, tests, and compile-only audits
+live_execution_performed: false
+accepted_formal_result: false
+formal_cursor_consumed: false
+
+active_identity:
+  protocol_id: E3-planning-feedback-safety-factorial-v3
+  protocol_path: ../protocols/E3_protocol_v3.yaml
+  protocol_sha256: 2eea03e2bb33aa1c10c1ae104b965f909690f00c8caee4446291faf2c9893013
+  registry_id: E3-exact-factorial-v3
+  registry_path: e3_factorial_registry_v3.yaml
+  registry_sha256: b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2
+  frozen_policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+  global_seed_registry_sha256: 90313d33793940489edde631d397564378ae54fe3cfddf438e4a895d6132254d
+  global_order_sha256: db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce
+
+supersession_chain:
+  - from: E3 v1
+    to: E3 v2
+    classification: protocol_correction_due_to_preregistered_feasibility_inconsistency
+    reason: E3-A-02 and E3-C-02 at 8.0 seconds violated the frozen Minimum-Jerk motion limits
+    correction: common scenario duration 8.0 seconds to 9.5 seconds
+    exact_analytic_minimum_s: 9.229157809087656
+    deterministic_quantization: round upward to nearest 0.5 seconds
+  - from: E3 v2
+    to: E3 v3
+    classification: protocol_correction_due_to_invalid_free-assignment_structural-risk_geometry
+    reason: E3-A-01 and E3-C-01 targets were permutation-equivalent to initial positions and free assignment produced a unique zero-motion optimum
+    correction: replace only the shared four-UAV target geometry
+    reviewed_targets_m: {1: [-3, 4, 3], 2: [3, 4, 3], 3: [-2, 12, 3], 4: [0, 12, 3]}
+
+scientific_integrity:
+  allocator_algorithms_changed: false
+  target_ownership_semantics_changed: false
+  P0_P1_semantics_changed: false
+  F0_F1_semantics_changed: false
+  controller_or_IAPF_or_LADRC_changed: false
+  infrastructure_responsible_for_geometry_inconsistency: false
+  valid_formal_E3_outcomes_used_for_geometry_selection: false
+  live_demo_outcomes_used_for_geometry_selection: false
+  selection_basis: deterministic offline planning-time quantities and exhaustive 24-permutation audit
+  all_other_scientific_semantics_unchanged: true
+
+production_numeric_environment:
+  python: 3.10.12
+  numpy: 1.24.4
+  scipy: 1.8.0
+  allocator_tie_breaking_changed: false
+  A02_C02_equal_cost_P0_reproducibility_issue: retained as separate Campaign-v2-freeze concern
+
+validation:
+  reviewed_geometry_revalidation: PASS
+  scenario_condition_cells: {checked: 24, pass: 24, fail: 0}
+  registered_production_specs: {checked: 360, pass: 360, fail: 0}
+  demo_compile_only_classes: {checked: 8, pass: 8, fail: 0}
+  complete_E3_tooling_test_suite: {checked: 87, pass: 87, fail: 0}
+  provenance_gate: PASS
+  active_audit_json_sha256: 7da162597d851a3e99c3daa89daa395221c69084e97a872f25bf80929fe07ad1
+  active_audit_markdown_sha256: 5b0c3321c154f9440ed823840e297a7a6040662d162fc62a3bf012c45755a9a2
+  formal_adapter_readiness_manifest_sha256: a23101661bf545a6920c4df53832bdbe183912f83393bbff650432837c148e5b
+  runner_readiness_manifest_sha256: 8cc633fb927282277c25452f45ef7cdf8dec03c61daeb6b8520339a83d40f9ef
+
+population_invariants:
+  scenarios: 6
+  conditions: 4
+  paired_seeds: 15
+  E3_trial_ids: 360
+  E3_trial_ids_unchanged: true
+  global_610_order_unchanged: true
+  global_seed_registry_unchanged: true
+
+campaign_v1_protection_pre_activation:
+  status: PASS
+  journal_entries: [1, 2]
+  accepted_formal_attempts: 2
+  formal_attempt_3_exists: false
+  retained_file_map_byte_identical: true
+  baseline_files_manifest_sha256: 29a6539e4b6b4372e0adc98bc5b45b4a8a40c20c3f23f244460e45695d14ba37
+  launcher_manifest_sha256: dd5ed80049b138d4e97c82ce556ed306efbc6e4b2a369f7616be0ff101f332d1
+  launcher_commit: 8c532288c8b5c47a20da954caad4f717cdc92ddb
+
+stop_conditions:
+  Campaign_v1_resumed: false
+  Campaign_v2_created: false
+  live_demos_launched: false
+  analysis_freeze_entered: false

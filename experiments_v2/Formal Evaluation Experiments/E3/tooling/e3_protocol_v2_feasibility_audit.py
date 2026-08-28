@@ -16,14 +16,31 @@ from e3_formal_backend import build_runtime_spec
 from e3_trial_registry import (
     CONDITIONS,
     POLICY_PATH,
-    PROTOCOL_SHA256,
-    REGISTRY_SHA256,
     build_exact_spec,
     canonical_sha256,
-    load_registry,
-    registered_trial_ids,
+    load_yaml,
     scenario_index,
 )
+
+
+E3_DIR = Path(__file__).resolve().parent.parent
+V2_PROTOCOL_PATH = E3_DIR.parent / "protocols/E3_protocol_v2.yaml"
+V2_REGISTRY_PATH = E3_DIR / "e3_factorial_registry_v2.yaml"
+V2_PROTOCOL_SHA256 = "3b1177983058351a443395966fce92ddb91e990e10a1b9b10d44921d8b854ecf"
+V2_REGISTRY_SHA256 = "f722d8a917ed6af57a3f75a79ef62720fdafb5835115a66d8e0582eb453d36a3"
+
+
+def _v2_registry() -> Dict[str, Any]:
+    return load_yaml(V2_REGISTRY_PATH)
+
+
+def _v2_trial_ids(registry: Dict[str, Any]) -> List[str]:
+    return [
+        f"{scenario['scenario_id']}__{condition}__S{seed}"
+        for scenario in registry["scenarios"]
+        for condition in CONDITIONS
+        for seed in registry["paired_seeds"]
+    ]
 
 
 def _imports() -> None:
@@ -53,7 +70,7 @@ def analytic_rows() -> List[Dict[str, Any]]:
     from location_allocate.motion_limits import minimum_jerk_peaks
     from location_allocate.policy_adapter import load_runtime_policy
 
-    registry = load_registry()
+    registry = _v2_registry()
     scenarios = scenario_index(registry)
     _configuration, policy = load_runtime_policy(POLICY_PATH)
     safety = policy.resolve_safety(1.0)
@@ -62,7 +79,8 @@ def analytic_rows() -> List[Dict[str, Any]]:
     for scenario_id in scenarios:
         for condition in CONDITIONS:
             spec = build_exact_spec(
-                f"{scenario_id}__{condition}__S{registry['paired_seeds'][0]}"
+                f"{scenario_id}__{condition}__S{registry['paired_seeds'][0]}",
+                registry=registry,
             )
             initial = [
                 [float(value) for value in spec["initial_positions_m"][uid]]
@@ -117,12 +135,13 @@ def compile_all_registered_specs(
     trial_ids: Iterable[str] | None = None,
 ) -> Dict[str, Any]:
     """Compile every registered exact spec without launching PX4 or Gazebo."""
-    ids = list(trial_ids if trial_ids is not None else registered_trial_ids())
+    registry = _v2_registry()
+    ids = list(trial_ids if trial_ids is not None else _v2_trial_ids(registry))
     failures = []
     runtime_hashes = {}
     for trial_id in ids:
         try:
-            runtime = build_runtime_spec(build_exact_spec(trial_id))
+            runtime = build_runtime_spec(build_exact_spec(trial_id, registry=registry))
             runtime_hashes[trial_id] = runtime["runtime_spec_sha256"]
         except Exception as exc:  # retained in deterministic audit evidence
             failures.append({
@@ -147,9 +166,9 @@ def build_audit() -> Dict[str, Any]:
 
     rows = analytic_rows()
     compiler = compile_all_registered_specs()
-    registry = load_registry()
+    registry = _v2_registry()
     analytic_passes = sum(row["feasibility"] == "PASS" for row in rows)
-    trial_count = len(registered_trial_ids())
+    trial_count = len(_v2_trial_ids(registry))
     report = {
         "audit_type": "E3_protocol_v2_analytic_and_compile_audit_v1",
         "dataset_class": "engineering_validation",
@@ -163,8 +182,8 @@ def build_audit() -> Dict[str, Any]:
             "scipy_version": scipy.__version__,
             "role": "production ROS/PX4 formal execution interpreter",
         },
-        "protocol_sha256": PROTOCOL_SHA256,
-        "registry_sha256": REGISTRY_SHA256,
+        "protocol_sha256": V2_PROTOCOL_SHA256,
+        "registry_sha256": V2_REGISTRY_SHA256,
         "population": {
             "scenarios": len(registry["scenarios"]),
             "conditions": len(CONDITIONS),

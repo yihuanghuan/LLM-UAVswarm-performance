@@ -14,14 +14,14 @@ TOOLING_DIR = Path(__file__).resolve().parent
 E3_DIR = TOOLING_DIR.parent
 FORMAL_DIR = E3_DIR.parent
 REPO_ROOT = FORMAL_DIR.parents[1]
-PROTOCOL_PATH = FORMAL_DIR / "protocols" / "E3_protocol_v2.yaml"
-REGISTRY_PATH = E3_DIR / "e3_factorial_registry_v2.yaml"
+PROTOCOL_PATH = FORMAL_DIR / "protocols" / "E3_protocol_v3.yaml"
+REGISTRY_PATH = E3_DIR / "e3_factorial_registry_v3.yaml"
 GLOBAL_REGISTRY_PATH = FORMAL_DIR / "e2_e5_scenario_seed_registry_v1.yaml"
 ORDER_PATH = FORMAL_DIR / "simulation_trial_order_v1.txt"
 POLICY_PATH = REPO_ROOT / "lfs_policy" / "config" / "lfs_policy.paper_current.yaml"
 
-PROTOCOL_SHA256 = "3b1177983058351a443395966fce92ddb91e990e10a1b9b10d44921d8b854ecf"
-REGISTRY_SHA256 = "f722d8a917ed6af57a3f75a79ef62720fdafb5835115a66d8e0582eb453d36a3"
+PROTOCOL_SHA256 = "2eea03e2bb33aa1c10c1ae104b965f909690f00c8caee4446291faf2c9893013"
+REGISTRY_SHA256 = "b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2"
 GLOBAL_REGISTRY_SHA256 = "90313d33793940489edde631d397564378ae54fe3cfddf438e4a895d6132254d"
 ORDER_SHA256 = "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce"
 POLICY_SHA256 = "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858"
@@ -129,7 +129,7 @@ def build_exact_spec(trial_id: str, registry: Dict[str, Any] | None = None) -> D
     duration = float(scenario["duration_s"])
     disturbance = scenario["disturbance"]
     spec = {
-        "spec_type": "E3_exact_execution_spec_v2",
+        "spec_type": "E3_exact_execution_spec_v3",
         "trial_id": trial_id,
         "experiment": "E3",
         **identity,

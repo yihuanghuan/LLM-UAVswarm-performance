@@ -28,6 +28,8 @@ from e3_trial_registry import (
 ROOT = Path(__file__).resolve().parents[4]
 V1_PROTOCOL = PROTOCOL_PATH.with_name("E3_protocol_v1.yaml")
 V1_REGISTRY = REGISTRY_PATH.with_name("e3_factorial_registry_v1.yaml")
+V2_PROTOCOL = PROTOCOL_PATH.with_name("E3_protocol_v2.yaml")
+V2_REGISTRY = REGISTRY_PATH.with_name("e3_factorial_registry_v2.yaml")
 
 
 def _yaml(path):
@@ -107,7 +109,7 @@ def test_population_and_global_order_are_preserved():
     assert set(global_e3_order) == set(v2_ids)
 
 
-def test_v1_is_preserved_and_v2_hashes_are_authoritative():
+def test_v1_v2_are_preserved_and_v3_hashes_are_authoritative():
     import hashlib
 
     assert hashlib.sha256(V1_PROTOCOL.read_bytes()).hexdigest() == (
@@ -115,6 +117,12 @@ def test_v1_is_preserved_and_v2_hashes_are_authoritative():
     )
     assert hashlib.sha256(V1_REGISTRY.read_bytes()).hexdigest() == (
         "48d66a07c744af4fad0f483ca24c72cf30dfbcaac9468e50ea3252ce6f76ea41"
+    )
+    assert hashlib.sha256(V2_PROTOCOL.read_bytes()).hexdigest() == (
+        "3b1177983058351a443395966fce92ddb91e990e10a1b9b10d44921d8b854ecf"
+    )
+    assert hashlib.sha256(V2_REGISTRY.read_bytes()).hexdigest() == (
+        "f722d8a917ed6af57a3f75a79ef62720fdafb5835115a66d8e0582eb453d36a3"
     )
     assert hashlib.sha256(PROTOCOL_PATH.read_bytes()).hexdigest() == PROTOCOL_SHA256
     assert hashlib.sha256(REGISTRY_PATH.read_bytes()).hexdigest() == REGISTRY_SHA256
@@ -135,7 +143,7 @@ def test_corrected_exact_spec_hashes_cover_derived_timing():
 
 def test_unaffected_scenarios_are_semantically_identical():
     v1 = {s["scenario_id"]: s for s in _yaml(V1_REGISTRY)["scenarios"]}
-    v2 = scenario_index()
+    v2 = {s["scenario_id"]: s for s in _yaml(V2_REGISTRY)["scenarios"]}
     for scenario_id in ("E3-A-01", "E3-B-01", "E3-B-02", "E3-C-01"):
         assert v2[scenario_id] == v1[scenario_id]
     for scenario_id in ("E3-A-02", "E3-C-02"):
@@ -152,7 +160,7 @@ def test_unaffected_scenarios_are_semantically_identical():
 @pytest.mark.parametrize("condition", CONDITIONS)
 def test_exact_spec_timing_derives_mechanically(scenario_id, condition):
     spec = build_exact_spec(f"{scenario_id}__{condition}__S53101")
-    assert spec["spec_type"] == "E3_exact_execution_spec_v2"
+    assert spec["spec_type"] == "E3_exact_execution_spec_v3"
     assert spec["duration_s"] == 9.5
     assert spec["scoring"]["end_offset_s"] == 11.5
     assert spec["timeout_after_t0_s"] == 15.5
@@ -165,5 +173,5 @@ def test_all_24_cells_are_analytically_feasible_and_compile():
     for row in rows:
         trial_id = f"{row['scenario_id']}__{row['condition']}__S53101"
         runtime = build_runtime_spec(build_exact_spec(trial_id))
-        assert runtime["runtime_spec_type"] == "E3_registered_physical_runtime_spec_v2"
+        assert runtime["runtime_spec_type"] == "E3_registered_physical_runtime_spec_v3"
         assert len(runtime["profiles"]) in (4, 8)
