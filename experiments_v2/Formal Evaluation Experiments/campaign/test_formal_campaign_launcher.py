@@ -4,7 +4,7 @@ from copy import deepcopy
 import json,tempfile,unittest
 from pathlib import Path
 from unittest.mock import patch
-from campaign_common import CANONICAL_POLICY_SHA256,ORDER_TXT_SHA256,CampaignError,load_sealed_order,write_json_exclusive
+from campaign_common import CANONICAL_POLICY_SHA256,ORDER_TXT_SHA256,CampaignError,load_json,load_sealed_order,sha256_file,write_json_exclusive
 from campaign_journal import CampaignExecutionLock
 from formal_campaign_launcher import FormalCampaignLauncher
 from pinned_adapter_loader import PinnedAdapterLoader
@@ -54,4 +54,52 @@ class FormalLauncherTests(unittest.TestCase):
  def test_production_hash_mismatch_fails_provenance(self):
   import campaign_provenance
   with patch.object(campaign_provenance,'CANONICAL_POLICY_SHA256','0'*64):self.assertEqual(campaign_provenance.validate_provenance(False)['status'],'FAIL')
+
+class FakeFormalAdapterLoader:
+ def __init__(self,statuses=()):self.statuses=list(statuses)
+ def verify_all_checkouts(self):return {'status':'PASS'}
+ def run_exact_trial(self,family,trial,context):
+  out=Path(context['attempt_output_dir']);artifact=out/'attempt.json';status=self.statuses.pop(0) if self.statuses else 'success'
+  write_json_exclusive(artifact,{'record_type':'isolated_fake_formal_attempt_v1','dataset_class':'formal_evaluation','accepted_formal_result':True,'trial_id':trial,'experiment':family,'global_position':context['global_trial_position'],'attempt_status':status,'replacement_attempt':False})
+  return {'trial_id':trial,'experiment':family,'attempt_status':status,'artifact_path':str(artifact),'artifact_sha256':sha256_file(artifact)}
+
+class FormalRestartResumeRegressionTests(unittest.TestCase):
+ @classmethod
+ def setUpClass(cls):cls.registry=load_runner_registry();cls.order=load_sealed_order()
+ def setUp(self):
+  self.temp=tempfile.TemporaryDirectory(prefix='isolated-formal-resume-');self.root=Path(self.temp.name)/'formal';self.gate=Path(self.temp.name)/'gate.json'
+  source=Path(__file__).resolve().parent/'formal_launch_gate_v1.json';write_json_exclusive(self.gate,load_json(source))
+ def tearDown(self):self.temp.cleanup()
+ def launcher(self,statuses=()):return FormalCampaignLauncher('formal',run_root=self.root,loader=FakeFormalAdapterLoader(statuses),gate_path=self.gate)
+ def rewrite_manifest(self,transform):
+  path=self.root/'launcher_run_manifest.json';path.chmod(0o644);value=load_json(path);transform(value);path.write_text(json.dumps(value,sort_keys=True,indent=2)+'\n',encoding='utf-8')
+ def test_initialize_and_restart_before_first_retained_attempt(self):
+  first=self.launcher();manifest=self.root/'launcher_run_manifest.json';self.assertTrue(manifest.is_file());digest=sha256_file(manifest)
+  second=self.launcher();self.assertEqual(second.validate_state()['next_position'],1);self.assertEqual(sha256_file(manifest),digest);self.assertFalse(second.lock.exists())
+ def test_existing_empty_formal_root_initializes_manifest(self):
+  self.root.mkdir(parents=True);launcher=self.launcher();self.assertEqual(launcher.validate_state()['next_position'],1);self.assertTrue((self.root/'launcher_run_manifest.json').is_file())
+ def test_retained_one_restart_dispatch_two_exact_prefix_and_immutable_manifest(self):
+  first=self.launcher();manifest=self.root/'launcher_run_manifest.json';digest=sha256_file(manifest);first.dispatch_next()
+  second=self.launcher();self.assertEqual(second.validate_state()['next_position'],2);second.dispatch_next();records=second.journal.read()
+  self.assertEqual([x['global_position'] for x in records],[1,2]);self.assertEqual([x['trial_id'] for x in records],self.order[:2]);self.assertEqual(second.validate_state()['next_position'],3);self.assertEqual(sha256_file(manifest),digest)
+ def test_retained_failure_restart_advances_without_retry(self):
+  first=self.launcher(('infrastructure_failure',));self.assertEqual(first.dispatch_next()['attempt_status'],'infrastructure_failure')
+  second=self.launcher();self.assertEqual(second.validate_state()['next_position'],2);self.assertEqual(second.dispatch_next()['global_position'],2)
+ def test_nonempty_root_without_manifest_fails_closed(self):
+  self.root.mkdir(parents=True);write_json_exclusive(self.root/'unknown.json',{'unknown':True})
+  with self.assertRaisesRegex(CampaignError,'unrecognized nonempty formal root'):self.launcher()
+ def test_malformed_or_tampered_manifest_fails_closed(self):
+  self.launcher();path=self.root/'launcher_run_manifest.json';path.chmod(0o644);path.write_text('{not-json',encoding='utf-8')
+  with self.assertRaises(CampaignError):self.launcher()
+ def test_manifest_provenance_mismatch_fails_closed(self):
+  self.launcher();self.rewrite_manifest(lambda value:value.__setitem__('global_order_sha256','0'*64))
+  with self.assertRaisesRegex(CampaignError,'provenance mismatch'):self.launcher()
+ def test_launch_gate_identity_mismatch_fails_closed_on_resume(self):
+  self.launcher();self.gate.chmod(0o644);gate=load_json(self.gate);gate['blockers']=['tampered'];self.gate.write_text(json.dumps(gate,sort_keys=True,indent=2)+'\n',encoding='utf-8')
+  with self.assertRaisesRegex(CampaignError,'provenance mismatch'):self.launcher()
+ def test_duplicate_or_replacement_after_resume_fails_closed(self):
+  first=self.launcher();first.dispatch_next();second=self.launcher()
+  with self.assertRaises(CampaignError):second.dispatch_next(self.order[0])
+  journal=self.root/'suite-journal/000001-attempt.json';journal.chmod(0o644);record=load_json(journal);record['replacement_attempt']=True;journal.write_text(json.dumps(record,sort_keys=True,indent=2)+'\n',encoding='utf-8')
+  with self.assertRaises(CampaignError):self.launcher()
 if __name__=='__main__':unittest.main()
