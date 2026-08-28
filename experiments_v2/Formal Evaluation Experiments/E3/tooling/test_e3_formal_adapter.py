@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 from types import SimpleNamespace
+import subprocess
 import sys
 
 import pytest
+import e3_runtime_diagnostics as runtime_diagnostics
 
 from e3_formal_adapter import (
     FormalAdapterError, adapter_identity, execution_tooling_identity, run_exact_trial,
@@ -226,6 +228,28 @@ def test_transient_node_info_miss_retains_raw_evidence_and_converges(monkeypatch
     assert evidence["observation_attempts"][0]["controller_endpoint_present_in_topic_info"] is True
     assert evidence["observation_attempts"][0]["enable_execution_profiles_true"] is True
     assert evidence["observation_attempts"][1]["observation_pass"] is True
+
+
+def test_ros_cli_timeout_is_retained_as_failed_observation(monkeypatch):
+    def timeout(*_args, **_kwargs):
+        raise subprocess.TimeoutExpired(
+            ["ros2", "param", "get", "/uav1/ladrc_position_controller",
+             "enable_execution_profiles"],
+            timeout=20,
+            output="partial stdout",
+            stderr="partial stderr",
+        )
+
+    monkeypatch.setattr(runtime_diagnostics.subprocess, "run", timeout)
+    result = runtime_diagnostics._run(
+        ["ros2", "param", "get", "/uav1/ladrc_position_controller",
+         "enable_execution_profiles"],
+        env={}, cwd=Path("/repo"),
+    )
+    assert result["returncode"] == 124
+    assert result["timed_out"] is True
+    assert result["stdout"] == "partial stdout"
+    assert result["stderr"] == "partial stderr"
 
 
 def test_persistent_missing_controller_exhausts_bounds_and_fails_closed(monkeypatch):

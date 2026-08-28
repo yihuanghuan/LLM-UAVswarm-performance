@@ -141,12 +141,26 @@ def validate_command(command: Any, expected_uav_id: int) -> Dict[str, Any]:
 
 def _run(command, *, env, cwd) -> Dict[str, Any]:
     started_at_utc = datetime.now(timezone.utc).isoformat()
-    completed = subprocess.run(
-        command, env=env, cwd=cwd, text=True, capture_output=True, timeout=20,
-    )
+    try:
+        completed = subprocess.run(
+            command, env=env, cwd=cwd, text=True, capture_output=True, timeout=20,
+        )
+        returncode = completed.returncode
+        stdout = completed.stdout
+        stderr = completed.stderr
+        timed_out = False
+    except subprocess.TimeoutExpired as exc:
+        returncode = 124
+        stdout = exc.stdout or ""
+        stderr = exc.stderr or ""
+        timed_out = True
+        if isinstance(stdout, bytes):
+            stdout = stdout.decode(errors="replace")
+        if isinstance(stderr, bytes):
+            stderr = stderr.decode(errors="replace")
     return {
-        "command": command, "returncode": completed.returncode,
-        "stdout": completed.stdout, "stderr": completed.stderr,
+        "command": command, "returncode": returncode,
+        "stdout": stdout, "stderr": stderr, "timed_out": timed_out,
         "started_at_utc": started_at_utc,
         "finished_at_utc": datetime.now(timezone.utc).isoformat(),
     }
