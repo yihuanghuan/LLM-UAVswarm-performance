@@ -1,0 +1,51 @@
+{
+  "accepted_formal_result": false,
+  "backend_result": {
+    "accepted_formal_result": false,
+    "attempt_status": "success",
+    "cold_start": true,
+    "dataset_class": "engineering_validation",
+    "fixture_class": "non_registered_engineering_fixture",
+    "full_method_modes": {
+      "assignment_mode": "safety_aware",
+      "avoidance_mode": "iapf_dual",
+      "control_mode": "ladrc_acceleration",
+      "lfs_runtime_mode": "candidate_v2"
+    },
+    "language_result": "language_result.json",
+    "raw_evidence": {
+      "candidate": "validated_candidate.json",
+      "controllers": "controllers.log",
+      "llm_parse": "llm_parse_log.append.csv.fragment",
+      "llm_raw": "llm_raw_responses.append.jsonl",
+      "resolution_trace": "ros_home/candidate_resolution_trace.jsonl",
+      "rosbag": "rosbag"
+    },
+    "retry_performed": false,
+    "runtime_provenance": "runtime_provenance.json"
+  },
+  "checks": {
+    "all_8_readiness": true,
+    "backend_success": true,
+    "candidate_gt_not_input": true,
+    "cold_start": true,
+    "commands_retained": true,
+    "full_method_modes": true,
+    "latency_decomposed": true,
+    "mission_completed": true,
+    "no_formal_command_retry": true,
+    "nonregistered_command": true,
+    "nonregistered_labels": true,
+    "raw_logging": true,
+    "real_llm_path": true,
+    "runtime_provenance": true
+  },
+  "command_utf8_sha256": "8cab5facacb1c70c70ed1137ea0cfafe96cb7f0dc2e380bc392a8c99b3df6a65",
+  "dataset_class": "engineering_validation",
+  "fixture_id": "ENG-E5-COLD-START-LANGUAGE-8UAV-v1",
+  "fixture_registered_formal_trial": false,
+  "manifest_type": "E5_live_engineering_smoke_v1",
+  "result_notice": "NOT_FORMAL_RESULT",
+  "scientific_interpretation": null,
+  "status": "PASS"
+}

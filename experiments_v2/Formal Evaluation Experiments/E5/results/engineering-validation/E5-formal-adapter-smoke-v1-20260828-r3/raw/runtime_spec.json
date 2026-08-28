@@ -1,0 +1,89 @@
+{
+  "candidate_gt_used_as_input": false,
+  "cold_start_required": true,
+  "cold_start_spawn_m": {
+    "1": [
+      0.0,
+      3.0,
+      0.83
+    ],
+    "2": [
+      0.0,
+      6.0,
+      0.83
+    ],
+    "3": [
+      0.0,
+      9.0,
+      0.83
+    ],
+    "4": [
+      0.0,
+      12.0,
+      0.83
+    ],
+    "5": [
+      0.0,
+      15.0,
+      0.83
+    ],
+    "6": [
+      0.0,
+      18.0,
+      0.83
+    ],
+    "7": [
+      0.0,
+      21.0,
+      0.83
+    ],
+    "8": [
+      0.0,
+      24.0,
+      0.83
+    ]
+  },
+  "command_source": "non_registered_engineering_fixture",
+  "dataset_class": "engineering_validation",
+  "exact_command": "Have UAVs 1 through 8 form a circle centered at [0, 13.5, 3] with radius 8 meters in exactly 8 seconds using normal motion and safety factor 1.0.",
+  "exact_command_utf8_sha256": "8cab5facacb1c70c70ed1137ea0cfafe96cb7f0dc2e380bc392a8c99b3df6a65",
+  "fixture_class": "non_registered_engineering_fixture",
+  "full_method_modes": {
+    "assignment_mode": "safety_aware",
+    "avoidance_mode": "iapf_dual",
+    "control_mode": "ladrc_acceleration",
+    "lfs_runtime_mode": "candidate_v2"
+  },
+  "metric_log_schema": {
+    "latency_components": [
+      "LLM_inference",
+      "parse_validation",
+      "snapshot_wait",
+      "resolution",
+      "allocation",
+      "dispatch",
+      "physical_execution"
+    ]
+  },
+  "mission_timeout_s": 35.0,
+  "readiness_gate": {
+    "all_px4_ready": true,
+    "armed_offboard": true,
+    "frozen_fresh_state_predicate": true,
+    "required_uav_count": 8
+  },
+  "runtime_spec_type": "E5_nonregistered_engineering_runtime_v1",
+  "scenario_id": "ENGINEERING-LANGUAGE-PLUMBING",
+  "seed": 990051,
+  "trial_id": "ENG-E5-COLD-START-LANGUAGE-8UAV-v1",
+  "uav_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ]
+}

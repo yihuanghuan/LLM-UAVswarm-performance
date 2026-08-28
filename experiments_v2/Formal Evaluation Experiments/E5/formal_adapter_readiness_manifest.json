@@ -15,28 +15,26 @@
   "global_trial_order_sha256":"db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
   "registered_attempt_count":25,
   "spec_reconstruction_status":"PASS",
-  "live_engineering_smoke_status":"FAIL",
-  "live_engineering_smoke_run_id":"E5-formal-adapter-smoke-v1-20260827-r2",
-  "live_engineering_smoke_manifest_sha256":"cb2f7181dbebee105381765c30f3ee1f1dde5af555188d545683b4ff9c99dacc",
-  "live_smoke_partial_checks":{
+  "live_engineering_smoke_status":"PASS",
+  "live_engineering_smoke_run_id":"E5-formal-adapter-smoke-v1-20260828-r3",
+  "live_engineering_smoke_manifest_sha256":"9bd8261aef7cecb44c2480c11c35ca19435042c1858fea15a1d13f8dfa7aacf4",
+  "live_smoke_checks":{
     "runtime_provenance":"PASS",
     "eight_px4_armed_offboard_readiness":"PASS",
     "frozen_fresh_state_before_language_submission":"PASS",
     "real_frozen_llm_endpoint_invoked":"PASS",
-    "provider_response":"HTTP_429_TOKEN_PLAN_LIMIT_2056",
-    "candidate_created":false,
-    "execution_commands_dispatched":0
+    "provider_response":"PASS",
+    "candidate_created":true,
+    "mission_completed":true,
+    "raw_logging":"PASS",
+    "latency_decomposition":"PASS",
+    "execution_command_retry_count":0
   },
   "formal_execution_capability_present":true,
   "production_semantics_changed":false,
   "sealed_artifacts_changed":false,
   "accepted_formal_results_created":false,
   "formal_global_cursor_consumed":false,
-  "validation_status":"BLOCKED",
-  "blockers":[{
-    "id":"E5-LIVE-LLM-PROVIDER-TOKEN-PLAN-LIMIT",
-    "stage":"frozen Candidate parser real engineering smoke",
-    "error":"HTTP 429 rate_limit_error: Token Plan usage limit reached (provider code 2056)",
-    "why_not_bypassed":"Changing model, provider, prompt, API identity, decoding, or frozen parser retry policy is prohibited. No Candidate or execution command was produced."
-  }]
+  "validation_status":"READY_FOR_GLOBAL_PIN",
+  "blockers":[]
 }
