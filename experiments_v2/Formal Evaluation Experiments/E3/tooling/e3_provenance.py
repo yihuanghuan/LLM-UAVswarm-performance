@@ -15,6 +15,7 @@ ALLOWED_BRANCHES = {
     BRANCH,
     "formal/E3-formal-adapter-v1",
     "formal/E3-formal-adapter-case-c-v1",
+    "formal/E3-protocol-feasibility-correction-v2",
 }
 PRODUCTION = [
  "location_allocate/location_allocate/safety_aware_allocator.py",
@@ -47,10 +48,13 @@ def validate() -> Dict[str, Any]:
             "experiments_v2/Formal Evaluation Experiments/E3/",
             "experiments_v2/Formal Evaluation Experiments/formal_equivalent_demos/",
         )
-        bad=sorted({p for p in changed if not p.startswith(allowed_roots)})
+        allowed_files={
+            "experiments_v2/Formal Evaluation Experiments/protocols/E3_protocol_v2.yaml",
+        }
+        bad=sorted({p for p in changed if not p.startswith(allowed_roots) and p not in allowed_files})
         ck("changes_experiment_only",not bad,{"prohibited":bad})
     except Exception as exc: ck("internal_error",False,{"type":type(exc).__name__,"message":str(exc)}); head="UNKNOWN"
-    return {"manifest_type":"E3_provenance_v1","status":"PASS" if all(c["status"]=="PASS" for c in checks) else "FAIL","runner_branch":branch if 'branch' in locals() else BRANCH,"runner_commit":head,"checks":checks}
+    return {"manifest_type":"E3_provenance_v2","status":"PASS" if all(c["status"]=="PASS" for c in checks) else "FAIL","runner_branch":branch if 'branch' in locals() else BRANCH,"runner_commit":head,"checks":checks}
 
 if __name__ == "__main__":
     report=validate(); print(json.dumps(report,indent=2,sort_keys=True)); raise SystemExit(report["status"]!="PASS")

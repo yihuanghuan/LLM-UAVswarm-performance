@@ -22,10 +22,10 @@ from e3_trial_registry import (
 )
 
 
-ADAPTER_BRANCH = "formal/E3-formal-adapter-case-c-v1"
-VALIDATED_CONTRACT_BRANCH = "formal/E3-planning-feedback-safety-v1"
-VALIDATED_CONTRACT_COMMIT = "dc1c7e82dd02341994eabd60e5585f99777a0954"
-PREFLIGHT_COMMIT = "36dba68c6b16681ec98500b49c5a83095de4b634"
+ADAPTER_BRANCH = "formal/E3-protocol-feasibility-correction-v2"
+VALIDATED_CONTRACT_BRANCH = "formal/E3-protocol-feasibility-correction-v2"
+VALIDATED_CONTRACT_COMMIT = "825eec019d32f27192a97059611b5d1d79d2c021"
+PREFLIGHT_COMMIT = "825eec019d32f27192a97059611b5d1d79d2c021"
 BASELINE_TAG = "paper-final-sim-v3"
 BASELINE_COMMIT = "6cf402debf23851b1eff3edc6f3ab49eae7127c4"
 ENTRYPOINT = "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_formal_adapter.py"
@@ -184,7 +184,7 @@ def run_exact_trial(trial_id: str, campaign_context: Dict[str, Any]) -> Dict[str
     status, backend = "success", None
     if mode == "spec_rehearsal":
         backend = {
-            "backend": "E3_pinned_adapter_spec_rehearsal_v1",
+            "backend": "E3_pinned_adapter_spec_rehearsal_v2",
             "physical_execution_performed": False,
             "scientific_outcomes": None,
             "failure_injection": campaign_context.get("failure_injection"),
@@ -202,7 +202,7 @@ def run_exact_trial(trial_id: str, campaign_context: Dict[str, Any]) -> Dict[str
             backend = {"error": f"{type(exc).__name__}: {exc}"}
     accepted = mode == "formal"
     artifact = {
-        "record_type": "E3_formal_capable_exact_trial_attempt_v1",
+        "record_type": "E3_formal_capable_exact_trial_attempt_v2",
         "dataset_class": FORMAL_DATASET if accepted else campaign_context["dataset_class"],
         "accepted_formal_result": accepted,
         "result_notice": None if accepted else NOTICE,

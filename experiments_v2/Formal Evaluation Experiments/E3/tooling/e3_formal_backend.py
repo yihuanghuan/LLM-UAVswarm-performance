@@ -60,7 +60,7 @@ def build_runtime_spec(spec: Dict[str, Any]) -> Dict[str, Any]:
         executable, initial, assigned, policy.profile, safety.soft_iapf,
     )
     runtime = {
-        "runtime_spec_type": "E3_registered_physical_runtime_spec_v1",
+        "runtime_spec_type": "E3_registered_physical_runtime_spec_v2",
         "fixture_class": spec.get("fixture_class", "registered_formal_spec"),
         "dataset_class": spec.get("dataset_class", "formal_evaluation"),
         "trial_id": spec["trial_id"], "seed": spec["seed"],

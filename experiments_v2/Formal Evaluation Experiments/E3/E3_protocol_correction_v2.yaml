@@ -21,6 +21,11 @@ corrected_identity:
   registry_sha256: f722d8a917ed6af57a3f75a79ef62720fdafb5835115a66d8e0582eb453d36a3
 
 root_cause:
+  analytic_environment:
+    python_executable: /usr/bin/python3
+    python_version: 3.10.12
+    scipy_version: 1.8.0
+    role: production ROS/PX4 formal execution interpreter
   trajectory_convention: frozen zero-end-derivative Minimum-Jerk quintic
   formulas:
     velocity_peak: 1.875 * D / T
@@ -59,6 +64,23 @@ correction:
     scoring_end_offset_s: duration_s + 2.0
     timeout_after_t0_s: duration_s + 6.0
     hashes: registered input and resolved execution spec hashes
+
+validation:
+  analytic_cells: {passed: 24, checked: 24, status: PASS}
+  registered_trials_analytically_feasible: {passed: 360, checked: 360, status: PASS}
+  production_profile_compiler: {passed: 360, checked: 360, status: PASS}
+  audit_json: E3_protocol_v2_feasibility_audit.json
+  audit_json_sha256: 41a794a6fcbc38888d8f60f40092479491bcca01c00a130420e15bc9cd5b1839
+  audit_internal_sha256: 24cd9b41ce8d63fd7df06a5ea33f5b2abe03c500a534650f56934a7cd09acfb6
+  audit_markdown: E3_protocol_v2_feasibility_audit.md
+  audit_markdown_sha256: 812d9017f77080ac22038ef97fafc547e4c23b9b4a0aa6ba3a81cae8ff92447c
+  live_runtime_launched: false
+
+numeric_environment_observation:
+  authoritative_result: the production ROS interpreter and production profile compiler accept 360 of 360 corrected specs
+  nonproduction_observation: scipy 1.15.3 selects a different equal-cost P0 Hungarian optimum for A-02/C-02 than production scipy 1.8.0
+  protocol_or_allocator_changed_in_response: false
+  review_requirement: retain the production numeric environment identity in the later Campaign v2 freeze
 
 scientific_scope:
   no_result_driven_tuning: true
