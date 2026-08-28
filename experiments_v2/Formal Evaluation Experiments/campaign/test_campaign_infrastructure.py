@@ -108,13 +108,10 @@ class CampaignInfrastructureTests(unittest.TestCase):
         second = run_to_completion("replay-b", self.results_root, (307,), self.provenance)
         self.assertEqual(retained_trace(first), retained_trace(second))
 
-    def test_formal_launch_gate_is_closed(self):
+    def test_adapter_registry_is_ready_for_separate_launch_gate(self):
         ready, blockers = formal_launch_gate(load_runner_registry())
-        self.assertFalse(ready)
-        self.assertTrue(any("E3" in blocker for blocker in blockers))
-        self.assertTrue(any("E4A" in blocker for blocker in blockers))
-        self.assertTrue(any("E4B" in blocker for blocker in blockers))
-        self.assertTrue(any("E5" in blocker for blocker in blockers))
+        self.assertTrue(ready)
+        self.assertEqual(blockers, [])
 
 
 if __name__ == "__main__":

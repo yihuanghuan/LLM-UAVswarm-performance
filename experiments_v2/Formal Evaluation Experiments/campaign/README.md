@@ -1,11 +1,12 @@
 # E2--E5 sealed global campaign infrastructure
 
-CURRENT FORMAL CAMPAIGN STATUS: **NOT_READY**
+CURRENT FORMAL CAMPAIGN STATUS: **READY_FOR_LAUNCH_GATE**
 
-E3, E4A, E4B, and E5 do not yet have pinned validated runners. Passing these
-infrastructure tests does not authorize cursor #1. This directory provides only
-`synthetic_validation`; every generated record is labeled
-`accepted_formal_result: false` and `NOT_FORMAL_RESULT`.
+All five formal-capable adapters are pinned by branch, commit, source hash,
+protocol/registry hash, and readiness-manifest hash. This status still does not
+authorize cursor #1: the final 610 pinned-entrypoint rehearsal and offline audit
+must be retained before `formal_launch_gate_v1.json` may say
+`READY_FOR_FORMAL_LAUNCH`.
 
 ## Authority and execution boundary
 
@@ -69,8 +70,10 @@ provenance checks PASS. A later, separately approved launch mechanism must also
 provide formal-capable exact-trial adapters; this synthetic dispatcher contains
 no accepted-formal-result mode.
 
-The runner registry truthfully pins the validated E2 Stage-B synthetic head as
-its interface reference and leaves E3/E4A/E4B/E5 unpinned and `NOT_READY`.
+`formal_campaign_launcher.py` owns the future formal order/journal boundary.
+Formal mode additionally requires an explicit final launch-gate manifest. The
+current preparation invokes only `spec_rehearsal` or non-registered engineering
+fixtures; it never creates an accepted formal artifact or consumes position #1.
 
 ## Scientific interpretation
 
