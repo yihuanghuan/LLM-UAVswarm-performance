@@ -3,6 +3,12 @@
 from __future__ import annotations
 import argparse,hashlib,json,signal,time
 from pathlib import Path
+from location_allocate.formation_geometry import GeometryError
+
+def classify_method_exception(error):
+ if isinstance(error,GeometryError):return {'attempt_status':'method_failure','failure_stage':'resolution','mission_termination':'frozen_method_rejection'}
+ return {'attempt_status':'infrastructure_failure'}
+
 def _slice(path,offset):
  p=Path(path)
  if not p.exists():return ''
@@ -42,7 +48,7 @@ def main():
   try:node.run_candidate_mission(payload)
   finally:signal.setitimer(signal.ITIMER_REAL,0);signal.signal(signal.SIGALRM,old)
   runtime_wall=time.monotonic()-runtime_started;lat['resolution']=max(0.0,lat['resolution']-lat['allocation']);lat['physical_execution']=max(0.0,runtime_wall-lat['resolution']-lat['allocation']-lat['dispatch']);out.update({'attempt_status':'success','candidate_completed':True,'validated_candidate_retained':True,'llm_attempt_records':len(records),'runtime_wall_s':runtime_wall})
- except Exception as x:out['error']=f'{type(x).__name__}: {x}'
+ except Exception as x:out.update(classify_method_exception(x));out['error']=f'{type(x).__name__}: {x}'
  finally:
   raw_append=_slice(rawlog,rawpos);parse_append=_slice(parselog,parsepos);(a.output/'llm_raw_responses.append.jsonl').write_text(raw_append);(a.output/'llm_parse_log.append.csv.fragment').write_text(parse_append);parse_lines=[x for x in parse_append.splitlines() if x and not x.startswith('command_id,')];out['provider_request_attempts_logged']=len(parse_lines);out['real_llm_invocation_attempted']=bool(parse_lines);out['latency_decomposition_s']=lat;a.result.write_text(json.dumps(out,indent=2,sort_keys=True)+'\n')
   if node is not None:node.destroy_node()

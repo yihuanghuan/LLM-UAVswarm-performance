@@ -6,6 +6,7 @@ from pathlib import Path
 from e5_runtime_provenance import collect_runtime_provenance,runtime_provenance_gate
 WORK=Path('/home/yihuang/learning/LLM_swarm_ws');PX4=Path('/home/yihuang/PX4-Autopilot-formal-v1');INSTALL=WORK/'formal_install_v1/setup.bash';PY=WORK/'llm_env/bin/python';POLICY=WORK/'formal_install_v1/lfs_policy/share/lfs_policy/config/lfs_policy.paper_current.yaml';REPO=Path(__file__).resolve().parents[4];READY=REPO/'experiments-legacy/system_8uav/scripts/wait_swarm_ready.py'
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def completed_language_outcome(language):return language.get('attempt_status') in {'success','method_failure'}
 def env(seed,output):
  raw=subprocess.check_output(['bash','-lc',f'source /opt/ros/humble/setup.bash && source {INSTALL} && env -0']);e={a.decode():b.decode() for x in raw.split(b'\0') if b'=' in x for a,b in [x.split(b'=',1)]};e.update({'ROS_DOMAIN_ID':'45','RMW_IMPLEMENTATION':'rmw_fastrtps_cpp','FORMAL_GAZEBO_SEED':str(seed),'ROS_HOME':str(output/'ros_home'),'PYTHONPATH':str(REPO/'location_allocate')+':'+str(REPO/'lfs_policy')+':'+e.get('PYTHONPATH','')});e['PATH']='/usr/bin:/bin:'+e.get('PATH','');e['GAZEBO_PLUGIN_PATH']='/opt/ros/humble/lib:'+e.get('GAZEBO_PLUGIN_PATH','');return e
 def start(cmd,path,cwd=None,e=None):f=path.open('w');p=subprocess.Popen(cmd,cwd=cwd,env=e,stdout=f,stderr=subprocess.STDOUT,start_new_session=True);return p,f
@@ -34,8 +35,8 @@ def orchestrate(s,output,result):
   lr=output/'language_result.json';run=subprocess.run([str(PY),str(Path(__file__).with_name('e5_language_driver.py')),'--runtime-spec',str(output/'runtime_spec.json'),'--output',str(output),'--result',str(lr)],cwd=REPO,env=e,text=True,capture_output=True,timeout=float(s['mission_timeout_s'])+150);(output/'language_driver.log').write_text(run.stdout+run.stderr)
   if not lr.exists():raise RuntimeError('language result missing')
   language=json.loads(lr.read_text())
-  if run.returncode or language.get('attempt_status')!='success':raise RuntimeError(f"language path failed: {language.get('error','unknown')}")
-  out.update({'attempt_status':'success','language_result':'language_result.json','runtime_provenance':'runtime_provenance.json','raw_evidence':{'rosbag':'rosbag','controllers':'controllers.log','llm_raw':'llm_raw_responses.append.jsonl','llm_parse':'llm_parse_log.append.csv.fragment','candidate':'validated_candidate.json','resolution_trace':'ros_home/candidate_resolution_trace.jsonl'}})
+  if not completed_language_outcome(language):raise RuntimeError(f"language path failed: {language.get('error','unknown')}")
+  out.update({'attempt_status':'success','scientific_outcome':language.get('attempt_status'),'method_failure_stage':language.get('failure_stage'),'method_failure_reason':language.get('error'),'language_result':'language_result.json','runtime_provenance':'runtime_provenance.json','raw_evidence':{'rosbag':'rosbag','controllers':'controllers.log','llm_raw':'llm_raw_responses.append.jsonl','llm_parse':'llm_parse_log.append.csv.fragment','candidate':'validated_candidate.json','resolution_trace':'ros_home/candidate_resolution_trace.jsonl'}})
  except Exception as x:out['error']=f'{type(x).__name__}: {x}'
  finally:
   for p in reversed(procs):stop(p)

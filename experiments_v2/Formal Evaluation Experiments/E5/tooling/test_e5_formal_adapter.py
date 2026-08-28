@@ -4,6 +4,9 @@ import pytest
 from e5_trial_registry import *
 from e5_formal_adapter import FormalAdapterError,identity,run_exact_trial
 from e5_formal_backend import build_runtime_spec
+from e5_language_driver import classify_method_exception
+from e5_physical_trial import completed_language_outcome
+from location_allocate.formation_geometry import GeometryError
 def ctx(t,root,**kw):
  i=identity();v={'execution_mode':'spec_rehearsal','dataset_class':'synthetic_validation','formal_launch_authorized':False,'trial_id':t,'global_trial_position':ORDER_PATH.read_text().splitlines().index(t)+1,'runner_commit':i['commit'],'runner_source_sha256':i['source_sha256'],'policy_sha256':POLICY_SHA256,'protocol_sha256':PROTOCOL_SHA256,'registry_sha256':REGISTRY_SHA256,'global_trial_order_sha256':ORDER_SHA256,'attempt_output_dir':str(root)};v.update(kw);return v
 def test_population_and_exact_runtime_reconstruction():
@@ -32,3 +35,8 @@ def test_px4_generator_uses_pinned_system_python(tmp_path):
 def test_no_hidden_preview_or_retry_mode():
  source=Path(__file__).with_name('e5_formal_adapter.py').read_text();assert 'preview' not in source;assert "execution_mode')" in source
  driver=Path(__file__).with_name('e5_language_driver.py').read_text();assert "provider_request_attempts_logged" in driver;assert "finally:" in driver
+def test_geometry_rejection_is_completed_method_outcome():
+ result=classify_method_exception(GeometryError('workspace limit'))
+ assert result=={'attempt_status':'method_failure','failure_stage':'resolution','mission_termination':'frozen_method_rejection'}
+ assert completed_language_outcome(result)
+ assert not completed_language_outcome({'attempt_status':'infrastructure_failure'})
