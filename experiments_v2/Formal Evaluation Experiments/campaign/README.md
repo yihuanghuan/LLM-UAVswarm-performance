@@ -3,8 +3,9 @@
 CURRENT FORMAL CAMPAIGN STATUS: **READY_FOR_FORMAL_LAUNCH**
 
 All five formal-capable adapters are pinned by branch, commit, source hash,
-protocol/registry hash, and readiness-manifest hash. The final 610
-pinned-entrypoint rehearsal and independent offline audit passed. This is
+protocol/registry hash, and readiness-manifest hash. The resume-safe 610
+pinned-entrypoint rehearsal, isolated formal restart regressions, and
+independent offline audit passed. This is
 launch readiness only: cursor #1 is not authorized by this repository change,
 the formal campaign has not started, and the formal suite journal is empty.
 
@@ -34,6 +35,14 @@ without its journal entry, any partial temporary file, a gap, duplicate,
 reorder, replacement, hash mismatch, or concurrent dispatcher causes a
 fail-closed stop for explicit recovery. Artifacts are published and fsynced
 before the corresponding journal record is atomically published and fsynced.
+
+Formal initialization publishes an immutable `launcher_run_manifest.json`
+before the execution lock or any attempt artifact can be created. The manifest
+contains only static campaign provenance and the authorized launch-gate hash;
+it is campaign metadata, not a scientific attempt. A fresh launch requires a
+pristine position-1 gate. A restart requires the same manifest and gate, then
+derives position `journal length + 1`; the launch gate is never a mutable
+cursor. A nonempty formal root without the manifest fails closed.
 
 ## Synthetic rehearsal
 
