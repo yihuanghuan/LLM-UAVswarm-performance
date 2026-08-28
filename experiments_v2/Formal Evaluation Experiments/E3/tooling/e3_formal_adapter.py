@@ -22,13 +22,24 @@ from e3_trial_registry import (
 )
 
 
-ADAPTER_BRANCH = "formal/E3-formal-adapter-v1"
+ADAPTER_BRANCH = "formal/E3-formal-adapter-case-c-v1"
 VALIDATED_CONTRACT_BRANCH = "formal/E3-planning-feedback-safety-v1"
 VALIDATED_CONTRACT_COMMIT = "dc1c7e82dd02341994eabd60e5585f99777a0954"
 PREFLIGHT_COMMIT = "36dba68c6b16681ec98500b49c5a83095de4b634"
 BASELINE_TAG = "paper-final-sim-v3"
 BASELINE_COMMIT = "6cf402debf23851b1eff3edc6f3ab49eae7127c4"
 ENTRYPOINT = "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_formal_adapter.py"
+EXECUTION_TOOLING_BUNDLE_SCHEMA = "e3_execution_tooling_bundle_v1"
+EXECUTION_TOOLING_PATHS = (
+    ENTRYPOINT,
+    "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_formal_backend.py",
+    "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_physical_trial.py",
+    "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_runtime_diagnostics.py",
+    "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_trial_registry.py",
+    "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_wrench_compat.py",
+    "experiments_v2/Formal Evaluation Experiments/harness/e3_wrench_driver.py",
+    "experiments-legacy/system_8uav/scripts/wait_swarm_ready.py",
+)
 NOTICE = "NOT_FORMAL_RESULT"
 FORMAL_DATASET = "formal_evaluation"
 NONFORMAL_DATASETS = {"synthetic_validation", "engineering_validation"}
@@ -56,13 +67,27 @@ def _position(trial_id: str) -> int:
         raise FormalAdapterError("trial absent from sealed global order") from exc
 
 
-def adapter_identity() -> Dict[str, str]:
+def execution_tooling_identity() -> Dict[str, Any]:
+    root = _repo_root()
+    files = {path: sha256_file(root / path) for path in sorted(EXECUTION_TOOLING_PATHS)}
+    payload = {"schema": EXECUTION_TOOLING_BUNDLE_SCHEMA, "files": files}
+    digest = hashlib.sha256(json.dumps(
+        payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")).hexdigest()
+    return {**payload, "bundle_sha256": digest}
+
+
+def adapter_identity() -> Dict[str, Any]:
     source = Path(__file__).resolve()
+    tooling = execution_tooling_identity()
     return {
         "branch": _git("branch", "--show-current"),
         "commit": _git("rev-parse", "HEAD"),
         "entrypoint": ENTRYPOINT,
         "source_sha256": sha256_file(source),
+        "execution_tooling_bundle_schema": tooling["schema"],
+        "execution_tooling_file_sha256": tooling["files"],
+        "execution_tooling_bundle_sha256": tooling["bundle_sha256"],
     }
 
 
@@ -84,6 +109,12 @@ def _validate_context(trial_id: str, context: Dict[str, Any]) -> tuple[str, int,
         raise FormalAdapterError("pinned adapter commit mismatch")
     if not expected_source or expected_source != identity["source_sha256"]:
         raise FormalAdapterError("pinned adapter source hash mismatch")
+    if context.get("runner_execution_tooling_bundle_schema") != identity["execution_tooling_bundle_schema"]:
+        raise FormalAdapterError("pinned execution-tooling bundle schema mismatch")
+    if context.get("runner_execution_tooling_file_sha256") != identity["execution_tooling_file_sha256"]:
+        raise FormalAdapterError("pinned execution-tooling file hashes mismatch")
+    if context.get("runner_execution_tooling_bundle_sha256") != identity["execution_tooling_bundle_sha256"]:
+        raise FormalAdapterError("pinned execution-tooling bundle hash mismatch")
     if context.get("policy_sha256") != POLICY_SHA256:
         raise FormalAdapterError("canonical policy hash mismatch")
     if context.get("protocol_sha256") != PROTOCOL_SHA256:
@@ -193,6 +224,9 @@ def run_exact_trial(trial_id: str, campaign_context: Dict[str, Any]) -> Dict[str
             "protocol_sha256": PROTOCOL_SHA256,
             "registry_sha256": REGISTRY_SHA256,
             "global_trial_order_sha256": ORDER_SHA256,
+            "execution_tooling_bundle_schema": identity["execution_tooling_bundle_schema"],
+            "execution_tooling_file_sha256": identity["execution_tooling_file_sha256"],
+            "execution_tooling_bundle_sha256": identity["execution_tooling_bundle_sha256"],
         },
     }
     artifact_path = output / "attempt.json"
@@ -205,6 +239,7 @@ def run_exact_trial(trial_id: str, campaign_context: Dict[str, Any]) -> Dict[str
         "accepted_formal_result": accepted,
         "runner_commit": identity["commit"],
         "runner_source_sha256": identity["source_sha256"],
+        "runner_execution_tooling_bundle_sha256": identity["execution_tooling_bundle_sha256"],
         "suite_journal_mutated": False,
     }
 

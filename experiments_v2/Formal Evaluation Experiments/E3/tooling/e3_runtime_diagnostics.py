@@ -9,8 +9,10 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+from datetime import datetime, timezone
 from pathlib import Path
 import subprocess
+import time
 from typing import Any, Dict, Iterable
 
 
@@ -21,6 +23,8 @@ CONTROLLER_SOURCE = "minisnap_LADRC/ladrc_controller/src/ladrc_position_controll
 CONTROLLER_LAUNCH = "minisnap_LADRC/ladrc_controller/launch/swarm_launch.py"
 POLICY_RELATIVE = "lfs_policy/config/lfs_policy.paper_current.yaml"
 POLICY_SHA256 = "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858"
+DISCOVERY_MAX_ATTEMPTS = 4
+DISCOVERY_RETRY_INTERVAL_S = 1.0
 
 
 def sha256_file(path: Path) -> str:
@@ -136,12 +140,15 @@ def validate_command(command: Any, expected_uav_id: int) -> Dict[str, Any]:
 
 
 def _run(command, *, env, cwd) -> Dict[str, Any]:
+    started_at_utc = datetime.now(timezone.utc).isoformat()
     completed = subprocess.run(
         command, env=env, cwd=cwd, text=True, capture_output=True, timeout=20,
     )
     return {
         "command": command, "returncode": completed.returncode,
         "stdout": completed.stdout, "stderr": completed.stderr,
+        "started_at_utc": started_at_utc,
+        "finished_at_utc": datetime.now(timezone.utc).isoformat(),
     }
 
 
@@ -150,6 +157,108 @@ def _prefix(package: str, *, env, cwd: Path) -> tuple[Path, Dict[str, Any]]:
     if result["returncode"]:
         raise RuntimeError(f"ros2 pkg prefix failed for {package}")
     return Path(result["stdout"].strip()).resolve(), result
+
+
+def _controller_observation(repo: Path, env: Dict[str, str], uav_id: int,
+                            sequence: int) -> Dict[str, Any]:
+    namespace = expected_controller_namespace(uav_id)
+    full_node = f"{namespace}/{EXPECTED_CONTROLLER_NODE}"
+    topic = f"{namespace}/execution_command"
+    started_at_utc = datetime.now(timezone.utc).isoformat()
+    node_info = _run(["ros2", "node", "info", full_node], env=env, cwd=repo)
+    parameter = _run(
+        ["ros2", "param", "get", full_node, "enable_execution_profiles"],
+        env=env, cwd=repo,
+    )
+    topic_info = _run(["ros2", "topic", "info", "-v", topic], env=env, cwd=repo)
+    node_subscription_present = (
+        node_info["returncode"] == 0 and topic in node_info["stdout"]
+    )
+    controller_endpoint_present = (
+        topic_info["returncode"] == 0
+        and f"Node name: {EXPECTED_CONTROLLER_NODE}" in topic_info["stdout"]
+        and f"Node namespace: {namespace}" in topic_info["stdout"]
+    )
+    execution_profiles_enabled = (
+        parameter["returncode"] == 0 and "True" in parameter["stdout"]
+    )
+    return {
+        "sequence": sequence,
+        "started_at_utc": started_at_utc,
+        "finished_at_utc": datetime.now(timezone.utc).isoformat(),
+        "node_info": node_info,
+        "enable_execution_profiles": parameter,
+        "topic_info_verbose": topic_info,
+        "node_subscription_present": node_subscription_present,
+        "controller_endpoint_present_in_topic_info": controller_endpoint_present,
+        "enable_execution_profiles_true": execution_profiles_enabled,
+        "observation_pass": (
+            node_subscription_present
+            and controller_endpoint_present
+            and execution_profiles_enabled
+        ),
+    }
+
+
+def collect_controller_runtime_evidence(
+    repo: Path,
+    env: Dict[str, str],
+    uav_ids: Iterable[int],
+    *,
+    max_attempts: int = DISCOVERY_MAX_ATTEMPTS,
+    retry_interval_s: float = DISCOVERY_RETRY_INTERVAL_S,
+) -> Dict[str, Any]:
+    """Observe the frozen controller invariant through a bounded retry window.
+
+    Each attempt must jointly establish node subscription, topic endpoint identity,
+    and the enabled execution-profile parameter. Every raw failed and successful
+    attempt is retained. A controller that never establishes all three facts remains
+    a fail-closed provenance failure.
+    """
+    ids = [int(value) for value in uav_ids]
+    if max_attempts < 1 or retry_interval_s < 0.0:
+        raise ValueError("invalid discovery stabilization bounds")
+    attempts = {str(uid): [] for uid in ids}
+    pending = set(ids)
+    for sequence in range(1, max_attempts + 1):
+        for uid in ids:
+            if uid not in pending:
+                continue
+            observation = _controller_observation(repo, env, uid, sequence)
+            attempts[str(uid)].append(observation)
+            if observation["observation_pass"]:
+                pending.remove(uid)
+        if not pending:
+            break
+        if sequence < max_attempts and retry_interval_s:
+            time.sleep(retry_interval_s)
+
+    dynamic = {}
+    for uid in ids:
+        records = attempts[str(uid)]
+        selected = next(
+            (item for item in records if item["observation_pass"]), records[-1]
+        )
+        dynamic[str(uid)] = {
+            "node": f"{expected_controller_namespace(uid)}/{EXPECTED_CONTROLLER_NODE}",
+            "execution_command_topic": f"{expected_controller_namespace(uid)}/execution_command",
+            "node_info": selected["node_info"],
+            "enable_execution_profiles": selected["enable_execution_profiles"],
+            "topic_info_verbose": selected["topic_info_verbose"],
+            "node_subscription_present": selected["node_subscription_present"],
+            "controller_endpoint_present_in_topic_info":
+                selected["controller_endpoint_present_in_topic_info"],
+            "enable_execution_profiles_true": selected["enable_execution_profiles_true"],
+            "discovery_converged": selected["observation_pass"],
+            "selected_observation_sequence": selected["sequence"],
+            "observation_count": len(records),
+            "observation_attempts": records,
+            "stabilization_bounds": {
+                "max_attempts": max_attempts,
+                "retry_interval_s": retry_interval_s,
+            },
+        }
+    return dynamic
 
 
 def collect_runtime_provenance(repo: Path, env: Dict[str, str], uav_ids: Iterable[int]) -> Dict[str, Any]:
@@ -192,31 +301,7 @@ def collect_runtime_provenance(repo: Path, env: Dict[str, str], uav_ids: Iterabl
     capability["executionCommandCallback_symbol"] = "executionCommandCallback" in symbols["stdout"]
     capability["applyExecutionCommand_symbol"] = "applyExecutionCommand" in symbols["stdout"]
 
-    dynamic = {}
-    for uav_id in uav_ids:
-        namespace = expected_controller_namespace(uav_id)
-        full_node = f"{namespace}/{EXPECTED_CONTROLLER_NODE}"
-        node_info = _run(["ros2", "node", "info", full_node], env=env, cwd=repo)
-        parameter = _run(
-            ["ros2", "param", "get", full_node, "enable_execution_profiles"],
-            env=env, cwd=repo,
-        )
-        topic = f"{namespace}/execution_command"
-        topic_info = _run(["ros2", "topic", "info", "-v", topic], env=env, cwd=repo)
-        controller_endpoint_text_present = (
-            f"Node name: {EXPECTED_CONTROLLER_NODE}" in topic_info["stdout"]
-            and f"Node namespace: {namespace}" in topic_info["stdout"]
-        )
-        dynamic[str(uav_id)] = {
-            "node": full_node, "execution_command_topic": topic,
-            "node_info": node_info, "enable_execution_profiles": parameter,
-            "topic_info_verbose": topic_info,
-            "node_subscription_present": topic in node_info["stdout"],
-            "controller_endpoint_present_in_topic_info": controller_endpoint_text_present,
-            "enable_execution_profiles_true": (
-                parameter["returncode"] == 0 and "True" in parameter["stdout"]
-            ),
-        }
+    dynamic = collect_controller_runtime_evidence(repo, env, uav_ids)
 
     checks = {
         "package_prefixes_are_formal_install_v1": all(

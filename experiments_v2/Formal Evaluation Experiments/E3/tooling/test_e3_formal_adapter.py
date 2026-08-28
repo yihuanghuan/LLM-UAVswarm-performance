@@ -7,7 +7,7 @@ import sys
 import pytest
 
 from e3_formal_adapter import (
-    FormalAdapterError, adapter_identity, run_exact_trial,
+    FormalAdapterError, adapter_identity, execution_tooling_identity, run_exact_trial,
 )
 from e3_trial_registry import (
     ORDER_SHA256, POLICY_SHA256, PROTOCOL_SHA256, REGISTRY_SHA256,
@@ -16,7 +16,8 @@ from e3_trial_registry import (
 from e3_engineering_smoke import fixture
 from e3_formal_backend import build_runtime_spec
 from e3_runtime_diagnostics import (
-    endpoint_snapshot, expected_wrench_topic, is_expected_controller_endpoint,
+    collect_controller_runtime_evidence, endpoint_snapshot, expected_wrench_topic,
+    is_expected_controller_endpoint,
     is_expected_recorder_endpoint, runtime_provenance_gate, validate_command,
 )
 
@@ -32,6 +33,9 @@ def context(trial_id, root, **changes):
         "global_trial_position": order.read_text().splitlines().index(trial_id) + 1,
         "runner_commit": identity["commit"],
         "runner_source_sha256": identity["source_sha256"],
+        "runner_execution_tooling_bundle_schema": identity["execution_tooling_bundle_schema"],
+        "runner_execution_tooling_file_sha256": identity["execution_tooling_file_sha256"],
+        "runner_execution_tooling_bundle_sha256": identity["execution_tooling_bundle_sha256"],
         "policy_sha256": POLICY_SHA256,
         "protocol_sha256": PROTOCOL_SHA256,
         "registry_sha256": REGISTRY_SHA256,
@@ -83,6 +87,33 @@ def test_provenance_or_position_mismatch_refused(field, value, tmp_path):
     trial = registered_trial_ids()[0]
     with pytest.raises(FormalAdapterError):
         run_exact_trial(trial, context(trial, tmp_path / "attempt", **{field: value}))
+
+
+@pytest.mark.parametrize("field,value", [
+    ("runner_execution_tooling_bundle_schema", "wrong"),
+    ("runner_execution_tooling_file_sha256", {}),
+    ("runner_execution_tooling_bundle_sha256", "0" * 64),
+])
+def test_execution_tooling_bundle_mismatch_refused(field, value, tmp_path):
+    trial = registered_trial_ids()[0]
+    with pytest.raises(FormalAdapterError, match="execution-tooling"):
+        run_exact_trial(trial, context(trial, tmp_path / "attempt", **{field: value}))
+
+
+def test_execution_tooling_bundle_covers_complete_runtime_dependency_set():
+    identity = execution_tooling_identity()
+    assert identity["schema"] == "e3_execution_tooling_bundle_v1"
+    assert set(identity["files"]) == {
+        "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_formal_adapter.py",
+        "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_formal_backend.py",
+        "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_physical_trial.py",
+        "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_runtime_diagnostics.py",
+        "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_trial_registry.py",
+        "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_wrench_compat.py",
+        "experiments_v2/Formal Evaluation Experiments/harness/e3_wrench_driver.py",
+        "experiments-legacy/system_8uav/scripts/wait_swarm_ready.py",
+    }
+    assert len(identity["bundle_sha256"]) == 64
 
 
 def test_formal_mode_is_fail_closed_without_final_gate(tmp_path):
@@ -151,6 +182,74 @@ def test_runtime_provenance_and_execution_profile_gate_fail_closed():
         "status": "FAIL",
         "checks": {"execution_profiles_enabled_for_every_controller": False},
     })
+
+
+def _diagnostic_command_result(command, *, node_visible):
+    if command[1:3] == ["node", "info"]:
+        uid = command[-1].split("/")[1]
+        topic = f"/{uid}/execution_command"
+        return {
+            "command": command, "returncode": 0 if node_visible else 1,
+            "stdout": f"{command[-1]}\n  Subscribers:\n    {topic}: type\n"
+                if node_visible else "",
+            "stderr": "" if node_visible else f"Unable to find node '{command[-1]}'\n",
+        }
+    if command[1:3] == ["param", "get"]:
+        return {"command": command, "returncode": 0,
+                "stdout": "Boolean value is: True\n", "stderr": ""}
+    if command[1:4] == ["topic", "info", "-v"]:
+        uid = command[-1].split("/")[1]
+        return {"command": command, "returncode": 0,
+                "stdout": ("Subscription count: 1\n"
+                           "Node name: ladrc_position_controller\n"
+                           f"Node namespace: /{uid}\n"), "stderr": ""}
+    raise AssertionError(command)
+
+
+def test_transient_node_info_miss_retains_raw_evidence_and_converges(monkeypatch):
+    node_info_calls = 0
+
+    def fake_run(command, **_kwargs):
+        nonlocal node_info_calls
+        if command[1:3] == ["node", "info"]:
+            node_info_calls += 1
+        return _diagnostic_command_result(command, node_visible=node_info_calls > 1)
+
+    monkeypatch.setattr("e3_runtime_diagnostics._run", fake_run)
+    evidence = collect_controller_runtime_evidence(
+        Path("/repo"), {}, [1], max_attempts=3, retry_interval_s=0.0,
+    )["1"]
+    assert evidence["discovery_converged"] is True
+    assert evidence["selected_observation_sequence"] == 2
+    assert evidence["observation_count"] == 2
+    assert evidence["observation_attempts"][0]["node_subscription_present"] is False
+    assert evidence["observation_attempts"][0]["controller_endpoint_present_in_topic_info"] is True
+    assert evidence["observation_attempts"][0]["enable_execution_profiles_true"] is True
+    assert evidence["observation_attempts"][1]["observation_pass"] is True
+
+
+def test_persistent_missing_controller_exhausts_bounds_and_fails_closed(monkeypatch):
+    monkeypatch.setattr(
+        "e3_runtime_diagnostics._run",
+        lambda command, **_kwargs: _diagnostic_command_result(command, node_visible=False),
+    )
+    evidence = collect_controller_runtime_evidence(
+        Path("/repo"), {}, [1], max_attempts=3, retry_interval_s=0.0,
+    )["1"]
+    assert evidence["discovery_converged"] is False
+    assert evidence["node_subscription_present"] is False
+    assert evidence["controller_endpoint_present_in_topic_info"] is True
+    assert evidence["enable_execution_profiles_true"] is True
+    assert evidence["observation_count"] == 3
+    assert all(not item["observation_pass"] for item in evidence["observation_attempts"])
+    checks = {
+        "every_controller_node_subscribes": evidence["node_subscription_present"],
+        "every_controller_endpoint_visible_separately_from_rosbag":
+            evidence["controller_endpoint_present_in_topic_info"],
+        "execution_profiles_enabled_for_every_controller":
+            evidence["enable_execution_profiles_true"],
+    }
+    assert not runtime_provenance_gate({"status": "FAIL", "checks": checks})
 
 
 def test_nonregistered_fixture_class_and_dataset_propagate():
