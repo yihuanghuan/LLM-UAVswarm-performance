@@ -362,6 +362,9 @@ def run_demo(entry: Dict[str, Any]) -> Dict[str, Any]:
         "registered_trial_id": entry["trial_id"],
         "family": family,
         "runtime_class": entry["runtime_class"],
+        "matrix_role": entry.get("matrix_role", "primary"),
+        "rerun_of": entry.get("rerun_of"),
+        "rerun_reason": entry.get("rerun_reason"),
         "dataset_class": "engineering_validation",
         "accepted_formal_result": False,
         "result_notice": NOTICE,
@@ -397,6 +400,7 @@ def run_demo(entry: Dict[str, Any]) -> Dict[str, Any]:
 
 def aggregate() -> Dict[str, Any]:
     planned = matrix()["demos"]
+    primary_planned = [item for item in planned if item.get("matrix_role", "primary") == "primary"]
     manifests = []
     for path in sorted(DEMO_ROOT.glob("E*/**/demo_manifest.json")):
         manifests.append(json.loads(path.read_text()))
@@ -404,7 +408,11 @@ def aggregate() -> Dict[str, Any]:
     for family in FAMILIES:
         selected = [item for item in manifests if item["family"] == family]
         by_family[family] = {
-            "planned": sum(item["family"] == family for item in planned),
+            "planned": sum(item["family"] == family for item in primary_planned),
+            "diagnostic_reruns_planned": sum(
+                item["family"] == family and item.get("matrix_role") == "diagnostic_rerun"
+                for item in planned
+            ),
             "completed": len(selected),
             "infrastructure_pass": sum(item["infrastructure_status"] == "PASS" for item in selected),
             "infrastructure_fail": sum(item["infrastructure_status"] != "PASS" for item in selected),
@@ -419,7 +427,8 @@ def aggregate() -> Dict[str, Any]:
         "accepted_formal_result": False,
         "result_notice": NOTICE,
         "formal_cursor_consumed": False,
-        "planned_count": len(planned),
+        "planned_count": len(primary_planned),
+        "diagnostic_rerun_plan_count": len(planned) - len(primary_planned),
         "completed_count": len(manifests),
         "by_family": by_family,
         "campaign_v1_integrity": assert_campaign_guard(),

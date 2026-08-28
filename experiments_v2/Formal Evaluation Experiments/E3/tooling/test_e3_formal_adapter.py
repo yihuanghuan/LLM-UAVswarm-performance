@@ -262,6 +262,11 @@ def test_registered_runtime_defaults_remain_registered():
     runtime = build_runtime_spec(build_exact_spec(registered_trial_ids()[0]))
     assert runtime["fixture_class"] == "registered_formal_spec"
     assert runtime["dataset_class"] == "formal_evaluation"
+    assert all(
+        isinstance(coordinate, float)
+        for vector in runtime["initial_positions_m"] + runtime["ordered_targets_m"]
+        for coordinate in vector
+    )
 
 
 def test_exact_e3_wrench_topic_mapping():

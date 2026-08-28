@@ -33,8 +33,17 @@ def build_runtime_spec(spec: Dict[str, Any]) -> Dict[str, Any]:
     _config, policy = load_runtime_policy(POLICY_PATH)
     safety = policy.resolve_safety(float(spec["invariants"]["safety_s"]))
     allocator = policy.allocator_factory(safety.d_hard, safety.d_plan)
-    initial = [spec["initial_positions_m"][uid] for uid in spec["uav_ids"]]
-    ordered_targets = [spec["ordered_targets_m"][uid] for uid in spec["uav_ids"]]
+    # ROS 2 geometry message setters require Python floats even when a sealed
+    # YAML coordinate is numerically integral. This is representation-only
+    # normalization; values and all scientific geometry remain unchanged.
+    initial = [
+        [float(value) for value in spec["initial_positions_m"][uid]]
+        for uid in spec["uav_ids"]
+    ]
+    ordered_targets = [
+        [float(value) for value in spec["ordered_targets_m"][uid]]
+        for uid in spec["uav_ids"]
+    ]
     assigned, metrics = allocator.allocate_mode_with_metrics(
         initial, ordered_targets, spec["duration_s"],
         mode=spec["assignment_mode"],
