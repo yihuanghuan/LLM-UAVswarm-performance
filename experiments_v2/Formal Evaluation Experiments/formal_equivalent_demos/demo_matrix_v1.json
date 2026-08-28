@@ -1,0 +1,48 @@
+{
+  "matrix_id": "formal-equivalent-runtime-demo-v1",
+  "dataset_class": "engineering_validation",
+  "accepted_formal_result": false,
+  "result_notice": "NOT_FORMAL_RESULT",
+  "formal_cursor_consumed": false,
+  "seed_selection_rule": "lowest preregistered seed in each frozen family registry, selected before runtime outcomes",
+  "demos": [
+    {"family":"E2","demo_instance_id":"E2-RSV-NO-SHIFT-EARLY-S52101-r1","trial_id":"E2-RSV-01__NO_SHIFT__EARLY__S52101","runtime_class":"RSV_no_shift_early"},
+    {"family":"E2","demo_instance_id":"E2-RSV-NO-SHIFT-LATE-S52101-r1","trial_id":"E2-RSV-01__NO_SHIFT__LATE__S52101","runtime_class":"RSV_no_shift_late"},
+    {"family":"E2","demo_instance_id":"E2-RSV-SHIFT-EARLY-S52101-r1","trial_id":"E2-RSV-01__SHIFT__EARLY__S52101","runtime_class":"RSV_shift_early_correction"},
+    {"family":"E2","demo_instance_id":"E2-RSV-SHIFT-LATE-S52101-r1","trial_id":"E2-RSV-01__SHIFT__LATE__S52101","runtime_class":"RSV_shift_late"},
+    {"family":"E2","demo_instance_id":"E2-PES-SHIFT-EARLY-S52101-r1","trial_id":"E2-PES-01__SHIFT__EARLY__S52101","runtime_class":"relative_center_shift"},
+    {"family":"E2","demo_instance_id":"E2-RC-SHIFT-EARLY-S52101-r1","trial_id":"E2-RC-01__SHIFT__EARLY__S52101","runtime_class":"isolated_relative_center"},
+    {"family":"E2","demo_instance_id":"E2-QS-NO-SHIFT-LATE-S52101-r1","trial_id":"E2-QS-01__NO_SHIFT__LATE__S52101","runtime_class":"qualitative_scale"},
+    {"family":"E2","demo_instance_id":"E2-AT-SHIFT-EARLY-S52101-r1","trial_id":"E2-AT-01__SHIFT__EARLY__S52101","runtime_class":"automatic_duration_correction"},
+    {"family":"E2","demo_instance_id":"E2-DF-SHIFT-EARLY-S52101-r1","trial_id":"E2-DF-01__SHIFT__EARLY__S52101","runtime_class":"dynamic_feasibility_nonuniform_shift"},
+
+    {"family":"E3","demo_instance_id":"E3-P0-F0-C01-S53101-r1","trial_id":"E3-C-01__P0_F0__S53101","runtime_class":"4uav_disturbance"},
+    {"family":"E3","demo_instance_id":"E3-P0-F0-A02-S53101-r1","trial_id":"E3-A-02__P0_F0__S53101","runtime_class":"8uav_no_disturbance"},
+    {"family":"E3","demo_instance_id":"E3-P0-F0-C02-S53101-r1","trial_id":"E3-C-02__P0_F0__S53101","runtime_class":"8uav_disturbance"},
+    {"family":"E3","demo_instance_id":"E3-P0-F1-C01-S53101-r1","trial_id":"E3-C-01__P0_F1__S53101","runtime_class":"4uav_disturbance"},
+    {"family":"E3","demo_instance_id":"E3-P0-F1-A02-S53101-r1","trial_id":"E3-A-02__P0_F1__S53101","runtime_class":"8uav_no_disturbance"},
+    {"family":"E3","demo_instance_id":"E3-P0-F1-C02-S53101-r1","trial_id":"E3-C-02__P0_F1__S53101","runtime_class":"8uav_disturbance"},
+    {"family":"E3","demo_instance_id":"E3-P1-F0-C01-S53101-r1","trial_id":"E3-C-01__P1_F0__S53101","runtime_class":"4uav_disturbance"},
+    {"family":"E3","demo_instance_id":"E3-P1-F0-A02-S53101-r1","trial_id":"E3-A-02__P1_F0__S53101","runtime_class":"8uav_no_disturbance"},
+    {"family":"E3","demo_instance_id":"E3-P1-F0-C02-S53101-r1","trial_id":"E3-C-02__P1_F0__S53101","runtime_class":"8uav_disturbance"},
+    {"family":"E3","demo_instance_id":"E3-P1-F1-C01-S53101-r1","trial_id":"E3-C-01__P1_F1__S53101","runtime_class":"4uav_disturbance"},
+    {"family":"E3","demo_instance_id":"E3-P1-F1-A02-S53101-r1","trial_id":"E3-A-02__P1_F1__S53101","runtime_class":"8uav_no_disturbance"},
+    {"family":"E3","demo_instance_id":"E3-P1-F1-C02-S53101-r1","trial_id":"E3-C-02__P1_F1__S53101","runtime_class":"8uav_disturbance"},
+
+    {"family":"E4A","demo_instance_id":"E4A-HORIZONTAL-smooth-S54101-r1","trial_id":"E4A-HORIZONTAL__smooth__S54101","runtime_class":"horizontal_smooth"},
+    {"family":"E4A","demo_instance_id":"E4A-VERTICAL-normal-S54101-r1","trial_id":"E4A-VERTICAL__normal__S54101","runtime_class":"vertical_normal"},
+    {"family":"E4A","demo_instance_id":"E4A-DIAGONAL-aggressive-S54101-r1","trial_id":"E4A-DIAGONAL-3D__aggressive__S54101","runtime_class":"diagonal_aggressive"},
+
+    {"family":"E4B","demo_instance_id":"E4B-FEASIBLE-normal-S54201-r1","trial_id":"E4B-FEASIBLE-EXPLICIT-T__normal__S54201","runtime_class":"feasible_explicit_T"},
+    {"family":"E4B","demo_instance_id":"E4B-INFEASIBLE-normal-S54201-r1","trial_id":"E4B-INFEASIBLE-EXPLICIT-T__normal__S54201","runtime_class":"infeasible_explicit_T_corrected"},
+    {"family":"E4B","demo_instance_id":"E4B-AUTO-smooth-S54201-r1","trial_id":"E4B-AUTO-T__smooth__S54201","runtime_class":"auto_T_smooth"},
+    {"family":"E4B","demo_instance_id":"E4B-AUTO-aggressive-S54201-r1","trial_id":"E4B-AUTO-T__aggressive__S54201","runtime_class":"auto_T_aggressive"},
+    {"family":"E4B","demo_instance_id":"E4B-SAFETY-normal-S54201-r1","trial_id":"E4B-SAFETY-ACTIVE__normal__S54201","runtime_class":"safety_active"},
+
+    {"family":"E5","demo_instance_id":"E5-SIMPLE-S55101-r1","trial_id":"E5-SIMPLE__Full_Method__S55101","runtime_class":"simple"},
+    {"family":"E5","demo_instance_id":"E5-REL-QUAL-S55101-r1","trial_id":"E5-REL-QUAL__Full_Method__S55101","runtime_class":"relative_qualitative"},
+    {"family":"E5","demo_instance_id":"E5-SEQUENTIAL-S55101-r1","trial_id":"E5-SEQUENTIAL__Full_Method__S55101","runtime_class":"sequential"},
+    {"family":"E5","demo_instance_id":"E5-PARALLEL-S55101-r1","trial_id":"E5-PARALLEL__Full_Method__S55101","runtime_class":"parallel"},
+    {"family":"E5","demo_instance_id":"E5-MIXED-HIGH-S55101-r1","trial_id":"E5-MIXED-HIGH__Full_Method__S55101","runtime_class":"mixed_sequential_parallel"}
+  ]
+}

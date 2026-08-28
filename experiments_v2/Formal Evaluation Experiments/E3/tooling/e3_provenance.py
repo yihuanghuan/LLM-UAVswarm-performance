@@ -11,7 +11,11 @@ SOURCE = "36dba68c6b16681ec98500b49c5a83095de4b634"
 BASELINE_TAG = "paper-final-sim-v3"
 BASELINE = "6cf402debf23851b1eff3edc6f3ab49eae7127c4"
 BRANCH = "formal/E3-planning-feedback-safety-v1"
-ALLOWED_BRANCHES = {BRANCH, "formal/E3-formal-adapter-v1"}
+ALLOWED_BRANCHES = {
+    BRANCH,
+    "formal/E3-formal-adapter-v1",
+    "formal/E3-formal-adapter-case-c-v1",
+}
 PRODUCTION = [
  "location_allocate/location_allocate/safety_aware_allocator.py",
  "location_allocate/location_allocate/location_allocate.py",
@@ -39,8 +43,11 @@ def validate() -> Dict[str, Any]:
             same=current==approved; ok &= same; details[rel]={"sha256":hashlib.sha256(current).hexdigest(),"byte_identical":same}
         ck("production_sources_byte_identical",ok,details)
         changed=git("diff","--name-only",SOURCE).splitlines()+git("ls-files","--others","--exclude-standard").splitlines()
-        allowed="experiments_v2/Formal Evaluation Experiments/E3/"
-        bad=sorted({p for p in changed if not p.startswith(allowed)})
+        allowed_roots=(
+            "experiments_v2/Formal Evaluation Experiments/E3/",
+            "experiments_v2/Formal Evaluation Experiments/formal_equivalent_demos/",
+        )
+        bad=sorted({p for p in changed if not p.startswith(allowed_roots)})
         ck("changes_experiment_only",not bad,{"prohibited":bad})
     except Exception as exc: ck("internal_error",False,{"type":type(exc).__name__,"message":str(exc)}); head="UNKNOWN"
     return {"manifest_type":"E3_provenance_v1","status":"PASS" if all(c["status"]=="PASS" for c in checks) else "FAIL","runner_branch":branch if 'branch' in locals() else BRANCH,"runner_commit":head,"checks":checks}
