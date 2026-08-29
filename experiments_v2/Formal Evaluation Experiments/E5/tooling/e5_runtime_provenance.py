@@ -32,17 +32,35 @@ def _sha256(path: Path) -> str:
 
 def _run(command, *, env: Dict[str, str], cwd: Path) -> Dict[str, Any]:
     started = datetime.now(timezone.utc).isoformat()
-    completed = subprocess.run(
-        command, env=env, cwd=cwd, text=True, capture_output=True, timeout=20,
-    )
-    return {
-        "command": command,
-        "returncode": completed.returncode,
-        "stdout": completed.stdout,
-        "stderr": completed.stderr,
-        "started_at_utc": started,
-        "finished_at_utc": datetime.now(timezone.utc).isoformat(),
-    }
+    try:
+        completed = subprocess.run(
+            command, env=env, cwd=cwd, text=True, capture_output=True, timeout=20,
+        )
+        return {
+            "command": command,
+            "returncode": completed.returncode,
+            "stdout": completed.stdout,
+            "stderr": completed.stderr,
+            "timed_out": False,
+            "started_at_utc": started,
+            "finished_at_utc": datetime.now(timezone.utc).isoformat(),
+        }
+    except subprocess.TimeoutExpired as exc:
+        stdout = exc.stdout or ""
+        stderr = exc.stderr or ""
+        if isinstance(stdout, bytes):
+            stdout = stdout.decode(errors="replace")
+        if isinstance(stderr, bytes):
+            stderr = stderr.decode(errors="replace")
+        return {
+            "command": command,
+            "returncode": 124,
+            "stdout": stdout,
+            "stderr": stderr,
+            "timed_out": True,
+            "started_at_utc": started,
+            "finished_at_utc": datetime.now(timezone.utc).isoformat(),
+        }
 
 
 def _controller_observation(repo: Path, env: Dict[str, str], uav_id: int,
