@@ -1,0 +1,126 @@
+{
+  "audit_type": "pre_v1_authoritative_analysis_contract_audit",
+  "status": "BLOCKED_A2_PREIMPLEMENTATION",
+  "dataset_class": "engineering_validation",
+  "accepted_formal_result": false,
+  "scientific_use": "analysis_contract_audit_only",
+  "formal_attempt_launched": false,
+  "physical_demo_launched": false,
+  "formal_analysis_v1_created": false,
+  "audit_base": {
+    "branch": "analysis/contract-audit-pre-v1",
+    "base_commit": "ae694047bf00933658847eef1a5cdc922ae17f6b",
+    "runtime_demo_completion_commit": "8fa73cfafc53afaef80751b86df8743f83402b7a"
+  },
+  "authoritative_sources": {
+    "E2": {
+      "protocol_sha256": "9ea7234db111b69cccb72315eed26e4abf117955eb20a2d593f2d854ea0b40e3",
+      "registry_sha256": "8215a5d8248c946c480ca4c8cb41e2afac28e6021c9f308a068580da69369bae",
+      "existing_scorer_sha256": "7b7725a6cba5fc3ba89636db5a87d2f26a65bfc8c85e764dfd16dfa7f4cfc48a"
+    },
+    "E3": {
+      "version": "v3",
+      "activation_commit": "16de9c7ffd83b67925fc5817f33665727ccbb75f",
+      "protocol_sha256": "2eea03e2bb33aa1c10c1ae104b965f909690f00c8caee4446291faf2c9893013",
+      "registry_sha256": "b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2"
+    },
+    "E4": {
+      "protocol_sha256": "5a7eeb923aebcfb068827c6513a37e856dc8d6f05166a4b84775b33572bd83d0",
+      "registry_sha256": "48779a6667759955dd7dab2d8509f61a5439cca51a4bf98fcb48b6d17c499f95"
+    },
+    "E5": {
+      "protocol_sha256": "116002154cd2395b6a9f55d7c1aae6e0a2c42440f0ceaa827a1a8cb02828319c",
+      "registry_sha256": "9bb6bc9b46b5211c50c8f2e29bd434235424beb2bb0fc36ec857a3298d89511e"
+    },
+    "global_seed_failure_registry_sha256": "90313d33793940489edde631d397564378ae54fe3cfddf438e4a895d6132254d"
+  },
+  "contracts": {
+    "E2": [
+      {"metric":"executable_grounding_success","role":"primary","definition":"valid executable mission grounded against the registered execution snapshot divided by all attempts","raw_sources":["offline_resolution_trace","metric_flags.executable_grounding_success"],"timestamp_basis":"registered parse and execute snapshots","interval":"not continuous","aggregation":"all-attempt rate","failure":"retained in denominator","determination":"A0_FULL"},
+      {"metric":"state_consistency_violation_rate","role":"primary","definition":"execution fields inconsistent with registered execution snapshot divided by all attempts","raw_sources":["offline_resolution_trace","metric_flags.state_consistency_violation"],"timestamp_basis":"registered execution snapshot","interval":"not continuous","aggregation":"all-attempt rate","failure":"retained in denominator","determination":"A0_FULL"},
+      {"metric":"dynamic_infeasibility_rate","role":"primary","definition":"requested timing or geometry dynamically infeasible under frozen policy divided by all attempts","raw_sources":["offline_resolution_trace","metric_flags.dynamic_infeasibility"],"timestamp_basis":"deterministic resolution","interval":"not continuous","aggregation":"all-attempt rate","failure":"retained in denominator","determination":"A0_FULL"},
+      {"metric":"correction_or_rejection_rate","role":"primary_with_separate_diagnostics","definition":"traced deterministic correction or terminal rejection divided by all attempts; correction and rejection separately","raw_sources":["offline_resolution_trace","metric_flags.correction","metric_flags.rejection"],"timestamp_basis":"deterministic resolution","interval":"not continuous","aggregation":"all-attempt rates","failure":"retained in denominator","determination":"A0_FULL"}
+    ],
+    "E3": [
+      {"metric":"actual_d_min","role":"primary","definition":"minimum measured pairwise 3-D distance over scored interval","raw_sources":["per-UAV measured 3-D position"],"timestamp_basis":"ROS message time normalized to t0","interval":"t0 to t0+duration+2s","threshold":null,"aggregation":"global and per-pair minima","failure":"NA if coverage insufficient; attempt retained","determination":"A0_FORMULA_A1_NUMERIC"},
+      {"metric":"predicted_d_min","role":"primary","definition":"allocator-predicted minimum pairwise 3-D distance recorded before execution","raw_sources":["retained allocator prediction","assignment","provenance"],"timestamp_basis":"pre-dispatch resolution","interval":"pre-execution scalar","aggregation":"none","failure":"NA if authoritative record absent","determination":"A0_FULL"},
+      {"metric":"hard_risk_exposure_duration","role":"primary","definition":"exposure duration for actual distance below frozen d_hard","raw_sources":["measured pairwise 3-D distance"],"timestamp_basis":"ROS message time normalized to t0","interval":"t0 to t0+duration+2s","threshold":1.5,"aggregation":"pairwise plus swarm total","failure":"NA if coverage insufficient; attempt retained","determination":"A0_THRESHOLD_A1_NUMERIC"},
+      {"metric":"hard_risk_events","role":"primary","definition":"count of events for actual distance below frozen d_hard","raw_sources":["measured pairwise 3-D distance"],"timestamp_basis":"ROS message time normalized to t0","interval":"t0 to t0+duration+2s","threshold":1.5,"aggregation":"UNRESOLVED","failure":"attempt retained","determination":"A2_BLOCKED","ambiguity_id":"A2-E3-01"},
+      {"metric":"mission_success","role":"primary","definition":"all required tasks complete within preregistered timeout with no hard failure","raw_sources":["explicit completion events","hard-failure events"],"timestamp_basis":"event ROS time","interval":"deadline t0+duration+6s","aggregation":"Boolean and all-attempt rate","failure":"false for scientific/method terminal failure; infrastructure separately labeled","determination":"A0_FULL_SUBJECT_TO_COMMON_FAILURE_POLICY"},
+      {"metric":"iapf_activation_time","role":"primary","definition":"total active seconds over all UAVs and per-UAV","raw_sources":["iapf_active"],"timestamp_basis":"IAPF debug ROS time","interval":"t0 to t0+duration+2s","aggregation":"per-UAV and sum","failure":"NA if coverage insufficient","determination":"A0_SIGNAL_A1_NUMERIC"},
+      {"metric":"integral_delta_p","role":"primary","definition":"time integral of Euclidean norm of IAPF position modulation","raw_sources":["IAPF delta-p"],"timestamp_basis":"IAPF debug ROS time","interval":"t0 to t0+duration+2s","aggregation":"per-UAV and sum","failure":"NA if coverage insufficient","determination":"A0_FORMULA_A1_NUMERIC"},
+      {"metric":"integral_delta_a","role":"primary","definition":"time integral of Euclidean norm of IAPF acceleration modulation","raw_sources":["IAPF delta-a"],"timestamp_basis":"IAPF debug ROS time","interval":"t0 to t0+duration+2s","aggregation":"per-UAV and sum","failure":"NA if coverage insufficient","determination":"A0_FORMULA_A1_NUMERIC"},
+      {"metric":"trajectory_deviation","role":"primary","definition":"time integral and RMS 3-D distance between nominal and safe references","raw_sources":["nominal reference","safe reference"],"timestamp_basis":"control debug ROS time","interval":"t0 to t0+duration+2s","aggregation":"per-UAV and swarm aggregation pending semantics","failure":"NA if coverage insufficient","determination":"A0_FORMULA_A1_NUMERIC"}
+    ],
+    "E4A": [
+      {"metric":"settling_time","role":"primary","definition":"task-command time to stable-hover entry under existing completion definition","raw_sources":["execution command","UAVStatus stability_state or TrajectoryMetrics is_hover_stable"],"timestamp_basis":"ROS event time","interval":"start command; stable entry end","aggregation":"UNRESOLVED","failure":"UNRESOLVED","determination":"A2_BLOCKED","ambiguity_id":"A2-E4A-03"},
+      {"metric":"control_effort","role":"primary","definition":"time integral of norm of commanded LADRC acceleration over scored interval","raw_sources":["commanded LADRC acceleration"],"timestamp_basis":"control debug ROS time","interval":"UNRESOLVED","aggregation":"UNRESOLVED","failure":"UNRESOLVED","determination":"A2_BLOCKED","ambiguity_id":"A2-E4A-02"},
+      {"metric":"acceleration_response","role":"primary","definition":"peak, RMS, and rise-time summary of commanded acceleration","raw_sources":["commanded LADRC acceleration"],"timestamp_basis":"control debug ROS time","interval":"UNRESOLVED","aggregation":"UNRESOLVED","failure":"UNRESOLVED","determination":"A2_BLOCKED","ambiguity_id":"A2-E4A-01"},
+      {"metric":"tracking_RMSE","role":"primary","definition":"RMS 3-D distance between safe reference and measured position","raw_sources":["safe reference","measured 3-D position"],"timestamp_basis":"control debug ROS time","interval":"UNRESOLVED","aggregation":"UNRESOLVED","failure":"UNRESOLVED","determination":"A2_BLOCKED","ambiguity_id":"A2-E4A-02"},
+      {"metric":"paired_reference_identity","role":"analysis_provenance","definition":"initial positions, targets, explicit T, seed, and Minimum-Jerk nominal reference identical across styles","raw_sources":["exact registered spec","runtime spec","execution commands"],"timestamp_basis":"pre-dispatch","interval":"not continuous","aggregation":"fail-closed predicate","failure":"comparison invalid","determination":"A0_FULL"}
+    ],
+    "E4B": [
+      {"metric":"unauthorized_override_count","role":"primary","definition":"count violations of six complete frozen authority predicates","raw_sources":["runtime authority diagnostics","runtime spec","saturation predicates"],"timestamp_basis":"pre-dispatch decisions and logged runtime events","interval":"attempt lifecycle","threshold":"1e-9 deterministic policy fields; logged saturation predicate for measured limits","aggregation":"individual predicates plus count","failure":"attempt retained","determination":"A0_FULL"},
+      {"metric":"Priority_Preservation_Rate","role":"primary","definition":"attempts with zero overrides and complete hierarchy respected divided by all retained attempts","raw_sources":["attempt predicate records"],"timestamp_basis":"attempt lifecycle","interval":"not continuous","aggregation":"overall and by scenario/style","failure":"all retained attempts in denominator","determination":"A0_FULL"}
+    ],
+    "E5": [
+      {"metric":"all_attempt_mission_success","role":"primary","definition":"successful attempts divided by every attempted run including infrastructure failures","raw_sources":["task acceptance/dispatch/completion","hard failures","actual d_min"],"timestamp_basis":"mission events","interval":"registered timeout; physical scored boundaries unresolved","aggregation":"all-attempt rate","failure":"false in denominator; infrastructure separately labeled","determination":"A2_DEPENDENCY","ambiguity_id":"A2-E5-01"},
+      {"metric":"tracking_RMSE","role":"primary","definition":"RMS 3-D safe-reference to measured-position distance per UAV and pooled only with declared weighting","raw_sources":["safe reference","measured 3-D position"],"timestamp_basis":"control debug ROS time","interval":"UNRESOLVED scored mission","aggregation":"UNRESOLVED weighting","failure":"UNRESOLVED partial metric policy","determination":"A2_BLOCKED","ambiguity_id":"A2-E5-02"},
+      {"metric":"final_error","role":"primary","definition":"3-D position error at terminal completion per UAV and mission aggregate","raw_sources":["terminal completion event","target","measured position"],"timestamp_basis":"terminal event ROS time","interval":"terminal point","aggregation":"UNRESOLVED mission operator","failure":"UNRESOLVED","determination":"A2_BLOCKED","ambiguity_id":"A2-E5-03"},
+      {"metric":"actual_d_min","role":"primary","definition":"minimum measured pairwise 3-D distance over entire scored mission","raw_sources":["per-UAV measured 3-D position"],"timestamp_basis":"ROS message time","interval":"UNRESOLVED scored mission","aggregation":"global and per-pair diagnostics","failure":"UNRESOLVED partial metric policy","determination":"A2_BLOCKED","ambiguity_id":"A2-E5-01"},
+      {"metric":"iapf_burden","role":"primary","definition":"activation time plus integral norm delta-p and delta-a","raw_sources":["iapf_active","delta-p","delta-a"],"timestamp_basis":"IAPF debug ROS time","interval":"UNRESOLVED scored mission","aggregation":"UNRESOLVED swarm operator","failure":"UNRESOLVED partial metric policy","determination":"A2_BLOCKED","ambiguity_id":"A2-E5-01"},
+      {"metric":"latency_decomposition","role":"primary","definition":"LLM inference, parse/validation, snapshot wait, resolution, allocation, dispatch, physical execution durations","raw_sources":["provider log","validation/resolution trace","dispatch and completion events"],"timestamp_basis":"UNRESOLVED stage timestamp pairs","interval":"mission lifecycle","aggregation":"per stage","failure":"unavailable stages must not be fabricated","determination":"A2_BLOCKED","ambiguity_id":"A2-E5-04"}
+    ]
+  },
+  "ambiguities": {
+    "A0": ["3-D Euclidean distances and vector norms","E3 exact scored interval and timeout from registered spec","recorded allocator prediction","E4A paired reference identity","E4B six authority predicates and rate","E2 existing flags and complete-population denominators","retain every attempt and no replacement/sample extension"],
+    "A1": ["monotonic timestamp normalization","duplicate timestamp handling","piecewise-linear boundary interpolation","piecewise-linear threshold crossing","trapezoidal integration","time-weighted RMS","coverage and maximum-gap diagnostics"],
+    "A2": [
+      {"id":"A2-E3-01","question":"Define hard-risk event identity: per-pair or union, simultaneous/overlap handling, and re-crossing merge rule.","evidence":"E3 protocol freezes threshold/count but no event segmentation; calibration code is not an explicit formal event contract."},
+      {"id":"A2-E4A-01","question":"Define commanded-acceleration rise time including scalar/component signal, baseline/final fractions, and multi-peak rule.","evidence":"Protocol contains only 'rise-time summary'; registry, messages, controller, C0-F extractor, and legacy analysis contain no rise-time implementation."},
+      {"id":"A2-E4A-02","question":"Define exact E4A scored start/end for effort, acceleration response, and tracking RMSE.","evidence":"Protocol refers to scored interval; E4 protocol/registry freezes no exact end."},
+      {"id":"A2-E4A-03","question":"Define per-UAV to swarm aggregation for all E4A metrics.","evidence":"No sum/mean/max/pooled weighting is frozen."},
+      {"id":"A2-E5-01","question":"Define exact scored-mission physical interval and IAPF swarm aggregation.","evidence":"Submission, dispatch, first execution command, task transitions, and terminal event are distinct; sealed text does not select boundaries."},
+      {"id":"A2-E5-02","question":"Declare E5 pooled tracking-RMSE weighting.","evidence":"Protocol explicitly requires declared weighting but supplies none."},
+      {"id":"A2-E5-03","question":"Define E5 mission-level final-error aggregation.","evidence":"Protocol requires mission aggregate but supplies no operator."},
+      {"id":"A2-E5-04","question":"Define timestamp endpoints and overlap rules for each latency component.","evidence":"Seven components are named but stage boundary semantics are absent."},
+      {"id":"A2-COMMON-01","question":"Define availability of partial continuous metrics for each terminal failure class.","evidence":"Global registry fixes denominator retention but not partial metric versus NA behavior; zero is scientifically invalid unless measured."}
+    ]
+  },
+  "validation": {
+    "extractor_implementation": "NOT_STARTED_MANDATORY_A2_STOP",
+    "demo_attempts_analyzed": 0,
+    "deterministic_reruns": 0,
+    "fixture_tests": 0,
+    "population_analysis": "NOT_IMPLEMENTED",
+    "analysis_bundle": "NOT_CREATED",
+    "scientific_retuning": false
+  },
+  "population_preparation": {
+    "E2": "existing complete-population scorer preserved",
+    "E3_pairing_keys": ["scenario","seed","planning_condition","feedback_condition"],
+    "E3_missing_member_policy": "future implementation must fail closed",
+    "E4_grouping_keys": ["scenario_or_geometry","seed","style","timing_or_authority_class"],
+    "E5_denominator": "all registered attempts including method and infrastructure failures",
+    "post_hoc_filtering": "forbidden",
+    "readiness": false
+  },
+  "campaign_v1_precheck": {
+    "status": "PASS",
+    "journal_record_count": 2,
+    "accepted_formal_attempt_count": 2,
+    "no_attempt_3": true,
+    "launcher_manifest_sha256": "dd5ed80049b138d4e97c82ce556ed306efbc6e4b2a369f7616be0ff101f332d1",
+    "files_manifest_sha256": "29a6539e4b6b4372e0adc98bc5b45b4a8a40c20c3f23f244460e45695d14ba37"
+  },
+  "campaign_v1_postcheck": {
+    "status": "PASS",
+    "journal_record_count": 2,
+    "accepted_formal_attempt_count": 2,
+    "no_attempt_3": true,
+    "launcher_manifest_sha256": "dd5ed80049b138d4e97c82ce556ed306efbc6e4b2a369f7616be0ff101f332d1",
+    "files_manifest_sha256": "29a6539e4b6b4372e0adc98bc5b45b4a8a40c20c3f23f244460e45695d14ba37",
+    "byte_identical_to_precheck": true
+  },
+  "decision": "BLOCKED_ANALYSIS_FREEZE"
+}
