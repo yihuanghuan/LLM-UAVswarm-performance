@@ -59,3 +59,5 @@ The controller logging contract is 50 Hz (20 ms period). The prospective complet
 ## Population rules
 
 E3 requires complete P0/P1 × F0/F1 cells for each scenario/seed pair. E4A preserves scenario/geometry/seed style pairing. E4B Priority-Preservation Rate and E5 mission success retain all attempts in their denominators. Continuous summaries report valid N and NA N. Post-hoc filtering and significance-driven test selection are forbidden.
+
+Descriptive summaries use sample SD (`ddof=1`), linear empirical quartiles, and a two-sided 95% Student-t confidence interval for the arithmetic mean. Paired effect size is Cohen's dz (mean paired difference divided by its sample SD), reported `NA` for zero paired-difference SD. These are fixed descriptive/effect-estimation conventions, not a data-selected inferential test.

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "attempt_analysis_result_schema_v1",
+  "type": "object",
+  "required": [
+    "schema", "analysis_version", "analysis_semantics_version", "dataset_class",
+    "accepted_formal_result", "scientific_use", "result_notice", "experiment",
+    "trial_id", "demo_instance_id", "raw_attempt_identity_sha256",
+    "analysis_status", "terminal_attempt_classification", "metrics",
+    "source_coverage", "canonical_result_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "live_attempt_analysis_result_v1"},
+    "analysis_version": {"const": "formal-analysis-v1"},
+    "analysis_semantics_version": {"const": "formal-analysis-semantics-v1"},
+    "dataset_class": {"const": "engineering_validation"},
+    "accepted_formal_result": {"const": false},
+    "scientific_use": {"const": "analysis_tool_validation_only"},
+    "result_notice": {"const": "NOT_FORMAL_RESULT"},
+    "experiment": {"enum": ["E3", "E4A", "E4B", "E5"]},
+    "analysis_status": {"enum": ["COMPLETE", "PARTIAL_VALID_METRICS", "INCOMPLETE_EVIDENCE", "FAIL_CLOSED"]},
+    "metrics": {"type": "object"},
+    "source_coverage": {"type": "object"},
+    "canonical_result_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": true
+}

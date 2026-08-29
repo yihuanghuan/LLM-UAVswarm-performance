@@ -137,6 +137,12 @@ human_approved_prospective_analysis_decisions:
     missing_encoded_as_numeric_zero: false
 
 population_semantics:
+  descriptive_statistics:
+    standard_deviation: sample SD with ddof=1; NA for valid N below 2
+    median_and_iqr: linear empirical quantiles at 0.25, 0.50, and 0.75
+    confidence_interval: two-sided 95 percent Student-t interval for the arithmetic mean; descriptive, not a hypothesis test
+    paired_effect_size: Cohen dz using mean paired difference divided by sample SD of paired differences
+    degenerate_effect_size: NA when paired-difference SD is zero
   continuous_summaries: only complete valid numeric observations, with valid_N and NA_N reported
   failures_removed_from_boolean_denominators: false
   E3_pairing_keys: [scenario, seed, planning_condition, feedback_condition]

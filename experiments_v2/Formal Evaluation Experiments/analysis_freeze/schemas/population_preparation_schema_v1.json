@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "population_preparation_schema_v1",
+  "type": "object",
+  "required": ["schema", "attempt_result_hashes", "attempt_count", "E3", "E4A", "E4B", "E5", "canonical_population_sha256"],
+  "properties": {
+    "schema": {"const": "formal_analysis_population_preparation_v1"},
+    "attempt_count": {"type": "integer", "minimum": 0},
+    "attempt_result_hashes": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "post_hoc_filtering": {"const": false},
+    "canonical_population_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": true
+}
