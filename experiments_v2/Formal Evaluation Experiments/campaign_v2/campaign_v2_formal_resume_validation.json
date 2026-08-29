@@ -1,0 +1,94 @@
+{
+  "classification": "campaign_infrastructure_only",
+  "formal_attempt_dispatched": false,
+  "formal_mode_restart_validation": {
+    "authorization": {
+      "dual_lock_preserved": true,
+      "legacy_attempt_1_trigger_backwards_auditable_after_retained_1": "PASS",
+      "missing_trigger_refused": "PASS",
+      "valid_campaign_trigger_and_token_after_retained_1": "PASS",
+      "wrong_campaign_manifest_sha_refused": "PASS",
+      "wrong_trigger_sha_refused": "PASS"
+    },
+    "crash_orphan_fail_closed": {
+      "adapter_hash_mismatch": "PASS",
+      "adapter_without_envelope_or_journal": "PASS",
+      "envelope_hash_mismatch": "PASS",
+      "envelope_without_journal": "PASS",
+      "extra_attempt_directory": "PASS",
+      "foreign_formal_artifact": "PASS",
+      "journal_without_envelope": "PASS",
+      "noncontiguous_journal": "PASS",
+      "partial_temp": "PASS",
+      "wrong_trial_id": "PASS"
+    },
+    "formal_test_cases_failed": 0,
+    "formal_test_cases_passed": 23,
+    "states": {
+      "F0_pristine_0_next_1": "PASS",
+      "F1_retained_1_next_2": "PASS",
+      "F2_retained_2_next_3": "PASS",
+      "F609_next_610": "PASS",
+      "F610_complete_no_611": "PASS",
+      "mixed_family_global_routing": "PASS",
+      "retained_infrastructure_failure_advances": "PASS",
+      "retained_method_failure_advances": "PASS"
+    },
+    "status": "PASS"
+  },
+  "formal_results_existed_when_fixed": false,
+  "human_launch_trigger_present_in_real_root": false,
+  "isolated_test_root": "results/synthetic-validation/formal-mode-tests/<unique-test-id>",
+  "issue": "formal _initialize() required a pristine root on every process start, so a valid retained formal prefix could not resume",
+  "launcher_tooling_identity": {
+    "change_reason": "formal_resume_infrastructure_fix_before_first_campaign_v2_attempt",
+    "new_bundle_sha256": "1e33c386a56565ee832e2525e493ad01794844b7aa7eb1e3539aee59ae228325",
+    "old_bundle_sha256": "86901a67a6e676b69e86624c9ccf86c23ea876df27e7442b5d569766451053a4",
+    "tooling_source_commit": "83757ec5a87993960d3e5ad6823cede02460e9f2"
+  },
+  "manifest_identity": {
+    "launcher_tooling_external_to_scientific_manifest": true,
+    "manifest_changed": false,
+    "manifest_sha256": "475e5e4cd1234a4dc9f552678aec0387fc8bcce3f2deef468362d6f3c2314488"
+  },
+  "previous_audit_commit": "085b4b4edda160a005f6217767935ce0f7d01809",
+  "production_code_path": "Coordinator('formal', root) initialization plus validate_state()",
+  "production_formal_root_used_by_tests": false,
+  "real_formal_root": {
+    "accepted_formal_results": 0,
+    "human_launch_trigger_present": false,
+    "journal_records": 0,
+    "launcher_run_manifest_sha256": "553639b5bbcd426b97c75e02f26bd10da89e316cbb433e613f88a7ffd7f60c3f",
+    "next_global_position": 1,
+    "next_trial_id": "E2-RSV-01__SHIFT__LATE__S52105",
+    "pristine_root_fingerprint_sha256": "cbfd626f812baad61237009599af05351af57470111e3fea72ef0573896a63c7",
+    "retained_formal_attempts": 0,
+    "schema": "campaign_v2_pristine_formal_root_state_v1",
+    "status": "PASS"
+  },
+  "rehearsal_restart_validation": {
+    "accounted_positions": 610,
+    "canonical_summary_sha256": "4750bcc32d95f2535300d487462460559c374731a28115465434aa3e73ad64e1",
+    "exact_global_order": true,
+    "retained_states": [
+      0,
+      1,
+      2,
+      7,
+      11,
+      120,
+      121,
+      480,
+      481,
+      585,
+      586,
+      609,
+      610
+    ],
+    "status": "PASS",
+    "summary_sha256": "27da3b71bcafe9d68bdc0ef6a6dd25f9e01f77bb55317f1d957741f321557638"
+  },
+  "schema": "campaign_v2_formal_resume_validation_v1",
+  "scientific_semantics_changed": false,
+  "status": "PASS"
+}

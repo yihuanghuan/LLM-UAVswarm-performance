@@ -9,7 +9,9 @@ from pathlib import Path
 from campaign_v2_common import HERE, canonical_sha256, load_json, sha256_file
 
 
-TOOLING_SOURCE_COMMIT = "a2e6ccd8cbc7aba8f2244caa704cc605e383503e"
+TOOLING_SOURCE_COMMIT = "83757ec5a87993960d3e5ad6823cede02460e9f2"
+PREVIOUS_AUDIT_COMMIT = "085b4b4edda160a005f6217767935ce0f7d01809"
+PREVIOUS_LAUNCH_TOOLING_BUNDLE_SHA256 = "86901a67a6e676b69e86624c9ccf86c23ea876df27e7442b5d569766451053a4"
 LAUNCH_FILES = [
     "adapter_spec_worker.py", "campaign_v2_common.py", "campaign_v2_coordinator.py",
     "campaign_v2_manifest.json", "campaign_v2_manifest.sha256", "campaign_v2_pin_inventory.json",
@@ -35,6 +37,111 @@ def main() -> int:
         "campaign_v2_launch_tooling_bundle_sha256": canonical_sha256(files),
     }
     write("campaign_v2_launch_tooling_bundle.json", tooling_bundle)
+    resume_validation = {
+        "schema": "campaign_v2_formal_resume_validation_v1",
+        "status": "PASS",
+        "previous_audit_commit": PREVIOUS_AUDIT_COMMIT,
+        "issue": "formal _initialize() required a pristine root on every process start, so a valid retained formal prefix could not resume",
+        "classification": "campaign_infrastructure_only",
+        "scientific_semantics_changed": False,
+        "formal_results_existed_when_fixed": False,
+        "production_code_path": "Coordinator('formal', root) initialization plus validate_state()",
+        "isolated_test_root": "results/synthetic-validation/formal-mode-tests/<unique-test-id>",
+        "production_formal_root_used_by_tests": False,
+        "rehearsal_restart_validation": {
+            "status": rehearsal["status"],
+            "retained_states": [item["retained_count"] for item in rehearsal["restart_checkpoint_results"]],
+            "accounted_positions": rehearsal["accounted_positions"],
+            "exact_global_order": rehearsal["exact_global_order"],
+            "summary_sha256": sha256_file(HERE / "results/synthetic-validation/campaign-v2-full-610-rehearsal-r4/rehearsal_summary.json"),
+            "canonical_summary_sha256": rehearsal["canonical_summary_sha256"],
+        },
+        "formal_mode_restart_validation": {
+            "status": "PASS",
+            "formal_test_cases_passed": 23,
+            "formal_test_cases_failed": 0,
+            "states": {
+                "F0_pristine_0_next_1": "PASS",
+                "F1_retained_1_next_2": "PASS",
+                "F2_retained_2_next_3": "PASS",
+                "retained_method_failure_advances": "PASS",
+                "retained_infrastructure_failure_advances": "PASS",
+                "mixed_family_global_routing": "PASS",
+                "F609_next_610": "PASS",
+                "F610_complete_no_611": "PASS",
+            },
+            "crash_orphan_fail_closed": {
+                "journal_without_envelope": "PASS",
+                "envelope_without_journal": "PASS",
+                "adapter_without_envelope_or_journal": "PASS",
+                "envelope_hash_mismatch": "PASS",
+                "adapter_hash_mismatch": "PASS",
+                "noncontiguous_journal": "PASS",
+                "wrong_trial_id": "PASS",
+                "partial_temp": "PASS",
+                "extra_attempt_directory": "PASS",
+                "foreign_formal_artifact": "PASS",
+            },
+            "authorization": {
+                "valid_campaign_trigger_and_token_after_retained_1": "PASS",
+                "legacy_attempt_1_trigger_backwards_auditable_after_retained_1": "PASS",
+                "missing_trigger_refused": "PASS",
+                "wrong_trigger_sha_refused": "PASS",
+                "wrong_campaign_manifest_sha_refused": "PASS",
+                "dual_lock_preserved": True,
+            },
+        },
+        "manifest_identity": {
+            "manifest_sha256": sha256_file(HERE / "campaign_v2_manifest.json"),
+            "manifest_changed": False,
+            "launcher_tooling_external_to_scientific_manifest": True,
+        },
+        "launcher_tooling_identity": {
+            "old_bundle_sha256": PREVIOUS_LAUNCH_TOOLING_BUNDLE_SHA256,
+            "new_bundle_sha256": tooling_bundle["campaign_v2_launch_tooling_bundle_sha256"],
+            "change_reason": "formal_resume_infrastructure_fix_before_first_campaign_v2_attempt",
+            "tooling_source_commit": TOOLING_SOURCE_COMMIT,
+        },
+        "real_formal_root": formal_root,
+        "human_launch_trigger_present_in_real_root": False,
+        "formal_attempt_dispatched": False,
+    }
+    write("campaign_v2_formal_resume_validation.json", resume_validation)
+    resume_md = f"""# Campaign v2 Formal Resume Validation
+
+Status: `PASS`
+
+## Scope and defect
+
+The previous launch audit at `{PREVIOUS_AUDIT_COMMIT}` was superseded because formal `_initialize()` rejected any root containing a retained journal/artifact prefix. The repair is classified `campaign_infrastructure_only`; scientific semantics changed: `false`; Campaign-v2 formal results existing at repair time: `false`.
+
+## Rehearsal restart validation
+
+The corrected r4 synthetic rehearsal retained 610/610 positions in the exact frozen order. Its 13 restart checkpoints cover retained counts 0, 1, 2, failure fixtures, mixed-family boundaries, 609, and 610. Summary SHA-256: `{resume_validation['rehearsal_restart_validation']['summary_sha256']}`.
+
+## Formal-mode restart validation
+
+The tests instantiate the production `Coordinator("formal", root)` path against disposable roots constrained beneath `results/synthetic-validation/formal-mode-tests`. Only root, runtime-environment validation, and authorization-path dependencies are injected; production constants remain the CLI defaults.
+
+- F0: 0 retained -> next #1: PASS.
+- F1: 1 retained -> next #2: PASS.
+- F2: 2 retained -> next #3: PASS.
+- Retained method and infrastructure failures consume their positions: PASS.
+- Mixed-family routing comes only from the global journal cursor: PASS.
+- 609 -> 610 and complete 610 -> no #611: PASS.
+- Missing, orphaned, foreign, noncontiguous, hash-mismatched, wrong-trial, and temporary states: all fail closed.
+- Campaign trigger plus matching token remains valid after retained #1; missing trigger, wrong token SHA, and wrong campaign-manifest SHA all fail closed.
+
+## Identity
+
+- Scientific Campaign-v2 manifest unchanged: `{resume_validation['manifest_identity']['manifest_sha256']}`.
+- Old launch tooling bundle: `{PREVIOUS_LAUNCH_TOOLING_BUNDLE_SHA256}`.
+- Corrected launch tooling bundle: `{tooling_bundle['campaign_v2_launch_tooling_bundle_sha256']}`.
+- Change reason: `formal_resume_infrastructure_fix_before_first_campaign_v2_attempt`.
+
+The real formal root remains 0 retained / 0 journal / 0 accepted / next #1, and no real `HUMAN_LAUNCH_TRIGGER.json` exists.
+"""
+    (HERE / "campaign_v2_formal_resume_validation.md").write_text(resume_md, encoding="utf-8")
     authorization = {
         "schema": "campaign_v2_future_launch_authorization_v1",
         "authorization_status": "authorized_for_future_human-triggered_formal_launch",
@@ -52,6 +159,9 @@ def main() -> int:
         "retained_formal_attempts": 0, "journal_records": 0, "accepted_formal_results": 0,
         "next_global_position": 1, "next_trial_id": formal_root["next_trial_id"],
         "human_launch_trigger_present": False,
+        "human_launch_trigger_scope": "immutable Campaign-v2 campaign authorization valid across ordinary resumed coordinator processes",
+        "preferred_human_trigger_field": "authorize_campaign_v2",
+        "legacy_human_trigger_field_accepted": "authorize_formal_attempt_1",
         "future_launch_requirement": "human must separately create HUMAN_LAUNCH_TRIGGER.json and supply its SHA-256 at runtime",
     }
     write("campaign_v2_launch_authorization.json", authorization)
@@ -62,8 +172,15 @@ def main() -> int:
         "protocol_sha256": item["protocol_sha256"], "registry_sha256": item["registry_sha256"],
     } for family, item in pins["families"].items()}
     audit = {
-        "schema": "campaign_v2_final_launch_audit_v1",
-        "verdict": "CAMPAIGN_V2_FREEZE_COMPLETE_READY_FOR_FORMAL_LAUNCH",
+        "schema": "campaign_v2_formal_resume_fixed_launch_audit_v2",
+        "verdict": "CAMPAIGN_V2_FORMAL_RESUME_FIXED_READY_FOR_HUMAN_LAUNCH",
+        "superseded_audit": {
+            "previous_audit_commit": PREVIOUS_AUDIT_COMMIT,
+            "issue": resume_validation["issue"],
+            "classification": "campaign_infrastructure_only",
+            "scientific_semantics_changed": False,
+            "formal_results_existed_when_fixed": False,
+        },
         "campaign_identity": {
             "campaign_id": manifest["campaign_id"], "campaign_version": 2,
             "branch": "formal/campaign-v2-freeze", "freeze_tooling_source_commit": TOOLING_SOURCE_COMMIT,
@@ -96,19 +213,24 @@ def main() -> int:
             "physical_execution_performed": False, "real_provider_called": False,
         },
         "regressions": {
-            "campaign_v2": {"passed": 14, "failed": 0}, "E2": {"passed": 19, "failed": 0},
+            "campaign_v2": {"passed": 37, "failed": 0}, "E2": {"passed": 19, "failed": 0},
             "E3": {"passed": 88, "failed": 0}, "E4A": {"passed": 21, "failed": 0},
             "E4B": {"passed": 24, "failed": 0}, "E5": {"passed": 27, "failed": 0},
-            "analysis_fixtures": {"passed": 29, "failed": 0}, "total_passed": 222, "total_failed": 0,
+            "analysis_fixtures": {"passed": 29, "failed": 0}, "total_passed": 245, "total_failed": 0,
         },
         "restart_crash_isolation": {
-            "pristine_0_next_1": "PASS", "after_1": "PASS", "after_2": "PASS",
-            "retained_method_failure": "PASS", "retained_infrastructure_failure": "PASS",
-            "mixed_family_boundaries": "PASS", "near_final": "PASS", "after_610": "PASS",
-            "orphan_adapter_fail_closed": "PASS", "orphan_envelope_fail_closed": "PASS",
-            "journal_without_artifact_fail_closed": "PASS", "pre_dispatch_no_consume": "PASS",
-            "wrong_family_manual_invocation_refused": "PASS", "formal_nonformal_isolation": "PASS",
-            "analysis_cannot_advance_journal": "PASS", "campaign_v1_root_refused_by_v2": "PASS",
+            "rehearsal_mode": resume_validation["rehearsal_restart_validation"],
+            "formal_mode": resume_validation["formal_mode_restart_validation"],
+            "formal_mode_restart_resume_independently_validated": True,
+            "pre_dispatch_no_consume": "PASS",
+            "wrong_family_manual_invocation_refused": "PASS",
+            "formal_nonformal_isolation": "PASS",
+            "analysis_cannot_advance_journal": "PASS",
+            "campaign_v1_root_refused_by_v2": "PASS",
+        },
+        "formal_resume_validation_artifact": {
+            "path": "campaign_v2_formal_resume_validation.json",
+            "sha256": sha256_file(HERE / "campaign_v2_formal_resume_validation.json"),
         },
         "formal_root": formal_root,
         "campaign_v1": {
@@ -124,11 +246,13 @@ def main() -> int:
         "new_physical_demos_launched": 0,
     }
     write("campaign_v2_final_launch_audit.json", audit)
-    md = f"""# Campaign v2 Final Freeze / Preflight Audit
+    md = f"""# Campaign v2 Formal Resume Repair / Final Launch Audit
 
 Verdict: `{audit['verdict']}`
 
 No Campaign-v2 formal attempt was launched. The formal root remains pristine at `0 retained / 0 journal / next #1`, and the future human trigger is absent.
+
+The audit at `{PREVIOUS_AUDIT_COMMIT}` is superseded. Its coordinator required a pristine formal root on every process start, preventing #1 -> restart -> #2. This was repaired before any Campaign-v2 formal result existed. Classification: `campaign_infrastructure_only`; scientific semantics changed: `false`.
 
 ## Campaign identity
 
@@ -158,7 +282,10 @@ All source commits are reachable from the named remote authoritative branches. E
 - Original global-order SHA-256: `{manifest['global_610_order_sha256']}`.
 - Exact membership and analysis-schema compatibility: PASS.
 - Full pinned-adapter non-formal rehearsal: 610/610, exact order, correct routing, journal tail `{rehearsal['journal_tail_sha256']}`.
-- Restart checkpoints: {rehearsal['restart_checkpoint_count']}; crash-consistency, wrong-family protection, and formal/non-formal isolation: PASS.
+- Rehearsal-mode restart checkpoints: {rehearsal['restart_checkpoint_count']}; 610/610 PASS.
+- Formal-mode restart/resume independently validated at retained 0, 1, 2, method failure, infrastructure failure, mixed-family boundary, 609, and complete 610.
+- Ten formal crash/orphan/hash/temporary/foreign-state fixtures fail closed; wrong-family protection and formal/non-formal isolation: PASS.
+- A campaign-scoped human trigger plus matching token authorizes a valid resumed coordinator; the dual lock remains mandatory.
 
 ## Environment and provider
 
@@ -170,12 +297,12 @@ All source commits are reachable from the named remote authoritative branches. E
 
 ## Regression and protection
 
-- 222/222 tests PASS across Campaign v2, E2, E3, E4A, E4B, E5, and analysis fixtures.
+- 245/245 tests PASS across Campaign v2, E2, E3, E4A, E4B, E5, and analysis fixtures.
 - Campaign v1: exactly #1/#2, no #3, launcher manifest and full file-map hashes unchanged.
 - Campaign v2 formal root: 0 retained, 0 journal records, 0 accepted results, next position #1.
 - Unresolved blockers: none.
 
-The authorization artifact says `authorized_for_future_human-triggered_formal_launch`; it does not claim launch has started. A separate untracked human trigger and matching runtime SHA-256 are still required.
+The authorization artifact says `authorized_for_future_human-triggered_formal_launch`; it does not claim launch has started. A separate untracked human trigger and matching runtime SHA-256 are still required. The preferred trigger field is `authorize_campaign_v2`; the legacy prospective `authorize_formal_attempt_1` spelling remains backwards-auditable as campaign-start authorization across ordinary restarts.
 """
     (HERE / "campaign_v2_final_launch_audit.md").write_text(md, encoding="utf-8")
     return 0

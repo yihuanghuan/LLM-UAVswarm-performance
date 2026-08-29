@@ -1,16 +1,18 @@
-# Campaign v2 Final Freeze / Preflight Audit
+# Campaign v2 Formal Resume Repair / Final Launch Audit
 
-Verdict: `CAMPAIGN_V2_FREEZE_COMPLETE_READY_FOR_FORMAL_LAUNCH`
+Verdict: `CAMPAIGN_V2_FORMAL_RESUME_FIXED_READY_FOR_HUMAN_LAUNCH`
 
 No Campaign-v2 formal attempt was launched. The formal root remains pristine at `0 retained / 0 journal / next #1`, and the future human trigger is absent.
+
+The audit at `085b4b4edda160a005f6217767935ce0f7d01809` is superseded. Its coordinator required a pristine formal root on every process start, preventing #1 -> restart -> #2. This was repaired before any Campaign-v2 formal result existed. Classification: `campaign_infrastructure_only`; scientific semantics changed: `false`.
 
 ## Campaign identity
 
 - Campaign: `E2-E5-final-paper-campaign-v2`
 - Branch: `formal/campaign-v2-freeze`
-- Freeze tooling source commit: `a2e6ccd8cbc7aba8f2244caa704cc605e383503e`
+- Freeze tooling source commit: `83757ec5a87993960d3e5ad6823cede02460e9f2`
 - Manifest SHA-256: `475e5e4cd1234a4dc9f552678aec0387fc8bcce3f2deef468362d6f3c2314488`
-- Launch tooling bundle SHA-256: `86901a67a6e676b69e86624c9ccf86c23ea876df27e7442b5d569766451053a4`
+- Launch tooling bundle SHA-256: `1e33c386a56565ee832e2525e493ad01794844b7aa7eb1e3539aee59ae228325`
 - Baseline: `paper-final-sim-v3` at `6cf402debf23851b1eff3edc6f3ab49eae7127c4`
 - Policy SHA-256: `6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858`
 
@@ -31,8 +33,11 @@ All source commits are reachable from the named remote authoritative branches. E
 - E2 120; E3 360; E4A 45; E4B 60; E5 25; total 610.
 - Original global-order SHA-256: `db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce`.
 - Exact membership and analysis-schema compatibility: PASS.
-- Full pinned-adapter non-formal rehearsal: 610/610, exact order, correct routing, journal tail `25ae6e1e20989ee1efb15884df2772286d532a9ccac2e27e6b11f45a93e853d7`.
-- Restart checkpoints: 13; crash-consistency, wrong-family protection, and formal/non-formal isolation: PASS.
+- Full pinned-adapter non-formal rehearsal: 610/610, exact order, correct routing, journal tail `4917df8af35c99073140a08b0ee8839c4223d33797abad0464b7e503fe74679f`.
+- Rehearsal-mode restart checkpoints: 13; 610/610 PASS.
+- Formal-mode restart/resume independently validated at retained 0, 1, 2, method failure, infrastructure failure, mixed-family boundary, 609, and complete 610.
+- Ten formal crash/orphan/hash/temporary/foreign-state fixtures fail closed; wrong-family protection and formal/non-formal isolation: PASS.
+- A campaign-scoped human trigger plus matching token authorizes a valid resumed coordinator; the dual lock remains mandatory.
 
 ## Environment and provider
 
@@ -44,9 +49,9 @@ All source commits are reachable from the named remote authoritative branches. E
 
 ## Regression and protection
 
-- 222/222 tests PASS across Campaign v2, E2, E3, E4A, E4B, E5, and analysis fixtures.
+- 245/245 tests PASS across Campaign v2, E2, E3, E4A, E4B, E5, and analysis fixtures.
 - Campaign v1: exactly #1/#2, no #3, launcher manifest and full file-map hashes unchanged.
 - Campaign v2 formal root: 0 retained, 0 journal records, 0 accepted results, next position #1.
 - Unresolved blockers: none.
 
-The authorization artifact says `authorized_for_future_human-triggered_formal_launch`; it does not claim launch has started. A separate untracked human trigger and matching runtime SHA-256 are still required.
+The authorization artifact says `authorized_for_future_human-triggered_formal_launch`; it does not claim launch has started. A separate untracked human trigger and matching runtime SHA-256 are still required. The preferred trigger field is `authorize_campaign_v2`; the legacy prospective `authorize_formal_attempt_1` spelling remains backwards-auditable as campaign-start authorization across ordinary restarts.

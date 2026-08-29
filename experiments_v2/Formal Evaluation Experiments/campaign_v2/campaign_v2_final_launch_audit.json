@@ -11,8 +11,8 @@
     "branch": "formal/campaign-v2-freeze",
     "campaign_id": "E2-E5-final-paper-campaign-v2",
     "campaign_version": 2,
-    "freeze_tooling_source_commit": "a2e6ccd8cbc7aba8f2244caa704cc605e383503e",
-    "launcher_tooling_bundle_sha256": "86901a67a6e676b69e86624c9ccf86c23ea876df27e7442b5d569766451053a4",
+    "freeze_tooling_source_commit": "83757ec5a87993960d3e5ad6823cede02460e9f2",
+    "launcher_tooling_bundle_sha256": "1e33c386a56565ee832e2525e493ad01794844b7aa7eb1e3539aee59ae228325",
     "manifest_sha256": "475e5e4cd1234a4dc9f552678aec0387fc8bcce3f2deef468362d6f3c2314488"
   },
   "campaign_v1": {
@@ -98,6 +98,10 @@
     "workspace_build_lock_sha256": "3cb63b4a22eedb9f31fc4c3a10d5b850b63fb481f1c4398eca3e5a2f6198c0f0"
   },
   "formal_provider_calls": 0,
+  "formal_resume_validation_artifact": {
+    "path": "campaign_v2_formal_resume_validation.json",
+    "sha256": "e94ffdf07b5708a4b71703c4a07805b0cfa89494b9f848764315f125aa1a43c5"
+  },
   "formal_root": {
     "accepted_formal_results": 0,
     "human_launch_trigger_present": false,
@@ -154,17 +158,17 @@
     },
     "campaign_v2": {
       "failed": 0,
-      "passed": 14
+      "passed": 37
     },
     "total_failed": 0,
-    "total_passed": 222
+    "total_passed": 245
   },
   "rehearsal": {
     "accounted_positions": 610,
-    "canonical_summary_sha256": "e55c51e1f2b1967b8c1c69f8aa0255ed31f5c5d2baa011c3a0f90c29d365c10c",
+    "canonical_summary_sha256": "4750bcc32d95f2535300d487462460559c374731a28115465434aa3e73ad64e1",
     "correct_family_routing": true,
     "exact_global_order": true,
-    "journal_tail_sha256": "25ae6e1e20989ee1efb15884df2772286d532a9ccac2e27e6b11f45a93e853d7",
+    "journal_tail_sha256": "4917df8af35c99073140a08b0ee8839c4223d33797abad0464b7e503fe74679f",
     "physical_execution_performed": false,
     "real_provider_called": false,
     "restart_checkpoint_count": 13,
@@ -179,24 +183,71 @@
   },
   "remote_resolution_status": "PASS",
   "restart_crash_isolation": {
-    "after_1": "PASS",
-    "after_2": "PASS",
-    "after_610": "PASS",
     "analysis_cannot_advance_journal": "PASS",
     "campaign_v1_root_refused_by_v2": "PASS",
+    "formal_mode": {
+      "authorization": {
+        "dual_lock_preserved": true,
+        "legacy_attempt_1_trigger_backwards_auditable_after_retained_1": "PASS",
+        "missing_trigger_refused": "PASS",
+        "valid_campaign_trigger_and_token_after_retained_1": "PASS",
+        "wrong_campaign_manifest_sha_refused": "PASS",
+        "wrong_trigger_sha_refused": "PASS"
+      },
+      "crash_orphan_fail_closed": {
+        "adapter_hash_mismatch": "PASS",
+        "adapter_without_envelope_or_journal": "PASS",
+        "envelope_hash_mismatch": "PASS",
+        "envelope_without_journal": "PASS",
+        "extra_attempt_directory": "PASS",
+        "foreign_formal_artifact": "PASS",
+        "journal_without_envelope": "PASS",
+        "noncontiguous_journal": "PASS",
+        "partial_temp": "PASS",
+        "wrong_trial_id": "PASS"
+      },
+      "formal_test_cases_failed": 0,
+      "formal_test_cases_passed": 23,
+      "states": {
+        "F0_pristine_0_next_1": "PASS",
+        "F1_retained_1_next_2": "PASS",
+        "F2_retained_2_next_3": "PASS",
+        "F609_next_610": "PASS",
+        "F610_complete_no_611": "PASS",
+        "mixed_family_global_routing": "PASS",
+        "retained_infrastructure_failure_advances": "PASS",
+        "retained_method_failure_advances": "PASS"
+      },
+      "status": "PASS"
+    },
+    "formal_mode_restart_resume_independently_validated": true,
     "formal_nonformal_isolation": "PASS",
-    "journal_without_artifact_fail_closed": "PASS",
-    "mixed_family_boundaries": "PASS",
-    "near_final": "PASS",
-    "orphan_adapter_fail_closed": "PASS",
-    "orphan_envelope_fail_closed": "PASS",
     "pre_dispatch_no_consume": "PASS",
-    "pristine_0_next_1": "PASS",
-    "retained_infrastructure_failure": "PASS",
-    "retained_method_failure": "PASS",
+    "rehearsal_mode": {
+      "accounted_positions": 610,
+      "canonical_summary_sha256": "4750bcc32d95f2535300d487462460559c374731a28115465434aa3e73ad64e1",
+      "exact_global_order": true,
+      "retained_states": [
+        0,
+        1,
+        2,
+        7,
+        11,
+        120,
+        121,
+        480,
+        481,
+        585,
+        586,
+        609,
+        610
+      ],
+      "status": "PASS",
+      "summary_sha256": "27da3b71bcafe9d68bdc0ef6a6dd25f9e01f77bb55317f1d957741f321557638"
+    },
     "wrong_family_manual_invocation_refused": "PASS"
   },
-  "schema": "campaign_v2_final_launch_audit_v1",
+  "schema": "campaign_v2_formal_resume_fixed_launch_audit_v2",
   "scientific_pins": {
     "E2": {
       "branch": "formal/E2-formal-adapter-v1",
@@ -240,6 +291,13 @@
     }
   },
   "scientific_semantics_changed": false,
+  "superseded_audit": {
+    "classification": "campaign_infrastructure_only",
+    "formal_results_existed_when_fixed": false,
+    "issue": "formal _initialize() required a pristine root on every process start, so a valid retained formal prefix could not resume",
+    "previous_audit_commit": "085b4b4edda160a005f6217767935ce0f7d01809",
+    "scientific_semantics_changed": false
+  },
   "unresolved_blockers": [],
-  "verdict": "CAMPAIGN_V2_FREEZE_COMPLETE_READY_FOR_FORMAL_LAUNCH"
+  "verdict": "CAMPAIGN_V2_FORMAL_RESUME_FIXED_READY_FOR_HUMAN_LAUNCH"
 }
