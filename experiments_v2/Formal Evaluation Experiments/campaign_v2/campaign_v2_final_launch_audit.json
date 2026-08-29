@@ -1,0 +1,245 @@
+{
+  "analysis_pin": {
+    "audit_head": "023bf48e521e3a6d2383da4699d8820dcf603da7",
+    "branch": "formal/analysis-v1",
+    "bundle_sha256": "9210245b12a108447cf03715ca6fd90e6ad3bf85fcab7a61e4dcfc6e5ac545b4",
+    "independent_recompute_status": "PASS",
+    "semantics_sha256": "f19440262a96d784177e5367e8de2a2ec50b7b6ca5b229d4a6d09816408c0db3",
+    "tooling_source_commit": "5546e2b673e3368574c2118ecc1943fab382f745"
+  },
+  "campaign_identity": {
+    "branch": "formal/campaign-v2-freeze",
+    "campaign_id": "E2-E5-final-paper-campaign-v2",
+    "campaign_version": 2,
+    "freeze_tooling_source_commit": "a2e6ccd8cbc7aba8f2244caa704cc605e383503e",
+    "launcher_tooling_bundle_sha256": "86901a67a6e676b69e86624c9ccf86c23ea876df27e7442b5d569766451053a4",
+    "manifest_sha256": "475e5e4cd1234a4dc9f552678aec0387fc8bcce3f2deef468362d6f3c2314488"
+  },
+  "campaign_v1": {
+    "accepted_formal_attempts": 2,
+    "file_map_sha256": "29a6539e4b6b4372e0adc98bc5b45b4a8a40c20c3f23f244460e45695d14ba37",
+    "journal_records": 2,
+    "launcher_manifest_sha256": "dd5ed80049b138d4e97c82ce556ed306efbc6e4b2a369f7616be0ff101f332d1",
+    "no_attempt_3": true,
+    "status": "PASS",
+    "used_for_final_scientific_analysis": false
+  },
+  "campaign_v2_formal_attempts_launched": 0,
+  "environment": {
+    "ROS_DOMAIN_ID": 42,
+    "architecture": "x86_64",
+    "formal_install_prefix": "/home/yihuang/learning/LLM_swarm_ws/formal_install_v1",
+    "gazebo": "Gazebo Classic 11.10.2",
+    "gazebo_classic_submodule_commit": "da7206e057703cc645770f02437013358b71e1c0",
+    "kernel": "6.8.0-138-generic",
+    "numpy": "1.24.4",
+    "os": "Ubuntu 22.04.5 LTS",
+    "provider": {
+      "base_url": "https://api.minimax.chat/v1",
+      "exact_model_name": "MiniMax-M2.7-highspeed",
+      "fewshot_sha256": "385ab2d0d99bc51c3862c289e28a9a95fa0bd5df1436b68bd0ebf30bb5a83958",
+      "llm_runtime_manifest_sha256": "2760697ad2230e335f7955f67b2cac2f4b6d44487743ef760ac6754cb12a3a14",
+      "name": "MiniMax",
+      "prompt_sha256": "ed9e83e971d05f034065f82298599463d9d3e20f6b79e508f68233da79b0c4da",
+      "retry_policy": "frozen runtime manifest; no campaign-level replacement retry",
+      "schema_sha256": "be6063a533f05b8d0b6e87353a40fb294975261fa1514cd5d34ced19ce2bffe7"
+    },
+    "provider_health": {
+      "accepted_formal_result": false,
+      "base_url": "https://api.minimax.chat/v1",
+      "campaign_total_quota_endpoint": "not_exposed_by_frozen_runtime_contract",
+      "campaign_total_quota_not_invented": true,
+      "dataset_class": "engineering_validation",
+      "exact_model_name": "MiniMax-M2.7-highspeed",
+      "formal_cursor_consumed": false,
+      "formal_provider_call_performed": false,
+      "independent_probe_count": 2,
+      "launch_level_model_entitlement_and_capacity": "PASS",
+      "observed_at_utc": "2026-08-29T05:10:08.502859+00:00",
+      "probes": [
+        {
+          "completion_tokens": 32,
+          "latency_s": 2.0993878829995083,
+          "probe": 1,
+          "prompt_tokens": 57,
+          "provider_returned_model": "MiniMax-M2.7-highspeed",
+          "requested_model": "MiniMax-M2.7-highspeed",
+          "response_content_retained": false,
+          "response_id_present": true,
+          "status": "PASS"
+        },
+        {
+          "completion_tokens": 32,
+          "latency_s": 1.2291598629999498,
+          "probe": 2,
+          "prompt_tokens": 57,
+          "provider_returned_model": "MiniMax-M2.7-highspeed",
+          "requested_model": "MiniMax-M2.7-highspeed",
+          "response_content_retained": false,
+          "response_id_present": true,
+          "status": "PASS"
+        }
+      ],
+      "prompt_schema_model_identity_unchanged": true,
+      "provider": "MiniMax",
+      "result_notice": "NOT_FORMAL_RESULT",
+      "schema": "campaign_v2_nonformal_provider_health_v1",
+      "status": "PASS",
+      "successful_probe_count": 2
+    },
+    "px4_commit": "30e763b6780061d70a14894e3e8b06e6a656f9b8",
+    "python": "3.10.12",
+    "rmw_implementation": "rmw_fastrtps_cpp",
+    "rmw_package_version": "6.2.9",
+    "ros_distribution": "humble",
+    "runtime_hash_gate": "PASS",
+    "scipy": "1.8.0",
+    "simulation_environment_manifest_sha256": "7b066020ae5608cead49b91623449ebc49af65720cf32c399559ade80277497c",
+    "workspace_build_lock_sha256": "3cb63b4a22eedb9f31fc4c3a10d5b850b63fb481f1c4398eca3e5a2f6198c0f0"
+  },
+  "formal_provider_calls": 0,
+  "formal_root": {
+    "accepted_formal_results": 0,
+    "human_launch_trigger_present": false,
+    "journal_records": 0,
+    "launcher_run_manifest_sha256": "553639b5bbcd426b97c75e02f26bd10da89e316cbb433e613f88a7ffd7f60c3f",
+    "next_global_position": 1,
+    "next_trial_id": "E2-RSV-01__SHIFT__LATE__S52105",
+    "pristine_root_fingerprint_sha256": "cbfd626f812baad61237009599af05351af57470111e3fea72ef0573896a63c7",
+    "retained_formal_attempts": 0,
+    "schema": "campaign_v2_pristine_formal_root_state_v1",
+    "status": "PASS"
+  },
+  "method_baseline": {
+    "commit": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+    "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+    "tag": "paper-final-sim-v3"
+  },
+  "new_physical_demos_launched": 0,
+  "population": {
+    "E2": 120,
+    "E3": 360,
+    "E4A": 45,
+    "E4B": 60,
+    "E5": 25,
+    "analysis_population_compatibility": "PASS",
+    "exact_membership": "PASS",
+    "global_order_sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+    "total": 610
+  },
+  "regressions": {
+    "E2": {
+      "failed": 0,
+      "passed": 19
+    },
+    "E3": {
+      "failed": 0,
+      "passed": 88
+    },
+    "E4A": {
+      "failed": 0,
+      "passed": 21
+    },
+    "E4B": {
+      "failed": 0,
+      "passed": 24
+    },
+    "E5": {
+      "failed": 0,
+      "passed": 27
+    },
+    "analysis_fixtures": {
+      "failed": 0,
+      "passed": 29
+    },
+    "campaign_v2": {
+      "failed": 0,
+      "passed": 14
+    },
+    "total_failed": 0,
+    "total_passed": 222
+  },
+  "rehearsal": {
+    "accounted_positions": 610,
+    "canonical_summary_sha256": "e55c51e1f2b1967b8c1c69f8aa0255ed31f5c5d2baa011c3a0f90c29d365c10c",
+    "correct_family_routing": true,
+    "exact_global_order": true,
+    "journal_tail_sha256": "25ae6e1e20989ee1efb15884df2772286d532a9ccac2e27e6b11f45a93e853d7",
+    "physical_execution_performed": false,
+    "real_provider_called": false,
+    "restart_checkpoint_count": 13,
+    "status": "PASS",
+    "synthetic_failure_fixtures": {
+      "11": "infrastructure_failure",
+      "131": "timeout",
+      "257": "method_failure",
+      "7": "method_failure"
+    },
+    "unique_trial_ids": 610
+  },
+  "remote_resolution_status": "PASS",
+  "restart_crash_isolation": {
+    "after_1": "PASS",
+    "after_2": "PASS",
+    "after_610": "PASS",
+    "analysis_cannot_advance_journal": "PASS",
+    "campaign_v1_root_refused_by_v2": "PASS",
+    "formal_nonformal_isolation": "PASS",
+    "journal_without_artifact_fail_closed": "PASS",
+    "mixed_family_boundaries": "PASS",
+    "near_final": "PASS",
+    "orphan_adapter_fail_closed": "PASS",
+    "orphan_envelope_fail_closed": "PASS",
+    "pre_dispatch_no_consume": "PASS",
+    "pristine_0_next_1": "PASS",
+    "retained_infrastructure_failure": "PASS",
+    "retained_method_failure": "PASS",
+    "wrong_family_manual_invocation_refused": "PASS"
+  },
+  "schema": "campaign_v2_final_launch_audit_v1",
+  "scientific_pins": {
+    "E2": {
+      "branch": "formal/E2-formal-adapter-v1",
+      "checkout_head": "c361d21360252b4b6d24a615c421825b40ae1c59",
+      "execution_bundle_sha256": "72ad8fbdec4e4962d1d5b353077e1f5114f8e83faa150f375f8f4e1e250e71f1",
+      "execution_source_commit": "c361d21360252b4b6d24a615c421825b40ae1c59",
+      "protocol_sha256": "9ea7234db111b69cccb72315eed26e4abf117955eb20a2d593f2d854ea0b40e3",
+      "registry_sha256": "8215a5d8248c946c480ca4c8cb41e2afac28e6021c9f308a068580da69369bae"
+    },
+    "E3": {
+      "branch": "formal/E3-protocol-v3-active",
+      "checkout_head": "fe1f06ea8cd30f2846afa47294169c556ade1926",
+      "execution_bundle_sha256": "6c8fc316e140e7d4c31dd26d07850af217a53e65060c1fa10b16ea35bdfe78af",
+      "execution_source_commit": "fe1f06ea8cd30f2846afa47294169c556ade1926",
+      "protocol_sha256": "2eea03e2bb33aa1c10c1ae104b965f909690f00c8caee4446291faf2c9893013",
+      "registry_sha256": "b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2"
+    },
+    "E4A": {
+      "branch": "formal/E4A-formal-adapter-v1",
+      "checkout_head": "7ca02a1bc079f1f36d4bb9a4f29344fcae54a059",
+      "execution_bundle_sha256": "fcbc0188b7f637c9bf9d49d4297b945013257deb53b2c1512e33a078a72eb1ac",
+      "execution_source_commit": "7ca02a1bc079f1f36d4bb9a4f29344fcae54a059",
+      "protocol_sha256": "5a7eeb923aebcfb068827c6513a37e856dc8d6f05166a4b84775b33572bd83d0",
+      "registry_sha256": "48779a6667759955dd7dab2d8509f61a5439cca51a4bf98fcb48b6d17c499f95"
+    },
+    "E4B": {
+      "branch": "formal/E4B-formal-adapter-v1",
+      "checkout_head": "71451469a2cd8cdd375977636beb0b906b6e94e1",
+      "execution_bundle_sha256": "7b47c744a943a680d05468a4c76e0957f9979fb0d5ef1d5b8df3a94240fabc93",
+      "execution_source_commit": "71451469a2cd8cdd375977636beb0b906b6e94e1",
+      "protocol_sha256": "5a7eeb923aebcfb068827c6513a37e856dc8d6f05166a4b84775b33572bd83d0",
+      "registry_sha256": "48779a6667759955dd7dab2d8509f61a5439cca51a4bf98fcb48b6d17c499f95"
+    },
+    "E5": {
+      "branch": "formal/E5-formal-adapter-v1",
+      "checkout_head": "6abaf2b53136d2d5e4d64cde8b9c9acb72ab2485",
+      "execution_bundle_sha256": "b876317fb431c1d63adea2ae150ebc3bdcb786d3a7f93700bc142d39b6197921",
+      "execution_source_commit": "6abaf2b53136d2d5e4d64cde8b9c9acb72ab2485",
+      "protocol_sha256": "116002154cd2395b6a9f55d7c1aae6e0a2c42440f0ceaa827a1a8cb02828319c",
+      "registry_sha256": "9bb6bc9b46b5211c50c8f2e29bd434235424beb2bb0fc36ec857a3298d89511e"
+    }
+  },
+  "scientific_semantics_changed": false,
+  "unresolved_blockers": [],
+  "verdict": "CAMPAIGN_V2_FREEZE_COMPLETE_READY_FOR_FORMAL_LAUNCH"
+}

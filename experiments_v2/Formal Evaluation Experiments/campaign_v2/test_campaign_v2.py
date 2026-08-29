@@ -12,7 +12,8 @@ import uuid
 import pytest
 
 from campaign_v2_common import (CampaignV2Error, FORMAL_EVAL, FORMAL_ROOT, HERE,
-                                REHEARSAL_ROOT, family_for_trial, load_order, sha256_file)
+                                REHEARSAL_ROOT, canonical_sha256, family_for_trial,
+                                load_order, sha256_file)
 from campaign_v2_coordinator import Coordinator, Journal, verify_pins
 
 
@@ -155,3 +156,26 @@ def test_wrong_family_and_nonformal_isolation(monkeypatch):
 
 def test_all_execution_worktrees_clean_and_hash_gated():
     assert verify_pins()["status"] == "PASS"
+
+
+def test_launch_tooling_bundle_and_future_authorization_are_hash_pinned():
+    bundle = json.loads((HERE / "campaign_v2_launch_tooling_bundle.json").read_text())
+    files = {path: sha256_file(HERE / path) for path in bundle["files"]}
+    assert files == bundle["files"]
+    assert canonical_sha256(files) == bundle["campaign_v2_launch_tooling_bundle_sha256"]
+    auth = json.loads((HERE / "campaign_v2_launch_authorization.json").read_text())
+    assert auth["launcher_tooling_bundle_sha256"] == bundle["campaign_v2_launch_tooling_bundle_sha256"]
+    assert auth["formal_launch_already_started"] is False
+    assert auth["human_launch_trigger_present"] is False
+
+
+def test_formal_root_pristine_and_human_trigger_still_required(monkeypatch):
+    state = json.loads((FORMAL_ROOT / "pristine_root_state.json").read_text())
+    assert (state["retained_formal_attempts"], state["journal_records"],
+            state["accepted_formal_results"], state["next_global_position"]) == (0, 0, 0, 1)
+    assert not (FORMAL_ROOT / "HUMAN_LAUNCH_TRIGGER.json").exists()
+    monkeypatch.setenv("RMW_IMPLEMENTATION", "rmw_fastrtps_cpp")
+    monkeypatch.setenv("ROS_DOMAIN_ID", "42")
+    monkeypatch.setenv("CAMPAIGN_V2_HUMAN_LAUNCH_TOKEN_SHA256", "0" * 64)
+    with pytest.raises(CampaignV2Error, match="missing future human launch-trigger"):
+        Coordinator("formal", FORMAL_ROOT)
