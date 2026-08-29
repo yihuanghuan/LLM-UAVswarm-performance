@@ -1,0 +1,145 @@
+{
+  "audit_type": "formal_analysis_v1_freeze_audit",
+  "status": "PASS",
+  "verdict": "ANALYSIS_FREEZE_COMPLETE_READY_FOR_CAMPAIGN_V2_FREEZE",
+  "campaign_v2_created": false,
+  "formal_execution_performed": false,
+  "scientific_retuning_performed": false,
+  "semantics_identity": {
+    "version": "formal-analysis-semantics-v1",
+    "path": "analysis_freeze/analysis_semantics_v1.yaml",
+    "sha256": "f19440262a96d784177e5367e8de2a2ec50b7b6ca5b229d4a6d09816408c0db3",
+    "approval": "HUMAN_APPROVED_PROSPECTIVE_ANALYSIS_DECISION",
+    "frozen_before_campaign_v2": true,
+    "demo_outcomes_used_to_select_semantics": false
+  },
+  "a2_status": {
+    "approved_decision_groups": [
+      "E3 pair-specific hard-risk events, pair-summed exposure, and union diagnostic",
+      "E4A 10-to-90 percent global-peak acceleration rise time",
+      "E4A explicit-T continuous-metric interval and untruncated stable-hover settling time",
+      "E4A equal-UAV attempt aggregation rules",
+      "E5 first execution-command through graph-derived terminal mission boundary",
+      "E5 tracking, final-error, and IAPF swarm aggregation",
+      "E5 seven non-additive latency stage service times",
+      "project-wide complete-evidence, partial-diagnostic, NA, and all-attempt failure policy"
+    ],
+    "unresolved_A2_issue_count": 0
+  },
+  "a1_conventions": {
+    "timestamp": "authoritative ROS message-header experiment time",
+    "duplicates": "serialization-equivalent duplicate retained once; material conflict fails closed",
+    "clipping": "exact closed interval with piecewise-linear boundaries and no extrapolation",
+    "multiuav_alignment": "piecewise-linear interpolation on the union timestamp grid",
+    "threshold_crossing": "piecewise-linear between adjacent pair-distance samples",
+    "integration": "trapezoidal",
+    "rms": "time-weighted trapezoidal squared magnitude",
+    "discrete_state": "zero-order hold",
+    "smoothing": "forbidden",
+    "coverage": "50 Hz contract, maximum gap 0.20 s, both boundaries covered or bracketed, fail closed",
+    "descriptive_statistics": "sample SD, linear quartiles, two-sided 95 percent Student-t mean CI, paired Cohen dz"
+  },
+  "analysis_contract": {
+    "E2": {
+      "implementation": "preserved existing e2_scorer.py without modification",
+      "metrics": ["executable grounding success", "state consistency violation rate", "dynamic infeasibility rate", "correction/rejection rates"],
+      "raw_sources": ["offline resolution trace", "frozen metric flags"],
+      "aggregation": "all-attempt rates over exact registered population",
+      "failure_semantics": "every registered attempt retained"
+    },
+    "E3": {
+      "implementation": "e3_live_metric_extractor.py",
+      "metrics": ["actual_d_min", "predicted_d_min", "hard_risk_event_count", "hard_risk_exposure_duration", "any_pair_hard_risk_duration", "mission_success", "iapf_activation_time", "integral_delta_p", "integral_delta_a", "trajectory_deviation integral", "trajectory_deviation RMS"],
+      "raw_sources": ["global ENU swarm_state", "runtime allocator prediction", "IAPFDebug", "ControlTrackingDebug", "UAVStatus", "interaction terminal record"],
+      "interval": "interaction command t0 through t0 + exact-spec duration + 2.0 s; timeout t0 + duration + 6.0 s",
+      "threshold": "policy d_hard, currently 1.50 m",
+      "aggregation": "pair-specific risk; per-UAV IAPF and reference diagnostics; registered swarm summaries",
+      "failure_semantics": "continuous values require complete interval; mission success remains all-attempt Boolean"
+    },
+    "E4A": {
+      "implementation": "e4a_live_metric_extractor.py",
+      "metrics": ["settling_time", "control_effort", "acceleration peak", "acceleration RMS", "acceleration rise time", "tracking_RMSE"],
+      "raw_sources": ["execution command", "ControlTrackingDebug.ladrc_output", "ControlTrackingDebug.tracking_error", "UAVStatus stable-hover state"],
+      "interval": "t0 through t0 + exact registered explicit T; settling time continues to stable-hover entry",
+      "aggregation": "frozen equal-UAV/max rules in analysis_semantics_v1",
+      "reference_identity": "initial condition, target, explicit T, seed, and Minimum-Jerk identity hash; paired population fails closed on mismatch",
+      "failure_semantics": "all required UAV evidence required for swarm primary; invalid rise-time produces NA"
+    },
+    "E4B": {
+      "implementation": "e4b_live_metric_extractor.py",
+      "metrics": ["six individual authority predicates", "unauthorized_override_count", "priority_preserved", "Priority-Preservation Rate preparation"],
+      "raw_sources": ["exact runtime authority evidence", "compiled profiles", "physically published execution profiles"],
+      "thresholds": "1e-9 deterministic policy tolerance; frozen motion limits and d_hard",
+      "aggregation": "zero-override attempts divided by all retained attempts, overall and by scenario/style",
+      "failure_semantics": "missing predicate evidence cannot enter numerator and remains in denominator"
+    },
+    "E5": {
+      "implementation": "e5_live_metric_extractor.py",
+      "metrics": ["all-attempt mission success", "tracking_RMSE", "final error mean/max", "actual_d_min", "three IAPF burdens", "seven latency components", "command-to-terminal diagnostic"],
+      "raw_sources": ["provider/language result", "validated graph", "execution commands", "global ENU swarm_state", "ControlTrackingDebug", "IAPFDebug", "UAVStatus"],
+      "interval": "first actual command publication through graph-derived registered terminal synchronized/stable completion and wait",
+      "aggregation": "equal-UAV tracking RMS, mean/max final error, sum IAPF swarm burden",
+      "failure_semantics": "all attempts remain in mission-success denominator; continuous physical metrics are NA without complete physical interval; completed earlier stage latencies remain numeric"
+    }
+  },
+  "extractor_validation": {
+    "retained_attempts_double_replayed": 29,
+    "resolved_registered_paths": 25,
+    "resolved_path_status": {"COMPLETE": 23, "PARTIAL_VALID_METRICS_EXPECTED_METHOD_FAILURE": 2},
+    "retained_diagnostic_history": {
+      "E3": {"attempts": 14, "complete": 12, "incomplete_evidence": 1, "provenance_fail_closed": 1},
+      "E4A": {"attempts": 3, "complete": 3},
+      "E4B": {"attempts": 6, "complete": 5, "partial_pre_fix_infrastructure_failure": 1},
+      "E5": {"attempts": 6, "complete_physical": 3, "partial_method_or_infrastructure_failure": 3}
+    },
+    "resolved_metric_counts": {
+      "E3": {"attempts": 12, "valid_primary_or_diagnostic_metric_records": 132, "NA": 0},
+      "E4A": {"attempts": 3, "valid_metric_records": 18, "NA": 0},
+      "E4B": {"attempts": 5, "valid_metric_records": 19, "not_applicable": 1},
+      "E5": {"attempts": 5, "valid_top_level_metric_records": 33, "NA_continuous_physical_records": 12, "method_failures_with_expected_NA": 2}
+    },
+    "deterministic_double_replay": true,
+    "attempt_schema_validation_count": 29,
+    "canonical_replay_summary_sha256": "443a07b26afcac9c99b309bbd1817b285e04cc3eb48b5b4521f227ca9d1c7e0c",
+    "population_preparation_sha256": "e905817fe312197cf848bab17643fc6d9fcf2d3ea14e3aabd548134da8bac5bb",
+    "scientific_effect_interpretation_performed": false
+  },
+  "fixture_and_regression_validation": {
+    "independent_analysis_fixtures": {"passed": 29, "failed": 0},
+    "fixture_categories": ["distance", "pair-specific exposure/events", "integration", "RMS", "E4A rise time", "E4A aggregation/reference identity", "E4B authority", "E5 mission interval", "failure and partial metrics", "population membership", "provenance mismatch"],
+    "existing_E2_regression": {"passed": 20, "failed": 0, "commit": "c361d21360252b4b6d24a615c421825b40ae1c59"},
+    "existing_E3_regression": {"passed": 57, "failed": 0, "commit": "8fa73cfafc53afaef80751b86df8743f83402b7a"},
+    "existing_E4A_regression": {"passed": 21, "failed": 0, "adapter_code_commit": "7ca02a1bc079f1f36d4bb9a4f29344fcae54a059"},
+    "existing_E4B_regression": {"passed": 23, "failed": 0, "adapter_code_commit": "3a6290f62a54a4bdf6620eeece96d6035a36e772"},
+    "existing_E5_regression": {"passed": 26, "failed": 0, "adapter_code_commit": "76164560e3ca6b44454bc5855d4f0d8f2fbfeac3"},
+    "note": "E3/E4/E5 regressions were run at recorded code commits so committed demo evidence and .gitattributes changes would not trip their pre-demo provenance change whitelist. Production/sealed hashes were independently gate-checked by every live extractor."
+  },
+  "population_readiness": {
+    "E3": "exact 360-member registry and complete P0/P1 by F0/F1 cells required; duplicates/missing members fail closed",
+    "E4A": "exact 45-member registry, style triplets, and shared reference identity required",
+    "E4B": "exact 60-member registry gate available; every retained attempt remains in Priority-Preservation denominator",
+    "E5": "exact 25-member registry gate available; every retained attempt remains in mission-success denominator",
+    "continuous_NA": "valid-N and NA-N reported separately; partial diagnostics excluded from primary contrasts",
+    "post_hoc_filtering": false,
+    "significance_driven_test_selection": false
+  },
+  "tooling_identity": {
+    "analysis_version": "formal-analysis-v1",
+    "branch": "formal/analysis-v1",
+    "tooling_source_commit": "5546e2b673e3368574c2118ecc1943fab382f745",
+    "bundle_manifest": "analysis_freeze/formal_analysis_v1_bundle_manifest.json",
+    "bundle_file_count": 17,
+    "formal_analysis_v1_bundle_sha256": "9210245b12a108447cf03715ca6fd90e6ad3bf85fcab7a61e4dcfc6e5ac545b4",
+    "E2_preserved_scorer_sha256": "7b7725a6cba5fc3ba89636db5a87d2f26a65bfc8c85e764dfd16dfa7f4cfc48a"
+  },
+  "campaign_v1_protection": {
+    "status": "PASS",
+    "journal_records": [1, 2],
+    "accepted_formal_attempt_count": 2,
+    "attempt_3_exists": false,
+    "cursor_unchanged": true,
+    "launcher_manifest_sha256": "dd5ed80049b138d4e97c82ce556ed306efbc6e4b2a369f7616be0ff101f332d1",
+    "files_manifest_sha256": "29a6539e4b6b4372e0adc98bc5b45b4a8a40c20c3f23f244460e45695d14ba37",
+    "byte_identical": true
+  }
+}
