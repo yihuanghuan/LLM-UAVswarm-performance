@@ -25,7 +25,7 @@ def main() -> int:
     manifest = load_json(HERE / "campaign_v2_manifest.json")
     pins = load_json(HERE / "campaign_v2_pin_inventory.json")
     preflight = load_json(HERE / "campaign_v2_final_preflight_evidence.json")
-    rehearsal = load_json(HERE / "results/synthetic-validation/campaign-v2-full-610-rehearsal-r3/rehearsal_summary.json")
+    rehearsal = load_json(HERE / "results/synthetic-validation/campaign-v2-full-610-rehearsal-r4/rehearsal_summary.json")
     formal_root = load_json(HERE / "results/formal/pristine_root_state.json")
     files = {path: sha256_file(HERE / path) for path in LAUNCH_FILES}
     tooling_bundle = {

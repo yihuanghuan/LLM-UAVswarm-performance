@@ -28,6 +28,12 @@ from campaign_v2_common import (
 
 WORKER = HERE / "adapter_spec_worker.py"
 AUTHORIZATION = HERE / "campaign_v2_launch_authorization.json"
+FORMAL_LABELS = {
+    "dataset_class": "formal_evaluation",
+    "accepted_formal_result": True,
+    "result_notice": None,
+    "formal_cursor_consumed": True,
+}
 
 
 def validate_runtime_environment(*, require_launch_environment: bool) -> dict[str, Any]:
@@ -128,7 +134,10 @@ class Journal:
 
 
 class Coordinator:
-    def __init__(self, mode: str, run_dir: Path):
+    def __init__(self, mode: str, run_dir: Path, *,
+                 _isolated_formal_test_root: Path | None = None,
+                 _isolated_runtime_validator: Any | None = None,
+                 _isolated_authorization_path: Path | None = None):
         if mode not in {"rehearsal", "formal"}:
             raise CampaignV2Error("unsupported mode")
         self.mode = mode
@@ -143,35 +152,71 @@ class Coordinator:
             except ValueError as exc:
                 raise CampaignV2Error("synthetic rehearsal root escaped isolated non-formal root") from exc
         else:
-            if self.run_dir != FORMAL_ROOT.resolve():
+            formal_root = FORMAL_ROOT.resolve()
+            if _isolated_formal_test_root is not None:
+                isolated = Path(_isolated_formal_test_root).resolve()
+                test_parent = (REHEARSAL_ROOT / "formal-mode-tests").resolve()
+                try:
+                    isolated.relative_to(test_parent)
+                except ValueError as exc:
+                    raise CampaignV2Error("isolated formal test root escaped its non-formal test area") from exc
+                if (os.getenv("CAMPAIGN_V2_ISOLATED_FORMAL_TEST") != "1" or
+                        self.run_dir != isolated):
+                    raise CampaignV2Error("isolated formal test injection is not explicitly enabled")
+                formal_root = isolated
+            if self.run_dir != formal_root:
                 raise CampaignV2Error("formal mode may use only Campaign-v2 formal root")
-            validate_runtime_environment(require_launch_environment=True)
-            self._require_human_authorization()
+            runtime_validator = _isolated_runtime_validator or validate_runtime_environment
+            if _isolated_runtime_validator is not None and _isolated_formal_test_root is None:
+                raise CampaignV2Error("runtime-validator injection is restricted to isolated formal tests")
+            runtime_validator(require_launch_environment=True)
+            authorization_path = _isolated_authorization_path or AUTHORIZATION
+            if _isolated_authorization_path is not None and _isolated_formal_test_root is None:
+                raise CampaignV2Error("authorization injection is restricted to isolated formal tests")
+            self._require_human_authorization(authorization_path)
         self.journal = Journal(self.run_dir)
         self._initialize()
         self.validate_state()
 
-    def _require_human_authorization(self) -> None:
-        auth = load_json(AUTHORIZATION)
+    def _require_human_authorization(self, authorization_path: Path) -> None:
+        auth = load_json(authorization_path)
         if auth.get("authorization_status") != "authorized_for_future_human-triggered_formal_launch":
             raise CampaignV2Error("future formal authorization artifact is not valid")
-        trigger_path = FORMAL_ROOT / "HUMAN_LAUNCH_TRIGGER.json"
+        trigger_path = self.run_dir / "HUMAN_LAUNCH_TRIGGER.json"
         if not trigger_path.is_file():
             raise CampaignV2Error("missing future human launch-trigger artifact")
         trigger = load_json(trigger_path)
         supplied = os.environ.get("CAMPAIGN_V2_HUMAN_LAUNCH_TOKEN_SHA256")
-        if (trigger.get("authorize_formal_attempt_1") is not True or
+        campaign_authorized = (trigger.get("authorize_campaign_v2") is True or
+                               trigger.get("authorize_formal_attempt_1") is True)
+        if (not campaign_authorized or
                 trigger.get("campaign_manifest_sha256") != sha256_file(HERE / "campaign_v2_manifest.json") or
                 supplied != sha256_file(trigger_path)):
             raise CampaignV2Error("independent human runtime launch token/trigger mismatch")
 
+    def _expected_formal_launcher_manifest(self) -> dict[str, Any]:
+        return {
+            "schema": "campaign_v2_pristine_formal_root_manifest_v1",
+            "artifact_class": "formal_campaign_metadata",
+            "campaign_id": "E2-E5-final-paper-campaign-v2",
+            "campaign_manifest_sha256": sha256_file(HERE / "campaign_v2_manifest.json"),
+            "formal_campaign_started": False,
+            "retained_formal_attempts": 0,
+            "journal_records": 0,
+            "accepted_formal_results": 0,
+            "next_global_position": 1,
+            "next_trial_id": self.order[0],
+            "journal_is_cursor_authority": True,
+            "formal_dispatch_authorized_in_this_phase": False,
+        }
+
     def _initialize(self) -> None:
         meta = self.run_dir / "launcher_run_manifest.json"
         if self.mode == "formal":
-            if not meta.is_file():
+            if not meta.is_file() or meta.is_symlink():
                 raise CampaignV2Error("pristine formal root lacks frozen launcher manifest")
-            if any((self.run_dir / name).exists() for name in ("suite-journal", "attempt-artifacts", "adapter-attempts")):
-                raise CampaignV2Error("formal root is no longer pristine")
+            if load_json(meta) != self._expected_formal_launcher_manifest():
+                raise CampaignV2Error("frozen formal launcher manifest mismatch")
             return
         if not self.run_dir.exists():
             self.run_dir.mkdir(parents=True)
@@ -191,24 +236,71 @@ class Coordinator:
         if temps:
             raise CampaignV2Error("partial temporary write requires audited recovery")
         records = self.journal.read()
+        if len(records) > len(self.order):
+            raise CampaignV2Error("journal exceeds sealed 610-position campaign")
+        expected_journal_names = {f"{i:06d}-attempt.json" for i in range(1, len(records) + 1)}
+        expected_envelope_names = {f"{i:06d}-attempt.json" for i in range(1, len(records) + 1)}
+        expected_adapter_names = {f"{i:06d}" for i in range(1, len(records) + 1)}
+        journal_dir = self.run_dir / "suite-journal"
+        envelope_dir = self.run_dir / "attempt-artifacts"
+        adapter_dir = self.run_dir / "adapter-attempts"
+        journal_names = {p.name for p in journal_dir.iterdir()} if journal_dir.exists() else set()
+        envelope_names = {p.name for p in envelope_dir.iterdir()} if envelope_dir.exists() else set()
+        adapter_names = {p.name for p in adapter_dir.iterdir()} if adapter_dir.exists() else set()
+        if journal_names != expected_journal_names:
+            raise CampaignV2Error("foreign/duplicate journal artifact; fail-closed recovery required")
+        if envelope_names != expected_envelope_names:
+            raise CampaignV2Error("orphan/foreign attempt envelope; fail-closed recovery required")
+        if adapter_names != expected_adapter_names:
+            raise CampaignV2Error("orphan/foreign adapter directory; fail-closed recovery required")
+        if any(p.is_symlink() for directory in (journal_dir, envelope_dir, adapter_dir)
+               if directory.exists() for p in directory.iterdir()):
+            raise CampaignV2Error("symlinked retained artifact is not a durable campaign artifact")
         for position, record in enumerate(records, 1):
             trial = self.order[position - 1]
             family = family_for_trial(trial)
+            if record.get("schema") != "campaign_v2_suite_journal_record_v1":
+                raise CampaignV2Error(f"journal schema mismatch at {position}")
             if (record.get("trial_id"), record.get("experiment")) != (trial, family):
                 raise CampaignV2Error(f"journal is not exact global-order prefix at {position}")
-            artifact = self.run_dir / record["artifact_path"]
+            expected_artifact_path = f"attempt-artifacts/{position:06d}-attempt.json"
+            if record.get("artifact_path") != expected_artifact_path:
+                raise CampaignV2Error(f"journal artifact path mismatch at {position}")
+            if record.get("attempt_status") not in TERMINAL_STATUSES:
+                raise CampaignV2Error(f"nonterminal/unknown journal status at {position}")
+            labels = NONFORMAL_LABELS if self.mode == "rehearsal" else FORMAL_LABELS
+            if any(record.get(k) != v for k, v in labels.items()):
+                raise CampaignV2Error(f"journal dataset/formal label mismatch at {position}")
+            artifact = self.run_dir / expected_artifact_path
             if not artifact.is_file() or sha256_file(artifact) != record.get("artifact_sha256"):
                 raise CampaignV2Error(f"retained artifact missing/hash mismatch at {position}")
             payload = load_json(artifact)
+            if payload.get("schema") != "campaign_v2_attempt_envelope_v1":
+                raise CampaignV2Error(f"attempt envelope schema mismatch at {position}")
             if (payload.get("global_position"), payload.get("trial_id"), payload.get("experiment")) != (position, trial, family):
                 raise CampaignV2Error(f"attempt envelope mismatch at {position}")
-            if self.mode == "rehearsal" and any(payload.get(k) != v for k, v in NONFORMAL_LABELS.items()):
-                raise CampaignV2Error(f"non-formal label mismatch at {position}")
-            adapter = self.run_dir / payload["adapter_artifact_path"]
-            if not adapter.is_file() or sha256_file(adapter) != payload["adapter_artifact_sha256"]:
+            if payload.get("attempt_status") != record.get("attempt_status"):
+                raise CampaignV2Error(f"journal/envelope terminal status mismatch at {position}")
+            if any(payload.get(k) != v for k, v in labels.items()):
+                raise CampaignV2Error(f"attempt envelope dataset/formal label mismatch at {position}")
+            expected_adapter_path = f"adapter-attempts/{position:06d}/attempt.json"
+            if payload.get("adapter_artifact_path") != expected_adapter_path:
+                raise CampaignV2Error(f"adapter artifact path mismatch at {position}")
+            adapter = self.run_dir / expected_adapter_path
+            if (not adapter.is_file() or adapter.is_symlink() or
+                    sha256_file(adapter) != payload.get("adapter_artifact_sha256")):
                 raise CampaignV2Error(f"adapter artifact missing/hash mismatch at {position}")
-        envelopes = sorted((self.run_dir / "attempt-artifacts").glob("*.json")) if (self.run_dir / "attempt-artifacts").exists() else []
-        adapters = sorted(p for p in (self.run_dir / "adapter-attempts").glob("*") if p.is_dir()) if (self.run_dir / "adapter-attempts").exists() else []
+            adapter_payload = load_json(adapter)
+            if ((adapter_payload.get("trial_id"), adapter_payload.get("experiment"),
+                 adapter_payload.get("global_trial_position")) != (trial, family, position)):
+                raise CampaignV2Error(f"adapter artifact identity mismatch at {position}")
+            adapter_labels = {"dataset_class": labels["dataset_class"],
+                              "accepted_formal_result": labels["accepted_formal_result"],
+                              "result_notice": labels["result_notice"]}
+            if any(adapter_payload.get(k) != v for k, v in adapter_labels.items()):
+                raise CampaignV2Error(f"adapter artifact dataset/formal label mismatch at {position}")
+        envelopes = sorted(envelope_dir.glob("*.json")) if envelope_dir.exists() else []
+        adapters = sorted(p for p in adapter_dir.glob("*") if p.is_dir()) if adapter_dir.exists() else []
         if len(envelopes) != len(records) or len(adapters) != len(records):
             raise CampaignV2Error("orphan attempt/adapter artifact; fail-closed recovery required")
         return {
@@ -288,10 +380,7 @@ class Coordinator:
         status = synthetic_terminal_status or descriptor.get("attempt_status")
         if status not in TERMINAL_STATUSES:
             raise CampaignV2Error(f"invalid terminal status: {status}")
-        labels = NONFORMAL_LABELS if self.mode == "rehearsal" else {
-            "dataset_class": "formal_evaluation", "accepted_formal_result": True,
-            "result_notice": None, "formal_cursor_consumed": True,
-        }
+        labels = NONFORMAL_LABELS if self.mode == "rehearsal" else FORMAL_LABELS
         envelope = {
             "schema": "campaign_v2_attempt_envelope_v1", **labels,
             "global_position": position, "trial_id": trial, "experiment": family,

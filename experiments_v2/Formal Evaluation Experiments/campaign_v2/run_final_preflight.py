@@ -19,7 +19,7 @@ from campaign_v2_coordinator import validate_runtime_environment, verify_pins
 REPO_ROOT = FORMAL_EVAL.parents[1]
 V1_RUNTIME_DEMO = FORMAL_EVAL / "formal_equivalent_demos/tooling/runtime_demo.py"
 ANALYSIS_MANIFEST = FORMAL_EVAL / "analysis_freeze/formal_analysis_v1_bundle_manifest.json"
-REHEARSAL = HERE / "results/synthetic-validation/campaign-v2-full-610-rehearsal-r3/rehearsal_summary.json"
+REHEARSAL = HERE / "results/synthetic-validation/campaign-v2-full-610-rehearsal-r4/rehearsal_summary.json"
 PROVIDER = HERE / "provider_health_validation.json"
 
 

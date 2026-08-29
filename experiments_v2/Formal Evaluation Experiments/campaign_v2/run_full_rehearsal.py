@@ -56,5 +56,5 @@ def run(run_dir: Path) -> dict:
 
 
 if __name__ == "__main__":
-    root = Path(__file__).resolve().parent / "results/synthetic-validation/campaign-v2-full-610-rehearsal-r3"
+    root = Path(__file__).resolve().parent / "results/synthetic-validation/campaign-v2-full-610-rehearsal-r4"
     print(json.dumps(run(root), sort_keys=True, indent=2))
