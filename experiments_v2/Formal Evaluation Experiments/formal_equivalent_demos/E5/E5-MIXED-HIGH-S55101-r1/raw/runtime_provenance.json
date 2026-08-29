@@ -1,0 +1,1000 @@
+{
+  "change_classification": "instrumentation_or_provenance_only",
+  "checks": {
+    "every_controller_endpoint_visible": true,
+    "every_controller_node_subscribes": true,
+    "execution_profiles_enabled_for_every_controller": true,
+    "formal_px4_binary_exists": true,
+    "installed_controller_binary_exists": true,
+    "installed_launch_matches_frozen_source": true,
+    "installed_policy_hash_matches": true,
+    "installed_policy_matches_frozen_source": true,
+    "package_prefixes_are_formal_install_v1": true,
+    "px4_sdf_generator_python_ready": true
+  },
+  "dynamic_runtime_checks": {
+    "1": {
+      "controller_endpoint_present_in_topic_info": true,
+      "discovery_converged": true,
+      "enable_execution_profiles": {
+        "command": [
+          "ros2",
+          "param",
+          "get",
+          "/uav1/ladrc_position_controller",
+          "enable_execution_profiles"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:51.547282+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:48.089236+00:00",
+        "stderr": "",
+        "stdout": "Boolean value is: True\n"
+      },
+      "enable_execution_profiles_true": true,
+      "execution_command_topic": "/uav1/execution_command",
+      "node": "/uav1/ladrc_position_controller",
+      "node_info": {
+        "command": [
+          "ros2",
+          "node",
+          "info",
+          "/uav1/ladrc_position_controller"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:48.089223+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:47.819183+00:00",
+        "stderr": "",
+        "stdout": "/uav1/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_1/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /uav1/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav1/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_1/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_1/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav1/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav1/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav1/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav1/odom: geometry_msgs/msg/Point\n    /uav1/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav1/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav1/swarm_state: nav_msgs/msg/Odometry\n    /uav1/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav1/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav1/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav1/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav1/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav1/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav1/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+      },
+      "node_subscription_present": true,
+      "observation_attempts": [
+        {
+          "controller_endpoint_present_in_topic_info": true,
+          "enable_execution_profiles": {
+            "command": [
+              "ros2",
+              "param",
+              "get",
+              "/uav1/ladrc_position_controller",
+              "enable_execution_profiles"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:32.819664+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:31.339807+00:00",
+            "stderr": "",
+            "stdout": "Boolean value is: True\n"
+          },
+          "enable_execution_profiles_true": true,
+          "execution_command_topic": "/uav1/execution_command",
+          "node": "/uav1/ladrc_position_controller",
+          "node_info": {
+            "command": [
+              "ros2",
+              "node",
+              "info",
+              "/uav1/ladrc_position_controller"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:31.339794+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:30.447708+00:00",
+            "stderr": "",
+            "stdout": "/uav1/ladrc_position_controller\n  Subscribers:\n\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_1/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_1/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav1/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav1/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav1/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav1/odom: geometry_msgs/msg/Point\n    /uav1/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav1/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav1/swarm_state: nav_msgs/msg/Odometry\n    /uav1/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+          },
+          "node_subscription_present": false,
+          "observation_pass": false,
+          "sequence": 1,
+          "topic_info_verbose": {
+            "command": [
+              "ros2",
+              "topic",
+              "info",
+              "-v",
+              "/uav1/execution_command"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:33.098772+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:32.819678+00:00",
+            "stderr": "",
+            "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav1\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.85.41.90.ce.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+          }
+        },
+        {
+          "controller_endpoint_present_in_topic_info": true,
+          "enable_execution_profiles": {
+            "command": [
+              "ros2",
+              "param",
+              "get",
+              "/uav1/ladrc_position_controller",
+              "enable_execution_profiles"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:51.547282+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:48.089236+00:00",
+            "stderr": "",
+            "stdout": "Boolean value is: True\n"
+          },
+          "enable_execution_profiles_true": true,
+          "execution_command_topic": "/uav1/execution_command",
+          "node": "/uav1/ladrc_position_controller",
+          "node_info": {
+            "command": [
+              "ros2",
+              "node",
+              "info",
+              "/uav1/ladrc_position_controller"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:48.089223+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:47.819183+00:00",
+            "stderr": "",
+            "stdout": "/uav1/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_1/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /uav1/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav1/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_1/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_1/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav1/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav1/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav1/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav1/odom: geometry_msgs/msg/Point\n    /uav1/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav1/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav1/swarm_state: nav_msgs/msg/Odometry\n    /uav1/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav1/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav1/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav1/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav1/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav1/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav1/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+          },
+          "node_subscription_present": true,
+          "observation_pass": true,
+          "sequence": 2,
+          "topic_info_verbose": {
+            "command": [
+              "ros2",
+              "topic",
+              "info",
+              "-v",
+              "/uav1/execution_command"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:51.829771+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:51.547303+00:00",
+            "stderr": "",
+            "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav1\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.85.41.90.ce.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+          }
+        }
+      ],
+      "observation_count": 2,
+      "selected_observation_sequence": 2,
+      "stabilization_bounds": {
+        "max_attempts": 4,
+        "retry_interval_s": 1.0
+      },
+      "topic_info_verbose": {
+        "command": [
+          "ros2",
+          "topic",
+          "info",
+          "-v",
+          "/uav1/execution_command"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:51.829771+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:51.547303+00:00",
+        "stderr": "",
+        "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav1\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.85.41.90.ce.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+      }
+    },
+    "2": {
+      "controller_endpoint_present_in_topic_info": true,
+      "discovery_converged": true,
+      "enable_execution_profiles": {
+        "command": [
+          "ros2",
+          "param",
+          "get",
+          "/uav2/ladrc_position_controller",
+          "enable_execution_profiles"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:34.834341+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:33.365177+00:00",
+        "stderr": "",
+        "stdout": "Boolean value is: True\n"
+      },
+      "enable_execution_profiles_true": true,
+      "execution_command_topic": "/uav2/execution_command",
+      "node": "/uav2/ladrc_position_controller",
+      "node_info": {
+        "command": [
+          "ros2",
+          "node",
+          "info",
+          "/uav2/ladrc_position_controller"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:33.365158+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:33.098791+00:00",
+        "stderr": "",
+        "stdout": "/uav2/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /uav2/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav2/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_2/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_2/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_2/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav2/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav2/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav2/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav2/odom: geometry_msgs/msg/Point\n    /uav2/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav2/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav2/swarm_state: nav_msgs/msg/Odometry\n    /uav2/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav2/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav2/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav2/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav2/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav2/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav2/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+      },
+      "node_subscription_present": true,
+      "observation_attempts": [
+        {
+          "controller_endpoint_present_in_topic_info": true,
+          "enable_execution_profiles": {
+            "command": [
+              "ros2",
+              "param",
+              "get",
+              "/uav2/ladrc_position_controller",
+              "enable_execution_profiles"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:34.834341+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:33.365177+00:00",
+            "stderr": "",
+            "stdout": "Boolean value is: True\n"
+          },
+          "enable_execution_profiles_true": true,
+          "execution_command_topic": "/uav2/execution_command",
+          "node": "/uav2/ladrc_position_controller",
+          "node_info": {
+            "command": [
+              "ros2",
+              "node",
+              "info",
+              "/uav2/ladrc_position_controller"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:33.365158+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:33.098791+00:00",
+            "stderr": "",
+            "stdout": "/uav2/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /uav2/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav2/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_2/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_2/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_2/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav2/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav2/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav2/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav2/odom: geometry_msgs/msg/Point\n    /uav2/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav2/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav2/swarm_state: nav_msgs/msg/Odometry\n    /uav2/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav2/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav2/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav2/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav2/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav2/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav2/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+          },
+          "node_subscription_present": true,
+          "observation_pass": true,
+          "sequence": 1,
+          "topic_info_verbose": {
+            "command": [
+              "ros2",
+              "topic",
+              "info",
+              "-v",
+              "/uav2/execution_command"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:35.117236+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:34.834354+00:00",
+            "stderr": "",
+            "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav2\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.87.41.4d.b8.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+          }
+        }
+      ],
+      "observation_count": 1,
+      "selected_observation_sequence": 1,
+      "stabilization_bounds": {
+        "max_attempts": 4,
+        "retry_interval_s": 1.0
+      },
+      "topic_info_verbose": {
+        "command": [
+          "ros2",
+          "topic",
+          "info",
+          "-v",
+          "/uav2/execution_command"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:35.117236+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:34.834354+00:00",
+        "stderr": "",
+        "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav2\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.87.41.4d.b8.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+      }
+    },
+    "3": {
+      "controller_endpoint_present_in_topic_info": true,
+      "discovery_converged": true,
+      "enable_execution_profiles": {
+        "command": [
+          "ros2",
+          "param",
+          "get",
+          "/uav3/ladrc_position_controller",
+          "enable_execution_profiles"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:36.627776+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:35.390864+00:00",
+        "stderr": "",
+        "stdout": "Boolean value is: True\n"
+      },
+      "enable_execution_profiles_true": true,
+      "execution_command_topic": "/uav3/execution_command",
+      "node": "/uav3/ladrc_position_controller",
+      "node_info": {
+        "command": [
+          "ros2",
+          "node",
+          "info",
+          "/uav3/ladrc_position_controller"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:35.390849+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:35.117263+00:00",
+        "stderr": "",
+        "stdout": "/uav3/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /uav3/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav3/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_3/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_3/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_3/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav3/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav3/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav3/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav3/odom: geometry_msgs/msg/Point\n    /uav3/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav3/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav3/swarm_state: nav_msgs/msg/Odometry\n    /uav3/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav3/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav3/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav3/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav3/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav3/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav3/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+      },
+      "node_subscription_present": true,
+      "observation_attempts": [
+        {
+          "controller_endpoint_present_in_topic_info": true,
+          "enable_execution_profiles": {
+            "command": [
+              "ros2",
+              "param",
+              "get",
+              "/uav3/ladrc_position_controller",
+              "enable_execution_profiles"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:36.627776+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:35.390864+00:00",
+            "stderr": "",
+            "stdout": "Boolean value is: True\n"
+          },
+          "enable_execution_profiles_true": true,
+          "execution_command_topic": "/uav3/execution_command",
+          "node": "/uav3/ladrc_position_controller",
+          "node_info": {
+            "command": [
+              "ros2",
+              "node",
+              "info",
+              "/uav3/ladrc_position_controller"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:35.390849+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:35.117263+00:00",
+            "stderr": "",
+            "stdout": "/uav3/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /uav3/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav3/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_3/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_3/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_3/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav3/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav3/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav3/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav3/odom: geometry_msgs/msg/Point\n    /uav3/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav3/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav3/swarm_state: nav_msgs/msg/Odometry\n    /uav3/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav3/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav3/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav3/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav3/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav3/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav3/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+          },
+          "node_subscription_present": true,
+          "observation_pass": true,
+          "sequence": 1,
+          "topic_info_verbose": {
+            "command": [
+              "ros2",
+              "topic",
+              "info",
+              "-v",
+              "/uav3/execution_command"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:36.910088+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:36.627788+00:00",
+            "stderr": "",
+            "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav3\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.89.41.ff.2b.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+          }
+        }
+      ],
+      "observation_count": 1,
+      "selected_observation_sequence": 1,
+      "stabilization_bounds": {
+        "max_attempts": 4,
+        "retry_interval_s": 1.0
+      },
+      "topic_info_verbose": {
+        "command": [
+          "ros2",
+          "topic",
+          "info",
+          "-v",
+          "/uav3/execution_command"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:36.910088+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:36.627788+00:00",
+        "stderr": "",
+        "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav3\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.89.41.ff.2b.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+      }
+    },
+    "4": {
+      "controller_endpoint_present_in_topic_info": true,
+      "discovery_converged": true,
+      "enable_execution_profiles": {
+        "command": [
+          "ros2",
+          "param",
+          "get",
+          "/uav4/ladrc_position_controller",
+          "enable_execution_profiles"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:38.088605+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:37.180073+00:00",
+        "stderr": "",
+        "stdout": "Boolean value is: True\n"
+      },
+      "enable_execution_profiles_true": true,
+      "execution_command_topic": "/uav4/execution_command",
+      "node": "/uav4/ladrc_position_controller",
+      "node_info": {
+        "command": [
+          "ros2",
+          "node",
+          "info",
+          "/uav4/ladrc_position_controller"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:37.180061+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:36.910110+00:00",
+        "stderr": "",
+        "stdout": "/uav4/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /uav4/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav4/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_4/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_4/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_4/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav4/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav4/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav4/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav4/odom: geometry_msgs/msg/Point\n    /uav4/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav4/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav4/swarm_state: nav_msgs/msg/Odometry\n    /uav4/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav4/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav4/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav4/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav4/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav4/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav4/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+      },
+      "node_subscription_present": true,
+      "observation_attempts": [
+        {
+          "controller_endpoint_present_in_topic_info": true,
+          "enable_execution_profiles": {
+            "command": [
+              "ros2",
+              "param",
+              "get",
+              "/uav4/ladrc_position_controller",
+              "enable_execution_profiles"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:38.088605+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:37.180073+00:00",
+            "stderr": "",
+            "stdout": "Boolean value is: True\n"
+          },
+          "enable_execution_profiles_true": true,
+          "execution_command_topic": "/uav4/execution_command",
+          "node": "/uav4/ladrc_position_controller",
+          "node_info": {
+            "command": [
+              "ros2",
+              "node",
+              "info",
+              "/uav4/ladrc_position_controller"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:37.180061+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:36.910110+00:00",
+            "stderr": "",
+            "stdout": "/uav4/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /uav4/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav4/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_4/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_4/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_4/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav4/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav4/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav4/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav4/odom: geometry_msgs/msg/Point\n    /uav4/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav4/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav4/swarm_state: nav_msgs/msg/Odometry\n    /uav4/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav4/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav4/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav4/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav4/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav4/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav4/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+          },
+          "node_subscription_present": true,
+          "observation_pass": true,
+          "sequence": 1,
+          "topic_info_verbose": {
+            "command": [
+              "ros2",
+              "topic",
+              "info",
+              "-v",
+              "/uav4/execution_command"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:38.374595+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:38.088620+00:00",
+            "stderr": "",
+            "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav4\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.8b.41.fb.6b.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+          }
+        }
+      ],
+      "observation_count": 1,
+      "selected_observation_sequence": 1,
+      "stabilization_bounds": {
+        "max_attempts": 4,
+        "retry_interval_s": 1.0
+      },
+      "topic_info_verbose": {
+        "command": [
+          "ros2",
+          "topic",
+          "info",
+          "-v",
+          "/uav4/execution_command"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:38.374595+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:38.088620+00:00",
+        "stderr": "",
+        "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav4\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.8b.41.fb.6b.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+      }
+    },
+    "5": {
+      "controller_endpoint_present_in_topic_info": true,
+      "discovery_converged": true,
+      "enable_execution_profiles": {
+        "command": [
+          "ros2",
+          "param",
+          "get",
+          "/uav5/ladrc_position_controller",
+          "enable_execution_profiles"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:40.055728+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:38.644843+00:00",
+        "stderr": "",
+        "stdout": "Boolean value is: True\n"
+      },
+      "enable_execution_profiles_true": true,
+      "execution_command_topic": "/uav5/execution_command",
+      "node": "/uav5/ladrc_position_controller",
+      "node_info": {
+        "command": [
+          "ros2",
+          "node",
+          "info",
+          "/uav5/ladrc_position_controller"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:38.644829+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:38.374616+00:00",
+        "stderr": "",
+        "stdout": "/uav5/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /uav5/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav5/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_5/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_5/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_5/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav5/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav5/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav5/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav5/odom: geometry_msgs/msg/Point\n    /uav5/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav5/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav5/swarm_state: nav_msgs/msg/Odometry\n    /uav5/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav5/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav5/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav5/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav5/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav5/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav5/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+      },
+      "node_subscription_present": true,
+      "observation_attempts": [
+        {
+          "controller_endpoint_present_in_topic_info": true,
+          "enable_execution_profiles": {
+            "command": [
+              "ros2",
+              "param",
+              "get",
+              "/uav5/ladrc_position_controller",
+              "enable_execution_profiles"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:40.055728+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:38.644843+00:00",
+            "stderr": "",
+            "stdout": "Boolean value is: True\n"
+          },
+          "enable_execution_profiles_true": true,
+          "execution_command_topic": "/uav5/execution_command",
+          "node": "/uav5/ladrc_position_controller",
+          "node_info": {
+            "command": [
+              "ros2",
+              "node",
+              "info",
+              "/uav5/ladrc_position_controller"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:38.644829+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:38.374616+00:00",
+            "stderr": "",
+            "stdout": "/uav5/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /uav5/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav5/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_5/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_5/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_5/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav5/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav5/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav5/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav5/odom: geometry_msgs/msg/Point\n    /uav5/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav5/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav5/swarm_state: nav_msgs/msg/Odometry\n    /uav5/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav5/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav5/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav5/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav5/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav5/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav5/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+          },
+          "node_subscription_present": true,
+          "observation_pass": true,
+          "sequence": 1,
+          "topic_info_verbose": {
+            "command": [
+              "ros2",
+              "topic",
+              "info",
+              "-v",
+              "/uav5/execution_command"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:40.343865+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:40.055741+00:00",
+            "stderr": "",
+            "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav5\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.8d.41.f6.bd.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+          }
+        }
+      ],
+      "observation_count": 1,
+      "selected_observation_sequence": 1,
+      "stabilization_bounds": {
+        "max_attempts": 4,
+        "retry_interval_s": 1.0
+      },
+      "topic_info_verbose": {
+        "command": [
+          "ros2",
+          "topic",
+          "info",
+          "-v",
+          "/uav5/execution_command"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:40.343865+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:40.055741+00:00",
+        "stderr": "",
+        "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav5\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.8d.41.f6.bd.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+      }
+    },
+    "6": {
+      "controller_endpoint_present_in_topic_info": true,
+      "discovery_converged": true,
+      "enable_execution_profiles": {
+        "command": [
+          "ros2",
+          "param",
+          "get",
+          "/uav6/ladrc_position_controller",
+          "enable_execution_profiles"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:42.755954+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:40.607688+00:00",
+        "stderr": "",
+        "stdout": "Boolean value is: True\n"
+      },
+      "enable_execution_profiles_true": true,
+      "execution_command_topic": "/uav6/execution_command",
+      "node": "/uav6/ladrc_position_controller",
+      "node_info": {
+        "command": [
+          "ros2",
+          "node",
+          "info",
+          "/uav6/ladrc_position_controller"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:40.607668+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:40.343894+00:00",
+        "stderr": "",
+        "stdout": "/uav6/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /uav6/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav6/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_6/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_6/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_6/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav6/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav6/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav6/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav6/odom: geometry_msgs/msg/Point\n    /uav6/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav6/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav6/swarm_state: nav_msgs/msg/Odometry\n    /uav6/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav6/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav6/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav6/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav6/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav6/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav6/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+      },
+      "node_subscription_present": true,
+      "observation_attempts": [
+        {
+          "controller_endpoint_present_in_topic_info": true,
+          "enable_execution_profiles": {
+            "command": [
+              "ros2",
+              "param",
+              "get",
+              "/uav6/ladrc_position_controller",
+              "enable_execution_profiles"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:42.755954+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:40.607688+00:00",
+            "stderr": "",
+            "stdout": "Boolean value is: True\n"
+          },
+          "enable_execution_profiles_true": true,
+          "execution_command_topic": "/uav6/execution_command",
+          "node": "/uav6/ladrc_position_controller",
+          "node_info": {
+            "command": [
+              "ros2",
+              "node",
+              "info",
+              "/uav6/ladrc_position_controller"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:40.607668+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:40.343894+00:00",
+            "stderr": "",
+            "stdout": "/uav6/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /uav6/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav6/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_6/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_6/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_6/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav6/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav6/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav6/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav6/odom: geometry_msgs/msg/Point\n    /uav6/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav6/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav6/swarm_state: nav_msgs/msg/Odometry\n    /uav6/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav6/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav6/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav6/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav6/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav6/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav6/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+          },
+          "node_subscription_present": true,
+          "observation_pass": true,
+          "sequence": 1,
+          "topic_info_verbose": {
+            "command": [
+              "ros2",
+              "topic",
+              "info",
+              "-v",
+              "/uav6/execution_command"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:43.036924+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:42.755967+00:00",
+            "stderr": "",
+            "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav6\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.8f.41.13.a9.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+          }
+        }
+      ],
+      "observation_count": 1,
+      "selected_observation_sequence": 1,
+      "stabilization_bounds": {
+        "max_attempts": 4,
+        "retry_interval_s": 1.0
+      },
+      "topic_info_verbose": {
+        "command": [
+          "ros2",
+          "topic",
+          "info",
+          "-v",
+          "/uav6/execution_command"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:43.036924+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:42.755967+00:00",
+        "stderr": "",
+        "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav6\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.8f.41.13.a9.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+      }
+    },
+    "7": {
+      "controller_endpoint_present_in_topic_info": true,
+      "discovery_converged": true,
+      "enable_execution_profiles": {
+        "command": [
+          "ros2",
+          "param",
+          "get",
+          "/uav7/ladrc_position_controller",
+          "enable_execution_profiles"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:44.552471+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:43.311767+00:00",
+        "stderr": "",
+        "stdout": "Boolean value is: True\n"
+      },
+      "enable_execution_profiles_true": true,
+      "execution_command_topic": "/uav7/execution_command",
+      "node": "/uav7/ladrc_position_controller",
+      "node_info": {
+        "command": [
+          "ros2",
+          "node",
+          "info",
+          "/uav7/ladrc_position_controller"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:43.311753+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:43.036951+00:00",
+        "stderr": "",
+        "stdout": "/uav7/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /uav7/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav7/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_7/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_7/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_7/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav7/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav7/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav7/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav7/odom: geometry_msgs/msg/Point\n    /uav7/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav7/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav7/swarm_state: nav_msgs/msg/Odometry\n    /uav7/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav7/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav7/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav7/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav7/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav7/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav7/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+      },
+      "node_subscription_present": true,
+      "observation_attempts": [
+        {
+          "controller_endpoint_present_in_topic_info": true,
+          "enable_execution_profiles": {
+            "command": [
+              "ros2",
+              "param",
+              "get",
+              "/uav7/ladrc_position_controller",
+              "enable_execution_profiles"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:44.552471+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:43.311767+00:00",
+            "stderr": "",
+            "stdout": "Boolean value is: True\n"
+          },
+          "enable_execution_profiles_true": true,
+          "execution_command_topic": "/uav7/execution_command",
+          "node": "/uav7/ladrc_position_controller",
+          "node_info": {
+            "command": [
+              "ros2",
+              "node",
+              "info",
+              "/uav7/ladrc_position_controller"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:43.311753+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:43.036951+00:00",
+            "stderr": "",
+            "stdout": "/uav7/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /uav7/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav7/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_7/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_7/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_7/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav7/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav7/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav7/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav7/odom: geometry_msgs/msg/Point\n    /uav7/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav7/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav7/swarm_state: nav_msgs/msg/Odometry\n    /uav7/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav7/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav7/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav7/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav7/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav7/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav7/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+          },
+          "node_subscription_present": true,
+          "observation_pass": true,
+          "sequence": 1,
+          "topic_info_verbose": {
+            "command": [
+              "ros2",
+              "topic",
+              "info",
+              "-v",
+              "/uav7/execution_command"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:44.826713+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:44.552486+00:00",
+            "stderr": "",
+            "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav7\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.91.41.70.06.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+          }
+        }
+      ],
+      "observation_count": 1,
+      "selected_observation_sequence": 1,
+      "stabilization_bounds": {
+        "max_attempts": 4,
+        "retry_interval_s": 1.0
+      },
+      "topic_info_verbose": {
+        "command": [
+          "ros2",
+          "topic",
+          "info",
+          "-v",
+          "/uav7/execution_command"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:44.826713+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:44.552486+00:00",
+        "stderr": "",
+        "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav7\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.91.41.70.06.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+      }
+    },
+    "8": {
+      "controller_endpoint_present_in_topic_info": true,
+      "discovery_converged": true,
+      "enable_execution_profiles": {
+        "command": [
+          "ros2",
+          "param",
+          "get",
+          "/uav8/ladrc_position_controller",
+          "enable_execution_profiles"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:46.528276+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:45.102318+00:00",
+        "stderr": "",
+        "stdout": "Boolean value is: True\n"
+      },
+      "enable_execution_profiles_true": true,
+      "execution_command_topic": "/uav8/execution_command",
+      "node": "/uav8/ladrc_position_controller",
+      "node_info": {
+        "command": [
+          "ros2",
+          "node",
+          "info",
+          "/uav8/ladrc_position_controller"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:45.102304+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:44.826735+00:00",
+        "stderr": "",
+        "stdout": "/uav8/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /uav8/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav8/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_8/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_8/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_8/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav8/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav8/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav8/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav8/odom: geometry_msgs/msg/Point\n    /uav8/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav8/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav8/swarm_state: nav_msgs/msg/Odometry\n    /uav8/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav8/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav8/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav8/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav8/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav8/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav8/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+      },
+      "node_subscription_present": true,
+      "observation_attempts": [
+        {
+          "controller_endpoint_present_in_topic_info": true,
+          "enable_execution_profiles": {
+            "command": [
+              "ros2",
+              "param",
+              "get",
+              "/uav8/ladrc_position_controller",
+              "enable_execution_profiles"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:46.528276+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:45.102318+00:00",
+            "stderr": "",
+            "stdout": "Boolean value is: True\n"
+          },
+          "enable_execution_profiles_true": true,
+          "execution_command_topic": "/uav8/execution_command",
+          "node": "/uav8/ladrc_position_controller",
+          "node_info": {
+            "command": [
+              "ros2",
+              "node",
+              "info",
+              "/uav8/ladrc_position_controller"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:45.102304+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:44.826735+00:00",
+            "stderr": "",
+            "stdout": "/uav8/ladrc_position_controller\n  Subscribers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_1/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_2/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_3/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_4/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_5/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_6/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_7/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_odometry: px4_msgs/msg/VehicleOdometry\n    /px4_8/fmu/out/vehicle_status: px4_msgs/msg/VehicleStatus\n    /uav8/execution_command: uav_swarm_interfaces/msg/UAVExecutionCommand\n    /uav8/swarm_command: uav_swarm_interfaces/msg/UAVSwarmCommand\n  Publishers:\n    /parameter_events: rcl_interfaces/msg/ParameterEvent\n    /px4_8/fmu/in/offboard_control_mode: px4_msgs/msg/OffboardControlMode\n    /px4_8/fmu/in/trajectory_setpoint: px4_msgs/msg/TrajectorySetpoint\n    /px4_8/fmu/in/vehicle_command: px4_msgs/msg/VehicleCommand\n    /rosout: rcl_interfaces/msg/Log\n    /uav8/control_adaptation: uav_swarm_interfaces/msg/ControlAdaptationLog\n    /uav8/control_tracking_debug: uav_swarm_interfaces/msg/ControlTrackingDebug\n    /uav8/iapf_debug: uav_swarm_interfaces/msg/IAPFDebug\n    /uav8/odom: geometry_msgs/msg/Point\n    /uav8/startup_event: uav_swarm_interfaces/msg/StartupEvent\n    /uav8/status: uav_swarm_interfaces/msg/UAVStatus\n    /uav8/swarm_state: nav_msgs/msg/Odometry\n    /uav8/trajectory_metrics: uav_swarm_interfaces/msg/TrajectoryMetrics\n  Service Servers:\n    /uav8/ladrc_position_controller/describe_parameters: rcl_interfaces/srv/DescribeParameters\n    /uav8/ladrc_position_controller/get_parameter_types: rcl_interfaces/srv/GetParameterTypes\n    /uav8/ladrc_position_controller/get_parameters: rcl_interfaces/srv/GetParameters\n    /uav8/ladrc_position_controller/list_parameters: rcl_interfaces/srv/ListParameters\n    /uav8/ladrc_position_controller/set_parameters: rcl_interfaces/srv/SetParameters\n    /uav8/ladrc_position_controller/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically\n  Service Clients:\n\n  Action Servers:\n\n  Action Clients:\n\n"
+          },
+          "node_subscription_present": true,
+          "observation_pass": true,
+          "sequence": 1,
+          "topic_info_verbose": {
+            "command": [
+              "ros2",
+              "topic",
+              "info",
+              "-v",
+              "/uav8/execution_command"
+            ],
+            "finished_at_utc": "2026-08-28T15:31:46.818607+00:00",
+            "returncode": 0,
+            "started_at_utc": "2026-08-28T15:31:46.528291+00:00",
+            "stderr": "",
+            "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav8\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.93.41.50.88.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+          }
+        }
+      ],
+      "observation_count": 1,
+      "selected_observation_sequence": 1,
+      "stabilization_bounds": {
+        "max_attempts": 4,
+        "retry_interval_s": 1.0
+      },
+      "topic_info_verbose": {
+        "command": [
+          "ros2",
+          "topic",
+          "info",
+          "-v",
+          "/uav8/execution_command"
+        ],
+        "finished_at_utc": "2026-08-28T15:31:46.818607+00:00",
+        "returncode": 0,
+        "started_at_utc": "2026-08-28T15:31:46.528291+00:00",
+        "stderr": "",
+        "stdout": "Type: uav_swarm_interfaces/msg/UAVExecutionCommand\n\nPublisher count: 0\n\nSubscription count: 1\n\nNode name: ladrc_position_controller\nNode namespace: /uav8\nTopic type: uav_swarm_interfaces/msg/UAVExecutionCommand\nEndpoint type: SUBSCRIPTION\nGID: 01.0f.18.96.93.41.50.88.00.00.00.00.00.00.13.04.00.00.00.00.00.00.00.00\nQoS profile:\n  Reliability: RELIABLE\n  History (Depth): UNKNOWN\n  Durability: VOLATILE\n  Lifespan: Infinite\n  Deadline: Infinite\n  Liveliness: AUTOMATIC\n  Liveliness lease duration: Infinite\n\n"
+      }
+    }
+  },
+  "formal_px4_binary": {
+    "path": "/home/yihuang/PX4-Autopilot-formal-v1/build/px4_sitl_default/bin/px4",
+    "sha256": "6e7a0a105cb30cb8e219d21398dbc20f76fd6d5a366b1f52ad29e6eb0fc2f0ac"
+  },
+  "installed_controller": {
+    "exists": true,
+    "path": "/home/yihuang/learning/LLM_swarm_ws/formal_build_v1/ladrc_controller/ladrc_position_controller_node"
+  },
+  "installed_launch": {
+    "path": "/home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/launch/swarm_launch.py",
+    "sha256": "eebe0d26d7d6d9408078c99dd735c4076b36eb79f1ebc8d02be64af24d9782dd"
+  },
+  "installed_policy": {
+    "path": "/home/yihuang/learning/LLM_swarm_ws/formal_install_v1/lfs_policy/share/lfs_policy/config/lfs_policy.paper_current.yaml",
+    "sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858"
+  },
+  "manifest_type": "E5_runtime_provenance_v1",
+  "package_prefix_commands": {
+    "ladrc_controller": {
+      "command": [
+        "ros2",
+        "pkg",
+        "prefix",
+        "ladrc_controller"
+      ],
+      "finished_at_utc": "2026-08-28T15:31:30.114618+00:00",
+      "returncode": 0,
+      "started_at_utc": "2026-08-28T15:31:29.979345+00:00",
+      "stderr": "",
+      "stdout": "/home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller\n"
+    },
+    "lfs_policy": {
+      "command": [
+        "ros2",
+        "pkg",
+        "prefix",
+        "lfs_policy"
+      ],
+      "finished_at_utc": "2026-08-28T15:31:30.396698+00:00",
+      "returncode": 0,
+      "started_at_utc": "2026-08-28T15:31:30.257513+00:00",
+      "stderr": "",
+      "stdout": "/home/yihuang/learning/LLM_swarm_ws/formal_install_v1/lfs_policy\n"
+    },
+    "uav_swarm_interfaces": {
+      "command": [
+        "ros2",
+        "pkg",
+        "prefix",
+        "uav_swarm_interfaces"
+      ],
+      "finished_at_utc": "2026-08-28T15:31:30.257416+00:00",
+      "returncode": 0,
+      "started_at_utc": "2026-08-28T15:31:30.114708+00:00",
+      "stderr": "",
+      "stdout": "/home/yihuang/learning/LLM_swarm_ws/formal_install_v1/uav_swarm_interfaces\n"
+    }
+  },
+  "package_prefixes": {
+    "ladrc_controller": "/home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller",
+    "lfs_policy": "/home/yihuang/learning/LLM_swarm_ws/formal_install_v1/lfs_policy",
+    "uav_swarm_interfaces": "/home/yihuang/learning/LLM_swarm_ws/formal_install_v1/uav_swarm_interfaces"
+  },
+  "px4_sdf_generator_python": {
+    "command": [
+      "/usr/bin/python3",
+      "-c",
+      "import jinja2"
+    ],
+    "finished_at_utc": "2026-08-28T15:31:30.443039+00:00",
+    "returncode": 0,
+    "started_at_utc": "2026-08-28T15:31:30.396804+00:00",
+    "stderr": "",
+    "stdout": ""
+  },
+  "scientific_semantics_changed": false,
+  "status": "PASS"
+}

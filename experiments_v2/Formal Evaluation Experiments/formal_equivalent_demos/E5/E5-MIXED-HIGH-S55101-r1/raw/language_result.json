@@ -1,0 +1,26 @@
+{
+  "attempt_status": "method_failure",
+  "candidate_gt_used_as_input": false,
+  "command_byte_identity": true,
+  "counts": {
+    "command_submission": 1,
+    "formal_command_retry": 0
+  },
+  "error": "GeometryError: workspace scale limit conflicts with d_plan(s) or requested scale",
+  "failure_stage": "resolution",
+  "fresh_state_before_language_submission": true,
+  "fresh_state_before_runtime_dispatch": true,
+  "latency_decomposition_s": {
+    "LLM_inference": 48.813,
+    "allocation": 0.0,
+    "dispatch": 0.0,
+    "parse_validation": 0.02878079299453873,
+    "physical_execution": 0.0,
+    "resolution": 0.00011855199409183115,
+    "snapshot_wait": 1.5547000680016936
+  },
+  "mission_termination": "frozen_method_rejection",
+  "mission_timeout_s": 45.0,
+  "provider_request_attempts_logged": 1,
+  "real_llm_invocation_attempted": true
+}

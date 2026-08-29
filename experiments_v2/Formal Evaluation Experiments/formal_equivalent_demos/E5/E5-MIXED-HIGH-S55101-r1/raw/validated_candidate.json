@@ -1,0 +1,122 @@
+{
+  "lfs_version": "2.1",
+  "mission": {
+    "nodes": [
+      {
+        "task": {
+          "F": {
+            "type": "Sphere"
+          },
+          "T": {
+            "mode": "auto"
+          },
+          "U": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "c": {
+            "frame": "world",
+            "mode": "relative",
+            "offset": [
+              2,
+              0,
+              1
+            ],
+            "reference": "current_swarm_centroid"
+          },
+          "m": "smooth",
+          "q": {
+            "mode": "continuous"
+          },
+          "r": {
+            "mode": "qualitative",
+            "value": "spacious"
+          },
+          "s": 1.0,
+          "task_id": 1
+        },
+        "type": "task"
+      },
+      {
+        "completion_mode": "synchronized",
+        "tasks": [
+          {
+            "F": {
+              "type": "Circle"
+            },
+            "T": {
+              "mode": "explicit",
+              "value": 7
+            },
+            "U": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "c": {
+              "mode": "absolute",
+              "value": [
+                -4,
+                18,
+                4
+              ]
+            },
+            "m": "normal",
+            "q": {
+              "duration": 2,
+              "mode": "hover-and-wait"
+            },
+            "r": {
+              "mode": "explicit",
+              "value": 2
+            },
+            "s": 1.25,
+            "task_id": 2
+          },
+          {
+            "F": {
+              "sides": 4,
+              "type": "Polygon"
+            },
+            "T": {
+              "mode": "auto"
+            },
+            "U": [
+              5,
+              6,
+              7,
+              8
+            ],
+            "c": {
+              "mode": "absolute",
+              "value": [
+                4,
+                18,
+                4
+              ]
+            },
+            "m": "aggressive",
+            "q": {
+              "duration": 2,
+              "mode": "hover-and-wait"
+            },
+            "r": {
+              "mode": "qualitative",
+              "value": "normal"
+            },
+            "s": 1.0,
+            "task_id": 3
+          }
+        ],
+        "type": "parallel"
+      }
+    ]
+  }
+}
