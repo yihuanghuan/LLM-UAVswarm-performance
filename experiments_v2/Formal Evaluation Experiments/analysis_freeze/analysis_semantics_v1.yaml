@@ -1,0 +1,149 @@
+analysis_semantics_id: formal-analysis-semantics-v1
+status: FROZEN_BEFORE_CAMPAIGN_V2
+approval: HUMAN_APPROVED_PROSPECTIVE_ANALYSIS_DECISION
+dataset_used_to_select_semantics: none
+demo_outcomes_used_to_select_semantics: false
+scientific_protocols_modified: false
+campaign_v2_created: false
+
+authoritative_dependencies:
+  E2:
+    protocol_sha256: 9ea7234db111b69cccb72315eed26e4abf117955eb20a2d593f2d854ea0b40e3
+    registry_sha256: 8215a5d8248c946c480ca4c8cb41e2afac28e6021c9f308a068580da69369bae
+  E3:
+    protocol_version: v3
+    activation_commit: 16de9c7ffd83b67925fc5817f33665727ccbb75f
+    protocol_sha256: 2eea03e2bb33aa1c10c1ae104b965f909690f00c8caee4446291faf2c9893013
+    registry_sha256: b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2
+  E4:
+    protocol_sha256: 5a7eeb923aebcfb068827c6513a37e856dc8d6f05166a4b84775b33572bd83d0
+    registry_sha256: 48779a6667759955dd7dab2d8509f61a5439cca51a4bf98fcb48b6d17c499f95
+  E5:
+    protocol_sha256: 116002154cd2395b6a9f55d7c1aae6e0a2c42440f0ceaa827a1a8cb02828319c
+    registry_sha256: 9bb6bc9b46b5211c50c8f2e29bd434235424beb2bb0fc36ec857a3298d89511e
+  policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+
+a1_numerical_conventions:
+  classification: A1_FROZEN_PROSPECTIVELY
+  time_basis: authoritative ROS experiment time from message header; bag receive time is retained diagnostically
+  ordering: monotonic nondecreasing after deterministic duplicate resolution
+  duplicate_timestamps:
+    identical_values: retain one canonical sample
+    material_disagreement: fail_signal_closed
+    numeric_equivalence_absolute_tolerance: 1.0e-12
+  interval_clipping:
+    rule: clip to exact registered closed interval
+    boundary_interpolation: piecewise_linear
+    extrapolation: forbidden
+  multiuav_synchronization:
+    rule: piecewise-linearly interpolate each UAV signal on the sorted union of participating signal timestamps and exact boundaries
+    pairwise_distance: evaluate 3-D Euclidean distance on the synchronized union grid
+  threshold_crossing: piecewise_linear_between_adjacent_pairwise_distance_samples
+  integration: trapezoidal
+  rms: square root of trapezoidal integral of squared magnitude divided by exact interval duration
+  discrete_state_duration: zero_order_hold_from_each_observation_until_the_next
+  smoothing: forbidden
+  coverage:
+    controller_expected_rate_hz: 50.0
+    controller_expected_period_s: 0.02
+    maximum_allowed_gap_s: 0.20
+    basis: controller 50 Hz timer and frozen 0.20 s neighbor-staleness contract
+    start_and_end_rule: each exact boundary must be sampled or bracketed by valid neighbors with no adjacent gap above 0.20 s
+    fail_closed: true
+    partial_diagnostics_allowed: true
+
+human_approved_prospective_analysis_decisions:
+  E3_hard_risk:
+    approval: HUMAN_APPROVED_PROSPECTIVE_ANALYSIS_DECISION
+    threshold_source: frozen_policy.d_hard
+    current_d_hard_m: 1.50
+    inside_predicate: distance_3d < d_hard
+    equality_inside: false
+    event_unit: unordered_uav_pair
+    event: one maximal connected below-threshold interval for that pair
+    debounce: none
+    hysteresis: none
+    minimum_duration: none
+    short_gap_merging: none
+    primary_event_count: sum of pair-specific events
+    primary_exposure: sum of pair-specific durations in pair-seconds
+    diagnostic_union: any_pair_hard_risk_duration
+  E4A_acceleration_rise_time:
+    approval: HUMAN_APPROVED_PROSPECTIVE_ANALYSIS_DECISION
+    signal: 3-D Euclidean norm of commanded LADRC acceleration
+    peak: global maximum over the frozen scored interval
+    t10: first interpolated crossing of 10 percent of global peak; scored start if already above
+    t90: first interpolated crossing of 90 percent of global peak at or after t10
+    multi_peak: first 90-percent-of-global-peak crossing after t10
+    filtering: none
+    no_valid_t90: per-UAV analysis-invalid
+  E4A_interval:
+    approval: HUMAN_APPROVED_PROSPECTIVE_ANALYSIS_DECISION
+    continuous_metrics: '[t0, t0 + exact_spec.explicit_T]'
+    settling_time: stable_hover_entry_timestamp - t0
+    settling_not_truncated_at_explicit_T: true
+  E4A_aggregation:
+    approval: HUMAN_APPROVED_PROSPECTIVE_ANALYSIS_DECISION
+    retain_per_uav: true
+    settling_time_swarm: max per-UAV
+    control_effort_swarm: arithmetic mean per-UAV integrals
+    acceleration_peak_swarm: arithmetic mean per-UAV peaks
+    acceleration_peak_max_diagnostic: true
+    acceleration_rms_swarm: square root of mean per-UAV RMS squared
+    rise_time_swarm: arithmetic mean only when every required UAV is valid
+    tracking_rmse_swarm: square root of mean per-UAV RMSE squared
+  E5_physical_interval:
+    approval: HUMAN_APPROVED_PROSPECTIVE_ANALYSIS_DECISION
+    start: first actual execution-command publication for the first registered task or group
+    end: exact registered terminal mission-completion event reconstructed from the registered mission graph
+    used_by: [actual_d_min, tracking_RMSE, iapf_burden]
+    timeout_is_separate: true
+  E5_tracking_aggregation:
+    approval: HUMAN_APPROVED_PROSPECTIVE_ANALYSIS_DECISION
+    retain_per_uav: true
+    swarm: square root of mean per-UAV RMSE squared
+  E5_final_error:
+    approval: HUMAN_APPROVED_PROSPECTIVE_ANALYSIS_DECISION
+    timestamp: authoritative terminal mission completion
+    target: final registered target under executed terminal assignment
+    primary: arithmetic mean per-UAV final errors
+    diagnostic: maximum per-UAV final error
+    without_terminal_completion: NA
+  E5_iapf_burden:
+    approval: HUMAN_APPROVED_PROSPECTIVE_ANALYSIS_DECISION
+    quantities: [activation_time, integral_delta_p, integral_delta_a]
+    primary_swarm: sum across participating UAVs
+    diagnostics: [per_uav, per_uav_mean]
+  E5_latency:
+    approval: HUMAN_APPROVED_PROSPECTIVE_ANALYSIS_DECISION
+    semantics: stage_service_times_not_an_additive_partition
+    llm_inference: first provider request through final response accepted for parsing, including frozen retry/backoff
+    parse_validation: accepted response availability through terminal candidate/schema/semantic validation
+    snapshot_wait: sum of registered fresh-state acquisition spans
+    resolution: sum of deterministic resolution spans, excluding allocation
+    allocation: sum of allocator invocation spans
+    dispatch: sum of dispatch invocation through completion of all required command publications
+    physical_execution: terminal mission completion minus first execution-command publication; NA without completion
+    command_to_terminal_wall_clock: diagnostic language submission through terminal completion
+    components_required_to_sum: false
+  common_failure_and_partial_metric_policy:
+    approval: HUMAN_APPROVED_PROSPECTIVE_ANALYSIS_DECISION
+    primary_numeric_requires_complete_required_interval: true
+    later_failure_does_not_invalidate_an_earlier_complete_independent_metric: true
+    incomplete_interval_primary: NA
+    partial_values_are_diagnostic_only: true
+    final_error_requires_terminal_completion: true
+    all_attempt_boolean_and_status_denominators_retain_every_attempt: true
+    missing_encoded_as_numeric_zero: false
+
+population_semantics:
+  continuous_summaries: only complete valid numeric observations, with valid_N and NA_N reported
+  failures_removed_from_boolean_denominators: false
+  E3_pairing_keys: [scenario, seed, planning_condition, feedback_condition]
+  E3_exact_cells_required: [P0_F0, P0_F1, P1_F0, P1_F1]
+  E4A_pairing_keys: [scenario, geometry, seed, style]
+  E4A_styles_required: [smooth, normal, aggressive]
+  E4B_priority_preservation_denominator: all retained attempts
+  E5_mission_success_denominator: all retained attempts
+  post_hoc_filtering: forbidden
+  significance_driven_test_selection: forbidden
