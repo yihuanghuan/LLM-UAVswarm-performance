@@ -114,7 +114,23 @@ def _formal_backend(trial_id: str, position: int):
     from location_allocate.policy_adapter import load_runtime_policy
     registry=load_scenario_registry(); provenance=validate_provenance()
     policy=load_runtime_policy(POLICY_PATH)[1]
-    return build_attempt_record(trial_id,registry,policy,provenance,position,1)
+    record=build_attempt_record(trial_id,registry,policy,provenance,position,1)
+    return _formalize_backend_record(record)
+
+
+def _formalize_backend_record(record: Dict[str, Any]) -> Dict[str, Any]:
+    """Normalize only the legacy builder's attempt-classification metadata."""
+    record["dataset_class"]="formal_evaluation"
+    record["accepted_formal_result"]=True
+    record["result_notice"]=None
+    return record
+
+
+def _assert_formal_backend_record(record: Dict[str, Any]) -> None:
+    if not (record.get("dataset_class")=="formal_evaluation"
+            and record.get("accepted_formal_result") is True
+            and record.get("result_notice") is None):
+        raise E2FormalAdapterError("formal backend classification mismatch")
 
 
 def run_exact_trial(trial_id: str, campaign_context: Dict[str, Any]):
@@ -128,6 +144,7 @@ def run_exact_trial(trial_id: str, campaign_context: Dict[str, Any]):
     if mode=="formal":
         try:
             backend=_formal_backend(trial_id,position)
+            _assert_formal_backend_record(backend)
             _durable(output/"raw"/"offline_resolution_trace.json",backend)
         except Exception as exc:
             status="infrastructure_failure"; backend={"error":f"{type(exc).__name__}: {exc}"}
