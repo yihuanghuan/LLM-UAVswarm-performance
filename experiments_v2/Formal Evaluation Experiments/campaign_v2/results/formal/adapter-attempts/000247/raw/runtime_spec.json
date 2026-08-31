@@ -1,0 +1,146 @@
+{
+  "candidate_gt_used_as_input": false,
+  "cold_start_required": true,
+  "cold_start_spawn_m": {
+    "1": [
+      0.0,
+      3.0,
+      0.83
+    ],
+    "2": [
+      0.0,
+      6.0,
+      0.83
+    ],
+    "3": [
+      0.0,
+      9.0,
+      0.83
+    ],
+    "4": [
+      0.0,
+      12.0,
+      0.83
+    ],
+    "5": [
+      0.0,
+      15.0,
+      0.83
+    ],
+    "6": [
+      0.0,
+      18.0,
+      0.83
+    ],
+    "7": [
+      0.0,
+      21.0,
+      0.83
+    ],
+    "8": [
+      0.0,
+      24.0,
+      0.83
+    ]
+  },
+  "command_source": "sealed_registry_exact_command",
+  "dataset_class": "formal_evaluation",
+  "exact_command": "Have UAVs 1 through 8 form a spacious sphere centered at world-frame offset [3, 0, 1] meters from their current swarm centroid with automatic duration, using smooth motion and a safer safety setting.",
+  "exact_command_utf8_sha256": "5c964fb43420d5d73bb081efb37c268397fde9f5dc5b31d9768df5122b769094",
+  "fixture_class": "registered_formal_spec",
+  "frozen_language_runtime": {
+    "candidate_gt_used_as_input": false,
+    "few_shot_sha256": "385ab2d0d99bc51c3862c289e28a9a95fa0bd5df1436b68bd0ebf30bb5a83958",
+    "max_tokens": 4000,
+    "model": "MiniMax-M2.7-highspeed",
+    "prompt_version": "paper-candidate-en-v2",
+    "response_format": {
+      "type": "json_object"
+    },
+    "schema_sha256": "be6063a533f05b8d0b6e87353a40fb294975261fa1514cd5d34ced19ce2bffe7",
+    "system_prompt_sha256": "ed9e83e971d05f034065f82298599463d9d3e20f6b79e508f68233da79b0c4da",
+    "temperature": 0.0,
+    "top_p": 0.01
+  },
+  "full_method_modes": {
+    "assignment_mode": "safety_aware",
+    "avoidance_mode": "iapf_dual",
+    "control_mode": "ladrc_acceleration",
+    "lfs_runtime_mode": "candidate_v2"
+  },
+  "metric_log_schema": {
+    "latency_components": [
+      "LLM_inference",
+      "parse_validation",
+      "snapshot_wait",
+      "resolution",
+      "allocation",
+      "dispatch",
+      "physical_execution"
+    ],
+    "primary_metrics": [
+      "all_attempt_mission_success",
+      "tracking_RMSE",
+      "final_error",
+      "actual_d_min",
+      "iapf_burden",
+      "latency_decomposition"
+    ],
+    "raw_required": [
+      "raw_llm_request_response_metadata",
+      "candidate_validation",
+      "state_snapshots",
+      "resolution_trace",
+      "assignment_trace",
+      "dispatch_events",
+      "task_completion_events",
+      "per_uav_measured_position_3d",
+      "nominal_reference",
+      "safe_reference",
+      "iapf_active",
+      "iapf_delta_p",
+      "iapf_delta_a",
+      "hard_failures",
+      "px4_readiness"
+    ]
+  },
+  "mission_graph": {
+    "node_types": [
+      "task"
+    ],
+    "task_count": 1
+  },
+  "mission_timeout_s": 25.0,
+  "readiness_gate": {
+    "all_px4_ready": true,
+    "armed_offboard": true,
+    "before_command_submission": true,
+    "frozen_fresh_state_predicate": true,
+    "required_uav_count": 8,
+    "uav_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "runtime_spec_sha256": "1b94f4ef95e95a4c997467949facd3bca55beed318598f25b75b07c1e9dac6b4",
+  "runtime_spec_type": "E5_registered_full_method_runtime_v1",
+  "scenario_id": "E5-REL-QUAL",
+  "seed": 55104,
+  "trial_id": "E5-REL-QUAL__Full_Method__S55104",
+  "uav_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ]
+}

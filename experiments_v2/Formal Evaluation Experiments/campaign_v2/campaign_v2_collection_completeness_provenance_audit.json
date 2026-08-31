@@ -1,0 +1,198 @@
+{
+  "schema": "campaign_v2_collection_completeness_provenance_audit_v1",
+  "campaign_id": "E2-E5-final-paper-campaign-v2",
+  "generated_utc": "2026-08-30T13:47:43Z",
+  "collection_status": "CAMPAIGN_V2_610_COLLECTION_COMPLETE_READY_FOR_FROZEN_ANALYSIS",
+  "completion": {
+    "complete": true,
+    "retained_count": 610,
+    "next_global_position": null,
+    "next_trial_id": null,
+    "attempt_611_refused": true,
+    "attempt_611_refusal_message": "campaign rehearsal complete"
+  },
+  "population": {
+    "E2": 120,
+    "E3": 360,
+    "E4A": 45,
+    "E4B": 60,
+    "E5": 25,
+    "total": 610
+  },
+  "status_accounting": {
+    "global": {
+      "success": 592,
+      "method_failure": 0,
+      "timeout": 0,
+      "infrastructure_failure": 18,
+      "other_terminal": 0,
+      "scientific_complete": 592,
+      "scientific_availability_percent": 97.05
+    },
+    "E2": {
+      "success": 120,
+      "method_failure": 0,
+      "timeout": 0,
+      "infrastructure_failure": 0,
+      "other_terminal": 0,
+      "scientific_complete": 120,
+      "scientific_availability_percent": 100.0
+    },
+    "E3": {
+      "success": 348,
+      "method_failure": 0,
+      "timeout": 0,
+      "infrastructure_failure": 12,
+      "other_terminal": 0,
+      "scientific_complete": 348,
+      "scientific_availability_percent": 96.67
+    },
+    "E4A": {
+      "success": 45,
+      "method_failure": 0,
+      "timeout": 0,
+      "infrastructure_failure": 0,
+      "other_terminal": 0,
+      "scientific_complete": 45,
+      "scientific_availability_percent": 100.0
+    },
+    "E4B": {
+      "success": 60,
+      "method_failure": 0,
+      "timeout": 0,
+      "infrastructure_failure": 0,
+      "other_terminal": 0,
+      "scientific_complete": 60,
+      "scientific_availability_percent": 100.0
+    },
+    "E5": {
+      "success": 19,
+      "method_failure": 0,
+      "timeout": 0,
+      "infrastructure_failure": 6,
+      "other_terminal": 0,
+      "scientific_complete": 19,
+      "scientific_availability_percent": 76.0
+    }
+  },
+  "E5_scenario_availability": {
+    "SIMPLE": {"retained": 5, "scientific_complete": 5},
+    "REL-QUAL": {"retained": 5, "scientific_complete": 5},
+    "SEQUENTIAL": {"retained": 5, "scientific_complete": 4},
+    "PARALLEL": {"retained": 5, "scientific_complete": 5},
+    "MIXED-HIGH": {"retained": 5, "scientific_complete": 0}
+  },
+  "infrastructure_failures_by_cause": {
+    "provider timeout": 5,
+    "ROS discovery/readiness": 1,
+    "Gazebo/PX4 startup": 0,
+    "staging": 12,
+    "other": 0
+  },
+  "order_integrity": {
+    "status": "PASS",
+    "global_order_sha256": "db28bf8d734e1f206987519e91ff27c67b2d9ab2971aeb68c4e13735762f1dce",
+    "journal_matches_exact_610_permutation": true,
+    "missing_trial_ids": [],
+    "unexpected_or_duplicate_trial_ids": [],
+    "replacement_attempt_count": 0,
+    "rerun_of_retained_formal_position_count": 0,
+    "journal_record_count": 610,
+    "attempt_envelope_count": 610,
+    "adapter_attempt_count": 610,
+    "journal_chain_and_all_retained_hashes": "PASS"
+  },
+  "provenance": {
+    "status": "PASS",
+    "campaign_branch": "formal/campaign-v2-freeze",
+    "campaign_head": "d55ba9e3faddcc258a2b0985f6db821f8efcabfb",
+    "campaign_remote_head": "d55ba9e3faddcc258a2b0985f6db821f8efcabfb",
+    "campaign_tracked_worktree_clean": true,
+    "campaign_manifest_sha256": "da9f90d68d44948df0fa0de70fe1a0eec2421c8d3b23a25cefb3e9f18ab66ce6",
+    "launch_tooling_bundle_sha256": "a39963333dceb6ed112069e0491e063bc5ad5ea108d83bfa0c539d639313faea",
+    "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+    "analysis_semantics_sha256": "f19440262a96d784177e5367e8de2a2ec50b7b6ca5b229d4a6d09816408c0db3",
+    "formal_analysis_v1_bundle_sha256": "9210245b12a108447cf03715ca6fd90e6ad3bf85fcab7a61e4dcfc6e5ac545b4",
+    "family_execution_pins": {
+      "E2": {"head": "0b0976b21f0b55d22693d508069d52cf3d6bab03", "bundle_sha256": "9a6f5d127511faeae7d746729646dd6b4fddc1c9690d16f6b9f9f2cc84718d76", "clean": true},
+      "E3": {"head": "fe1f06ea8cd30f2846afa47294169c556ade1926", "bundle_sha256": "6c8fc316e140e7d4c31dd26d07850af217a53e65060c1fa10b16ea35bdfe78af", "clean": true},
+      "E4A": {"head": "7ca02a1bc079f1f36d4bb9a4f29344fcae54a059", "bundle_sha256": "fcbc0188b7f637c9bf9d49d4297b945013257deb53b2c1512e33a078a72eb1ac", "clean": true},
+      "E4B": {"head": "71451469a2cd8cdd375977636beb0b906b6e94e1", "bundle_sha256": "7b47c744a943a680d05468a4c76e0957f9979fb0d5ef1d5b8df3a94240fabc93", "clean": true},
+      "E5": {"head": "8fdd3d13c85229b083fc3fddd8d9729ff83d99ec", "bundle_sha256": "91b6008b2b70481501fb4a58d1fc79fed2a78b2a72d002035e5da4fb4a424079", "clean": true}
+    },
+    "environment_identity": {
+      "python": "3.10.12",
+      "numpy": "1.24.4",
+      "scipy": "1.8.0",
+      "os": "Ubuntu 22.04.5 LTS",
+      "architecture": "x86_64",
+      "gazebo": "Gazebo Classic 11.10.2",
+      "ros_distribution": "humble",
+      "rmw_implementation": "rmw_fastrtps_cpp",
+      "rmw_package_version": "6.2.9",
+      "ROS_DOMAIN_ID": 42,
+      "px4_commit": "30e763b6780061d70a14894e3e8b06e6a656f9b8",
+      "gazebo_submodule_commit": "da7206e057703cc645770f02437013358b71e1c0",
+      "status": "PASS"
+    },
+    "retained_attempt_1_original_bytes_match_intervention_evidence": true
+  },
+  "governance": {
+    "scientific_semantics_changed": false,
+    "retained_attempts_rewritten": false,
+    "replacement_sampling": false,
+    "campaign_reset": false,
+    "pauses": [
+      {
+        "class": "P0",
+        "detected_after_position": 1,
+        "reason": "E2 nested backend inherited synthetic classification labels",
+        "positions_affected": [1],
+        "recovery_evidence": "campaign_v2_p0_e2_provenance_intervention.json; scientific payload equivalence PASS; retained #1 unchanged"
+      },
+      {
+        "class": "P2",
+        "detected_after_position": 6,
+        "reason": "consecutive #5 E5 and #6 E3 infrastructure failures",
+        "positions_affected": [5, 6],
+        "recovery_evidence": "campaign_v2_p2_recovery_after_000006.json; E5 instrumentation-only correction tests PASS; one E3 non-formal diagnostic PASS"
+      },
+      {
+        "class": "P1",
+        "detected_after_position": 101,
+        "reason": "E5 MiniMax provider timeout",
+        "positions_affected": [101],
+        "recovery_evidence": "two independent non-formal MiniMax probes PASS"
+      },
+      {
+        "class": "P1",
+        "detected_after_position": 202,
+        "reason": "E5 MiniMax provider timeout",
+        "positions_affected": [202],
+        "recovery_evidence": "two independent non-formal MiniMax probes PASS"
+      },
+      {
+        "class": "P2",
+        "detected_after_position": 295,
+        "reason": "consecutive #294 and #295 E5 provider/LLM-path infrastructure failures",
+        "positions_affected": [294, 295],
+        "recovery_evidence": "campaign_v2_p2_human_adjudication_after_000295.json; human review accepted scenario-specific MIXED-HIGH limitation and unchanged protocol"
+      },
+      {
+        "class": "P1",
+        "detected_after_position": 359,
+        "reason": "remaining E5-MIXED-HIGH seed retained provider/LLM-path infrastructure failure",
+        "positions_affected": [359],
+        "recovery_evidence": "two independent non-formal endpoint/model health probes PASS; probe treated only as reachability/entitlement evidence"
+      }
+    ]
+  },
+  "campaign_v1": {
+    "status": "PASS_UNCHANGED",
+    "journal_record_count": 2,
+    "no_position_3": true,
+    "launcher_manifest_sha256": "dd5ed80049b138d4e97c82ce556ed306efbc6e4b2a369f7616be0ff101f332d1",
+    "file_map_sha256": "29a6539e4b6b4372e0adc98bc5b45b4a8a40c20c3f23f244460e45695d14ba37",
+    "included_in_campaign_v2_analysis": false
+  }
+}

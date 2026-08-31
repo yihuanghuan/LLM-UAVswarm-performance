@@ -1,0 +1,227 @@
+{
+  "assigned_targets_m": [
+    [
+      -2.7,
+      8.0,
+      6.0
+    ],
+    [
+      -0.9,
+      8.0,
+      6.0
+    ],
+    [
+      0.9,
+      8.0,
+      6.0
+    ],
+    [
+      2.7,
+      8.0,
+      6.0
+    ]
+  ],
+  "dataset_class": "formal_evaluation",
+  "duration_s": 3.5,
+  "fixture_class": "registered_formal_spec",
+  "initial_positions_m": [
+    [
+      -2.7,
+      8.0,
+      3.0
+    ],
+    [
+      -0.9,
+      8.0,
+      3.0
+    ],
+    [
+      0.9,
+      8.0,
+      3.0
+    ],
+    [
+      2.7,
+      8.0,
+      3.0
+    ]
+  ],
+  "metric_log_schema": {
+    "acceleration_response_components": [
+      "peak",
+      "RMS",
+      "rise_time"
+    ],
+    "control_effort_definition": "time integral norm commanded LADRC acceleration",
+    "primary_metrics": [
+      "settling_time",
+      "control_effort",
+      "acceleration_response",
+      "tracking_RMSE"
+    ],
+    "raw_required": [
+      "clock",
+      "commanded_ladrc_acceleration_3d",
+      "safe_reference_position_3d",
+      "measured_position_3d",
+      "trajectory_completion",
+      "stable_hover_entry"
+    ],
+    "tracking_RMSE_definition": "safe reference vs measured 3-D position"
+  },
+  "nominal_reference": {
+    "duration_s": 3.5,
+    "p0": {
+      "1": [
+        -2.7,
+        8.0,
+        3.0
+      ],
+      "2": [
+        -0.9,
+        8.0,
+        3.0
+      ],
+      "3": [
+        0.9,
+        8.0,
+        3.0
+      ],
+      "4": [
+        2.7,
+        8.0,
+        3.0
+      ]
+    },
+    "polynomial": "frozen Minimum-Jerk reference",
+    "style_may_regenerate_or_retime": false,
+    "targets": {
+      "1": [
+        -2.7,
+        8.0,
+        6.0
+      ],
+      "2": [
+        -0.9,
+        8.0,
+        6.0
+      ],
+      "3": [
+        0.9,
+        8.0,
+        6.0
+      ],
+      "4": [
+        2.7,
+        8.0,
+        6.0
+      ]
+    }
+  },
+  "profiles": [
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 3.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 3.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 3.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 3.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    }
+  ],
+  "runtime_spec_sha256": "0704f00d7298e4101be3411ba68a45be824255d7585fcdf326282efb7a7d4b8b",
+  "runtime_spec_type": "E4A_registered_physical_runtime_v1",
+  "safety_s": 1.0,
+  "seed": 54102,
+  "style": "normal",
+  "trial_id": "E4A-VERTICAL__normal__S54102",
+  "uav_ids": [
+    1,
+    2,
+    3,
+    4
+  ]
+}

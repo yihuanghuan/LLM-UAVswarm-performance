@@ -1,0 +1,74 @@
+{
+  "lfs_version": "2.1",
+  "mission": {
+    "nodes": [
+      {
+        "completion_mode": "synchronized",
+        "tasks": [
+          {
+            "F": {
+              "type": "Circle"
+            },
+            "T": {
+              "mode": "explicit",
+              "value": 7
+            },
+            "U": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "c": {
+              "mode": "absolute",
+              "value": [
+                -4,
+                14,
+                3
+              ]
+            },
+            "m": "smooth",
+            "q": {
+              "mode": "direct"
+            },
+            "r": {
+              "mode": "explicit",
+              "value": 2
+            },
+            "s": 1.25,
+            "task_id": 1
+          },
+          {
+            "F": {
+              "sides": 4,
+              "type": "Polygon"
+            },
+            "T": {
+              "mode": "auto"
+            },
+            "U": [
+              5,
+              6,
+              7,
+              8
+            ],
+            "c": {
+              "mode": "maintain_current_centroid"
+            },
+            "m": "normal",
+            "q": {
+              "mode": "direct"
+            },
+            "r": {
+              "mode": "qualitative",
+              "value": "compact"
+            },
+            "s": 1.0,
+            "task_id": 2
+          }
+        ],
+        "type": "parallel"
+      }
+    ]
+  }
+}

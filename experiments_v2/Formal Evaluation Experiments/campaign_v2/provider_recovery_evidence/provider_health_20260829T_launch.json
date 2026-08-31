@@ -1,0 +1,43 @@
+{
+  "accepted_formal_result": false,
+  "base_url": "https://api.minimax.chat/v1",
+  "campaign_total_quota_endpoint": "not_exposed_by_frozen_runtime_contract",
+  "campaign_total_quota_not_invented": true,
+  "dataset_class": "engineering_validation",
+  "exact_model_name": "MiniMax-M2.7-highspeed",
+  "formal_cursor_consumed": false,
+  "formal_provider_call_performed": false,
+  "independent_probe_count": 2,
+  "launch_level_model_entitlement_and_capacity": "PASS",
+  "observed_at_utc": "2026-08-29T05:59:02.071028+00:00",
+  "probes": [
+    {
+      "completion_tokens": 32,
+      "latency_s": 1.4162915749984677,
+      "probe": 1,
+      "prompt_tokens": 57,
+      "provider_returned_model": "MiniMax-M2.7-highspeed",
+      "requested_model": "MiniMax-M2.7-highspeed",
+      "response_content_retained": false,
+      "response_id_present": true,
+      "status": "PASS"
+    },
+    {
+      "completion_tokens": 32,
+      "latency_s": 1.0220753009998589,
+      "probe": 2,
+      "prompt_tokens": 57,
+      "provider_returned_model": "MiniMax-M2.7-highspeed",
+      "requested_model": "MiniMax-M2.7-highspeed",
+      "response_content_retained": false,
+      "response_id_present": true,
+      "status": "PASS"
+    }
+  ],
+  "prompt_schema_model_identity_unchanged": true,
+  "provider": "MiniMax",
+  "result_notice": "NOT_FORMAL_RESULT",
+  "schema": "campaign_v2_nonformal_provider_health_v1",
+  "status": "PASS",
+  "successful_probe_count": 2
+}

@@ -1,0 +1,419 @@
+{
+  "allocator_diagnostics": {
+    "allocator_version": "lexicographic-safety-aware-v2",
+    "d_hard": 1.5,
+    "d_plan": 1.8,
+    "distance": 112.92961599426846,
+    "final_assignment": [
+      7,
+      6,
+      1,
+      4,
+      3,
+      5,
+      2,
+      0
+    ],
+    "hard_feasible": true,
+    "hard_violations": 0,
+    "hungarian_initial_assignment": [
+      7,
+      0,
+      5,
+      2,
+      3,
+      4,
+      1,
+      6
+    ],
+    "iterations": 1,
+    "margin_cost": 0.0,
+    "margin_intrusion_m": 0.0,
+    "min_distance": 2.2483866045465772,
+    "planning_margin_met": true,
+    "residual_planning_risk": false,
+    "xy_crossings": 1
+  },
+  "allocator_metrics": {
+    "distance": 112.92961599426846,
+    "hard_violations": 0,
+    "margin_cost": 0.0,
+    "min_distance": 2.2483866045465772,
+    "xy_crossings": 1
+  },
+  "assigned_targets_m": [
+    [
+      6.0,
+      14.0,
+      3.0
+    ],
+    [
+      4.242640687119,
+      18.242640687119,
+      3.0
+    ],
+    [
+      0.0,
+      8.0,
+      3.0
+    ],
+    [
+      -4.242640687119,
+      18.242640687119,
+      3.0
+    ],
+    [
+      -6.0,
+      14.0,
+      3.0
+    ],
+    [
+      0.0,
+      20.0,
+      3.0
+    ],
+    [
+      -4.242640687119,
+      9.757359312881,
+      3.0
+    ],
+    [
+      4.242640687119,
+      9.757359312881,
+      3.0
+    ]
+  ],
+  "assignment_mode": "safety_aware",
+  "avoidance_mode": "iapf_dual",
+  "dataset_class": "formal_evaluation",
+  "disturbance": {
+    "affected_uavs": [],
+    "duration_s": 1.5,
+    "force_frame": "world",
+    "link": "base_link",
+    "loaded_for_zero_force_family_A": true,
+    "mechanism": "ROS 2 gazebo_plugins GazeboRosForce model plugin plus experiment-only e3_wrench_driver.py",
+    "model_overlay": "../environment/patches/iris_gazebo_ros_force_v1.patch",
+    "onset_s": 2.0,
+    "random_component": null,
+    "timing_basis": "/clock elapsed from /e3/disturbance_arm received at t0",
+    "torque": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vectors_N": {},
+    "waveform": "rectangular constant force",
+    "zero_wrench_at_end": true
+  },
+  "duration_s": 9.5,
+  "fixture_class": "registered_formal_spec",
+  "initial_positions_m": [
+    [
+      6.0,
+      0.0,
+      3.0
+    ],
+    [
+      4.242640687119,
+      4.242640687119,
+      3.0
+    ],
+    [
+      0.0,
+      6.0,
+      3.0
+    ],
+    [
+      -4.242640687119,
+      4.242640687119,
+      3.0
+    ],
+    [
+      -6.0,
+      0.0,
+      3.0
+    ],
+    [
+      -4.242640687119,
+      -4.242640687119,
+      3.0
+    ],
+    [
+      0.0,
+      -6.0,
+      3.0
+    ],
+    [
+      4.242640687119,
+      -4.242640687119,
+      3.0
+    ]
+  ],
+  "ordered_targets_m": [
+    [
+      4.242640687119,
+      9.757359312881,
+      3.0
+    ],
+    [
+      0.0,
+      8.0,
+      3.0
+    ],
+    [
+      -4.242640687119,
+      9.757359312881,
+      3.0
+    ],
+    [
+      -6.0,
+      14.0,
+      3.0
+    ],
+    [
+      -4.242640687119,
+      18.242640687119,
+      3.0
+    ],
+    [
+      0.0,
+      20.0,
+      3.0
+    ],
+    [
+      4.242640687119,
+      18.242640687119,
+      3.0
+    ],
+    [
+      6.0,
+      14.0,
+      3.0
+    ]
+  ],
+  "policy_path": "/home/yihuang/learning/LLM_swarm_ws/campaign_v2_pinned_worktrees/e3_source/lfs_policy/config/lfs_policy.paper_current.yaml",
+  "profiles": [
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 9.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 9.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 9.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 9.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 9.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 9.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 9.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 9.5,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    }
+  ],
+  "required_raw_schema": [
+    "clock",
+    "execution_command_t0",
+    "per_uav_position_3d",
+    "per_uav_nominal_reference",
+    "per_uav_safe_reference",
+    "iapf_active",
+    "iapf_delta_p",
+    "iapf_delta_a",
+    "allocator_prediction",
+    "completion_events",
+    "hard_failures",
+    "wrench_commands"
+  ],
+  "runtime_spec_sha256": "27b38cfeee729a47430d74370b6a4eb2d46c15df7fd6c40176e1d574e19c74db",
+  "runtime_spec_type": "E3_registered_physical_runtime_spec_v3",
+  "scoring": {
+    "end_offset_s": 11.5,
+    "t0": "interaction_execution_command_timestamp"
+  },
+  "seed": 53110,
+  "staging": {
+    "scored": false,
+    "stable_continuous_s": 2.0
+  },
+  "timeout_after_t0_s": 15.5,
+  "trial_id": "E3-A-02__P1_F1__S53110",
+  "uav_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ]
+}
