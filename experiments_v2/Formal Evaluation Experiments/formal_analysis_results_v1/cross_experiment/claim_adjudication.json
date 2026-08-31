@@ -1,0 +1,47 @@
+{
+  "analysis_bundle_sha256": "9210245b12a108447cf03715ca6fd90e6ad3bf85fcab7a61e4dcfc6e5ac545b4",
+  "analysis_semantics_sha256": "f19440262a96d784177e5367e8de2a2ec50b7b6ca5b229d4a6d09816408c0db3",
+  "analysis_source_commit": "023bf48e521e3a6d2383da4699d8820dcf603da7",
+  "bounded_behavioral_semantics": {
+    "E4A_verdict": "PARTIALLY_SUPPORTED",
+    "E4B_verdict": "SUPPORTED",
+    "maximum_defensible_wording": "The frozen qualitative motion profiles produce repeatable differences in control effort, acceleration, and tracking while preserving every registered authority predicate; because settling-time ordering is small and not scenario-consistent, this is supported as a bounded secondary property rather than a third core contribution.",
+    "status": "SECONDARY_PROPERTY_SUPPORTED"
+  },
+  "canonical_adjudication_sha256": "e225d2c13253e35d8e2f838772f2da3ecc53193516643bacba6339091369e3bb",
+  "central_research_question": "How can under-specified natural-language formation commands be realized as state-dependent, constraint-consistent, and safety-aware closed-loop behaviors in UAV-swarm reconfiguration?",
+  "core_contribution_A": {
+    "E2_verdict": "SUPPORTED",
+    "E4B_support": "SUPPORTED",
+    "contradictions_and_limitations": [
+      "The result is scoped to the frozen paired E2 scenarios and does not claim novelty of late binding in general."
+    ],
+    "maximum_defensible_wording": "In the evaluated UAV-swarm reconfiguration setting, preserving unresolved semantic intent until the registered execution snapshot prevents the state-inconsistency and feasibility-correction failures caused by premature numerical commitment, while frozen authority checks show that soft semantics remain subordinate to feasibility and safety.",
+    "verdict": "SUPPORTED"
+  },
+  "core_contribution_B": {
+    "E3_verdict": "PARTIALLY_SUPPORTED",
+    "contradictions_and_limitations": [
+      "Reactive feedback did not reduce residual realized hard-risk endpoints overall or in registered Family B.",
+      "No global collision-free guarantee follows."
+    ],
+    "maximum_defensible_wording": "In the evaluated UAV-swarm reconfiguration scenarios, safety-aware planning reduced predictable nominal conflict, realized hard-risk exposure, and the corrective burden left to feedback in the registered structural- and mixed-risk families. The frozen experiment did not show that reactive feedback reduced residual realized hard-risk exposure in the registered residual-risk family, so the full planning-execution responsibility decomposition is only partially supported.",
+    "verdict": "PARTIALLY_SUPPORTED"
+  },
+  "end_to_end_integration": {
+    "limitations": [
+      "REL-QUAL had 0/5 mission successes despite 5/5 scientific-complete attempts: every attempt reached the frozen resolver and was rejected because the registered qualitative scale conflicted with the workspace/safety geometry constraint. MIXED-HIGH had 0/5 scientific-complete attempts. For MIXED-HIGH, the bounded conclusion is that the frozen LLM semantic frontend did not reliably handle the highest-complexity mixed command under the evaluated frontend configuration. The data do not isolate MiniMax as the sole cause; model capability, prompt/few-shot design, structured generation, output budget, and timeout/retry interaction remain jointly plausible."
+    ],
+    "maximum_defensible_wording": "The evaluated full system completed all simple and parallel missions and four of five sequential missions, but the frozen resolver rejected every relative/qualitative mission and the frozen semantic frontend produced no scientific-complete highest-complexity mixed mission; end-to-end integration is therefore only partially supported.",
+    "mission_success": {
+      "count": 14,
+      "denominator": 25,
+      "rate": 0.56
+    },
+    "verdict": "PARTIALLY_SUPPORTED"
+  },
+  "overall_core_insight": "PARTIALLY_SUPPORTED",
+  "raw_dataset_commit": "33538b91ab9e0c53b918cdc0e47e3b7fa6f08592",
+  "reviewer_safe_scope": "evaluated UAV-swarm formation-reconfiguration setting",
+  "schema": "campaign_v2_cross_experiment_claim_adjudication_v1"
+}

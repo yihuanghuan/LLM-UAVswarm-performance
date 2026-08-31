@@ -1,0 +1,1253 @@
+{
+  "all_attempt_mission_success": {
+    "count": 14,
+    "denominator": 25,
+    "rate": 0.56
+  },
+  "analysis_semantics_sha256": "f19440262a96d784177e5367e8de2a2ec50b7b6ca5b229d4a6d09816408c0db3",
+  "analysis_source_commit": "023bf48e521e3a6d2383da4699d8820dcf603da7",
+  "canonical_summary_sha256": "c1eccf2f2eebaf7954408d0174c991f569fe3eb9d03bbeaacfaee9375b0b0d65",
+  "integration_verdict": "PARTIALLY_SUPPORTED",
+  "latency_service_time_summaries": {
+    "MIXED-HIGH": {
+      "allocation": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "dispatch": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "llm_inference": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "parse_validation": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "physical_execution": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "resolution": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "snapshot_wait": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      }
+    },
+    "OVERALL": {
+      "allocation": {
+        "IQR": 0.04649239899299573,
+        "NA_N": 6,
+        "mean": 0.06235328578814484,
+        "mean_95pct_t_CI": [
+          0.03511713672278033,
+          0.08958943485350936
+        ],
+        "median": 0.046046596005908214,
+        "q1": 0.022061481002310757,
+        "q3": 0.06855387999530649,
+        "standard_deviation": 0.05650834210560114,
+        "valid_N": 19
+      },
+      "dispatch": {
+        "IQR": 0.0006457964918809012,
+        "NA_N": 6,
+        "mean": 0.0008408883157627363,
+        "mean_95pct_t_CI": [
+          0.0005428874253193539,
+          0.0011388892062061187
+        ],
+        "median": 0.0008550220081815496,
+        "q1": 0.00040047500078799203,
+        "q3": 0.0010462714926688932,
+        "standard_deviation": 0.0006182788992869338,
+        "valid_N": 19
+      },
+      "llm_inference": {
+        "IQR": 9.482999999999997,
+        "NA_N": 6,
+        "mean": 29.567526315789475,
+        "mean_95pct_t_CI": [
+          18.57994985879015,
+          40.5551027727888
+        ],
+        "median": 23.753,
+        "q1": 18.423000000000002,
+        "q3": 27.906,
+        "standard_deviation": 22.79653147195965,
+        "valid_N": 19
+      },
+      "parse_validation": {
+        "IQR": 0.001560561505290714,
+        "NA_N": 6,
+        "mean": 0.13483379626284564,
+        "mean_95pct_t_CI": [
+          -0.08651563013781172,
+          0.356183222663503
+        ],
+        "median": 0.02936431300768305,
+        "q1": 0.028517760995077523,
+        "q3": 0.030078322500368238,
+        "standard_deviation": 0.4592458751018194,
+        "valid_N": 19
+      },
+      "physical_execution": {
+        "IQR": 6.06138092800029,
+        "NA_N": 11,
+        "mean": 11.141317983712984,
+        "mean_95pct_t_CI": [
+          9.446037838284331,
+          12.836598129141636
+        ],
+        "median": 11.036999603980803,
+        "q1": 8.046471626257699,
+        "q3": 14.107852554257988,
+        "standard_deviation": 2.9361458563212537,
+        "valid_N": 14
+      },
+      "resolution": {
+        "IQR": 0.0014448240035562776,
+        "NA_N": 6,
+        "mean": 0.0008888870020439897,
+        "mean_95pct_t_CI": [
+          0.0005218018298163437,
+          0.001255972174271636
+        ],
+        "median": 0.00040439800068270415,
+        "q1": 0.00017008400027407333,
+        "q3": 0.001614908003830351,
+        "standard_deviation": 0.0007616118726752062,
+        "valid_N": 19
+      },
+      "snapshot_wait": {
+        "IQR": 0.3571715660073096,
+        "NA_N": 6,
+        "mean": 1.0719867358910913,
+        "mean_95pct_t_CI": [
+          0.8016023604140066,
+          1.342371111368176
+        ],
+        "median": 0.8649645199911902,
+        "q1": 0.8622921869900892,
+        "q3": 1.2194637529973988,
+        "standard_deviation": 0.560981391047616,
+        "valid_N": 19
+      }
+    },
+    "PARALLEL": {
+      "allocation": {
+        "IQR": 0.0010026179952546954,
+        "NA_N": 0,
+        "mean": 0.04536594220262487,
+        "mean_95pct_t_CI": [
+          0.044358122034058166,
+          0.04637376237119157
+        ],
+        "median": 0.04566566900757607,
+        "q1": 0.044995932999881916,
+        "q3": 0.04599855099513661,
+        "standard_deviation": 0.0008116689942082978,
+        "valid_N": 5
+      },
+      "dispatch": {
+        "IQR": 0.00018580598407424986,
+        "NA_N": 0,
+        "mean": 0.0009418594010639936,
+        "mean_95pct_t_CI": [
+          0.0008073833991311384,
+          0.0010763354029968489
+        ],
+        "median": 0.0009518380102235824,
+        "q1": 0.0008550220081815496,
+        "q3": 0.0010408279922557995,
+        "standard_deviation": 0.00010830305310244387,
+        "valid_N": 5
+      },
+      "llm_inference": {
+        "IQR": 6.727,
+        "NA_N": 0,
+        "mean": 36.34459999999999,
+        "mean_95pct_t_CI": [
+          9.218443042356508,
+          63.470756957643474
+        ],
+        "median": 27.469,
+        "q1": 24.349,
+        "q3": 31.076,
+        "standard_deviation": 21.846616312372035,
+        "valid_N": 5
+      },
+      "parse_validation": {
+        "IQR": 0.0021352000135230753,
+        "NA_N": 0,
+        "mean": 0.02770801519763282,
+        "mean_95pct_t_CI": [
+          0.025636498245511473,
+          0.029779532149754165
+        ],
+        "median": 0.027626362990353925,
+        "q1": 0.02680326398892774,
+        "q3": 0.028938464002450814,
+        "standard_deviation": 0.0016683393857904172,
+        "valid_N": 5
+      },
+      "physical_execution": {
+        "IQR": 0.003260075012804009,
+        "NA_N": 0,
+        "mean": 8.043501744003152,
+        "mean_95pct_t_CI": [
+          8.030930759300654,
+          8.056072728705649
+        ],
+        "median": 8.038908254005946,
+        "q1": 8.038232353996136,
+        "q3": 8.04149242900894,
+        "standard_deviation": 0.010124304739995954,
+        "valid_N": 5
+      },
+      "resolution": {
+        "IQR": 8.316399180330336e-05,
+        "NA_N": 0,
+        "mean": 0.0015594631957355886,
+        "mean_95pct_t_CI": [
+          0.0014703188975640168,
+          0.0016486074939071605
+        ],
+        "median": 0.0015705259866081178,
+        "q1": 0.001521883998066187,
+        "q3": 0.0016050479898694903,
+        "standard_deviation": 7.179421993432281e-05,
+        "valid_N": 5
+      },
+      "snapshot_wait": {
+        "IQR": 0.0017540150001877919,
+        "NA_N": 0,
+        "mean": 0.7309943071944872,
+        "mean_95pct_t_CI": [
+          0.35028895745110006,
+          1.1116996569378743
+        ],
+        "median": 0.8639440049882978,
+        "q1": 0.8632105049910024,
+        "q3": 0.8649645199911902,
+        "standard_deviation": 0.3066089942964671,
+        "valid_N": 5
+      }
+    },
+    "REL-QUAL": {
+      "allocation": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "dispatch": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "llm_inference": {
+        "IQR": 2.1260000000000012,
+        "NA_N": 0,
+        "mean": 18.0476,
+        "mean_95pct_t_CI": [
+          13.691474281131306,
+          22.403725718868692
+        ],
+        "median": 17.957,
+        "q1": 17.953,
+        "q3": 20.079,
+        "standard_deviation": 3.5082967092308484,
+        "valid_N": 5
+      },
+      "parse_validation": {
+        "IQR": 0.001386009997279558,
+        "NA_N": 0,
+        "mean": 0.029095846802612967,
+        "mean_95pct_t_CI": [
+          0.027480973429640333,
+          0.030710720175585602
+        ],
+        "median": 0.02963270100951121,
+        "q1": 0.028686860002810732,
+        "q3": 0.03007287000009029,
+        "standard_deviation": 0.001300571954497162,
+        "valid_N": 5
+      },
+      "physical_execution": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "resolution": {
+        "IQR": 1.607800368219614e-05,
+        "NA_N": 0,
+        "mean": 9.804940054891631e-05,
+        "mean_95pct_t_CI": [
+          8.351640657577754e-05,
+          0.00011258239452205508
+        ],
+        "median": 9.1200003225822e-05,
+        "q1": 8.990899368654937e-05,
+        "q3": 0.0001059869973687455,
+        "standard_deviation": 1.1704449830358851e-05,
+        "valid_N": 5
+      },
+      "snapshot_wait": {
+        "IQR": 0.9997252930043032,
+        "NA_N": 0,
+        "mean": 1.5704471071963781,
+        "mean_95pct_t_CI": [
+          0.654944710721727,
+          2.485949503671029
+        ],
+        "median": 1.6383367399903364,
+        "q1": 0.8691721569921356,
+        "q3": 1.8688974499964388,
+        "standard_deviation": 0.7373189508587251,
+        "valid_N": 5
+      }
+    },
+    "SEQUENTIAL": {
+      "allocation": {
+        "IQR": 0.010341558247091598,
+        "NA_N": 1,
+        "mean": 0.15719816524324415,
+        "mean_95pct_t_CI": [
+          0.13617383900998561,
+          0.17822249147650268
+        ],
+        "median": 0.16113058698829263,
+        "q1": 0.1539935969922226,
+        "q3": 0.1643351552393142,
+        "standard_deviation": 0.013212682456479396,
+        "valid_N": 4
+      },
+      "dispatch": {
+        "IQR": 0.00016327900084434077,
+        "NA_N": 1,
+        "mean": 0.0017345034975733142,
+        "mean_95pct_t_CI": [
+          0.0015681666045352003,
+          0.0019008403906114282
+        ],
+        "median": 0.001725511498079868,
+        "q1": 0.0016483679974044207,
+        "q3": 0.0018116469982487615,
+        "standard_deviation": 0.00010453398240336142,
+        "valid_N": 4
+      },
+      "llm_inference": {
+        "IQR": 23.291249999999998,
+        "NA_N": 1,
+        "mean": 45.16524999999999,
+        "mean_95pct_t_CI": [
+          -20.60161954275113,
+          110.93211954275111
+        ],
+        "median": 27.4835,
+        "q1": 24.67875,
+        "q3": 47.97,
+        "standard_deviation": 41.331015975697156,
+        "valid_N": 4
+      },
+      "parse_validation": {
+        "IQR": 0.5043299122496245,
+        "NA_N": 1,
+        "mean": 0.5330304522504017,
+        "mean_95pct_t_CI": [
+          -1.056314517055183,
+          2.1223754215559865
+        ],
+        "median": 0.03496531950152715,
+        "q1": 0.03183292975115215,
+        "q3": 0.5361628420007767,
+        "standard_deviation": 0.9988196606280972,
+        "valid_N": 4
+      },
+      "physical_execution": {
+        "IQR": 0.009231236992491176,
+        "NA_N": 1,
+        "mean": 15.142449908500566,
+        "mean_95pct_t_CI": [
+          15.128027844228876,
+          15.156871972772256
+        ],
+        "median": 15.145756545003678,
+        "q1": 15.139487608255877,
+        "q3": 15.148718845248368,
+        "standard_deviation": 0.00906350831292412,
+        "valid_N": 4
+      },
+      "resolution": {
+        "IQR": 0.0002095687304972671,
+        "NA_N": 1,
+        "mean": 0.0017805077586672269,
+        "mean_95pct_t_CI": [
+          0.0015153603468065398,
+          0.0020456551705279142
+        ],
+        "median": 0.0017521255067549646,
+        "q1": 0.0016615322674624622,
+        "q3": 0.0018711009979597293,
+        "standard_deviation": 0.00016663119275283652,
+        "valid_N": 4
+      },
+      "snapshot_wait": {
+        "IQR": 0.10525728174070537,
+        "NA_N": 1,
+        "mean": 0.7860463647502911,
+        "mean_95pct_t_CI": [
+          0.5609695229004344,
+          1.0111232066001477
+        ],
+        "median": 0.8447291955017135,
+        "q1": 0.7627591392556496,
+        "q3": 0.868016420996355,
+        "standard_deviation": 0.1414489485501326,
+        "valid_N": 4
+      }
+    },
+    "SIMPLE": {
+      "allocation": {
+        "IQR": 0.004285242990590632,
+        "NA_N": 0,
+        "mean": 0.06581801159773022,
+        "mean_95pct_t_CI": [
+          0.0626297976280387,
+          0.06900622556742174
+        ],
+        "median": 0.06475699599832296,
+        "q1": 0.0637681850057561,
+        "q3": 0.06805342799634673,
+        "standard_deviation": 0.002567694621333711,
+        "valid_N": 5
+      },
+      "dispatch": {
+        "IQR": 0.00012184398656245321,
+        "NA_N": 0,
+        "mean": 0.0008659134007757529,
+        "mean_95pct_t_CI": [
+          0.0007840839739443912,
+          0.0009477428276071147
+        ],
+        "median": 0.0008489269966958091,
+        "q1": 0.000809205012046732,
+        "q3": 0.0009310489986091852,
+        "standard_deviation": 6.590303572443026e-05,
+        "valid_N": 5
+      },
+      "llm_inference": {
+        "IQR": 6.972999999999999,
+        "NA_N": 0,
+        "mean": 21.8322,
+        "mean_95pct_t_CI": [
+          15.450482165837577,
+          28.213917834162423
+        ],
+        "median": 21.525,
+        "q1": 18.003,
+        "q3": 24.976,
+        "standard_deviation": 5.139649569766405,
+        "valid_N": 5
+      },
+      "parse_validation": {
+        "IQR": 0.000676217005938895,
+        "NA_N": 0,
+        "mean": 0.02914020199824634,
+        "mean_95pct_t_CI": [
+          0.028339282486920428,
+          0.029941121509572254
+        ],
+        "median": 0.029287060994306557,
+        "q1": 0.028688096001744157,
+        "q3": 0.02936431300768305,
+        "standard_deviation": 0.0006450372342957114,
+        "valid_N": 5
+      },
+      "physical_execution": {
+        "IQR": 0.0022908320097485557,
+        "NA_N": 0,
+        "mean": 11.038228683592752,
+        "mean_95pct_t_CI": [
+          11.034560795551052,
+          11.041896571634453
+        ],
+        "median": 11.037146936971112,
+        "q1": 11.036852270990494,
+        "q3": 11.039143103000242,
+        "standard_deviation": 0.002954010140430038,
+        "valid_N": 5
+      },
+      "resolution": {
+        "IQR": 9.201900684274733e-05,
+        "NA_N": 0,
+        "mean": 0.0002958518045488745,
+        "mean_95pct_t_CI": [
+          0.00020252569270291584,
+          0.00038917791639483316
+        ],
+        "median": 0.0002556179970270023,
+        "q1": 0.0002509010082576424,
+        "q3": 0.0003429200151003897,
+        "standard_deviation": 7.516213080267076e-05,
+        "valid_N": 5
+      },
+      "snapshot_wait": {
+        "IQR": 0.6965652559883893,
+        "NA_N": 0,
+        "mean": 1.1432710901950487,
+        "mean_95pct_t_CI": [
+          0.5615949894983239,
+          1.7249471908917735
+        ],
+        "median": 0.869608912995318,
+        "q1": 0.8621690820000367,
+        "q3": 1.558734337988426,
+        "standard_deviation": 0.46846498049246604,
+        "valid_N": 5
+      }
+    }
+  },
+  "maximum_defensible_paper_wording": "The evaluated full system completed all simple and parallel missions and four of five sequential missions, but the frozen resolver rejected every relative/qualitative mission and the frozen semantic frontend produced no scientific-complete highest-complexity mixed mission; end-to-end integration is therefore only partially supported.",
+  "mission_success_by_scenario": {
+    "MIXED-HIGH": {
+      "count": 0,
+      "denominator": 5,
+      "rate": 0.0
+    },
+    "PARALLEL": {
+      "count": 5,
+      "denominator": 5,
+      "rate": 1.0
+    },
+    "REL-QUAL": {
+      "count": 0,
+      "denominator": 5,
+      "rate": 0.0
+    },
+    "SEQUENTIAL": {
+      "count": 4,
+      "denominator": 5,
+      "rate": 0.8
+    },
+    "SIMPLE": {
+      "count": 5,
+      "denominator": 5,
+      "rate": 1.0
+    }
+  },
+  "mixed_high_limitation": "REL-QUAL had 0/5 mission successes despite 5/5 scientific-complete attempts: every attempt reached the frozen resolver and was rejected because the registered qualitative scale conflicted with the workspace/safety geometry constraint. MIXED-HIGH had 0/5 scientific-complete attempts. For MIXED-HIGH, the bounded conclusion is that the frozen LLM semantic frontend did not reliably handle the highest-complexity mixed command under the evaluated frontend configuration. The data do not isolate MiniMax as the sole cause; model capability, prompt/few-shot design, structured generation, output budget, and timeout/retry interaction remain jointly plausible.",
+  "observed_scientific_complete_coverage": {
+    "MIXED-HIGH": 0,
+    "PARALLEL": 5,
+    "REL-QUAL": 5,
+    "SEQUENTIAL": 4,
+    "SIMPLE": 5
+  },
+  "population": {
+    "infrastructure_failure": 6,
+    "retained": 25,
+    "scientific_complete": 19
+  },
+  "raw_dataset_commit": "33538b91ab9e0c53b918cdc0e47e3b7fa6f08592",
+  "scenario_summaries": {
+    "MIXED-HIGH": {
+      "actual_d_min": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "final_error": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "iapf_activation_burden": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "infrastructure_failure": 5,
+      "integral_delta_a_burden": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "integral_delta_p_burden": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "mission_success": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "parsing_resolution_status": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "provider_status": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "retained": 5,
+      "scientific_complete": 0,
+      "tracking_RMSE": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      }
+    },
+    "PARALLEL": {
+      "actual_d_min": {
+        "IQR": 0.033952991307570235,
+        "NA_N": 0,
+        "mean": 1.8293583936095792,
+        "mean_95pct_t_CI": [
+          1.803388043577965,
+          1.8553287436411934
+        ],
+        "median": 1.820344715084821,
+        "q1": 1.8150882153200287,
+        "q3": 1.849041206627599,
+        "standard_deviation": 0.020915763096283447,
+        "valid_N": 5
+      },
+      "final_error": {
+        "IQR": 0.0013380641614338107,
+        "NA_N": 0,
+        "mean": 0.049065384327990194,
+        "mean_95pct_t_CI": [
+          0.045983155583749734,
+          0.052147613072230654
+        ],
+        "median": 0.04859281360495024,
+        "q1": 0.04838172284320287,
+        "q3": 0.04971978700463668,
+        "standard_deviation": 0.002482337209341109,
+        "valid_N": 5
+      },
+      "iapf_activation_burden": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "infrastructure_failure": 0,
+      "integral_delta_a_burden": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "integral_delta_p_burden": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "mission_success": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 1.0,
+        "mean_95pct_t_CI": [
+          1.0,
+          1.0
+        ],
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "parsing_resolution_status": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 1.0,
+        "mean_95pct_t_CI": [
+          1.0,
+          1.0
+        ],
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "provider_status": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 1.0,
+        "mean_95pct_t_CI": [
+          1.0,
+          1.0
+        ],
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "retained": 5,
+      "scientific_complete": 5,
+      "tracking_RMSE": {
+        "IQR": 0.0029067103795842736,
+        "NA_N": 0,
+        "mean": 0.08274237015696202,
+        "mean_95pct_t_CI": [
+          0.07997707206687876,
+          0.08550766824704528
+        ],
+        "median": 0.08374877202248909,
+        "q1": 0.08114252100324246,
+        "q3": 0.08404923138282673,
+        "standard_deviation": 0.002227090496369099,
+        "valid_N": 5
+      }
+    },
+    "REL-QUAL": {
+      "actual_d_min": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "final_error": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "iapf_activation_burden": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "infrastructure_failure": 0,
+      "integral_delta_a_burden": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "integral_delta_p_burden": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      },
+      "mission_success": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "parsing_resolution_status": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "provider_status": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 1.0,
+        "mean_95pct_t_CI": [
+          1.0,
+          1.0
+        ],
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "retained": 5,
+      "scientific_complete": 5,
+      "tracking_RMSE": {
+        "IQR": null,
+        "NA_N": 5,
+        "mean": null,
+        "mean_95pct_t_CI": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "standard_deviation": null,
+        "valid_N": 0
+      }
+    },
+    "SEQUENTIAL": {
+      "actual_d_min": {
+        "IQR": 0.016717402940150894,
+        "NA_N": 1,
+        "mean": 1.863644922419875,
+        "mean_95pct_t_CI": [
+          1.8472242438430404,
+          1.8800656009967096
+        ],
+        "median": 1.8645020498767666,
+        "q1": 1.8557147846782454,
+        "q3": 1.8724321876183962,
+        "standard_deviation": 0.010319532209903406,
+        "valid_N": 4
+      },
+      "final_error": {
+        "IQR": 0.0025053940102389774,
+        "NA_N": 1,
+        "mean": 0.0249712561748986,
+        "mean_95pct_t_CI": [
+          0.021905627882462468,
+          0.02803688446733473
+        ],
+        "median": 0.02500306010304283,
+        "q1": 0.023734461133851227,
+        "q3": 0.026239855144090204,
+        "standard_deviation": 0.0019265860274505422,
+        "valid_N": 4
+      },
+      "iapf_activation_burden": {
+        "IQR": 0.0,
+        "NA_N": 1,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 4
+      },
+      "infrastructure_failure": 1,
+      "integral_delta_a_burden": {
+        "IQR": 0.0,
+        "NA_N": 1,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 4
+      },
+      "integral_delta_p_burden": {
+        "IQR": 0.0,
+        "NA_N": 1,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 4
+      },
+      "mission_success": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.8,
+        "mean_95pct_t_CI": [
+          0.24471097896044025,
+          1.3552890210395598
+        ],
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "standard_deviation": 0.44721359549995804,
+        "valid_N": 5
+      },
+      "parsing_resolution_status": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.8,
+        "mean_95pct_t_CI": [
+          0.24471097896044025,
+          1.3552890210395598
+        ],
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "standard_deviation": 0.44721359549995804,
+        "valid_N": 5
+      },
+      "provider_status": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.8,
+        "mean_95pct_t_CI": [
+          0.24471097896044025,
+          1.3552890210395598
+        ],
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "standard_deviation": 0.44721359549995804,
+        "valid_N": 5
+      },
+      "retained": 5,
+      "scientific_complete": 4,
+      "tracking_RMSE": {
+        "IQR": 0.001153772899640082,
+        "NA_N": 1,
+        "mean": 0.10809301889125789,
+        "mean_95pct_t_CI": [
+          0.10478280024609705,
+          0.11140323753641872
+        ],
+        "median": 0.10910075127721486,
+        "q1": 0.10801999863441633,
+        "q3": 0.10917377153405641,
+        "standard_deviation": 0.0020802981905236892,
+        "valid_N": 4
+      }
+    },
+    "SIMPLE": {
+      "actual_d_min": {
+        "IQR": 0.0033297811731554106,
+        "NA_N": 0,
+        "mean": 2.504825037496715,
+        "mean_95pct_t_CI": [
+          2.493962139841052,
+          2.515687935152378
+        ],
+        "median": 2.5029987669200207,
+        "q1": 2.5020160134734284,
+        "q3": 2.505345794646584,
+        "standard_deviation": 0.0087486612089727,
+        "valid_N": 5
+      },
+      "final_error": {
+        "IQR": 0.002485064136303925,
+        "NA_N": 0,
+        "mean": 0.010702294279455104,
+        "mean_95pct_t_CI": [
+          0.007845126977387646,
+          0.013559461581522563
+        ],
+        "median": 0.010014768969731858,
+        "q1": 0.009895832907045519,
+        "q3": 0.012380897043349444,
+        "standard_deviation": 0.0023010792824795876,
+        "valid_N": 5
+      },
+      "iapf_activation_burden": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "infrastructure_failure": 0,
+      "integral_delta_a_burden": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "integral_delta_p_burden": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 0.0,
+        "mean_95pct_t_CI": [
+          0.0,
+          0.0
+        ],
+        "median": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "mission_success": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 1.0,
+        "mean_95pct_t_CI": [
+          1.0,
+          1.0
+        ],
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "parsing_resolution_status": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 1.0,
+        "mean_95pct_t_CI": [
+          1.0,
+          1.0
+        ],
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "provider_status": {
+        "IQR": 0.0,
+        "NA_N": 0,
+        "mean": 1.0,
+        "mean_95pct_t_CI": [
+          1.0,
+          1.0
+        ],
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "standard_deviation": 0.0,
+        "valid_N": 5
+      },
+      "retained": 5,
+      "scientific_complete": 5,
+      "tracking_RMSE": {
+        "IQR": 0.0003906393029678226,
+        "NA_N": 0,
+        "mean": 0.03785906234102012,
+        "mean_95pct_t_CI": [
+          0.037246338765805936,
+          0.038471785916234305
+        ],
+        "median": 0.03791117919660584,
+        "q1": 0.03765522539660188,
+        "q3": 0.0380458646995697,
+        "standard_deviation": 0.0004934697116938022,
+        "valid_N": 5
+      }
+    }
+  },
+  "schema": "campaign_v2_E5_frozen_summary_v1"
+}

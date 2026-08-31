@@ -1,0 +1,59 @@
+{
+  "analysis_bundle_sha256": "9210245b12a108447cf03715ca6fd90e6ad3bf85fcab7a61e4dcfc6e5ac545b4",
+  "analysis_order": [
+    "E2",
+    "E3",
+    "E4A",
+    "E4B",
+    "E5",
+    "cross-experiment"
+  ],
+  "analysis_semantics_sha256": "f19440262a96d784177e5367e8de2a2ec50b7b6ca5b229d4a6d09816408c0db3",
+  "analysis_source_commit": "023bf48e521e3a6d2383da4699d8820dcf603da7",
+  "canonical_manifest_sha256": "b80c12f496846121469e14737bcfbe114e1a937cbe781e4896005f666587b630",
+  "claim_verdicts": {
+    "E2": "SUPPORTED",
+    "E3": "PARTIALLY_SUPPORTED",
+    "E4A": "PARTIALLY_SUPPORTED",
+    "E4B": "SUPPORTED",
+    "E4_overall": "SECONDARY_PROPERTY_SUPPORTED",
+    "E5": "PARTIALLY_SUPPORTED",
+    "overall": "PARTIALLY_SUPPORTED"
+  },
+  "exact_analysis_commands": [
+    "python3 audit/run_frozen_analysis.py E2",
+    "python3 audit/run_frozen_analysis.py E3",
+    "python3 audit/run_frozen_analysis.py E4A",
+    "python3 audit/run_frozen_analysis.py E4B",
+    "python3 audit/run_frozen_analysis.py E5",
+    "python3 audit/run_frozen_analysis.py FINALIZE"
+  ],
+  "formal_provenance_adapter": "Unmodified frozen metric extractors and numerical primitives were supplied with a formal-campaign provenance envelope because the pre-campaign CLIs intentionally accepted only engineering-validation demos.",
+  "primary_csv_json_sha256": {
+    "E2/paired_results.csv": "18e89736c5dc060439ef787b6b290b2f30d38fbed5bb16e04650a5703c8f9675",
+    "E2/per_attempt_scored.csv": "dfee3d31e9cac1baa1d8cc39a59eea5d197f100b9d6726881759e006cc537834",
+    "E2/summary.json": "11bb2b6ea15886744cb56245c084db1926a39e1c30332e921614225b2a51392e",
+    "E3/factorial_summary.json": "691abfb6a92d79cf0226c1ecfef6aae670f21fd70deacf6a701c5d0945e93df8",
+    "E3/family_summaries.csv": "6bd7dda09cff0ad8e3981bcbcf3c24056a9c602dc879913ba442777b2ea3a03c",
+    "E3/paired_cells.csv": "31bb8fb73898dab670a7b1f97b1bd581cda0b3656ced7611ff3ddbb64a01630b",
+    "E3/per_attempt_scored.csv": "011fb800f9190482474a379318a6c4a01e112bf93eab63a8dbfdda0ea1c65a4d",
+    "E4A/paired_style_results.csv": "b4a788cd0424cea847595bb3f1b850eb2c0313eec000b56ad83a195a7d17e55d",
+    "E4A/per_attempt_scored.csv": "c6fe3529ce0dfdd02d81a6dd62ba13c7f1a1c94689c03be03c53c3822c90fa27",
+    "E4A/summary.json": "7a9dde8c1d63e7816ce8824fbf7aabff51dfddff239499414d8766ed34aa5838",
+    "E4B/authority_checks.csv": "c2c265dac074b38de9dfd5c5a9e9a67bc4e1ef134ef04e7960b46be37defd890",
+    "E4B/per_attempt_scored.csv": "14030aa582ae390330200534649803fac4b017851a5daf014326a4a4aee1c97c",
+    "E4B/summary.json": "fc5509ba8ce12f8bd483dac5c76de84eb233e2e37c06f0693f32d507e7d2d968",
+    "E5/latency_summary.csv": "2dfa8e118aee531fa76c8d06990b8e98003aa2d75f311d35891035910d55f6c1",
+    "E5/per_attempt_scored.csv": "9b7c5507d36a121f0cdfb987e77df82a488b53b4c633d1c29b61ae4bfcdd8def",
+    "E5/scenario_summary.csv": "33037491034aaeea8cb1aeff9b8cfdafc266c25b8aa14ec3b4bfaab22081cc23",
+    "E5/summary.json": "eb9a39433f65f8111cbc9079b4b14a5ed17faecda99b3ea104dd40e3b9fe2e9d",
+    "audit/analysis_completion_audit.json": "547281d959fcbd161a4117ba03089f21a0c365313f8f502ee45a384577bf2c99",
+    "audit/deterministic_replay_audit.json": "b42857a57b1ace3677fd8e9d3cf2da3bc6b0aefc057dcf5f807656a1a692dfa9",
+    "cross_experiment/claim_adjudication.json": "6ce3d7476eee4546f33903f5a9390284bc9749fab20e15754dca27290d3cb737",
+    "dataset_provenance.json": "dc418e112f8e94c842c2bd8789b661ed7cbe3c9da4d95c25f95223da15a5a619",
+    "paper_assets/tables/campaign_accounting.csv": "4f43415555ca8f9c197071b84ca39c4cd3f16f3ebfe6849133e2e8d40c56e38f",
+    "paper_assets/tables/claim_verdicts.csv": "8a3ccd91f922302fd8d14cc270acfa3a6f7824cb515764acb4330421a056a6d5"
+  },
+  "raw_dataset_commit": "33538b91ab9e0c53b918cdc0e47e3b7fa6f08592",
+  "schema": "campaign_v2_formal_analysis_results_manifest_v1"
+}
