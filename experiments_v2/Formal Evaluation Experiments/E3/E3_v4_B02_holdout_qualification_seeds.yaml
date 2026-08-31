@@ -1,0 +1,22 @@
+registry_id: E3-v4-B02-amendment-v1-holdout-qualification-seeds
+status: FROZEN_UNSEEN_BEFORE_AMENDMENT_SCREENING
+purpose: F0-only post-selection manipulation holdout
+dataset_class: calibration_pilot
+accepted_formal_result: false
+formal_population_eligible: false
+screening_population_eligible: false
+conditions: [P0_F0, P1_F0]
+seeds: [76174, 77507, 78307, 77571, 76333]
+generation:
+  algorithm: Python random.Random(seed).randrange with rejection of collisions
+  generator_seed: 2026083104
+  sampling_frame: integers 70000 through 79999 inclusive
+  excluded:
+    E3_v3_formal_seeds: [53101, 53102, 53103, 53104, 53105, 53106, 53107, 53108, 53109, 53110, 53111, 53112, 53113, 53114, 53115]
+    E3_v4_screening_qualification_seeds: [69707, 69912, 68907, 67442, 64654]
+  draw_order_preserved: true
+holdout_rule:
+  run_exactly_one_screening-selected_candidate: true
+  attempts: 10
+  selection_freeze_required_before_execution: E3_v4_B02_amendment_screening_selection.yaml
+  failure_action: BLOCKED_AT_E3_B02_HOLDOUT_FAILURE

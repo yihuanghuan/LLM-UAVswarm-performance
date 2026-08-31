@@ -25,6 +25,9 @@ E3_DIR = TOOLING_DIR.parent
 REPO_ROOT = E3_DIR.parents[2]
 GRID_PATH = E3_DIR / "E3_v4_candidate_disturbance_grid.yaml"
 SEEDS_PATH = E3_DIR / "E3_v4_qualification_seeds.yaml"
+AMENDMENT_GRID_PATH = E3_DIR / "E3_v4_B02_amendment_v1_grid.yaml"
+HOLDOUT_SEEDS_PATH = E3_DIR / "E3_v4_B02_holdout_qualification_seeds.yaml"
+AMENDMENT_SELECTION_PATH = E3_DIR / "E3_v4_B02_amendment_screening_selection.yaml"
 OLD_REGISTRY_PATH = E3_DIR / "e3_factorial_registry_v3.yaml"
 DEFAULT_OUTPUT = E3_DIR / "results" / "qualification" / "raw"
 ALLOWED = {
@@ -61,8 +64,60 @@ def git(*args: str) -> str:
     return subprocess.check_output(["git", *args], cwd=REPO_ROOT, text=True).strip()
 
 
-def build_candidate_spec(candidate_id: str, condition: str, seed: int) -> dict[str, Any]:
-    mapping = validate_condition(condition)
+def _resolve_registration(candidate_id: str, seed: int) -> dict[str, Any]:
+    """Resolve either the original grid or the versioned B-02 amendment."""
+    if candidate_id.startswith("B02-V1-"):
+        grid = load_yaml(AMENDMENT_GRID_PATH)
+        if grid.get("status") != "FROZEN_BEFORE_AMENDMENT_V1_PHYSICAL_QUALIFICATION":
+            raise QualificationError("B-02 amendment grid is not frozen")
+        if candidate_id not in grid["candidates"]:
+            raise QualificationError(f"unknown amendment candidate: {candidate_id}")
+        screen = [int(value) for value in load_yaml(SEEDS_PATH)["seeds"]]
+        holdout = [int(value) for value in load_yaml(HOLDOUT_SEEDS_PATH)["seeds"]]
+        if int(seed) in screen:
+            seed_role = "screening"
+            seed_registry_path = SEEDS_PATH
+        elif int(seed) in holdout:
+            seed_role = "holdout"
+            seed_registry_path = HOLDOUT_SEEDS_PATH
+            if not AMENDMENT_SELECTION_PATH.is_file():
+                raise QualificationError(
+                    "holdout execution refused before committed screening selection freeze"
+                )
+            selection = load_yaml(AMENDMENT_SELECTION_PATH)
+            if (selection.get("status") != "FROZEN_BEFORE_HOLDOUT_EXECUTION"
+                    or selection.get("selected_candidate_id") != candidate_id):
+                raise QualificationError(
+                    "holdout execution is restricted to the frozen selected candidate"
+                )
+        else:
+            raise QualificationError(f"unregistered amendment qualification seed: {seed}")
+        compact = grid["candidates"][candidate_id]
+        profile = grid["disturbance_profiles"][compact["profile"]]
+        candidate = {
+            "scenario_id": grid["scenario_id"],
+            "geometry": compact["geometry"],
+            "affected_uavs": [2, 3],
+            "vectors_N": {
+                2: [0.0, 0.0, float(profile["magnitude_N_per_uav"])],
+                3: [0.0, 0.0, -float(profile["magnitude_N_per_uav"])],
+            },
+            "magnitude_N_per_uav": float(profile["magnitude_N_per_uav"]),
+            "onset_s": float(grid["onset_s"]),
+            "duration_s": float(profile["duration_s"]),
+            "disposition": "PHYSICAL",
+            "amendment_profile": compact["profile"],
+        }
+        return {
+            "grid": grid,
+            "candidate": candidate,
+            "geometry": grid["geometries"][compact["geometry"]],
+            "grid_path": AMENDMENT_GRID_PATH,
+            "seed_registry_path": seed_registry_path,
+            "seed_role": seed_role,
+            "amendment": "B02_v1",
+        }
+
     grid, seeds = load_yaml(GRID_PATH), load_yaml(SEEDS_PATH)
     if grid.get("status") != "FROZEN_BEFORE_NEW_PHYSICAL_QUALIFICATION":
         raise QualificationError("candidate grid is not frozen")
@@ -73,11 +128,26 @@ def build_candidate_spec(candidate_id: str, condition: str, seed: int) -> dict[s
     if candidate_id not in grid["candidates"]:
         raise QualificationError(f"unknown candidate: {candidate_id}")
     candidate = grid["candidates"][candidate_id]
+    return {
+        "grid": grid,
+        "candidate": candidate,
+        "geometry": grid["geometries"][candidate["geometry"]],
+        "grid_path": GRID_PATH,
+        "seed_registry_path": SEEDS_PATH,
+        "seed_role": "legacy_screening",
+        "amendment": None,
+    }
+
+
+def build_candidate_spec(candidate_id: str, condition: str, seed: int) -> dict[str, Any]:
+    mapping = validate_condition(condition)
+    registration = _resolve_registration(candidate_id, seed)
+    candidate = registration["candidate"]
     if candidate.get("disposition") != "PHYSICAL":
         raise QualificationError(
             f"candidate is not executable: {candidate.get('disposition')}"
         )
-    geometry = grid["geometries"][candidate["geometry"]]
+    geometry = registration["geometry"]
     scenario = str(candidate["scenario_id"])
     family = "B_residual_execution_risk" if scenario.startswith("E3-B") else "C_mixed_risk"
     duration = float(geometry["duration_s"])
@@ -95,6 +165,8 @@ def build_candidate_spec(candidate_id: str, condition: str, seed: int) -> dict[s
         "condition": condition,
         "seed": int(seed),
         "family": family,
+        "qualification_amendment": registration["amendment"],
+        "qualification_seed_role": registration["seed_role"],
         "input_level": "frozen allocator target set plus executable task fields; no LLM call",
         "uav_ids": [int(value) for value in geometry["uav_ids"]],
         "initial_positions_m": geometry["initial_positions_m"],
@@ -136,8 +208,9 @@ def build_candidate_spec(candidate_id: str, condition: str, seed: int) -> dict[s
         },
     }
     spec["registered_input_hash"] = canonical_sha256({
-        "grid_sha256": sha256_file(GRID_PATH), "candidate": candidate,
+        "grid_sha256": sha256_file(registration["grid_path"]), "candidate": candidate,
         "geometry": geometry, "condition": condition, "seed": int(seed),
+        "seed_registry_sha256": sha256_file(registration["seed_registry_path"]),
     })
     spec["resolved_execution_spec_hash"] = canonical_sha256(spec)
     return spec
@@ -220,8 +293,22 @@ def execute(candidate_id: str, condition: str, seed: int, output_root: Path,
             "production_baseline": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
             "policy_sha256": sha256_file(POLICY_PATH),
             "old_E3_v3_registry_sha256": sha256_file(OLD_REGISTRY_PATH),
-            "candidate_grid_sha256": sha256_file(GRID_PATH),
-            "qualification_seeds_sha256": sha256_file(SEEDS_PATH),
+            "candidate_grid_sha256": (
+                sha256_file(AMENDMENT_GRID_PATH)
+                if spec["qualification_amendment"] == "B02_v1"
+                else sha256_file(GRID_PATH)
+            ),
+            "base_candidate_grid_sha256": sha256_file(GRID_PATH),
+            "B02_amendment_grid_sha256": (
+                sha256_file(AMENDMENT_GRID_PATH)
+                if spec["qualification_amendment"] == "B02_v1" else None
+            ),
+            "qualification_seeds_sha256": (
+                sha256_file(HOLDOUT_SEEDS_PATH)
+                if spec["qualification_seed_role"] == "holdout"
+                else sha256_file(SEEDS_PATH)
+            ),
+            "qualification_seed_role": spec["qualification_seed_role"],
         }
         manifest = {
             "schema": "E3_v4_qualification_attempt_v1",

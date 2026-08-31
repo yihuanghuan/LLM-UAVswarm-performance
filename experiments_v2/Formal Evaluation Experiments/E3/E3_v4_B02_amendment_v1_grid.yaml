@@ -1,0 +1,125 @@
+grid_id: E3-v4-B02-qualification-amendment-v1-grid
+status: FROZEN_BEFORE_AMENDMENT_V1_PHYSICAL_QUALIFICATION
+classification: qualification_protocol_amendment_after_preregistered_finite_grid_exhaustion
+dataset_class: calibration_pilot
+scenario_id: E3-B-02
+allowed_conditions: [P0_F0, P1_F0]
+forbidden_conditions: [P0_F1, P1_F1]
+production_semantics_changed: false
+F1_used_for_selection: false
+formal_results_generated: false
+d_hard_m: 1.5
+nominal_affected_pair_distance_m: 2.0
+duration_s: 8.0
+onset_s: 2.0
+affected_uavs: [2, 3]
+screening_seeds_file: E3_v4_qualification_seeds.yaml
+holdout_seeds_file: E3_v4_B02_holdout_qualification_seeds.yaml
+holdout_selection_freeze_file: E3_v4_B02_amendment_screening_selection.yaml
+
+reason: >-
+  B-02 v1 disturbance-only grid exhausted without valid target-pair residual risk;
+  analytic geometry review shows that a vertical-risk assay requires a horizontal
+  projection below d_hard while preserving nominal 3-D safety.
+
+geometry_formula:
+  horizontal_separations_m: [1.0, 1.1, 1.2]
+  z_midpoint_m: 3.0
+  z_separation: sqrt(2.0^2 - h^2)
+  uav1: [0.0, -4.0, 3.0]
+  uav2: [0.0, -h/2, 3.0-z_separation/2]
+  uav3: [0.0, +h/2, 3.0+z_separation/2]
+  uav4: [0.0, +4.0, 3.0]
+  target_translation_m: [8.0, 0.0, 0.0]
+
+geometries:
+  H1p0:
+    h_m: 1.0
+    z_separation_m: 1.7320508075688772
+    uav_ids: [1, 2, 3, 4]
+    duration_s: 8.0
+    initial_positions_m:
+      1: [0.0, -4.0, 3.0]
+      2: [0.0, -0.5, 2.1339745962155616]
+      3: [0.0, 0.5, 3.8660254037844384]
+      4: [0.0, 4.0, 3.0]
+    ordered_targets_m:
+      1: [8.0, -4.0, 3.0]
+      2: [8.0, -0.5, 2.1339745962155616]
+      3: [8.0, 0.5, 3.8660254037844384]
+      4: [8.0, 4.0, 3.0]
+  H1p1:
+    h_m: 1.1
+    z_separation_m: 1.6703293088490065
+    uav_ids: [1, 2, 3, 4]
+    duration_s: 8.0
+    initial_positions_m:
+      1: [0.0, -4.0, 3.0]
+      2: [0.0, -0.55, 2.1648353455754967]
+      3: [0.0, 0.55, 3.8351646544245033]
+      4: [0.0, 4.0, 3.0]
+    ordered_targets_m:
+      1: [8.0, -4.0, 3.0]
+      2: [8.0, -0.55, 2.1648353455754967]
+      3: [8.0, 0.55, 3.8351646544245033]
+      4: [8.0, 4.0, 3.0]
+  H1p2:
+    h_m: 1.2
+    z_separation_m: 1.6
+    uav_ids: [1, 2, 3, 4]
+    duration_s: 8.0
+    initial_positions_m:
+      1: [0.0, -4.0, 3.0]
+      2: [0.0, -0.6, 2.2]
+      3: [0.0, 0.6, 3.8]
+      4: [0.0, 4.0, 3.0]
+    ordered_targets_m:
+      1: [8.0, -4.0, 3.0]
+      2: [8.0, -0.6, 2.2]
+      3: [8.0, 0.6, 3.8]
+      4: [8.0, 4.0, 3.0]
+
+disturbance_profiles:
+  F2p0: {magnitude_N_per_uav: 2.0, duration_s: 1.5, impulse_Ns_per_uav: 3.0}
+  F3p0: {magnitude_N_per_uav: 3.0, duration_s: 1.5, impulse_Ns_per_uav: 4.5}
+  F4p0: {magnitude_N_per_uav: 4.0, duration_s: 1.5, impulse_Ns_per_uav: 6.0}
+
+screening_order:
+  - B02-V1-H1p0-F2p0
+  - B02-V1-H1p0-F3p0
+  - B02-V1-H1p0-F4p0
+  - B02-V1-H1p1-F2p0
+  - B02-V1-H1p1-F3p0
+  - B02-V1-H1p1-F4p0
+  - B02-V1-H1p2-F2p0
+  - B02-V1-H1p2-F3p0
+  - B02-V1-H1p2-F4p0
+
+selection_order_after_all_nine_cells:
+  - B02-V1-H1p2-F2p0
+  - B02-V1-H1p1-F2p0
+  - B02-V1-H1p0-F2p0
+  - B02-V1-H1p2-F3p0
+  - B02-V1-H1p1-F3p0
+  - B02-V1-H1p0-F3p0
+  - B02-V1-H1p2-F4p0
+  - B02-V1-H1p1-F4p0
+  - B02-V1-H1p0-F4p0
+
+selection_rule:
+  - passes_all_qualification_gates
+  - minimum_force_impulse
+  - maximum_horizontal_separation_h
+  - lexical_candidate_id
+  - never_use_F1_effect
+
+candidates:
+  B02-V1-H1p0-F2p0: {geometry: H1p0, profile: F2p0}
+  B02-V1-H1p0-F3p0: {geometry: H1p0, profile: F3p0}
+  B02-V1-H1p0-F4p0: {geometry: H1p0, profile: F4p0}
+  B02-V1-H1p1-F2p0: {geometry: H1p1, profile: F2p0}
+  B02-V1-H1p1-F3p0: {geometry: H1p1, profile: F3p0}
+  B02-V1-H1p1-F4p0: {geometry: H1p1, profile: F4p0}
+  B02-V1-H1p2-F2p0: {geometry: H1p2, profile: F2p0}
+  B02-V1-H1p2-F3p0: {geometry: H1p2, profile: F3p0}
+  B02-V1-H1p2-F4p0: {geometry: H1p2, profile: F4p0}
