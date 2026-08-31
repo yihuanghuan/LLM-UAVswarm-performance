@@ -1,0 +1,18 @@
+registry_id: E3-v4-qualification-seeds-v1
+status: FROZEN_FOR_QUALIFICATION_ONLY
+dataset_class: calibration_pilot
+seed_count: 5
+seeds: [69707, 69912, 68907, 67442, 64654]
+generation:
+  algorithm: Python random.Random(master_seed).sample(range(60000,70000),5)
+  master_seed: 2026083103
+  order_is_authoritative: true
+isolation:
+  disjoint_from_E3_v3_formal_seeds_53101_through_53115: true
+  forbidden_from_E3_v4_formal_population: true
+  no_replacement_seed: true
+  qualification_only: true
+failure_accounting:
+  retain_every_attempt: true
+  infrastructure_retry_uses_same_seed_and_explicit_retry_suffix: true
+  failed_attempt_is_never_deleted_or_overwritten: true
