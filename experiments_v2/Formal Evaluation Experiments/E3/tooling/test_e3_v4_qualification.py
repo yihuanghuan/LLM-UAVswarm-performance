@@ -14,6 +14,7 @@ from e3_formal_backend import build_runtime_spec
 from e3_v4_qualification import (
     GRID_PATH, QualificationError, build_candidate_spec, load_yaml, validate_condition,
 )
+from e3_v4_qualification_metrics import _qualification_identity
 
 
 class E3V4QualificationTests(unittest.TestCase):
@@ -25,6 +26,14 @@ class E3V4QualificationTests(unittest.TestCase):
         for value in ("P0_F1", "P1_F1", "F1", "iapf_dual"):
             with self.assertRaises(QualificationError):
                 validate_condition(value)
+
+    def test_runtime_trial_id_recovers_dropped_qualification_metadata(self):
+        self.assertEqual(
+            _qualification_identity("E3V4Q-B01-G1-4N-1p5__P0_F0__S69707"),
+            ("B01-G1-4N-1p5", "P0_F0", "E3-B-01"),
+        )
+        with self.assertRaises(ValueError):
+            _qualification_identity("E3V4Q-B01-G1-4N-1p5__P0_F1__S69707")
 
     def test_search_orders_are_finite_complete_and_unique(self):
         flattened = []

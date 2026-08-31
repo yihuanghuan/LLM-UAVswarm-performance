@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 from typing import Any
@@ -18,7 +19,6 @@ import yaml
 
 from e3_formal_backend import build_runtime_spec, execute_registered_trial
 from e3_trial_registry import POLICY_PATH, canonical_sha256, sha256_file
-from e3_v4_qualification_metrics import extract as extract_metrics
 
 TOOLING_DIR = Path(__file__).resolve().parent
 E3_DIR = TOOLING_DIR.parent
@@ -32,6 +32,10 @@ ALLOWED = {
     "P1_F0": {"assignment_mode": "safety_aware", "avoidance_mode": "off"},
 }
 NOTICE = "NOT_FORMAL_RESULT"
+METRICS_TOOL = TOOLING_DIR / "e3_v4_qualification_metrics.py"
+INTERFACE_PREFIX = Path(
+    "/home/yihuang/learning/LLM_swarm_ws/formal_install_v1/uav_swarm_interfaces"
+)
 
 
 class QualificationError(RuntimeError):
@@ -150,11 +154,43 @@ def _write_exclusive(path: Path, value: Any) -> None:
         os.fsync(stream.fileno())
 
 
-def execute(candidate_id: str, condition: str, seed: int, output_root: Path) -> dict[str, Any]:
+def _metrics_environment() -> dict[str, str]:
+    """Return an environment that resolves only the sealed formal interfaces."""
+    python_path = INTERFACE_PREFIX / "local/lib/python3.10/dist-packages"
+    library_path = INTERFACE_PREFIX / "lib"
+    if not python_path.is_dir() or not library_path.is_dir():
+        raise QualificationError(
+            f"sealed interface overlay is unavailable: {INTERFACE_PREFIX}"
+        )
+    env = os.environ.copy()
+    env["PYTHONPATH"] = ":".join(filter(None, (
+        str(python_path), env.get("PYTHONPATH", ""))))
+    env["LD_LIBRARY_PATH"] = ":".join(filter(None, (
+        str(library_path), env.get("LD_LIBRARY_PATH", ""))))
+    return env
+
+
+def _extract_metrics_in_sealed_overlay(raw_dir: Path, output_path: Path) -> dict[str, Any]:
+    subprocess.run(
+        [sys.executable, str(METRICS_TOOL), str(raw_dir), "--output", str(output_path)],
+        cwd=REPO_ROOT,
+        env=_metrics_environment(),
+        check=True,
+    )
+    return json.loads(output_path.read_text(encoding="utf-8"))
+
+
+def execute(candidate_id: str, condition: str, seed: int, output_root: Path,
+            retry_suffix: str | None = None) -> dict[str, Any]:
     spec = build_candidate_spec(candidate_id, condition, seed)
+    if retry_suffix is not None and not re.fullmatch(r"r[1-9][0-9]*", retry_suffix):
+        raise QualificationError("retry suffix must match r[1-9][0-9]*")
     output_root = Path(output_root).resolve()
     output_root.mkdir(parents=True, exist_ok=True)
-    attempt_dir = output_root / spec["trial_id"]
+    attempt_instance_id = spec["trial_id"] + (
+        f"__retry-{retry_suffix}" if retry_suffix is not None else ""
+    )
+    attempt_dir = output_root / attempt_instance_id
     if attempt_dir.exists():
         raise QualificationError(f"refusing to overwrite retained pilot: {attempt_dir}")
     lock_path = output_root / ".qualification.lock"
@@ -169,8 +205,9 @@ def execute(candidate_id: str, condition: str, seed: int, output_root: Path) -> 
         error = None
         try:
             physical = execute_registered_trial(spec, raw_dir)
-            metrics = extract_metrics(raw_dir)
-            _write_exclusive(attempt_dir / "qualification_metrics.json", metrics)
+            metrics = _extract_metrics_in_sealed_overlay(
+                raw_dir, attempt_dir / "qualification_metrics.json"
+            )
             status = str(physical.get("attempt_status", "infrastructure_failure"))
         except Exception as exc:
             status = "infrastructure_failure"
@@ -193,6 +230,9 @@ def execute(candidate_id: str, condition: str, seed: int, output_root: Path) -> 
             "result_notice": NOTICE,
             "formal_cursor_consumed": False,
             "trial_id": spec["trial_id"],
+            "attempt_instance_id": attempt_instance_id,
+            "retry_of": spec["trial_id"] if retry_suffix is not None else None,
+            "retry_suffix": retry_suffix,
             "candidate_id": candidate_id, "scenario_id": spec["scenario_id"],
             "condition": condition, "feedback": "F0", "seed": int(seed),
             "attempt_status": status, "error": error,
@@ -209,12 +249,14 @@ def main() -> int:
     parser.add_argument("--condition", required=True, choices=tuple(ALLOWED))
     parser.add_argument("--seed", required=True, type=int)
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--retry-suffix")
     parser.add_argument("--dry-run-spec", action="store_true")
     args = parser.parse_args()
     if args.dry_run_spec:
         value = build_runtime_spec(build_candidate_spec(args.candidate, args.condition, args.seed))
     else:
-        value = execute(args.candidate, args.condition, args.seed, args.output_root)
+        value = execute(args.candidate, args.condition, args.seed, args.output_root,
+                        retry_suffix=args.retry_suffix)
     print(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True))
     return 0 if value.get("attempt_status", "success") == "success" else 2
 

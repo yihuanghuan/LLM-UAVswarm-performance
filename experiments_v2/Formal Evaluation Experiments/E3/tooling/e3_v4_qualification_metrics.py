@@ -7,7 +7,9 @@ import argparse
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
+import re
 import sys
 from typing import Any
 
@@ -17,6 +19,20 @@ TOOLING_DIR = Path(__file__).resolve().parent
 E3_DIR = TOOLING_DIR.parent
 FORMAL_DIR = E3_DIR.parent
 ANALYSIS_TOOLS = FORMAL_DIR / "analysis_freeze" / "tooling"
+WORKSPACE = Path("/home/yihuang/learning/LLM_swarm_ws")
+INTERFACE_PREFIX = WORKSPACE / "formal_install_v1" / "uav_swarm_interfaces"
+INTERFACE_PYTHON = INTERFACE_PREFIX / "local/lib/python3.10/dist-packages"
+INTERFACE_LIB = INTERFACE_PREFIX / "lib"
+
+# The physical launcher sources the sealed formal overlay in its child shell, but
+# post-hoc extraction runs in this qualification process.  Import the generated
+# message bindings from that same sealed overlay without changing runtime method
+# semantics or falling back to a developer build.
+if not INTERFACE_PYTHON.is_dir() or not INTERFACE_LIB.is_dir():
+    raise RuntimeError(f"sealed interface overlay is unavailable: {INTERFACE_PREFIX}")
+sys.path.insert(0, str(INTERFACE_PYTHON))
+os.environ["LD_LIBRARY_PATH"] = ":".join(filter(None, (
+    str(INTERFACE_LIB), os.environ.get("LD_LIBRARY_PATH", ""))))
 sys.path.insert(0, str(ANALYSIS_TOOLS))
 
 from live_metric_helpers import command_time, pairwise_distance_metrics  # noqa: E402
@@ -54,6 +70,18 @@ def _vector(value: Any) -> np.ndarray:
     return np.array([float(value.x), float(value.y), float(value.z)])
 
 
+def _qualification_identity(trial_id: str) -> tuple[str, str, str]:
+    match = re.fullmatch(
+        r"E3V4Q-((?:B|C)(?:01|02)-.+)__(P0_F0|P1_F0)__S[0-9]+", trial_id
+    )
+    if match is None:
+        raise ValueError(f"unregistered qualification trial id: {trial_id}")
+    candidate_id, condition = match.groups()
+    scenario_token = candidate_id.split("-", 1)[0]
+    scenario_id = f"E3-{scenario_token[0]}-{scenario_token[1:]}"
+    return candidate_id, condition, scenario_id
+
+
 def extract(raw_dir: Path) -> dict[str, Any]:
     raw_dir = Path(raw_dir).resolve()
     spec = json.loads((raw_dir / "runtime_spec.json").read_text(encoding="utf-8"))
@@ -63,6 +91,7 @@ def extract(raw_dir: Path) -> dict[str, Any]:
         raise ValueError("qualification extractor refuses non-pilot data")
     if spec.get("avoidance_mode") != "off":
         raise ValueError("qualification extractor refuses feedback-on data")
+    candidate_id, condition, scenario_id = _qualification_identity(spec["trial_id"])
 
     suffixes = ("/execution_command", "/swarm_state", "/control_tracking_debug",
                 "/status", "/disturbance_arm")
@@ -134,9 +163,9 @@ def extract(raw_dir: Path) -> dict[str, Any]:
         "accepted_formal_result": False,
         "result_notice": "NOT_FORMAL_RESULT",
         "trial_id": spec["trial_id"],
-        "candidate_id": spec["candidate_id"],
-        "scenario_id": spec["scenario_id"],
-        "condition": spec["condition"],
+        "candidate_id": candidate_id,
+        "scenario_id": scenario_id,
+        "condition": condition,
         "seed": int(spec["seed"]),
         "feedback": "F0",
         "predicted": {
