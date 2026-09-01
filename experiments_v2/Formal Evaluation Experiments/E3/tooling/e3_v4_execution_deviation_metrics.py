@@ -154,8 +154,8 @@ def verify_delay(records, spec: dict, interaction: dict) -> dict[str, Any]:
         str(uid): [command_payload(value) for value in commands[int(uid)]]
         for uid in spec["uav_ids"]
     }
-    t0 = min(reference_times) if reference_times else math.inf
-    commitment = planning_commitment(records, spec, t0)
+    t0_sim = min(reference_times) if reference_times else math.inf
+    commitment = planning_commitment(records, spec, t0_sim)
     return {
         "mechanism": "command_delay",
         "verified": bool(
@@ -173,6 +173,7 @@ def verify_delay(records, spec: dict, interaction: dict) -> dict[str, Any]:
         "controller_acceptance_verified": ack_ok,
         "acceptance_timestamps_s": acknowledgments,
         "command_payloads": payloads,
+        "authoritative_timing_basis": "execution-command ROS simulation-time header",
         "planning_commitment": commitment,
     }
 
@@ -310,6 +311,7 @@ def verify_reference(records, spec: dict, interaction: dict) -> dict[str, Any]:
         "reset_ack_timestamps_s": [float(value.timestamp) for value in reset_ack],
         "effective_runtime_reference_verified": effective,
         "effective_runtime_reference": effective_detail,
+        "authoritative_timing_basis": "execution-command ROS simulation-time header",
         "planning_commitment": commitment,
     }
 
@@ -342,7 +344,13 @@ def extract(raw_dir: Path) -> dict[str, Any]:
     ]
     if not nominal_commands:
         raise ValueError("nominal interaction command evidence missing")
-    t0 = min(record.timestamp for record in nominal_commands)
+    # The experiment driver uses /clock for registered manipulation scheduling
+    # and stamps commands in simulation time.  The frozen production controller
+    # deliberately retains its existing ROS system clock, so its swarm/debug
+    # headers are in the recorder's system-time domain.  Use command bag-receipt
+    # time only to align realized production signals; manipulation timing itself
+    # remains verified from the command's authoritative simulation-time header.
+    t0 = min(record.bag_timestamp for record in nominal_commands)
     end = t0 + float(spec["duration_s"]) + 2.0
     distance, coverage = pairwise_distance_metrics(
         records, [int(value) for value in spec["uav_ids"]], t0, end,
@@ -355,10 +363,15 @@ def extract(raw_dir: Path) -> dict[str, Any]:
         pair for pair, detail in risk.items() if int(detail["event_count"]) > 0
     ]
     minimum = distance["actual_d_min"]
-    manipulation_start = (
-        t0 if mechanism == "command_delay"
-        else t0 + float(spec["manipulation"]["start_s"])
-    )
+    if mechanism == "command_delay":
+        manipulation_start = t0
+    else:
+        bias_mission = int(interaction["bias_mission_id"])
+        affected = int(spec["manipulation"]["affected_uav"])
+        bias_records = command_records(records, affected, bias_mission)
+        if len(bias_records) != 1:
+            raise ValueError("cannot align realized signals without exact bias command")
+        manipulation_start = float(bias_records[0].bag_timestamp)
     pre_activation = None
     if mechanism == "reference_deviation":
         pre_distance, pre_coverage = pairwise_distance_metrics(
@@ -453,6 +466,12 @@ def extract(raw_dir: Path) -> dict[str, Any]:
             ),
         },
         "coverage": coverage,
+        "timing_bases": {
+            "manipulation_delivery": "execution-command ROS simulation-time headers",
+            "realized_signal_alignment": "command bag receipt in frozen controller ROS system-time domain",
+            "realized_t0_s": t0,
+            "manipulation_start_realized_time_s": manipulation_start,
+        },
         "runtime_spec_sha256": sha256_file(raw_dir / "runtime_spec.json"),
         "raw_inventory": inventory,
         "raw_inventory_sha256": inventory_sha,
