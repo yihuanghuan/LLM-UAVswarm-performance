@@ -1,0 +1,180 @@
+{
+  "bias_mission_id": 3843942620,
+  "command_publications": [
+    {
+      "mission_id": 3843942619,
+      "role": "reference_nominal",
+      "ros_time_s": 61.7,
+      "uav_id": 1
+    },
+    {
+      "mission_id": 3843942619,
+      "role": "reference_nominal",
+      "ros_time_s": 61.7,
+      "uav_id": 2
+    },
+    {
+      "mission_id": 3843942619,
+      "role": "reference_nominal",
+      "ros_time_s": 61.7,
+      "uav_id": 4
+    },
+    {
+      "mission_id": 3843942619,
+      "role": "delayed_nominal",
+      "ros_time_s": 62.1,
+      "uav_id": 3
+    }
+  ],
+  "command_publish_count_by_uav": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1
+  },
+  "controller_events": [
+    {
+      "event": "command_accepted",
+      "failsafe": false,
+      "mission_id": 3843942619,
+      "stamp_s": 1788293125.4652445,
+      "uav_id": 1
+    },
+    {
+      "event": "command_accepted",
+      "failsafe": false,
+      "mission_id": 3843942619,
+      "stamp_s": 1788293125.4652648,
+      "uav_id": 2
+    },
+    {
+      "event": "command_accepted",
+      "failsafe": false,
+      "mission_id": 3843942619,
+      "stamp_s": 1788293125.4652822,
+      "uav_id": 4
+    },
+    {
+      "event": "mission_trajectory_started",
+      "failsafe": false,
+      "mission_id": 3843942619,
+      "stamp_s": 1788293125.4652612,
+      "uav_id": 1
+    },
+    {
+      "event": "mission_trajectory_started",
+      "failsafe": false,
+      "mission_id": 3843942619,
+      "stamp_s": 1788293125.4652772,
+      "uav_id": 2
+    },
+    {
+      "event": "mission_trajectory_started",
+      "failsafe": false,
+      "mission_id": 3843942619,
+      "stamp_s": 1788293125.4652956,
+      "uav_id": 4
+    },
+    {
+      "event": "command_accepted",
+      "failsafe": false,
+      "mission_id": 3843942619,
+      "stamp_s": 1788293125.8634,
+      "uav_id": 3
+    },
+    {
+      "event": "mission_trajectory_started",
+      "failsafe": false,
+      "mission_id": 3843942619,
+      "stamp_s": 1788293125.863419,
+      "uav_id": 3
+    }
+  ],
+  "debug_mission_ids_seen": {
+    "1": [
+      1847301262,
+      3843942619
+    ],
+    "2": [
+      1847301262,
+      3843942619
+    ],
+    "3": [
+      1847301262,
+      3843942619
+    ],
+    "4": [
+      1847301262,
+      3843942619
+    ]
+  },
+  "execution_command_t0_ros_s": 61.7,
+  "final_status": {
+    "1": {
+      "failsafe": false,
+      "is_hover_stable": true,
+      "mission_id": 3843942619,
+      "position_error": 0.027860991656780243,
+      "speed": 0.01452219020575285
+    },
+    "2": {
+      "failsafe": false,
+      "is_hover_stable": true,
+      "mission_id": 3843942619,
+      "position_error": 0.03430058807134628,
+      "speed": 0.030602270737290382
+    },
+    "3": {
+      "failsafe": false,
+      "is_hover_stable": true,
+      "mission_id": 3843942619,
+      "position_error": 0.04337349906563759,
+      "speed": 0.01692936196923256
+    },
+    "4": {
+      "failsafe": false,
+      "is_hover_stable": true,
+      "mission_id": 3843942619,
+      "position_error": 0.035788003355264664,
+      "speed": 0.009666564874351025
+    }
+  },
+  "finished_utc": "2026-09-01T20:05:35.463421+00:00",
+  "manipulation_ledger": [
+    {
+      "assignment": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "assignment_mode": "distance_hungarian",
+      "event": "planning_committed",
+      "phase": "interaction",
+      "ros_time_s": 61.7,
+      "runtime_spec_sha256": "2a31cd19ba159bd0317bd3db53e7818beee214b89c35c4f23c62c368e3ab50c0"
+    },
+    {
+      "affected_uavs": [
+        3
+      ],
+      "event": "delay_started",
+      "registered_delay_s": 0.4,
+      "ros_time_s": 61.7
+    },
+    {
+      "actual_delay_s": 0.3999999999999986,
+      "affected_uavs": [
+        3
+      ],
+      "event": "delayed_command_published",
+      "ros_time_s": 62.1
+    }
+  ],
+  "mission_id": 3843942619,
+  "phase": "interaction",
+  "reset_mission_id": 3843942621,
+  "started_utc": "2026-09-01T20:05:22.803595+00:00",
+  "success": true,
+  "termination_reason": "SUCCESS"
+}
