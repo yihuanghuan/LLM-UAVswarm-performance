@@ -222,6 +222,21 @@ def execute(
     retry_suffix: str | None = None,
 ) -> dict[str, Any]:
     spec = build_candidate_spec(candidate_id, condition, seed)
+    return execute_spec(
+        spec, output_root, retry_suffix, grid_path=GRID_PATH,
+        seeds_path=SEEDS_PATH,
+    )
+
+
+def execute_spec(
+    spec: dict[str, Any], output_root: Path,
+    retry_suffix: str | None = None, *, grid_path: Path = GRID_PATH,
+    seeds_path: Path = SEEDS_PATH,
+) -> dict[str, Any]:
+    """Execute an already validated B/C qualification spec append-only."""
+    candidate_id = str(spec["candidate_id"])
+    condition = str(spec["condition"])
+    seed = int(spec["seed"])
     runtime = build_deviation_runtime_spec(spec)
     if retry_suffix is not None and not re.fullmatch(r"r[1-9][0-9]*", retry_suffix):
         raise QualificationError("retry suffix must match r[1-9][0-9]*")
@@ -313,8 +328,8 @@ def execute(
                 "branch": git("branch", "--show-current"),
                 "qualification_commit": git("rev-parse", "HEAD"),
                 "preregistration_commit": spec["preregistration_commit"],
-                "grid_sha256": sha256_file(GRID_PATH),
-                "qualification_seeds_sha256": sha256_file(SEEDS_PATH),
+                "grid_sha256": sha256_file(grid_path),
+                "qualification_seeds_sha256": sha256_file(seeds_path),
                 "policy_sha256": sha256_file(POLICY_PATH),
                 "old_E3_v3_registry_sha256": sha256_file(OLD_REGISTRY_PATH),
                 "production_baseline": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",

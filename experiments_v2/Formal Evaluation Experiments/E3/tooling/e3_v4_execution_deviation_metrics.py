@@ -395,6 +395,9 @@ def extract(raw_dir: Path) -> dict[str, Any]:
             "hard_risk_exposure_pair_s": float(
                 pre_distance["hard_risk_exposure_duration"]["value"]
             ),
+            "hard_risk_pair_diagnostics": pre_distance[
+                "hard_risk_pair_diagnostics"
+            ],
             "coverage": pre_coverage,
         }
     statuses = [record for record in records if record.topic.endswith("/status")]

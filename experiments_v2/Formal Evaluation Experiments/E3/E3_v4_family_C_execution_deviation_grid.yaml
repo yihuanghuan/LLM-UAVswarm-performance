@@ -1,0 +1,167 @@
+schema: E3_v4_family_C_execution_deviation_grid_v1
+status: FROZEN_BEFORE_PHYSICAL_SCREENING
+classification: finite_F0_only_mixed_risk_design_after_Family_B_qualification
+parent_family_B_commit: 9ac48de0
+production_baseline: 6cf402debf23851b1eff3edc6f3ab49eae7127c4
+policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+old_E3_v3_registry_sha256: b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2
+family_B_registry_sha256: c774f29b09e16ef27854410893f2d4cff298f2570d252723f1b28946fb2042ce
+production_method_changed: false
+F1_permitted: false
+formal_execution_permitted: false
+
+qualification_population:
+  seed_registry: E3_v4_qualification_seeds.yaml
+  seeds: [69707, 69912, 68907, 67442, 64654]
+  conditions: [P0_F0, P1_F0]
+  attempts_per_cell: 10
+  candidate_cells: 4
+  maximum_attempts: 40
+  retries: infrastructure-only; append explicit retry-rN; never overwrite
+
+delivery_tolerances:
+  command_delay_s: 0.05
+  reference_activation_time_s: 0.05
+  reference_duration_s: 0.05
+  target_coordinate_m: 0.000001
+  controller_acceptance_timeout_ros_s: 1.0
+  effective_reference_endpoint_tolerance_m: 0.15
+
+common:
+  frame: world ENU
+  motion_style: normal
+  safety_s: 1.0
+  avoidance_mode: 'off'
+  planning_modes:
+    P0_F0: distance_hungarian
+    P1_F0: safety_aware
+  planning_committed_before_manipulation: true
+  manipulation_included_in_planner_input: false
+  random_component: none
+  construction: spatially isolated A-01 structural component plus qualified Family-B execution-deviation component
+  isolation_translation_m: [20.0, 0.0, 0.0]
+
+geometries:
+  C01_A01_plus_B01_delay:
+    uav_ids: [1, 2, 3, 4, 5, 6, 7, 8]
+    duration_s: 8.0
+    structural_component_uavs: [1, 2, 3, 4]
+    residual_component_uavs: [5, 6, 7, 8]
+    intended_pair: [6, 7]
+    initial_positions_m:
+      1: [-3.0, -3.0, 3.0]
+      2: [3.0, -3.0, 3.0]
+      3: [-3.0, 3.0, 3.0]
+      4: [3.0, 3.0, 3.0]
+      5: [20.0, -4.0, 3.0]
+      6: [18.26794919243112, -0.5, 3.0]
+      7: [20.0, 0.5, 3.0]
+      8: [20.0, 4.0, 3.0]
+    ordered_targets_m:
+      1: [-3.0, 4.0, 3.0]
+      2: [3.0, 4.0, 3.0]
+      3: [-2.0, 12.0, 3.0]
+      4: [0.0, 12.0, 3.0]
+      5: [28.0, -4.0, 3.0]
+      6: [26.26794919243112, -0.5, 3.0]
+      7: [28.0, 0.5, 3.0]
+      8: [28.0, 4.0, 3.0]
+  C02_A01_plus_B02_reference_subset:
+    uav_ids: [1, 2, 3, 4, 5, 6, 7, 8]
+    duration_s: 10.0
+    structural_component_uavs: [1, 2, 3, 4]
+    residual_component_uavs: [5, 6, 7, 8]
+    intended_pair: [6, 7]
+    initial_positions_m:
+      1: [-3.0, -3.0, 3.0]
+      2: [3.0, -3.0, 3.0]
+      3: [-3.0, 3.0, 3.0]
+      4: [3.0, 3.0, 3.0]
+      5: [25.0, 0.0, 3.0]
+      6: [22.5, 4.330127018922193, 3.0]
+      7: [17.5, 4.330127018922193, 3.0]
+      8: [15.0, 0.0, 3.0]
+    ordered_targets_m:
+      1: [-3.0, 4.0, 3.0]
+      2: [3.0, 4.0, 3.0]
+      3: [-2.0, 12.0, 3.0]
+      4: [0.0, 12.0, 3.0]
+      5: [22.4, 0.0, 3.0]
+      6: [21.2, 2.078460969082653, 3.0]
+      7: [18.8, 2.078460969082653, 3.0]
+      8: [17.6, 0.0, 3.0]
+
+candidates:
+  C01-DELAY-D0p4:
+    scenario_id: E3-C-01
+    geometry: C01_A01_plus_B01_delay
+    mechanism: command_delay
+    affected_uavs: [7]
+    reference_uavs: [1, 2, 3, 4, 5, 6, 8]
+    intended_pair: [6, 7]
+    delay_s: 0.4
+  C01-DELAY-D0p5:
+    scenario_id: E3-C-01
+    geometry: C01_A01_plus_B01_delay
+    mechanism: command_delay
+    affected_uavs: [7]
+    reference_uavs: [1, 2, 3, 4, 5, 6, 8]
+    intended_pair: [6, 7]
+    delay_s: 0.5
+  C02-REF-O1p2:
+    scenario_id: E3-C-02
+    geometry: C02_A01_plus_B02_reference_subset
+    mechanism: reference_deviation
+    affected_uav: 7
+    intended_pair: [6, 7]
+    start_s: 3.5
+    duration_s: 3.0
+    offset_m: [1.2, 0.0, 0.0]
+  C02-REF-O1p5:
+    scenario_id: E3-C-02
+    geometry: C02_A01_plus_B02_reference_subset
+    mechanism: reference_deviation
+    affected_uav: 7
+    intended_pair: [6, 7]
+    start_s: 3.5
+    duration_s: 3.0
+    offset_m: [1.5, 0.0, 0.0]
+
+qualification_gates:
+  planning:
+    P0_predicted_hard_violations_minimum: 1
+    P1_predicted_hard_violations: 0
+    P1_predicted_min_distance_at_least_m: 1.80
+    structural_component_assignment_changes_between_P0_and_P1: true
+    residual_component_assignment_unchanged: true
+    cross_component_assignment_forbidden: true
+  delivery:
+    every_scientific_attempt_within_registered_tolerances: true
+    controller_acceptance_required: true
+    reference_debug_effect_required_for_C02: true
+    reset_acknowledgment_required_for_C02: true
+    failure_class: INFRASTRUCTURE_FAILURE
+  residual_risk:
+    per_condition_intended_pair_event_seed_minimum: 3
+    per_condition_intended_pair_event_seed_maximum: 5
+    nonzero_intended_pair_exposure_required_in_each_event_attempt: true
+    P1_only_intended_pair_may_have_hard_events: true
+    P0_structural_component_events_expected_and_allowed: true
+    C02_pre_activation_intended_pair_hard_events: 0
+  recoverability:
+    per_condition_mission_success_seed_minimum: 4
+    systematic_failsafe_forbidden: true
+    catastrophic_distance_at_or_below_m: 0.25
+    catastrophic_attempts_allowed: 0
+    saturation_near_limit_fraction_threshold: 0.20
+  selection:
+    first: all_gates_pass
+    second: minimum_deviation_magnitude
+    third: candidate_id_lexical_order
+    F1_effect_forbidden: true
+
+execution_order:
+  generation: candidate order below, then condition [P0_F0,P1_F0], then frozen qualification seed order
+  candidate_order: [C01-DELAY-D0p4, C01-DELAY-D0p5, C02-REF-O1p2, C02-REF-O1p5]
+  expanded_attempt_count: 40
+  canonical_expanded_order_sha256: 7a0e786a966d691d448ed15f18900207c3222e597a549b26ae7b8bc2aefb2891
