@@ -1,0 +1,308 @@
+{
+  "accepted_formal_result": true,
+  "attribution": {
+    "intended_pair": null,
+    "intended_pair_event_count": null,
+    "intended_pair_exposure_s": null,
+    "intended_pair_is_global_minimum": null,
+    "pairs_with_hard_events": [
+      "1-3",
+      "2-4"
+    ]
+  },
+  "condition": "P0_F0",
+  "coverage": {
+    "swarm_position": {
+      "1": {
+        "completeness_status": "COMPLETE",
+        "coverage_fraction": 1.0,
+        "dropped_duplicate_sample_count": 0,
+        "end_interpolated": true,
+        "expected_duration_s": 8.0,
+        "expected_end": 1788283435.6225123,
+        "expected_start": 1788283427.6225123,
+        "first_timestamp": 1788283427.6225123,
+        "last_timestamp": 1788283435.6225123,
+        "maximum_allowed_gap_s": 0.2,
+        "maximum_sample_gap_s": 0.012200593948364258,
+        "sample_count": 802,
+        "start_interpolated": true
+      },
+      "2": {
+        "completeness_status": "COMPLETE",
+        "coverage_fraction": 1.0,
+        "dropped_duplicate_sample_count": 0,
+        "end_interpolated": true,
+        "expected_duration_s": 8.0,
+        "expected_end": 1788283435.6225123,
+        "expected_start": 1788283427.6225123,
+        "first_timestamp": 1788283427.6225123,
+        "last_timestamp": 1788283435.6225123,
+        "maximum_allowed_gap_s": 0.2,
+        "maximum_sample_gap_s": 0.012627601623535156,
+        "sample_count": 801,
+        "start_interpolated": true
+      },
+      "3": {
+        "completeness_status": "COMPLETE",
+        "coverage_fraction": 1.0,
+        "dropped_duplicate_sample_count": 0,
+        "end_interpolated": true,
+        "expected_duration_s": 8.0,
+        "expected_end": 1788283435.6225123,
+        "expected_start": 1788283427.6225123,
+        "first_timestamp": 1788283427.6225123,
+        "last_timestamp": 1788283435.6225123,
+        "maximum_allowed_gap_s": 0.2,
+        "maximum_sample_gap_s": 0.012317419052124023,
+        "sample_count": 801,
+        "start_interpolated": true
+      },
+      "4": {
+        "completeness_status": "COMPLETE",
+        "coverage_fraction": 1.0,
+        "dropped_duplicate_sample_count": 0,
+        "end_interpolated": true,
+        "expected_duration_s": 8.0,
+        "expected_end": 1788283435.6225123,
+        "expected_start": 1788283427.6225123,
+        "first_timestamp": 1788283427.6225123,
+        "last_timestamp": 1788283435.6225123,
+        "maximum_allowed_gap_s": 0.2,
+        "maximum_sample_gap_s": 0.012673139572143555,
+        "sample_count": 802,
+        "start_interpolated": true
+      }
+    },
+    "synchronization_grid_sample_count": 3200
+  },
+  "dataset_class": "formal_evaluation",
+  "feedback": "F0",
+  "formal_cursor_consumed": false,
+  "manipulation_delivery": {
+    "acceptance_timestamps_s": {
+      "1": [
+        1788283427.6225123
+      ],
+      "2": [
+        1788283427.6225271
+      ],
+      "3": [
+        1788283427.6225626
+      ],
+      "4": [
+        1788283427.6226168
+      ]
+    },
+    "command_payloads": {
+      "1": [
+        {
+          "bag_timestamp_s": 1788283427.6224234,
+          "configuration_id": "paper-current-v11-c0-f-frozen",
+          "duration_s": 6.0,
+          "mission_id": 4040815443,
+          "target_m": [
+            -2.0,
+            12.0,
+            3.0
+          ],
+          "task_id": 1,
+          "timestamp_s": 62.1,
+          "uav_id": 1
+        }
+      ],
+      "2": [
+        {
+          "bag_timestamp_s": 1788283427.6224484,
+          "configuration_id": "paper-current-v11-c0-f-frozen",
+          "duration_s": 6.0,
+          "mission_id": 4040815443,
+          "target_m": [
+            0.0,
+            12.0,
+            3.0
+          ],
+          "task_id": 1,
+          "timestamp_s": 62.1,
+          "uav_id": 2
+        }
+      ],
+      "3": [
+        {
+          "bag_timestamp_s": 1788283427.622472,
+          "configuration_id": "paper-current-v11-c0-f-frozen",
+          "duration_s": 6.0,
+          "mission_id": 4040815443,
+          "target_m": [
+            -3.0,
+            4.0,
+            3.0
+          ],
+          "task_id": 1,
+          "timestamp_s": 62.1,
+          "uav_id": 3
+        }
+      ],
+      "4": [
+        {
+          "bag_timestamp_s": 1788283427.6224902,
+          "configuration_id": "paper-current-v11-c0-f-frozen",
+          "duration_s": 6.0,
+          "mission_id": 4040815443,
+          "target_m": [
+            3.0,
+            4.0,
+            3.0
+          ],
+          "task_id": 1,
+          "timestamp_s": 62.1,
+          "uav_id": 4
+        }
+      ]
+    },
+    "common_nominal_command_timestamp": true,
+    "controller_acceptance_verified": true,
+    "exactly_one_nominal_command_per_uav": true,
+    "mechanism": "none",
+    "planning_commitment": {
+      "commit_before_first_nominal_command": true,
+      "events": [
+        {
+          "assignment": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "assignment_mode": "distance_hungarian",
+          "event": "planning_committed",
+          "phase": "stage",
+          "ros_time_s": 50.300000000000004,
+          "runtime_spec_sha256": "c29da7fd1283cf88bdd242e2e32f492255f8987ab3af7560ac9020af7dcd9778"
+        },
+        {
+          "assignment": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "assignment_mode": "distance_hungarian",
+          "event": "planning_committed",
+          "phase": "interaction",
+          "ros_time_s": 62.1,
+          "runtime_spec_sha256": "c29da7fd1283cf88bdd242e2e32f492255f8987ab3af7560ac9020af7dcd9778"
+        }
+      ],
+      "matching_event_count": 1,
+      "verified": true
+    },
+    "verified": true
+  },
+  "pre_activation": null,
+  "predicted": {
+    "assignment": [
+      2,
+      3,
+      0,
+      1
+    ],
+    "d_min_m": 0.42748229992745784,
+    "hard_violations": 2
+  },
+  "raw_inventory": {
+    "agent.log": "ddb45f5a464a5dfb1a20296c49a81efb7f5b6c66af106681dd56dfe476ed4e8a",
+    "command_validation.json": "22276e2845e29f8f2c9c6250944b9d0c469385c01278a3e7f0ea62c31b39ebff",
+    "controllers.log": "434003914f568a5f375adafa62e42747e81a6ccd8880cbeb98dcf425e9ece3fb",
+    "harness.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "harness.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "interaction.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "interaction_endpoint_snapshot.json": "4756525ece7882705b78e90dbadeb657921d36e86d2a8d1ca01c6c5e34beaa1a",
+    "interaction_result.json": "fdbb2f6160e71819627256163f7c66170d0f3ddcfdb7b4acf0689cf411579aab",
+    "physical_result.json": "a9711048e5a174a602cd78d8c0d211b220068d97b146089466d2babf92e32db1",
+    "readiness.log": "1060cfb5d1bbc98fa11bea47d8d9eb1f8bcd4437722146ba4a966d5d5ded9dd4",
+    "rosbag.log": "54a6f8cbe60b684f9e30efe6a12df1837728571f32d2ff6ef7dd2fd000368b84",
+    "rosbag/metadata.yaml": "2bfbb978c2311b35bb7ff6c47f93e4fd059dd2eb17113b504920d800e92052f2",
+    "rosbag/rosbag_0.db3": "1c887880b7655e9aac499143a02239f5a072a91b9dfabe01c4c9bd16d80bf5e0",
+    "runtime_provenance.json": "cfb3fa64fddefd0f5ad3005d5a9875965dfd053e1a87f55b2493c44ee8976e55",
+    "runtime_spec.json": "b968ddd02bfcd5589367ff3c1aa0ca4152ed5124c4aab9e5ed6b44b08ada0704",
+    "sitl.log": "b099a49cfb6c625954f9f0e04337eb5529d62ea4834c8a51dcbc4433c1869054",
+    "stage.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stage_endpoint_snapshot.json": "4e23d372389253f6a2d7c50054ce5d05dc98fce2f73da50c6af88be252795164",
+    "stage_result.json": "4b3883c24fa76445da78c847570d4cfa88c1657656cefc88a11730efe16a53e2"
+  },
+  "raw_inventory_sha256": "ced05a6fcf5b89767d7e714af4aa230fba6e11bfddb2831d58485c3895399be4",
+  "realized": {
+    "any_pair_hard_risk_duration_s": 0.7848379611968994,
+    "d_min_m": 0.12872243005626355,
+    "d_min_pair": "1-3",
+    "d_min_time_relative_s": 2.8199939727783203,
+    "hard_risk_event_count": 2,
+    "hard_risk_exposure_pair_s": 1.1237003803253174,
+    "pair_diagnostics": {
+      "1-2": {
+        "event_count": 0,
+        "events": [],
+        "exposure_duration_s": 0.0,
+        "minimum_distance_m": 1.7782965782011577
+      },
+      "1-3": {
+        "event_count": 1,
+        "events": [
+          {
+            "duration_s": 0.7848379611968994,
+            "end": 1788283430.8533897,
+            "start": 1788283430.0685518
+          }
+        ],
+        "exposure_duration_s": 0.7848379611968994,
+        "minimum_distance_m": 0.12872243005626355
+      },
+      "1-4": {
+        "event_count": 0,
+        "events": [],
+        "exposure_duration_s": 0.0,
+        "minimum_distance_m": 5.706701003788938
+      },
+      "2-3": {
+        "event_count": 0,
+        "events": [],
+        "exposure_duration_s": 0.0,
+        "minimum_distance_m": 4.280056018807718
+      },
+      "2-4": {
+        "event_count": 1,
+        "events": [
+          {
+            "duration_s": 0.33886241912841797,
+            "end": 1788283430.5310063,
+            "start": 1788283430.192144
+          }
+        ],
+        "exposure_duration_s": 0.33886241912841797,
+        "minimum_distance_m": 1.281472153470294
+      },
+      "3-4": {
+        "event_count": 0,
+        "events": [],
+        "exposure_duration_s": 0.0,
+        "minimum_distance_m": 5.632120996167362
+      }
+    }
+  },
+  "runtime_spec_sha256": "c29da7fd1283cf88bdd242e2e32f492255f8987ab3af7560ac9020af7dcd9778",
+  "scenario_id": "E3-A-01",
+  "schema": "E3_v4_formal_attempt_metrics_v1",
+  "seed": 702055,
+  "stability": {
+    "actual_d_min_le_0p25_m": true,
+    "control_debug_sample_count": 1600,
+    "failsafe_seen": false,
+    "interaction_termination_reason": "SUCCESS",
+    "mission_success": true,
+    "near_acceleration_limit_sample_fraction": 0.01125,
+    "physical_attempt_status": "success",
+    "saturation_dominated": false
+  },
+  "trial_id": "E3-A-01__P0_F0__S702055"
+}
