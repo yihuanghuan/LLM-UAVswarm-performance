@@ -1,0 +1,174 @@
+{
+  "accepted_formal_result": false,
+  "campaign_position": null,
+  "checks": {
+    "all_8_system_ready": true,
+    "all_8_valid_odometry_altitudes": true,
+    "all_8_vehicle_odometry_topics_present": false,
+    "at_least_8_controller_processes_alive": true,
+    "at_least_8_iris_models_present": false,
+    "at_least_8_px4_processes_alive": true,
+    "campaign_journal_unchanged": true,
+    "formal_attempt_directories_unchanged": true,
+    "formal_contexts_unchanged": true,
+    "gazebo_master_alive": true,
+    "gazebo_model_query_succeeded": true,
+    "micro_xrce_agent_alive": true,
+    "px4_gazebo_launcher_alive_before_controllers": true,
+    "raw_storage_ledger_unchanged_by_smoke": true,
+    "readiness_process_returned_zero": true,
+    "readiness_reported_true": true,
+    "readiness_uav_count_is_8": true,
+    "residual_simulator_controller_processes_absent": true
+  },
+  "dataset_class": "engineering_validation",
+  "finished_utc": "2026-09-01T11:50:14.751542+00:00",
+  "formal_launch_authorized": false,
+  "gazebo_models": [],
+  "journal_sha256_after": "f6a619ea20a9e1bc8c664db2a7c42aeb723f684ae7de1ad2d652d761ca10f6dd",
+  "journal_sha256_before": "f6a619ea20a9e1bc8c664db2a7c42aeb723f684ae7de1ad2d652d761ca10f6dd",
+  "live_process_snapshot": {
+    "controllers": [
+      "1226221 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav1 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_gp9j8if8 --params-file /tmp/launch_params_3gvb0nef --params-file /tmp/launch_params_nous0icr -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav1/fmu/out/vehicle_status:=/px4_1/fmu/out/vehicle_status -r /uav1/fmu/in/offboard_control_mode:=/px4_1/fmu/in/offboard_control_mode -r /uav1/fmu/in/trajectory_setpoint:=/px4_1/fmu/in/trajectory_setpoint -r /uav1/fmu/in/vehicle_command:=/px4_1/fmu/in/vehicle_command -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry",
+      "1226223 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav2 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_nfg342sr --params-file /tmp/launch_params_m6kb4f47 --params-file /tmp/launch_params_6o5hgrik -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav2/fmu/out/vehicle_status:=/px4_2/fmu/out/vehicle_status -r /uav2/fmu/in/offboard_control_mode:=/px4_2/fmu/in/offboard_control_mode -r /uav2/fmu/in/trajectory_setpoint:=/px4_2/fmu/in/trajectory_setpoint -r /uav2/fmu/in/vehicle_command:=/px4_2/fmu/in/vehicle_command -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry",
+      "1226225 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav3 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_xmt0slkd --params-file /tmp/launch_params_35s8xwu6 --params-file /tmp/launch_params_b8dnas3_ -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_status:=/px4_3/fmu/out/vehicle_status -r /uav3/fmu/in/offboard_control_mode:=/px4_3/fmu/in/offboard_control_mode -r /uav3/fmu/in/trajectory_setpoint:=/px4_3/fmu/in/trajectory_setpoint -r /uav3/fmu/in/vehicle_command:=/px4_3/fmu/in/vehicle_command -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry",
+      "1226227 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav4 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_acdudr_1 --params-file /tmp/launch_params_ba5b9a2l --params-file /tmp/launch_params_z28edcb3 -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_status:=/px4_4/fmu/out/vehicle_status -r /uav4/fmu/in/offboard_control_mode:=/px4_4/fmu/in/offboard_control_mode -r /uav4/fmu/in/trajectory_setpoint:=/px4_4/fmu/in/trajectory_setpoint -r /uav4/fmu/in/vehicle_command:=/px4_4/fmu/in/vehicle_command -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry",
+      "1226229 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav5 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_l3cfbhkq --params-file /tmp/launch_params_yu1x_hwj --params-file /tmp/launch_params_9vk6t6vt -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_status:=/px4_5/fmu/out/vehicle_status -r /uav5/fmu/in/offboard_control_mode:=/px4_5/fmu/in/offboard_control_mode -r /uav5/fmu/in/trajectory_setpoint:=/px4_5/fmu/in/trajectory_setpoint -r /uav5/fmu/in/vehicle_command:=/px4_5/fmu/in/vehicle_command -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry",
+      "1226231 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav6 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_xzphk2_6 --params-file /tmp/launch_params_28ofvjg5 --params-file /tmp/launch_params_9qr6g_1n -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_status:=/px4_6/fmu/out/vehicle_status -r /uav6/fmu/in/offboard_control_mode:=/px4_6/fmu/in/offboard_control_mode -r /uav6/fmu/in/trajectory_setpoint:=/px4_6/fmu/in/trajectory_setpoint -r /uav6/fmu/in/vehicle_command:=/px4_6/fmu/in/vehicle_command -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry",
+      "1226233 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav7 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_93mkk1y3 --params-file /tmp/launch_params_w1dlcd0i --params-file /tmp/launch_params_hylnucah -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_status:=/px4_7/fmu/out/vehicle_status -r /uav7/fmu/in/offboard_control_mode:=/px4_7/fmu/in/offboard_control_mode -r /uav7/fmu/in/trajectory_setpoint:=/px4_7/fmu/in/trajectory_setpoint -r /uav7/fmu/in/vehicle_command:=/px4_7/fmu/in/vehicle_command -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry",
+      "1226235 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav8 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_446k1d50 --params-file /tmp/launch_params_bn1da8vy --params-file /tmp/launch_params_szo7fm8w -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_status:=/px4_8/fmu/out/vehicle_status -r /uav8/fmu/in/offboard_control_mode:=/px4_8/fmu/in/offboard_control_mode -r /uav8/fmu/in/trajectory_setpoint:=/px4_8/fmu/in/trajectory_setpoint -r /uav8/fmu/in/vehicle_command:=/px4_8/fmu/in/vehicle_command -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry"
+    ],
+    "gzserver": [
+      "1222964 gzserver /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../Tools/simulation/gazebo-classic/sitl_gazebo-classic/worlds/empty.world --verbose --seed 8105105 -s libgazebo_ros_init.so -s libgazebo_ros_factory.so"
+    ],
+    "micro_xrce_agent": [
+      "1222942 MicroXRCEAgent udp4 -p 8888"
+    ],
+    "px4": [
+      "1223090 /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/bin/px4 -i 1 -d /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/etc",
+      "1223292 /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/bin/px4 -i 2 -d /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/etc",
+      "1223657 /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/bin/px4 -i 3 -d /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/etc",
+      "1224018 /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/bin/px4 -i 4 -d /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/etc",
+      "1224395 /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/bin/px4 -i 5 -d /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/etc",
+      "1224760 /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/bin/px4 -i 6 -d /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/etc",
+      "1225134 /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/bin/px4 -i 7 -d /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/etc",
+      "1225501 /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/bin/px4 -i 8 -d /home/yihuang/PX4-Autopilot-formal-v1/Tools/simulation/gazebo-classic/../../../build/px4_sitl_default/etc",
+      "1226221 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav1 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_gp9j8if8 --params-file /tmp/launch_params_3gvb0nef --params-file /tmp/launch_params_nous0icr -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav1/fmu/out/vehicle_status:=/px4_1/fmu/out/vehicle_status -r /uav1/fmu/in/offboard_control_mode:=/px4_1/fmu/in/offboard_control_mode -r /uav1/fmu/in/trajectory_setpoint:=/px4_1/fmu/in/trajectory_setpoint -r /uav1/fmu/in/vehicle_command:=/px4_1/fmu/in/vehicle_command -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry",
+      "1226223 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav2 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_nfg342sr --params-file /tmp/launch_params_m6kb4f47 --params-file /tmp/launch_params_6o5hgrik -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav2/fmu/out/vehicle_status:=/px4_2/fmu/out/vehicle_status -r /uav2/fmu/in/offboard_control_mode:=/px4_2/fmu/in/offboard_control_mode -r /uav2/fmu/in/trajectory_setpoint:=/px4_2/fmu/in/trajectory_setpoint -r /uav2/fmu/in/vehicle_command:=/px4_2/fmu/in/vehicle_command -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry",
+      "1226225 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav3 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_xmt0slkd --params-file /tmp/launch_params_35s8xwu6 --params-file /tmp/launch_params_b8dnas3_ -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_status:=/px4_3/fmu/out/vehicle_status -r /uav3/fmu/in/offboard_control_mode:=/px4_3/fmu/in/offboard_control_mode -r /uav3/fmu/in/trajectory_setpoint:=/px4_3/fmu/in/trajectory_setpoint -r /uav3/fmu/in/vehicle_command:=/px4_3/fmu/in/vehicle_command -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry",
+      "1226227 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav4 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_acdudr_1 --params-file /tmp/launch_params_ba5b9a2l --params-file /tmp/launch_params_z28edcb3 -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_status:=/px4_4/fmu/out/vehicle_status -r /uav4/fmu/in/offboard_control_mode:=/px4_4/fmu/in/offboard_control_mode -r /uav4/fmu/in/trajectory_setpoint:=/px4_4/fmu/in/trajectory_setpoint -r /uav4/fmu/in/vehicle_command:=/px4_4/fmu/in/vehicle_command -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry",
+      "1226229 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav5 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_l3cfbhkq --params-file /tmp/launch_params_yu1x_hwj --params-file /tmp/launch_params_9vk6t6vt -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_status:=/px4_5/fmu/out/vehicle_status -r /uav5/fmu/in/offboard_control_mode:=/px4_5/fmu/in/offboard_control_mode -r /uav5/fmu/in/trajectory_setpoint:=/px4_5/fmu/in/trajectory_setpoint -r /uav5/fmu/in/vehicle_command:=/px4_5/fmu/in/vehicle_command -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry",
+      "1226231 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav6 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_xzphk2_6 --params-file /tmp/launch_params_28ofvjg5 --params-file /tmp/launch_params_9qr6g_1n -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_status:=/px4_6/fmu/out/vehicle_status -r /uav6/fmu/in/offboard_control_mode:=/px4_6/fmu/in/offboard_control_mode -r /uav6/fmu/in/trajectory_setpoint:=/px4_6/fmu/in/trajectory_setpoint -r /uav6/fmu/in/vehicle_command:=/px4_6/fmu/in/vehicle_command -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry",
+      "1226233 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav7 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_93mkk1y3 --params-file /tmp/launch_params_w1dlcd0i --params-file /tmp/launch_params_hylnucah -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_status:=/px4_7/fmu/out/vehicle_status -r /uav7/fmu/in/offboard_control_mode:=/px4_7/fmu/in/offboard_control_mode -r /uav7/fmu/in/trajectory_setpoint:=/px4_7/fmu/in/trajectory_setpoint -r /uav7/fmu/in/vehicle_command:=/px4_7/fmu/in/vehicle_command -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry",
+      "1226235 /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node --ros-args -r __node:=ladrc_position_controller -r __ns:=/uav8 --params-file /home/yihuang/learning/LLM_swarm_ws/formal_install_v1/ladrc_controller/share/ladrc_controller/config/ladrc_params.yaml --params-file /tmp/launch_params_446k1d50 --params-file /tmp/launch_params_bn1da8vy --params-file /tmp/launch_params_szo7fm8w -r /uav8/fmu/out/vehicle_odometry:=/px4_8/fmu/out/vehicle_odometry -r /uav8/fmu/out/vehicle_status:=/px4_8/fmu/out/vehicle_status -r /uav8/fmu/in/offboard_control_mode:=/px4_8/fmu/in/offboard_control_mode -r /uav8/fmu/in/trajectory_setpoint:=/px4_8/fmu/in/trajectory_setpoint -r /uav8/fmu/in/vehicle_command:=/px4_8/fmu/in/vehicle_command -r /uav1/fmu/out/vehicle_odometry:=/px4_1/fmu/out/vehicle_odometry -r /uav2/fmu/out/vehicle_odometry:=/px4_2/fmu/out/vehicle_odometry -r /uav3/fmu/out/vehicle_odometry:=/px4_3/fmu/out/vehicle_odometry -r /uav4/fmu/out/vehicle_odometry:=/px4_4/fmu/out/vehicle_odometry -r /uav5/fmu/out/vehicle_odometry:=/px4_5/fmu/out/vehicle_odometry -r /uav6/fmu/out/vehicle_odometry:=/px4_6/fmu/out/vehicle_odometry -r /uav7/fmu/out/vehicle_odometry:=/px4_7/fmu/out/vehicle_odometry"
+    ]
+  },
+  "post_cleanup_process_snapshot": {
+    "controllers": [],
+    "gzserver": [],
+    "micro_xrce_agent": [],
+    "px4": []
+  },
+  "readiness": {
+    "diagnostics": {
+      "1": {
+        "age_s": 0.004510155005846173,
+        "altitude": 1.6649221181869507,
+        "armed": true,
+        "failsafe": false,
+        "offboard": true,
+        "position_derived_speed": 0.11965223401784897,
+        "present": true,
+        "system_ready": true
+      },
+      "2": {
+        "age_s": 0.0035848560073645785,
+        "altitude": 1.706274151802063,
+        "armed": true,
+        "failsafe": false,
+        "offboard": true,
+        "position_derived_speed": 0.08857620507478714,
+        "present": true,
+        "system_ready": true
+      },
+      "3": {
+        "age_s": 1.3185010175220668e-05,
+        "altitude": 1.6657235622406006,
+        "armed": true,
+        "failsafe": false,
+        "offboard": true,
+        "position_derived_speed": 0.247332364320755,
+        "present": true,
+        "system_ready": true
+      },
+      "4": {
+        "age_s": 0.01996269600931555,
+        "altitude": 1.6680999994277954,
+        "armed": true,
+        "failsafe": false,
+        "offboard": true,
+        "position_derived_speed": 0.11956969648599625,
+        "present": true,
+        "system_ready": true
+      },
+      "5": {
+        "age_s": 0.014337130007334054,
+        "altitude": 1.6683061122894287,
+        "armed": true,
+        "failsafe": false,
+        "offboard": true,
+        "position_derived_speed": 0.11503282934427261,
+        "present": true,
+        "system_ready": true
+      },
+      "6": {
+        "age_s": 0.019914074000553228,
+        "altitude": 1.7050535678863525,
+        "armed": true,
+        "failsafe": false,
+        "offboard": true,
+        "position_derived_speed": 0.08785608410835266,
+        "present": true,
+        "system_ready": true
+      },
+      "7": {
+        "age_s": 0.002055238001048565,
+        "altitude": 1.6469199657440186,
+        "armed": true,
+        "failsafe": false,
+        "offboard": true,
+        "position_derived_speed": 0.15315425395965576,
+        "present": true,
+        "system_ready": true
+      },
+      "8": {
+        "age_s": 0.004637407007976435,
+        "altitude": 1.6475987434387207,
+        "armed": true,
+        "failsafe": false,
+        "offboard": true,
+        "position_derived_speed": 0.15379013121128082,
+        "present": true,
+        "system_ready": true
+      }
+    },
+    "ready": true,
+    "uav_count": 8
+  },
+  "registered_formal_trial_id": null,
+  "schema": "E3_v4_post_slot105_infrastructure_smoke_v1",
+  "scientific_interaction_executed": false,
+  "scientific_scene_executed": false,
+  "seed_registries_checked": [
+    "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_formal_paired_seeds.yaml",
+    "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_qualification_seeds.yaml",
+    "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_B02_holdout_qualification_seeds.yaml"
+  ],
+  "seed_registry_collision": false,
+  "smoke_id": "E3-V4-INFRASTRUCTURE-SMOKE-AFTER-SLOT105-v1",
+  "smoke_seed": 8105105,
+  "started_utc": "2026-09-01T11:49:25.895598+00:00",
+  "status": "FAIL",
+  "storage_ledger_sha256_after": "7233afd23c35abb69e3245111189499c729a138b62e86964baa730dd0d1309f5",
+  "storage_ledger_sha256_before": "7233afd23c35abb69e3245111189499c729a138b62e86964baa730dd0d1309f5"
+}
