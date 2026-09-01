@@ -23,6 +23,7 @@ START_HEAD = "cda52d13c14cb05b3d92ee57dcae8fdfba0b157f"
 PRODUCTION_BASELINE = "6cf402debf23851b1eff3edc6f3ab49eae7127c4"
 V3 = E3 / "e3_factorial_registry_v3.yaml"
 ANALYSIS = E3 / "E3_v4_analysis_contract.md"
+JOURNAL_CONTRACT = E3 / "E3_v4_campaign_journal_contract.yaml"
 
 
 def main() -> int:
@@ -117,6 +118,7 @@ def main() -> int:
             cardinality, blocks_complete, planning_pass, mechanisms_pass,
             formal_gate_refused, production_invariant, hashes_pass,
             ANALYSIS.is_file(), registry["qualification_provenance"]["F1_attempt_count"] == 0,
+            JOURNAL_CONTRACT.is_file(),
             registry["qualification_provenance"]["formal_attempt_count"] == 0,
         )) else "FAIL",
         "registry_status": registry["status"],
@@ -156,6 +158,7 @@ def main() -> int:
             "E3_v3_registry_sha256_before": OLD_V3_SHA256,
             "E3_v3_registry_sha256_after": sha256_file(V3),
             "analysis_contract_sha256": sha256_file(ANALYSIS),
+            "journal_contract_sha256": sha256_file(JOURNAL_CONTRACT),
         },
         "F1_qualification_attempt_count": 0,
         "formal_attempt_count": 0,

@@ -1,0 +1,22 @@
+schema: E3_v4_campaign_journal_contract_v1
+status: FROZEN_BEFORE_FORMAL_EXECUTION
+campaign: E3-v4 standalone confirmatory campaign
+order_file: E3_v4_formal_trial_order.txt
+order_sha256: 60ee30a7100b53c4964e3f9f086ff3d137fb41282eebc4439760bf17f033b39b
+registered_slot_count: 360
+journal_relative_path: results/formal_v4/campaign_journal.jsonl
+journal_initial_state: absent
+append_only: true
+exclusive_file_lock_required: true
+fsync_each_record: true
+exact_next_registered_slot_required: true
+one_journal_record_per_registered_trial: true
+attempt_artifact_must_preexist: true
+attempt_artifact_sha256_required: true
+failed_attempts_retained_and_consume_slot: true
+replacement_attempts_forbidden: true
+replacement_seeds_forbidden: true
+manual_cursor_edit_forbidden: true
+significance_triggered_extension_forbidden: true
+old_campaign_v2_cursor_modified: false
+formal_execution_started: false

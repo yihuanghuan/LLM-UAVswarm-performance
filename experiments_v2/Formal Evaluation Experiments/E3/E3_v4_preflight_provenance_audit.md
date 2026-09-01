@@ -8,6 +8,11 @@ IDs. Static compilation produces 90 complete four-cell scenario×seed blocks.
 Every scenario×condition has 15 attempts. The old 610-attempt Campaign-v2
 order and cursor are not modified.
 
+The standalone journal contract is append-only and position-checked. It
+requires one immutable artifact hash for the exact next trial, retains failed
+attempts as consumed slots, and forbids replacement attempts/seeds and manual
+cursor edits. No E3-v4 formal journal exists yet.
+
 The exact-spec audit confirms the registered planning manipulation in every
 cell: A and C have P0 structural conflicts and P1 removes them; B is nominally
 safe under both P0 and P1. Feedback mode does not change allocation/prediction.

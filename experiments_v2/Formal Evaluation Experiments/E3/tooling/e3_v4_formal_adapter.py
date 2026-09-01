@@ -32,6 +32,7 @@ TOOLING_PATHS = (
     ENTRYPOINT,
     "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_v4_trial_registry.py",
     "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_v4_formal_metrics.py",
+    "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_v4_campaign_journal.py",
     "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_v4_execution_deviation_trial.py",
     "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_v4_execution_deviation_metrics.py",
     "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_formal_backend.py",

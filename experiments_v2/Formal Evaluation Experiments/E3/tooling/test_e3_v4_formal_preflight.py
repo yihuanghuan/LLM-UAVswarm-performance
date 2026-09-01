@@ -8,6 +8,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from e3_v4_formal_adapter import AdapterError, adapter_identity, validate_context
+from e3_v4_campaign_journal import read_journal, validate
 from e3_v4_trial_registry import (
     ORDER_SHA256, POLICY_SHA256, REGISTRY_SHA256, SEEDS_SHA256,
     build_exact_runtime_spec, registered_trial_ids,
@@ -60,3 +61,10 @@ def test_candidate_registry_refuses_formal_launch():
     }
     with pytest.raises(AdapterError, match="pending human registry activation"):
         validate_context(trial, context)
+
+
+def test_absent_journal_starts_at_exact_first_slot(tmp_path):
+    state = validate(read_journal(tmp_path / "journal.jsonl"))
+    assert state["consumed_slot_count"] == 0
+    assert state["next_campaign_position"] == 1
+    assert state["next_trial_id"] == registered_trial_ids()[0]
