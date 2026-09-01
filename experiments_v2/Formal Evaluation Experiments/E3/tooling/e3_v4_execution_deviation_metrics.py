@@ -348,11 +348,19 @@ def extract(raw_dir: Path) -> dict[str, Any]:
         raise ValueError("nominal interaction command evidence missing")
     # The experiment driver uses /clock for registered manipulation scheduling
     # and stamps commands in simulation time.  The frozen production controller
-    # deliberately retains its existing ROS system clock, so its swarm/debug
-    # headers are in the recorder's system-time domain.  Use command bag-receipt
-    # time only to align realized production signals; manipulation timing itself
-    # remains verified from the command's authoritative simulation-time header.
-    t0 = min(record.bag_timestamp for record in nominal_commands)
+    # deliberately retains its existing ROS system clock, so its swarm/debug and
+    # StartupEvent headers are in the production system-time domain.  Use the
+    # controller's first command_accepted event to align realized signals;
+    # manipulation timing itself remains verified from the authoritative command
+    # simulation-time headers.  Recorder receipt time is deliberately not used
+    # because DDS discovery/queueing can delay it without delaying the controller.
+    nominal_acceptances = [
+        record for uid in spec["uav_ids"]
+        for record in acceptance_records(records, int(uid), nominal_mission)
+    ]
+    if not nominal_acceptances:
+        raise ValueError("nominal controller-acceptance evidence missing")
+    t0 = min(record.timestamp for record in nominal_acceptances)
     end = t0 + float(spec["duration_s"]) + 2.0
     distance, coverage = pairwise_distance_metrics(
         records, [int(value) for value in spec["uav_ids"]], t0, end,
@@ -370,10 +378,10 @@ def extract(raw_dir: Path) -> dict[str, Any]:
     else:
         bias_mission = int(interaction["bias_mission_id"])
         affected = int(spec["manipulation"]["affected_uav"])
-        bias_records = command_records(records, affected, bias_mission)
-        if len(bias_records) != 1:
-            raise ValueError("cannot align realized signals without exact bias command")
-        manipulation_start = float(bias_records[0].bag_timestamp)
+        bias_acceptances = acceptance_records(records, affected, bias_mission)
+        if not bias_acceptances:
+            raise ValueError("cannot align realized signals without bias acceptance")
+        manipulation_start = min(record.timestamp for record in bias_acceptances)
     pre_activation = None
     if mechanism == "reference_deviation":
         pre_distance, pre_coverage = pairwise_distance_metrics(
@@ -470,7 +478,7 @@ def extract(raw_dir: Path) -> dict[str, Any]:
         "coverage": coverage,
         "timing_bases": {
             "manipulation_delivery": "execution-command ROS simulation-time headers",
-            "realized_signal_alignment": "command bag receipt in frozen controller ROS system-time domain",
+            "realized_signal_alignment": "controller command_accepted header in frozen production ROS system-time domain",
             "realized_t0_s": t0,
             "manipulation_start_realized_time_s": manipulation_start,
         },
