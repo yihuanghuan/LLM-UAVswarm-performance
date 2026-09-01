@@ -116,8 +116,8 @@ def planning_commitment(records, spec: dict, t0: float) -> dict[str, Any]:
         value for value in parsed
         if value.get("runtime_spec_sha256") == spec["runtime_spec_sha256"]
         and value.get("assignment") == spec["allocator_diagnostics"]["final_assignment"]
-        and float(value.get("ros_time_s", math.inf)) <= t0
-        and t0 - float(value.get("ros_time_s", -math.inf)) <= 1.0
+        and float(value.get("ros_time_s", math.inf)) <= t0 + 1e-6
+        and t0 - float(value.get("ros_time_s", -math.inf)) <= 1.0 + 1e-6
         and value.get("phase", "interaction") == "interaction"
     ]
     return {
