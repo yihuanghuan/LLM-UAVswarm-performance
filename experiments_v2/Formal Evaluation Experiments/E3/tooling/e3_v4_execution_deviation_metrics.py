@@ -117,6 +117,8 @@ def planning_commitment(records, spec: dict, t0: float) -> dict[str, Any]:
         if value.get("runtime_spec_sha256") == spec["runtime_spec_sha256"]
         and value.get("assignment") == spec["allocator_diagnostics"]["final_assignment"]
         and float(value.get("ros_time_s", math.inf)) <= t0
+        and t0 - float(value.get("ros_time_s", -math.inf)) <= 1.0
+        and value.get("phase", "interaction") == "interaction"
     ]
     return {
         "verified": len(matching) == 1,

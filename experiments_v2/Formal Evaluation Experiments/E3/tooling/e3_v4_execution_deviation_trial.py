@@ -275,6 +275,7 @@ def direct_driver(spec: dict, phase: str, result_path: Path) -> int:
 
         plan_entry = node.ledger(
             "planning_committed",
+            phase=phase,
             runtime_spec_sha256=spec["runtime_spec_sha256"],
             assignment=list(spec["allocator_diagnostics"]["final_assignment"]),
             assignment_mode=spec["assignment_mode"],
