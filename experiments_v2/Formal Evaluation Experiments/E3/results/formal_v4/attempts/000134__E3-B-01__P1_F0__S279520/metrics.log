@@ -1,0 +1,17 @@
+[INFO] [1788272942.915348699] [rosbag2_storage]: Opened database '/home/yihuang/learning/LLM_swarm_ws/e3_v4_redesign_worktree/experiments_v2/Formal Evaluation Experiments/E3/results/formal_v4/attempts/000134__E3-B-01__P1_F0__S279520/raw/rosbag/rosbag_0.db3' for READ_ONLY.
+Traceback (most recent call last):
+  File "/home/yihuang/learning/LLM_swarm_ws/e3_v4_redesign_worktree/experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_v4_formal_metrics.py", line 213, in <module>
+    raise SystemExit(main())
+  File "/home/yihuang/learning/LLM_swarm_ws/e3_v4_redesign_worktree/experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_v4_formal_metrics.py", line 206, in main
+    result = extract(args.raw_dir)
+  File "/home/yihuang/learning/LLM_swarm_ws/e3_v4_redesign_worktree/experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_v4_formal_metrics.py", line 88, in extract
+    distance, coverage = pairwise_distance_metrics(
+  File "/home/yihuang/learning/LLM_swarm_ws/e3_v4_redesign_worktree/experiments_v2/Formal Evaluation Experiments/analysis_freeze/tooling/live_metric_helpers.py", line 45, in pairwise_distance_metrics
+    grid, positions, coverage = synchronized_grid(series, start, end)
+  File "/home/yihuang/learning/LLM_swarm_ws/e3_v4_redesign_worktree/experiments_v2/Formal Evaluation Experiments/analysis_freeze/tooling/analysis_common.py", line 169, in synchronized_grid
+    clipped[uav_id], coverage[str(uav_id)] = clip_series(series, start, end, max_gap_s=max_gap_s)
+  File "/home/yihuang/learning/LLM_swarm_ws/e3_v4_redesign_worktree/experiments_v2/Formal Evaluation Experiments/analysis_freeze/tooling/analysis_common.py", line 139, in clip_series
+    end_v, end_interp = _value_at(series, end, max_gap_s=max_gap_s)
+  File "/home/yihuang/learning/LLM_swarm_ws/e3_v4_redesign_worktree/experiments_v2/Formal Evaluation Experiments/analysis_freeze/tooling/analysis_common.py", line 127, in _value_at
+    raise EvidenceError(f"boundary {timestamp} is outside raw support")
+analysis_common.EvidenceError: boundary 1788272940.4225981 is outside raw support
