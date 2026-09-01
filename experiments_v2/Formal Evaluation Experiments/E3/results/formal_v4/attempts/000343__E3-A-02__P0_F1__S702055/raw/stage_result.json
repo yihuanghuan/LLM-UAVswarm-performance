@@ -1,0 +1,91 @@
+{
+  "bias_mission_id": null,
+  "command_publications": [
+    {
+      "mission_id": 510798082,
+      "role": "nominal",
+      "ros_time_s": 60.0,
+      "uav_id": 1
+    },
+    {
+      "mission_id": 510798082,
+      "role": "nominal",
+      "ros_time_s": 60.0,
+      "uav_id": 2
+    },
+    {
+      "mission_id": 510798082,
+      "role": "nominal",
+      "ros_time_s": 60.0,
+      "uav_id": 3
+    },
+    {
+      "mission_id": 510798082,
+      "role": "nominal",
+      "ros_time_s": 60.0,
+      "uav_id": 4
+    },
+    {
+      "mission_id": 510798082,
+      "role": "nominal",
+      "ros_time_s": 60.0,
+      "uav_id": 5
+    },
+    {
+      "mission_id": 510798082,
+      "role": "nominal",
+      "ros_time_s": 60.0,
+      "uav_id": 6
+    },
+    {
+      "mission_id": 510798082,
+      "role": "nominal",
+      "ros_time_s": 60.0,
+      "uav_id": 7
+    },
+    {
+      "mission_id": 510798082,
+      "role": "nominal",
+      "ros_time_s": 60.0,
+      "uav_id": 8
+    }
+  ],
+  "command_publish_count_by_uav": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1,
+    "5": 1,
+    "6": 1,
+    "7": 1,
+    "8": 1
+  },
+  "error": "RuntimeError: global initial geometry did not satisfy the 0.30 m position and frozen-controller 2 s stable-hold gate",
+  "execution_command_t0_ros_s": 60.0,
+  "finished_utc": "2026-09-01T20:12:34.756825+00:00",
+  "manipulation_ledger": [
+    {
+      "assignment": [
+        7,
+        0,
+        5,
+        2,
+        3,
+        4,
+        1,
+        6
+      ],
+      "assignment_mode": "distance_hungarian",
+      "event": "planning_committed",
+      "phase": "stage",
+      "ros_time_s": 60.00000000000001,
+      "runtime_spec_sha256": "07fecd45d1bad5bfef312c05a62b637b14ee73f2fa8eabbf1fbdb8f9b7086be7"
+    }
+  ],
+  "mission_id": 510798082,
+  "phase": "stage",
+  "reset_mission_id": null,
+  "started_utc": "2026-09-01T20:11:46.512448+00:00",
+  "success": false,
+  "termination_reason": "DRIVER_FAILURE"
+}
