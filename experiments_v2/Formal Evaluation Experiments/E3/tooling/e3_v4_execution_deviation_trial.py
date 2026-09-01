@@ -60,6 +60,8 @@ def direct_driver(spec: dict, phase: str, result_path: Path) -> int:
     import rclpy
     from rclpy.node import Node
     from rclpy.parameter import Parameter
+    from rclpy.qos import qos_profile_sensor_data
+    from nav_msgs.msg import Odometry
     from std_msgs.msg import String
     from uav_swarm_interfaces.msg import (
         ControlTrackingDebug, StartupEvent, UAVExecutionCommand, UAVStatus,
@@ -99,6 +101,8 @@ def direct_driver(spec: dict, phase: str, result_path: Path) -> int:
                 parameter_overrides=[Parameter("use_sim_time", value=True)],
             )
             self.status: dict[int, object] = {}
+            self.global_position: dict[int, tuple[float, float, float]] = {}
+            self.global_speed: dict[int, float] = {}
             self.events: list[dict] = []
             self.debug_seen: dict[int, set[int]] = {uid: set() for uid in ids}
             self.command_publishers = {
@@ -121,7 +125,12 @@ def direct_driver(spec: dict, phase: str, result_path: Path) -> int:
                     ControlTrackingDebug, f"/uav{uid}/control_tracking_debug",
                     lambda msg, value=uid: self.debug_seen[value].add(
                         int(msg.mission_id)
-                    ), 20,
+                    ), qos_profile_sensor_data,
+                ))
+                self._e3_subscriptions.append(self.create_subscription(
+                    Odometry, f"/uav{uid}/swarm_state",
+                    lambda msg, value=uid: self._swarm(value, msg),
+                    qos_profile_sensor_data,
                 ))
 
         def ros_seconds(self) -> float:
@@ -129,6 +138,17 @@ def direct_driver(spec: dict, phase: str, result_path: Path) -> int:
 
         def _status(self, uid, msg) -> None:
             self.status[uid] = msg
+
+        def _swarm(self, uid, msg) -> None:
+            position = msg.pose.pose.position
+            velocity = msg.twist.twist.linear
+            self.global_position[uid] = (
+                float(position.x), float(position.y), float(position.z)
+            )
+            self.global_speed[uid] = math.sqrt(
+                float(velocity.x) ** 2 + float(velocity.y) ** 2
+                + float(velocity.z) ** 2
+            )
 
         def _event(self, uid, msg) -> None:
             stamp = float(msg.header.stamp.sec) + float(msg.header.stamp.nanosec) * 1e-9
@@ -428,8 +448,57 @@ def direct_driver(spec: dict, phase: str, result_path: Path) -> int:
         if not wait_for_acceptance(node, required, 1.5):
             raise RuntimeError("one or more nominal commands were not acknowledged")
 
-        end_ros = t0 + duration + 2.0
-        wait_until_ros(node, end_ros, duration + 20.0)
+        if phase == "stage":
+            hold_required = float(spec["staging"]["stable_continuous_s"])
+            stable_since = None
+            wall_deadline = time.monotonic() + duration + 35.0
+            while time.monotonic() < wall_deadline:
+                rclpy.spin_once(node, timeout_sec=0.01)
+                global_geometry_ok = all(
+                    uid in node.global_position
+                    and math.dist(
+                        node.global_position[uid],
+                        tuple(float(value) for value in targets[ids.index(uid)]),
+                    ) <= 0.30
+                    and node.global_speed.get(uid, math.inf) <= 0.30
+                    for uid in ids
+                )
+                controller_stable = all(
+                    uid in node.status
+                    and int(node.status[uid].mission_id) == nominal_mission
+                    and bool(node.status[uid].is_hover_stable)
+                    and not bool(node.status[uid].failsafe)
+                    for uid in ids
+                )
+                stable = global_geometry_ok and controller_stable
+                stable_since = (
+                    stable_since or node.ros_seconds() if stable else None
+                )
+                if (
+                    stable_since is not None
+                    and node.ros_seconds() - stable_since >= hold_required
+                ):
+                    break
+            else:
+                raise RuntimeError(
+                    "global initial geometry did not satisfy 0.30 m / 0.30 mps "
+                    "and 2 s stable-hold gate"
+                )
+            result["stage_global_geometry_gate"] = {
+                "verified": True,
+                "position_tolerance_m": 0.30,
+                "speed_tolerance_mps": 0.30,
+                "stable_continuous_s": hold_required,
+                "final_global_positions_m": {
+                    str(uid): list(node.global_position[uid]) for uid in ids
+                },
+                "final_global_speeds_mps": {
+                    str(uid): node.global_speed[uid] for uid in ids
+                },
+            }
+        else:
+            end_ros = t0 + duration + 2.0
+            wait_until_ros(node, end_ros, duration + 20.0)
         result["success"] = True
         result["termination_reason"] = "SUCCESS"
         result["controller_events"] = node.events
