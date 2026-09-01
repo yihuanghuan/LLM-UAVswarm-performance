@@ -1,0 +1,73 @@
+{
+  "schema": "E3_v4_slot_infrastructure_failure_diagnosis_v1",
+  "status": "FROZEN_FROM_RETAINED_EVIDENCE_BEFORE_SLOT_106",
+  "baseline_evidence_commit": "093a66f27cbb1936b10cff6b61c716ffaa0cd1b9",
+  "campaign_position": 105,
+  "trial_id": "E3-C-02__P1_F0__S730940",
+  "attempt_artifact_sha256": "8cc8bdb81cf33a2f0b635078fa3d80485dadbbca0078c10d58142471d540690c",
+  "attempt_status": "infrastructure_failure",
+  "accepted_formal_result": true,
+  "replacement_attempt": false,
+  "metrics": null,
+  "retry_performed": false,
+  "proximate_failure": "RuntimeError: all-UAV readiness failed",
+  "slot105_root_cause_class": "SIMULATION_STARTUP_INFRASTRUCTURE_FAILURE",
+  "failure_stage": "PRE_FORMAL_INTERACTION_READINESS",
+  "readiness_passed": false,
+  "scientific_method_execution_started": false,
+  "interaction_scoring_started": false,
+  "rosbag_acquisition_started": false,
+  "rosbag_source_exists": false,
+  "rosbag_source_expected": false,
+  "raw_evidence_loss": false,
+  "storage_disposition": "PRE_RAW_ACQUISITION_INFRASTRUCTURE_FAILURE",
+  "observed_sequence": [
+    "PX4/Gazebo multi-instance launcher started but later instances reported that Gazebo was not running",
+    "all eight controller processes started and remained in WAIT_ESTIMATOR_READY",
+    "fresh VehicleOdometry readiness was not achieved",
+    "all controllers remained unarmed and outside Offboard mode",
+    "STARTUP_FAILED was latched",
+    "the all-UAV readiness gate returned failure before rosbag acquisition"
+  ],
+  "bounded_conclusion": "Gazebo/PX4 multi-instance simulation startup infrastructure failure caused the absence of valid estimator/odometry readiness, which caused the all-UAV readiness gate to fail.",
+  "unsupported_specific_causes_not_claimed": [
+    "internal Gazebo crash mechanism",
+    "memory exhaustion",
+    "race condition"
+  ],
+  "frozen_tooling_order_evidence": {
+    "source": "experiments_v2/Formal Evaluation Experiments/E3/tooling/e3_v4_execution_deviation_trial.py",
+    "readiness_failure_check_lines": [583, 584],
+    "rosbag_start_lines": [585, 586],
+    "readiness_precedes_rosbag_start": true,
+    "activated_execution_tooling_bundle_sha256": "78cb5dbc374983c64752433fa1c62c4990903b03b5b813f0248f13105eb074bf"
+  },
+  "retained_compact_evidence_sha256": {
+    "attempt.json": "8cc8bdb81cf33a2f0b635078fa3d80485dadbbca0078c10d58142471d540690c",
+    "raw/runtime_spec.json": "05297c6aeb92f8567b6b97d609472ba11d1a31aa40df456d0d7c33a8eeaed399",
+    "raw/physical_result.json": "580a1d90363fea2b8f6cc2aec4b6900a3527bfba3d97be58605da6e57ede4565",
+    "raw/readiness.log": "902dc1b4fc2a9cf910d565c9639ef45993f761961890a7ce655f2e6ba4219123",
+    "raw/controllers.log": "05e615dcc55651d101d13a3be3b536413d22eb5f34df46a12ca0b85bbf701acb",
+    "raw/sitl.log": "25cf719d4412c6661d4de9d0fed0852b5604350abf5d5b62f2d20f666f6169ad",
+    "raw/agent.log": "37efd90b5f059234798b8f8e44a5cf387abff32f747f2d31ac1290a873efba03",
+    "raw/harness.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw/harness.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "negative_evidence": {
+    "rosbag_directory_exists": false,
+    "rosbag_log_exists": false,
+    "runtime_provenance_exists": false,
+    "stage_result_exists": false,
+    "interaction_result_exists": false,
+    "raw_archive_inventory_exists": false,
+    "independent_archive_exists": false,
+    "raw_archive_ledger_slot105_record_exists": false
+  },
+  "governance": {
+    "attempt_artifact_changed": false,
+    "campaign_journal_changed": false,
+    "scientific_retry_authorized": false,
+    "replacement_seed_authorized": false,
+    "slot_remains_consumed": true
+  }
+}

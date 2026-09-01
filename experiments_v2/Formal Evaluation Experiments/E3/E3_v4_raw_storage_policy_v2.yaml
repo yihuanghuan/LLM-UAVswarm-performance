@@ -1,0 +1,124 @@
+schema: E3_v4_raw_storage_policy_v2
+status: FROZEN_AFTER_SLOT_105_BEFORE_SLOT_106
+baseline_evidence_commit: 093a66f27cbb1936b10cff6b61c716ffaa0cd1b9
+supersedes_for_future_governance: E3_v4_raw_storage_policy_v1
+v1_remains_historical_and_immutable: true
+v1_policy_sha256: 71557c662d12d8f6fe840b2f429f6c735ac4bde27c1ecd367ceac2ab8479f3ad
+
+scope:
+  classification: storage_governance_clarification_only
+  scientific_protocol_changed: false
+  formal_registry_changed: false
+  formal_seed_population_changed: false
+  formal_order_changed: false
+  analysis_contract_changed: false
+  journal_semantics_changed: false
+  execution_semantics_changed: false
+  production_semantics_changed: false
+  activated_execution_tooling_changed: false
+
+frozen_execution_lifecycle:
+  ordered_steps:
+    - start_px4_gazebo
+    - start_controllers
+    - run_all_uav_readiness_gate
+    - start_rosbag_only_if_readiness_passes
+    - collect_runtime_provenance
+    - run_staging
+    - run_interaction
+  move_rosbag_before_readiness: forbidden
+
+acquisition_classification:
+  RAW_ACQUISITION_STARTED:
+    definition: frozen runner reached rosbag acquisition start
+    source_raw_expected: true
+  PRE_RAW_ACQUISITION_FAILURE:
+    definition: immutable formal attempt terminated before rosbag acquisition start
+    evidence_required:
+      - formal_attempt_artifact
+      - infrastructure_failure_status
+      - retained_compact_failure_evidence
+      - frozen_lifecycle_stage_proof
+      - no_rosbag_source_created
+      - interaction_and_scoring_not_started
+    source_raw_expected: false
+  ambiguous_classification:
+    fail_closed: true
+    status: SLOT_EVIDENCE_AMBIGUITY
+
+storage_states:
+  RAW_ARCHIVE_VERIFIED:
+    raw_acquisition_started: true
+    source_raw_exists: true
+    archive_exists: true
+    source_archive_size_and_sha256_equal: required
+    archive_required: true
+    campaign_progression_blocked: false
+  RAW_ARCHIVE_PENDING:
+    raw_acquisition_started: true
+    source_raw_exists: true
+    archive_verified: false
+    archive_required: true
+    scientific_retry_authorized: false
+    replacement_seed_authorized: false
+    campaign_progression_blocked_until_storage_repaired: true
+  RAW_EVIDENCE_LOSS:
+    raw_acquisition_started_or_source_proven_expected: true
+    required_source_raw_available: false
+    use_when_acquisition_never_began: forbidden
+    campaign_progression_blocked: true
+  PRE_RAW_ACQUISITION_INFRASTRUCTURE_FAILURE:
+    formal_attempt_exists: true
+    attempt_status: infrastructure_failure
+    failure_precedes_rosbag_acquisition: true
+    interaction_started: false
+    scoring_started: false
+    rosbag_source_created: false
+    retained_compact_stage_evidence_required: true
+    raw_bag_expected: false
+    raw_bag_lost: false
+    archive_required: false
+    archive_missing_is_not_error: true
+    scientific_retry_authorized: false
+    replacement_seed_authorized: false
+    additional_campaign_slot_consumed: false
+    slot_remains_consumed: true
+
+ledger:
+  path: results/formal_v4/raw_archive_ledger.jsonl
+  append_only: true
+  controls_scientific_campaign_order: false
+  one_storage_disposition_per_consumed_formal_slot: required
+  allowed_record_schemas:
+    - E3_v4_raw_archive_ledger_record_v1
+    - E3_v4_raw_storage_disposition_record_v2
+  pre_acquisition_record_fake_archive_fields: forbidden
+
+slot_105_disposition:
+  campaign_position: 105
+  trial_id: E3-C-02__P1_F0__S730940
+  attempt_artifact_sha256: 8cc8bdb81cf33a2f0b635078fa3d80485dadbbca0078c10d58142471d540690c
+  scientific_attempt_status_unchanged: infrastructure_failure
+  failure_stage: PRE_FORMAL_INTERACTION_READINESS
+  root_cause_class: SIMULATION_STARTUP_INFRASTRUCTURE_FAILURE
+  storage_disposition: PRE_RAW_ACQUISITION_INFRASTRUCTURE_FAILURE
+  raw_bag_expected: false
+  raw_evidence_loss: false
+  archive_required: false
+  rerun_forbidden: true
+  replacement_forbidden: true
+  slot_remains_consumed: true
+
+retention:
+  retained_compact_failure_evidence: required
+  verified_source_and_archive_retention_when_acquisition_started: required
+  later_deletion_requires_separate_human_archival_decision: true
+
+frozen_sha256:
+  sealed_registry: 2b3dccc2ad27cf317029c2b7b014bca3a8b28fc8c0a196fd4c2e5abe0be9d4b7
+  formal_seed_registry: 665600871ad3fb6cff324ab3ef9144b0d84b42acc19505283679b6ae01586841
+  formal_order: 60ee30a7100b53c4964e3f9f086ff3d137fb41282eebc4439760bf17f033b39b
+  analysis_contract: 987ff29aa814a0dc5e9e64081fcf0fc79ceb3086b21a0e945bfe2f8252185c58
+  production_policy: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+  E3_v3_registry: b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2
+  activated_execution_tooling_bundle: 78cb5dbc374983c64752433fa1c62c4990903b03b5b813f0248f13105eb074bf
