@@ -1,0 +1,198 @@
+{
+  "bias_mission_id": null,
+  "command_publications": [
+    {
+      "mission_id": 1936004896,
+      "role": "nominal",
+      "ros_time_s": 50.0,
+      "uav_id": 1
+    },
+    {
+      "mission_id": 1936004896,
+      "role": "nominal",
+      "ros_time_s": 50.0,
+      "uav_id": 2
+    },
+    {
+      "mission_id": 1936004896,
+      "role": "nominal",
+      "ros_time_s": 50.0,
+      "uav_id": 3
+    },
+    {
+      "mission_id": 1936004896,
+      "role": "nominal",
+      "ros_time_s": 50.0,
+      "uav_id": 4
+    }
+  ],
+  "command_publish_count_by_uav": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1
+  },
+  "controller_events": [
+    {
+      "event": "command_accepted",
+      "failsafe": false,
+      "mission_id": 1936004896,
+      "stamp_s": 1788257292.4696102,
+      "uav_id": 1
+    },
+    {
+      "event": "command_accepted",
+      "failsafe": false,
+      "mission_id": 1936004896,
+      "stamp_s": 1788257292.469614,
+      "uav_id": 2
+    },
+    {
+      "event": "command_accepted",
+      "failsafe": false,
+      "mission_id": 1936004896,
+      "stamp_s": 1788257292.4696467,
+      "uav_id": 3
+    },
+    {
+      "event": "command_accepted",
+      "failsafe": false,
+      "mission_id": 1936004896,
+      "stamp_s": 1788257292.4696822,
+      "uav_id": 4
+    },
+    {
+      "event": "mission_trajectory_started",
+      "failsafe": false,
+      "mission_id": 1936004896,
+      "stamp_s": 1788257292.4696243,
+      "uav_id": 1
+    },
+    {
+      "event": "mission_trajectory_started",
+      "failsafe": false,
+      "mission_id": 1936004896,
+      "stamp_s": 1788257292.469624,
+      "uav_id": 2
+    },
+    {
+      "event": "mission_trajectory_started",
+      "failsafe": false,
+      "mission_id": 1936004896,
+      "stamp_s": 1788257292.4696631,
+      "uav_id": 3
+    },
+    {
+      "event": "mission_trajectory_started",
+      "failsafe": false,
+      "mission_id": 1936004896,
+      "stamp_s": 1788257292.4696915,
+      "uav_id": 4
+    }
+  ],
+  "debug_mission_ids_seen": {
+    "1": [
+      0,
+      1936004896
+    ],
+    "2": [
+      0,
+      1936004896
+    ],
+    "3": [
+      0,
+      1936004896
+    ],
+    "4": [
+      0,
+      1936004896
+    ]
+  },
+  "execution_command_t0_ros_s": 50.0,
+  "final_status": {
+    "1": {
+      "failsafe": false,
+      "is_hover_stable": true,
+      "mission_id": 1936004896,
+      "position_error": 0.023469457402825356,
+      "speed": 0.04530228301882744
+    },
+    "2": {
+      "failsafe": false,
+      "is_hover_stable": true,
+      "mission_id": 1936004896,
+      "position_error": 0.020214805379509926,
+      "speed": 0.061612099409103394
+    },
+    "3": {
+      "failsafe": false,
+      "is_hover_stable": true,
+      "mission_id": 1936004896,
+      "position_error": 0.020058048889040947,
+      "speed": 0.05578550696372986
+    },
+    "4": {
+      "failsafe": false,
+      "is_hover_stable": true,
+      "mission_id": 1936004896,
+      "position_error": 0.013644562102854252,
+      "speed": 0.06891708076000214
+    }
+  },
+  "finished_utc": "2026-09-01T10:08:21.466486+00:00",
+  "manipulation_ledger": [
+    {
+      "assignment": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "assignment_mode": "safety_aware",
+      "event": "planning_committed",
+      "phase": "stage",
+      "ros_time_s": 50.0,
+      "runtime_spec_sha256": "2e1338c953e19731c759ae2b42269afcd3aba5c6b65fd1823129315699f0f4d2"
+    }
+  ],
+  "mission_id": 1936004896,
+  "phase": "stage",
+  "reset_mission_id": null,
+  "stage_global_geometry_gate": {
+    "final_global_positions_m": {
+      "1": [
+        -3.0122880935668945,
+        -3.015082359313965,
+        3.0106430053710938
+      ],
+      "2": [
+        2.9909145832061768,
+        -3.0142030715942383,
+        3.0107059478759766
+      ],
+      "3": [
+        -3.0148353576660156,
+        2.998556137084961,
+        3.0127077102661133
+      ],
+      "4": [
+        3.0041258335113525,
+        2.999861717224121,
+        2.990473508834839
+      ]
+    },
+    "final_global_speeds_mps": {
+      "1": 0.3624056127448765,
+      "2": 0.35224543823097926,
+      "3": 0.34539390013579646,
+      "4": 0.4169413902129717
+    },
+    "position_tolerance_m": 0.3,
+    "speed_gate": "frozen controller is_hover_stable; its configured filtered velocity hysteresis is authoritative, while raw global speed is retained below for audit only",
+    "stable_continuous_s": 2.0,
+    "verified": true
+  },
+  "started_utc": "2026-09-01T10:08:11.505589+00:00",
+  "success": true,
+  "termination_reason": "SUCCESS"
+}
