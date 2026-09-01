@@ -1,0 +1,260 @@
+[INFO] [launch]: All log files can be found below /home/yihuang/.ros/log/2026-09-02-03-05-11-398826-JIAOLONG-Series-2061818
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [ladrc_position_controller_node-1]: process started with pid [2061852]
+[INFO] [ladrc_position_controller_node-2]: process started with pid [2061854]
+[INFO] [ladrc_position_controller_node-3]: process started with pid [2061856]
+[INFO] [ladrc_position_controller_node-4]: process started with pid [2061858]
+[ladrc_position_controller_node-3] [0m[INFO] [1788289511.471933496] [uav3.ladrc_position_controller]: 已创建 3 个邻居 Odom 订阅[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289511.472130514] [uav1.ladrc_position_controller]: 已创建 3 个邻居 Odom 订阅[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289511.472363620] [uav4.ladrc_position_controller]: 已创建 3 个邻居 Odom 订阅[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289511.472571498] [uav2.ladrc_position_controller]: 已创建 3 个邻居 Odom 订阅[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289511.477620111] [uav1.ladrc_position_controller]: LADRC 集群执行节点已初始化 (命名空间: /uav1), ENU偏移=[0.0, 3.0, 0.0][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289511.477643124] [uav1.ladrc_position_controller]: 等待 swarm_command 和 vehicle_odometry 消息...[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289511.477651179] [uav1.ladrc_position_controller]: 控制模式: ladrc_acceleration[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289511.477873054] [uav2.ladrc_position_controller]: LADRC 集群执行节点已初始化 (命名空间: /uav2), ENU偏移=[0.0, 6.0, 0.0][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289511.477906646] [uav2.ladrc_position_controller]: 等待 swarm_command 和 vehicle_odometry 消息...[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289511.477918499] [uav2.ladrc_position_controller]: 控制模式: ladrc_acceleration[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289511.477935821] [uav3.ladrc_position_controller]: LADRC 集群执行节点已初始化 (命名空间: /uav3), ENU偏移=[0.0, 9.0, 0.0][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289511.477976547] [uav3.ladrc_position_controller]: 等待 swarm_command 和 vehicle_odometry 消息...[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289511.477989832] [uav3.ladrc_position_controller]: 控制模式: ladrc_acceleration[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289511.479332140] [uav4.ladrc_position_controller]: LADRC 集群执行节点已初始化 (命名空间: /uav4), ENU偏移=[0.0, 12.0, 0.0][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289511.479371263] [uav4.ladrc_position_controller]: 等待 swarm_command 和 vehicle_odometry 消息...[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289511.479384558] [uav4.ladrc_position_controller]: 控制模式: ladrc_acceleration[0m
+[ladrc_position_controller_node-1] [33m[WARN] [1788289511.497757987] [uav1.ladrc_position_controller]: 等待新鲜 VehicleOdometry（startup=WAIT_ESTIMATOR_READY armed=0 offboard=0）[0m
+[ladrc_position_controller_node-2] [33m[WARN] [1788289511.497990071] [uav2.ladrc_position_controller]: 等待新鲜 VehicleOdometry（startup=WAIT_ESTIMATOR_READY armed=0 offboard=0）[0m
+[ladrc_position_controller_node-3] [33m[WARN] [1788289511.498486809] [uav3.ladrc_position_controller]: 等待新鲜 VehicleOdometry（startup=WAIT_ESTIMATOR_READY armed=0 offboard=0）[0m
+[ladrc_position_controller_node-4] [33m[WARN] [1788289511.499481848] [uav4.ladrc_position_controller]: 等待新鲜 VehicleOdometry（startup=WAIT_ESTIMATOR_READY armed=0 offboard=0）[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289511.671059979] [uav2.ladrc_position_controller]: 已接收到 vehicle_odometry 消息[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289512.462348171] [uav1.ladrc_position_controller]: 已接收到 vehicle_odometry 消息[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289512.462407001] [uav3.ladrc_position_controller]: 已接收到 vehicle_odometry 消息[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289512.466354587] [uav4.ladrc_position_controller]: 已接收到 vehicle_odometry 消息[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289523.377887962] [uav2.ladrc_position_controller]: 请求 ARM（第 1 次）[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289523.477894497] [uav2.ladrc_position_controller]: 请求 OFFBOARD（第 1 次）[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289523.597933733] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,0.01,-0.13] Cmd[-0.0,0.0,4.7][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289524.177942101] [uav3.ladrc_position_controller]: 请求 ARM（第 1 次）[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289524.277609383] [uav1.ladrc_position_controller]: 请求 ARM（第 1 次）[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289524.277976649] [uav3.ladrc_position_controller]: 请求 OFFBOARD（第 1 次）[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289524.279274374] [uav4.ladrc_position_controller]: 请求 ARM（第 1 次）[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289524.377633040] [uav1.ladrc_position_controller]: 请求 OFFBOARD（第 1 次）[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289524.379285929] [uav4.ladrc_position_controller]: 请求 OFFBOARD（第 1 次）[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289524.398005776] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,0.01,-0.15] Cmd[0.0,0.1,4.7][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289524.497673298] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,0.01,-0.18] Cmd[-0.0,-0.0,4.8][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289524.499330114] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.01,-0.13] Cmd[-0.0,0.1,4.7][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289524.617882892] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.01,-0.00,-0.14] Cmd[0.1,0.0,8.0][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289525.417942643] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.00,-0.16] Cmd[0.0,-0.0,8.0][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289525.499335069] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,0.00,-0.14] Cmd[0.1,0.0,8.0][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289525.517665218] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.01,-0.18] Cmd[-0.0,0.0,8.0][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289525.617943482] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.05,-0.03,1.02] Cmd[-0.3,0.4,2.9][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289526.437934934] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.05,-0.05,1.01] Cmd[-0.2,0.5,3.0][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289526.517666548] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.03,-0.02,0.98] Cmd[-0.3,0.4,2.8][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289526.519310289] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.06,-0.03,1.01] Cmd[-0.4,0.4,3.3][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289526.637906839] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.03,-0.03,1.39] Cmd[0.3,0.1,4.0][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289527.077955182] [uav2.ladrc_position_controller]: 自动起飞稳定保持完成，进入 READY[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289527.437971410] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.03,-0.04,1.39] Cmd[0.3,0.1,4.1][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289527.519311069] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.03,-0.03,1.39] Cmd[0.5,0.1,3.9][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289527.537648842] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.05,-0.03,1.39] Cmd[0.5,0.1,3.7][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289527.657874596] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.06,0.03,1.51] Cmd[0.3,-0.1,3.8][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289527.877976353] [uav3.ladrc_position_controller]: 自动起飞稳定保持完成，进入 READY[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289528.079325040] [uav4.ladrc_position_controller]: 自动起飞稳定保持完成，进入 READY[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289528.437972241] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.03,0.04,1.50] Cmd[0.3,-0.2,3.8][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289528.477639948] [uav1.ladrc_position_controller]: 自动起飞稳定保持完成，进入 READY[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289528.539307590] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.03,0.03,1.50] Cmd[0.1,-0.1,4.1][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289528.557631086] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.05,0.04,1.52] Cmd[0.3,-0.2,3.6][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289528.657875577] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.06,0.01,1.82] Cmd[-0.5,0.3,1.3][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289529.457953084] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.08,-0.00,1.83] Cmd[-0.5,0.4,1.4][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289529.539313621] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.07,0.02,1.83] Cmd[-0.2,0.2,0.9][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289529.557634212] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.04,0.01,1.86] Cmd[-0.1,0.3,0.3][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289529.677874734] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,0.00,1.68] Cmd[0.3,0.0,-0.6][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289530.477936693] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,0.01,1.69] Cmd[0.3,0.2,-0.7][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289530.557675570] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,-0.02,1.69] Cmd[0.1,0.1,-0.0][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289530.559328399] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,-0.00,1.70] Cmd[0.1,0.1,-0.9][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289530.677881127] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.02,1.58] Cmd[-0.2,0.0,-0.2][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289531.497916626] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.04,0.03,1.58] Cmd[-0.2,-0.1,-0.1][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289531.557680652] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.03,1.56] Cmd[-0.1,0.0,0.4][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289531.559393602] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.02,1.59] Cmd[-0.0,-0.0,-0.2][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289531.677890927] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.03,0.03,1.52] Cmd[-0.0,0.0,0.5][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289532.517915766] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.05,0.01,1.51] Cmd[-0.0,0.2,0.6][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289532.577627544] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,0.01,1.52] Cmd[-0.0,0.1,0.0][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289532.579354481] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.05,0.03,1.50] Cmd[-0.2,0.1,1.0][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289532.697864339] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,0.00,1.50] Cmd[-0.1,0.2,0.2][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289533.517973046] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.03,0.00,1.50] Cmd[-0.1,0.1,0.1][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289533.597580919] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,0.01,1.50] Cmd[-0.1,0.1,0.3][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289533.599306113] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,-0.00,1.51] Cmd[-0.0,0.2,-0.2][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289533.717837602] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.02,1.51] Cmd[-0.1,-0.0,-0.2][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289534.537927425] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.03,0.03,1.50] Cmd[-0.1,0.0,-0.1][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289534.617574621] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.01,1.50] Cmd[-0.1,0.0,-0.1][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289534.619353695] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,0.03,1.51] Cmd[-0.1,-0.1,-0.1][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289534.737835772] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,0.01,1.51] Cmd[-0.1,0.0,-0.1][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289535.557890249] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.03,0.00,1.51] Cmd[-0.1,0.1,-0.1][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289535.617596187] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.00,0.00,1.49] Cmd[-0.1,0.1,0.4][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289535.639331598] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.03,0.01,1.51] Cmd[-0.2,0.1,0.1][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289535.757819757] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.00,1.49] Cmd[-0.1,0.1,0.3][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289536.557921785] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.03,0.01,1.50] Cmd[-0.1,0.0,0.3][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289536.637608555] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.01,1.50] Cmd[-0.1,-0.0,-0.1][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289536.639372261] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,0.01,1.49] Cmd[-0.1,0.1,0.7][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289536.757848838] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.01,1.50] Cmd[-0.2,0.0,-0.1][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289537.577887427] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.03,0.02,1.50] Cmd[-0.2,0.0,-0.2][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289537.657505629] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.00,0.01,1.50] Cmd[-0.1,0.1,0.4][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289537.659275646] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.01,1.50] Cmd[-0.1,0.2,-0.1][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289537.777813738] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.00,0.01,1.49] Cmd[-0.1,0.1,0.2][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289538.577919114] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,0.01,1.50] Cmd[-0.1,0.1,0.2][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289538.657608439] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.00,0.00,1.50] Cmd[-0.1,0.1,-0.0][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289538.679275653] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,0.01,1.50] Cmd[-0.2,0.0,0.0][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289538.797804679] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.01,1.51] Cmd[-0.2,0.0,-0.2][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289539.597878496] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,0.01,1.50] Cmd[-0.1,0.0,-0.1][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289539.677611343] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,-0.00,1.50] Cmd[-0.1,0.1,0.3][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289539.679331907] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.01,1.49] Cmd[-0.0,0.1,0.4][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289539.797871783] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,-0.00,1.49] Cmd[-0.1,0.1,0.4][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289540.597903643] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,0.01,1.49] Cmd[-0.1,0.1,0.4][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289540.697591154] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,0.01,1.50] Cmd[-0.1,0.0,-0.0][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289540.699263809] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,0.00,1.51] Cmd[-0.2,0.1,-0.2][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289540.817787054] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,0.01,1.51] Cmd[-0.2,0.0,-0.2][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289541.597915636] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.03,0.02,1.50] Cmd[-0.1,-0.0,-0.2][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289541.698960733] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,0.01,1.50] Cmd[-0.1,0.1,0.1][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289541.699310347] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.01,1.50] Cmd[-0.1,0.1,0.1][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289541.817812011] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.00,0.01,1.49] Cmd[-0.1,0.1,0.5][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289542.617906339] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.03,0.01,1.49] Cmd[-0.1,0.1,0.1][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289542.717549638] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.00,0.01,1.50] Cmd[-0.1,0.1,0.0][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289542.719223716] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,0.01,1.50] Cmd[-0.1,0.0,0.1][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289542.837772619] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,0.02,1.50] Cmd[-0.1,-0.0,-0.2][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289543.637858932] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.02,-0.01,1.50] Cmd[-0.1,0.1,0.2][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289543.717570319] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.00,0.00,1.50] Cmd[-0.1,0.1,0.0][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289543.719253414] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.01,1.50] Cmd[-0.1,0.1,0.1][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289543.837799862] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.00,0.00,1.49] Cmd[-0.0,0.1,0.5][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289544.657839458] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.02,1.51] Cmd[-0.1,-0.0,-0.1][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289544.737506522] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.01,-0.00,1.50] Cmd[-0.1,0.1,0.1][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289544.739269807] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,0.01,1.50] Cmd[-0.0,0.1,-0.0][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289544.837828209] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.00,0.00,1.51] Cmd[-0.1,0.1,-0.3][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289545.117839657] [uav2.ladrc_position_controller]: 轨迹指标: path=6.89m vmax=1.62m/s amax=0.62m/s^2 jmax=0.81m/s^3 ISJ=1.04[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289545.117887476] [uav2.ladrc_position_controller]: 应用 Execution Profile mission=1474847998 task=1 config=paper-current-v11-c0-f-frozen T_exec=8.000[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289545.657841536] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.03,0.02,1.49] Cmd[-0.1,0.1,0.7][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289545.737550148] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[-0.00,0.01,1.51] Cmd[-0.1,0.0,-0.2][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289545.759216190] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,0.0,1.5] Safe[0.0,0.0,1.5] Pos[0.01,0.02,1.51] Cmd[-0.1,-0.0,-0.1][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289545.776061244] [uav1.ladrc_position_controller]: 轨迹指标: path=7.17m vmax=1.68m/s amax=0.65m/s^2 jmax=0.84m/s^3 ISJ=1.13[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289545.776103573] [uav1.ladrc_position_controller]: 应用 Execution Profile mission=1474847998 task=1 config=paper-current-v11-c0-f-frozen T_exec=8.000[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289545.776208790] [uav3.ladrc_position_controller]: 轨迹指标: path=8.65m vmax=2.03m/s amax=0.78m/s^2 jmax=1.01m/s^3 ISJ=1.64[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289545.776260917] [uav3.ladrc_position_controller]: 应用 Execution Profile mission=1474847998 task=1 config=paper-current-v11-c0-f-frozen T_exec=8.000[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289545.776295933] [uav4.ladrc_position_controller]: 轨迹指标: path=8.16m vmax=1.91m/s amax=0.74m/s^2 jmax=0.96m/s^3 ISJ=1.46[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289545.776334355] [uav4.ladrc_position_controller]: 应用 Execution Profile mission=1474847998 task=1 config=paper-current-v11-c0-f-frozen T_exec=8.000[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289545.857800290] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[-0.0,-0.0,1.5] Safe[-0.0,-0.0,1.5] Pos[-0.01,-0.02,1.50] Cmd[-0.2,-0.5,0.7][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289546.657882448] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,-0.1,1.5] Safe[0.0,-0.1,1.5] Pos[0.04,-0.05,1.53] Cmd[-0.2,-0.9,-0.3][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289546.737557537] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[-0.0,-0.1,1.5] Safe[-0.0,-0.1,1.5] Pos[-0.00,-0.05,1.52] Cmd[-0.1,-0.8,0.3][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289546.759236453] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,-0.1,1.5] Safe[0.0,-0.1,1.5] Pos[0.01,-0.06,1.53] Cmd[-0.1,-0.9,0.3][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289546.877752696] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[-0.1,-0.5,1.6] Safe[-0.1,-0.5,1.6] Pos[-0.08,-0.42,1.62] Cmd[-0.7,-0.8,-0.2][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289547.677857677] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,-0.8,1.6] Safe[0.0,-0.8,1.6] Pos[0.05,-0.67,1.64] Cmd[-0.2,-1.1,0.5][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289547.757573292] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[-0.0,-0.7,1.7] Safe[-0.0,-0.7,1.7] Pos[0.05,-0.63,1.66] Cmd[-0.6,-0.9,-0.2][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289547.779205030] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,-0.8,1.7] Safe[0.0,-0.8,1.7] Pos[0.07,-0.73,1.67] Cmd[-0.6,-1.1,-0.2][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289547.877772228] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[-0.4,-1.5,1.8] Safe[-0.4,-1.5,1.8] Pos[-0.35,-1.45,1.83] Cmd[-0.3,-0.6,0.5][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289548.697813690] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,-2.2,1.9] Safe[0.0,-2.2,1.9] Pos[0.07,-2.14,1.89] Cmd[-0.4,-0.9,0.0][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289548.777481116] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[-0.0,-1.9,1.9] Safe[-0.0,-1.9,1.9] Pos[0.03,-1.90,1.90] Cmd[-0.2,-0.6,0.6][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289548.779206169] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,-2.2,1.9] Safe[0.0,-2.2,1.9] Pos[0.03,-2.16,1.91] Cmd[-0.2,-0.7,0.4][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289548.897757827] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[-0.8,-2.9,2.2] Safe[-0.8,-2.9,2.2] Pos[-0.79,-2.86,2.17] Cmd[-0.2,-0.6,-0.0][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289549.697833215] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,-4.1,2.2] Safe[0.0,-4.1,2.2] Pos[-0.04,-4.01,2.21] Cmd[0.2,-0.8,0.4][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289549.779207299] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,-4.0,2.3] Safe[0.0,-4.0,2.3] Pos[-0.06,-3.92,2.25] Cmd[0.1,-0.8,-0.3][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289549.797512151] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[-0.0,-3.5,2.3] Safe[-0.0,-3.5,2.3] Pos[-0.07,-3.48,2.26] Cmd[0.2,-0.5,-0.3][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289549.917772632] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[-1.2,-4.4,2.5] Safe[-1.2,-4.4,2.5] Pos[-1.20,-4.40,2.52] Cmd[-0.1,0.0,0.0][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289550.697854693] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,-6.0,2.6] Safe[0.0,-6.0,2.6] Pos[-0.03,-6.00,2.56] Cmd[-0.1,0.2,-0.2][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289550.799215742] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,-5.8,2.6] Safe[0.0,-5.8,2.6] Pos[-0.02,-5.81,2.57] Cmd[-0.1,0.2,0.5][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289550.817469930] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[-0.0,-5.1,2.6] Safe[-0.0,-5.1,2.6] Pos[0.00,-5.11,2.58] Cmd[-0.2,-0.0,0.9][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289550.937782659] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[-1.5,-5.7,2.8] Safe[-1.5,-5.7,2.8] Pos[-1.54,-5.70,2.80] Cmd[0.1,0.4,0.2][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289551.717828363] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,-7.6,2.8] Safe[0.0,-7.6,2.8] Pos[0.01,-7.59,2.83] Cmd[-0.1,0.5,0.0][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289551.819167110] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,-7.2,2.9] Safe[0.0,-7.2,2.9] Pos[-0.01,-7.27,2.86] Cmd[0.0,0.6,-0.4][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289551.837501057] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[-0.0,-6.3,2.9] Safe[-0.0,-6.3,2.9] Pos[-0.01,-6.37,2.87] Cmd[0.0,0.7,-0.5][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289551.957727325] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[-1.7,-6.3,3.0] Safe[-1.7,-6.3,3.0] Pos[-1.73,-6.38,2.97] Cmd[0.1,0.5,-0.4][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289552.737862206] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,-8.3,3.0] Safe[0.0,-8.3,3.0] Pos[-0.01,-8.42,2.98] Cmd[0.0,0.7,-0.0][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289552.837521556] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[-0.0,-6.9,3.0] Safe[-0.0,-6.9,3.0] Pos[-0.02,-6.97,2.98] Cmd[-0.1,0.5,0.7][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289552.839177019] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,-7.9,3.0] Safe[0.0,-7.9,3.0] Pos[-0.01,-7.94,2.97] Cmd[-0.1,0.5,0.8][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289552.977719029] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[-1.7,-6.5,3.0] Safe[-1.7,-6.5,3.0] Pos[-1.75,-6.55,2.99] Cmd[0.0,0.1,0.5][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289553.757801674] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,-8.5,3.0] Safe[0.0,-8.5,3.0] Pos[-0.01,-8.56,3.01] Cmd[0.0,-0.0,-0.2][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289553.839199242] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,-8.0,3.0] Safe[0.0,-8.0,3.0] Pos[-0.01,-8.06,3.02] Cmd[-0.0,-0.0,-0.5][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289553.857462596] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,-7.0,3.0] Safe[0.0,-7.0,3.0] Pos[-0.03,-7.04,3.02] Cmd[0.2,-0.1,-0.3][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289553.997706086] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[-1.7,-6.5,3.0] Safe[-1.7,-6.5,3.0] Pos[-1.73,-6.54,3.02] Cmd[-0.1,0.1,-0.6][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289554.157726268] [uav2.ladrc_position_controller]: 控制适应日志已写入: /home/yihuang/learning/LLM_swarm_ws/C0-F-motion-style/logs/control_adaptation_log.csv (mission=1474847998, uav=2)[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289554.157797581] [uav2.ladrc_position_controller]: 悬停稳定确认! pos_err=0.04m, pos_vel=0.03m/s, raw_ekf_vel=0.47m/s → is_hover_stable=true[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289554.757815892] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,-8.5,3.0] Safe[0.0,-8.5,3.0] Pos[0.00,-8.53,3.00] Cmd[-0.1,0.1,0.2][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289554.779159813] [uav4.ladrc_position_controller]: 控制适应日志已写入: /home/yihuang/learning/LLM_swarm_ws/C0-F-motion-style/logs/control_adaptation_log.csv (mission=1474847998, uav=4)[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289554.779217851] [uav4.ladrc_position_controller]: 悬停稳定确认! pos_err=0.04m, pos_vel=0.02m/s, raw_ekf_vel=0.48m/s → is_hover_stable=true[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289554.797430922] [uav1.ladrc_position_controller]: 控制适应日志已写入: /home/yihuang/learning/LLM_swarm_ws/C0-F-motion-style/logs/control_adaptation_log.csv (mission=1474847998, uav=1)[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289554.797478460] [uav1.ladrc_position_controller]: 悬停稳定确认! pos_err=0.04m, pos_vel=0.06m/s, raw_ekf_vel=0.52m/s → is_hover_stable=true[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289554.797750609] [uav3.ladrc_position_controller]: 控制适应日志已写入: /home/yihuang/learning/LLM_swarm_ws/C0-F-motion-style/logs/control_adaptation_log.csv (mission=1474847998, uav=3)[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289554.797786907] [uav3.ladrc_position_controller]: 悬停稳定确认! pos_err=0.04m, pos_vel=0.04m/s, raw_ekf_vel=0.52m/s → is_hover_stable=true[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289554.857465634] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,-7.0,3.0] Safe[0.0,-7.0,3.0] Pos[0.01,-7.03,3.00] Cmd[-0.2,0.1,0.6][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289554.859177543] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,-8.0,3.0] Safe[0.0,-8.0,3.0] Pos[0.01,-8.03,3.00] Cmd[-0.1,0.1,0.8][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289555.017731916] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[-1.7,-6.5,3.0] Safe[-1.7,-6.5,3.0] Pos[-1.73,-6.54,2.99] Cmd[-0.1,0.2,0.8][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289555.777809022] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,-8.5,3.0] Safe[0.0,-8.5,3.0] Pos[0.01,-8.55,3.01] Cmd[-0.1,0.1,-0.4][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289555.877454396] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,-7.0,3.0] Safe[0.0,-7.0,3.0] Pos[0.02,-7.03,3.01] Cmd[-0.1,0.1,-0.3][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289555.879128904] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,-8.0,3.0] Safe[0.0,-8.0,3.0] Pos[-0.00,-8.04,3.01] Cmd[-0.0,0.1,-0.4][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289556.037742718] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[-1.7,-6.5,3.0] Safe[-1.7,-6.5,3.0] Pos[-1.73,-6.50,3.01] Cmd[-0.0,0.0,-0.5][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289556.797803284] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,-8.5,3.0] Safe[0.0,-8.5,3.0] Pos[0.00,-8.51,2.98] Cmd[-0.1,-0.0,0.7][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289556.879142744] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,-8.0,3.0] Safe[0.0,-8.0,3.0] Pos[-0.01,-8.01,2.99] Cmd[0.0,0.1,0.6][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289556.897420626] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,-7.0,3.0] Safe[0.0,-7.0,3.0] Pos[-0.01,-7.02,3.00] Cmd[0.0,0.1,0.1][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289557.038400852] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[-1.7,-6.5,3.0] Safe[-1.7,-6.5,3.0] Pos[-1.73,-6.51,2.98] Cmd[-0.1,0.2,1.0][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289557.817701218] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.0,-8.5,3.0] Safe[0.0,-8.5,3.0] Pos[-0.00,-8.50,3.01] Cmd[-0.0,0.0,-0.5][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289557.879170811] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,-8.0,3.0] Safe[0.0,-8.0,3.0] Pos[0.00,-7.99,3.01] Cmd[-0.1,-0.0,-0.4][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289557.897438464] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,-7.0,3.0] Safe[0.0,-7.0,3.0] Pos[-0.02,-7.00,3.01] Cmd[0.1,-0.0,-0.3][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289558.057680170] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[-1.7,-6.5,3.0] Safe[-1.7,-6.5,3.0] Pos[-1.73,-6.51,3.01] Cmd[-0.0,0.1,-0.6][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289558.368731569] [uav1.ladrc_position_controller]: 轨迹指标: path=8.01m vmax=1.88m/s amax=0.72m/s^2 jmax=0.94m/s^3 ISJ=1.41[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289558.368789747] [uav1.ladrc_position_controller]: 应用 Execution Profile mission=4091397763 task=1 config=paper-current-v11-c0-f-frozen T_exec=8.000[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289558.368758349] [uav2.ladrc_position_controller]: 轨迹指标: path=8.00m vmax=1.88m/s amax=0.72m/s^2 jmax=0.94m/s^3 ISJ=1.41[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289558.368812770] [uav2.ladrc_position_controller]: 应用 Execution Profile mission=4091397763 task=1 config=paper-current-v11-c0-f-frozen T_exec=8.000[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289558.368771553] [uav4.ladrc_position_controller]: 轨迹指标: path=8.00m vmax=1.88m/s amax=0.72m/s^2 jmax=0.94m/s^3 ISJ=1.41[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289558.368821076] [uav4.ladrc_position_controller]: 应用 Execution Profile mission=4091397763 task=1 config=paper-current-v11-c0-f-frozen T_exec=8.000[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289558.764260661] [uav3.ladrc_position_controller]: 轨迹指标: path=8.00m vmax=1.88m/s amax=0.72m/s^2 jmax=0.94m/s^3 ISJ=1.41[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289558.764314031] [uav3.ladrc_position_controller]: 应用 Execution Profile mission=4091397763 task=1 config=paper-current-v11-c0-f-frozen T_exec=8.000[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289558.817732983] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[-0.0,-8.5,3.0] Safe[-0.0,-8.5,3.0] Pos[-0.01,-8.51,2.98] Cmd[0.0,0.1,0.8][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289558.899147393] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.0,-8.0,3.0] Safe[0.0,-8.0,3.0] Pos[0.00,-8.00,2.99] Cmd[0.5,0.1,0.4][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289558.917416738] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.0,-7.0,3.0] Safe[0.0,-7.0,3.0] Pos[0.02,-7.00,3.00] Cmd[0.4,0.2,-0.0][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289559.077683652] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[-1.7,-6.5,3.0] Safe[-1.7,-6.5,3.0] Pos[-1.72,-6.49,3.00] Cmd[0.8,-0.0,0.5][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289559.817755601] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.1,-8.5,3.0] Safe[0.1,-8.5,3.0] Pos[0.09,-8.51,3.01] Cmd[1.0,0.1,-0.5][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289559.919129765] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[0.4,-8.0,3.0] Safe[0.4,-8.0,3.0] Pos[0.35,-8.00,3.01] Cmd[1.2,0.1,-0.3][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289559.937414029] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[0.4,-7.0,3.0] Safe[0.4,-7.0,3.0] Pos[0.35,-7.00,2.99] Cmd[1.2,0.1,0.1][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289560.097695600] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[-1.2,-6.5,3.0] Safe[-1.2,-6.5,3.0] Pos[-1.24,-6.50,3.02] Cmd[1.1,0.0,-0.3][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289560.837706356] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[0.9,-8.5,3.0] Safe[0.9,-8.5,3.0] Pos[0.83,-8.49,2.99] Cmd[1.1,0.0,0.9][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289560.939113822] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[1.5,-8.0,3.0] Safe[1.5,-8.0,3.0] Pos[1.47,-7.99,3.00] Cmd[1.0,-0.0,-0.1][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289560.957425006] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[1.6,-7.0,3.0] Safe[1.6,-7.0,3.0] Pos[1.50,-6.97,3.00] Cmd[0.8,-0.1,-0.4][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289561.117682081] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[0.1,-6.5,3.0] Safe[0.1,-6.5,3.0] Pos[0.00,-6.50,3.01] Cmd[1.0,0.0,0.1][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289561.837743934] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[2.3,-8.5,3.0] Safe[2.3,-8.5,3.0] Pos[2.26,-8.49,3.01] Cmd[0.9,-0.0,-0.6][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289561.957427599] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[3.2,-7.0,3.0] Safe[3.2,-7.0,3.0] Pos[3.16,-6.98,2.99] Cmd[0.9,-0.0,0.3][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289561.959122697] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[3.2,-8.0,3.0] Safe[3.2,-8.0,3.0] Pos[3.17,-7.99,2.99] Cmd[0.8,0.0,0.2][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289562.137651963] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[1.8,-6.5,3.0] Safe[1.8,-6.5,3.0] Pos[1.77,-6.50,3.00] Cmd[0.7,0.0,0.3][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289562.857709428] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[4.2,-8.5,3.0] Safe[4.2,-8.5,3.0] Pos[4.11,-8.51,2.99] Cmd[0.6,0.1,0.9][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289562.959137904] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[5.1,-8.0,3.0] Safe[5.1,-8.0,3.0] Pos[5.07,-8.00,3.00] Cmd[0.2,0.1,-0.3][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289562.977392111] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[5.1,-7.0,3.0] Safe[5.1,-7.0,3.0] Pos[5.10,-7.02,3.01] Cmd[0.1,0.2,-0.5][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289563.157666529] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[3.7,-6.5,3.0] Safe[3.7,-6.5,3.0] Pos[3.70,-6.51,3.01] Cmd[0.1,0.1,-0.3][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289563.857735637] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[5.9,-8.5,3.0] Safe[5.9,-8.5,3.0] Pos[5.94,-8.51,3.01] Cmd[-0.2,0.1,-0.5][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289563.977404895] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[6.7,-7.0,3.0] Safe[6.7,-7.0,3.0] Pos[6.73,-7.00,2.99] Cmd[-0.3,0.0,0.5][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289563.979106805] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[6.7,-8.0,3.0] Safe[6.7,-8.0,3.0] Pos[6.72,-8.00,2.99] Cmd[-0.3,0.1,0.4][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289564.177627235] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[5.2,-6.5,3.0] Safe[5.2,-6.5,3.0] Pos[5.25,-6.51,3.00] Cmd[-0.4,0.1,0.1][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289564.877724045] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[7.3,-8.5,3.0] Safe[7.3,-8.5,3.0] Pos[7.33,-8.51,2.99] Cmd[-0.4,0.1,0.6][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289564.997364400] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[7.7,-7.0,3.0] Safe[7.7,-7.0,3.0] Pos[7.74,-7.00,3.01] Cmd[-0.6,0.1,-0.5][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289564.999081699] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[7.7,-8.0,3.0] Safe[7.7,-8.0,3.0] Pos[7.76,-8.01,3.01] Cmd[-0.6,0.1,-0.6][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289565.177643807] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[6.1,-6.5,3.0] Safe[6.1,-6.5,3.0] Pos[6.13,-6.49,3.02] Cmd[-0.6,0.1,-0.6][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289565.897706754] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[7.9,-8.5,3.0] Safe[7.9,-8.5,3.0] Pos[7.98,-8.50,3.01] Cmd[-0.5,0.1,-0.3][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289565.999097770] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[8.0,-8.0,3.0] Safe[8.0,-8.0,3.0] Pos[8.06,-8.00,2.99] Cmd[-0.2,0.1,0.5][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289566.017330628] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[8.0,-7.0,3.0] Safe[8.0,-7.0,3.0] Pos[8.06,-7.00,2.98] Cmd[-0.2,0.1,0.9][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289566.197621546] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[6.3,-6.5,3.0] Safe[6.3,-6.5,3.0] Pos[6.33,-6.50,2.97] Cmd[-0.1,0.1,1.0][0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289566.897737143] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[8.0,-8.5,3.0] Safe[8.0,-8.5,3.0] Pos[8.05,-8.50,3.00] Cmd[0.1,0.1,0.4][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289567.019101078] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[8.0,-8.0,3.0] Safe[8.0,-8.0,3.0] Pos[8.03,-7.99,3.01] Cmd[0.1,0.1,-0.6][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289567.037340518] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[8.0,-7.0,3.0] Safe[8.0,-7.0,3.0] Pos[8.02,-7.00,3.01] Cmd[0.2,0.1,-0.5][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289567.197622601] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[6.3,-6.5,3.0] Safe[6.3,-6.5,3.0] Pos[6.30,-6.50,3.00] Cmd[0.1,0.0,-0.5][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289567.377605274] [uav2.ladrc_position_controller]: 控制适应日志已写入: /home/yihuang/learning/LLM_swarm_ws/C0-F-motion-style/logs/control_adaptation_log.csv (mission=4091397763, uav=2)[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289567.377663753] [uav2.ladrc_position_controller]: 悬停稳定确认! pos_err=0.03m, pos_vel=0.02m/s, raw_ekf_vel=0.43m/s → is_hover_stable=true[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289567.397316033] [uav1.ladrc_position_controller]: 控制适应日志已写入: /home/yihuang/learning/LLM_swarm_ws/C0-F-motion-style/logs/control_adaptation_log.csv (mission=4091397763, uav=1)[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289567.397360777] [uav1.ladrc_position_controller]: 悬停稳定确认! pos_err=0.03m, pos_vel=0.03m/s, raw_ekf_vel=0.35m/s → is_hover_stable=true[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289567.399058859] [uav4.ladrc_position_controller]: 控制适应日志已写入: /home/yihuang/learning/LLM_swarm_ws/C0-F-motion-style/logs/control_adaptation_log.csv (mission=4091397763, uav=4)[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289567.399106018] [uav4.ladrc_position_controller]: 悬停稳定确认! pos_err=0.04m, pos_vel=0.03m/s, raw_ekf_vel=0.36m/s → is_hover_stable=true[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289567.797661067] [uav3.ladrc_position_controller]: 控制适应日志已写入: /home/yihuang/learning/LLM_swarm_ws/C0-F-motion-style/logs/control_adaptation_log.csv (mission=4091397763, uav=3)[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289567.797712353] [uav3.ladrc_position_controller]: 悬停稳定确认! pos_err=0.04m, pos_vel=0.03m/s, raw_ekf_vel=0.37m/s → is_hover_stable=true[0m
+[ladrc_position_controller_node-3] [0m[INFO] [1788289567.917756011] [uav3.ladrc_position_controller]: UAV3 mode=ladrc_acceleration Ref[8.0,-8.5,3.0] Safe[8.0,-8.5,3.0] Pos[8.04,-8.50,3.01] Cmd[-0.0,0.1,-0.2][0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289568.039075263] [uav4.ladrc_position_controller]: UAV4 mode=ladrc_acceleration Ref[8.0,-8.0,3.0] Safe[8.0,-8.0,3.0] Pos[8.04,-7.99,2.98] Cmd[-0.1,0.0,1.0][0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289568.057349438] [uav1.ladrc_position_controller]: UAV1 mode=ladrc_acceleration Ref[8.0,-7.0,3.0] Safe[8.0,-7.0,3.0] Pos[8.03,-6.99,2.99] Cmd[-0.0,-0.0,0.8][0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289568.217612084] [uav2.ladrc_position_controller]: UAV2 mode=ladrc_acceleration Ref[6.3,-6.5,3.0] Safe[6.3,-6.5,3.0] Pos[6.30,-6.50,3.00] Cmd[-0.0,0.1,0.1][0m
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[ladrc_position_controller_node-3] [0m[INFO] [1788289568.780287319] [rclcpp]: signal_handler(signum=2)[0m
+[ladrc_position_controller_node-4] [0m[INFO] [1788289568.780287349] [rclcpp]: signal_handler(signum=2)[0m
+[ladrc_position_controller_node-1] [0m[INFO] [1788289568.780292989] [rclcpp]: signal_handler(signum=2)[0m
+[ladrc_position_controller_node-2] [0m[INFO] [1788289568.780293150] [rclcpp]: signal_handler(signum=2)[0m
+[INFO] [ladrc_position_controller_node-1]: process has finished cleanly [pid 2061852]
+[INFO] [ladrc_position_controller_node-2]: process has finished cleanly [pid 2061854]
+[INFO] [ladrc_position_controller_node-3]: process has finished cleanly [pid 2061856]
+[INFO] [ladrc_position_controller_node-4]: process has finished cleanly [pid 2061858]
