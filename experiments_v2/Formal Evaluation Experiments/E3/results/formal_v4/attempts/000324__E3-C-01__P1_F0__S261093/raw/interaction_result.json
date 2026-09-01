@@ -1,0 +1,107 @@
+{
+  "bias_mission_id": 790748899,
+  "command_publications": [
+    {
+      "mission_id": 790748898,
+      "role": "reference_nominal",
+      "ros_time_s": 73.7,
+      "uav_id": 1
+    },
+    {
+      "mission_id": 790748898,
+      "role": "reference_nominal",
+      "ros_time_s": 73.7,
+      "uav_id": 2
+    },
+    {
+      "mission_id": 790748898,
+      "role": "reference_nominal",
+      "ros_time_s": 73.7,
+      "uav_id": 3
+    },
+    {
+      "mission_id": 790748898,
+      "role": "reference_nominal",
+      "ros_time_s": 73.7,
+      "uav_id": 4
+    },
+    {
+      "mission_id": 790748898,
+      "role": "reference_nominal",
+      "ros_time_s": 73.7,
+      "uav_id": 5
+    },
+    {
+      "mission_id": 790748898,
+      "role": "reference_nominal",
+      "ros_time_s": 73.7,
+      "uav_id": 6
+    },
+    {
+      "mission_id": 790748898,
+      "role": "reference_nominal",
+      "ros_time_s": 73.7,
+      "uav_id": 8
+    },
+    {
+      "mission_id": 790748898,
+      "role": "delayed_nominal",
+      "ros_time_s": 74.1,
+      "uav_id": 7
+    }
+  ],
+  "command_publish_count_by_uav": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1,
+    "5": 1,
+    "6": 1,
+    "7": 1,
+    "8": 1
+  },
+  "error": "RuntimeError: one or more nominal commands were not acknowledged",
+  "execution_command_t0_ros_s": 73.7,
+  "finished_utc": "2026-09-01T19:41:52.469046+00:00",
+  "manipulation_ledger": [
+    {
+      "assignment": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "assignment_mode": "safety_aware",
+      "event": "planning_committed",
+      "phase": "interaction",
+      "ros_time_s": 73.7,
+      "runtime_spec_sha256": "823b9b6176005b81cc61d59c4cc1151172927facc284f67e37c3c2ddceea03ba"
+    },
+    {
+      "affected_uavs": [
+        7
+      ],
+      "event": "delay_started",
+      "registered_delay_s": 0.4,
+      "ros_time_s": 73.7
+    },
+    {
+      "actual_delay_s": 0.3999999999999915,
+      "affected_uavs": [
+        7
+      ],
+      "event": "delayed_command_published",
+      "ros_time_s": 74.10000000000001
+    }
+  ],
+  "mission_id": 790748898,
+  "phase": "interaction",
+  "reset_mission_id": 790748900,
+  "started_utc": "2026-09-01T19:41:49.472622+00:00",
+  "success": false,
+  "termination_reason": "DRIVER_FAILURE"
+}
