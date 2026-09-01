@@ -1,0 +1,102 @@
+schema: E3_v4_family_C_registry_v1
+status: QUALIFIED_FOR_E3_V4_CANDIDATE_REGISTRY
+dataset_class: calibration_pilot
+accepted_formal_result: false
+formal_execution_permitted: false
+F1_permitted_during_qualification: false
+production_method_changed: false
+production_baseline: 6cf402debf23851b1eff3edc6f3ab49eae7127c4
+policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+old_E3_v3_registry_sha256: b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2
+family_B_registry_sha256: c774f29b09e16ef27854410893f2d4cff298f2570d252723f1b28946fb2042ce
+qualification_grid_sha256: a46469f71206b71cf4d85c8190196757c8ee996ff6bb5708e3483f47bf87cd83
+qualification_evidence_sha256: 7481080bd9b43da66773b9d3e18c37dc3047a8dda27a5427854550028d52ad12
+qualification_seeds: [69707, 69912, 68907, 67442, 64654]
+qualification_conditions: [P0_F0, P1_F0]
+F1_attempt_count: 0
+formal_attempt_count: 0
+
+scenarios:
+  E3-C-01:
+    family: mixed_structural_and_residual_risk
+    selected_candidate: C01-DELAY-D0p4
+    construction: spatially_isolated_A01_plus_B01_timing_deviation
+    frame: world_ENU
+    uav_ids: [1, 2, 3, 4, 5, 6, 7, 8]
+    duration_s: 8.0
+    structural_component_uavs: [1, 2, 3, 4]
+    residual_component_uavs: [5, 6, 7, 8]
+    initial_positions_m:
+      1: [-3.0, -3.0, 3.0]
+      2: [3.0, -3.0, 3.0]
+      3: [-3.0, 3.0, 3.0]
+      4: [3.0, 3.0, 3.0]
+      5: [20.0, -4.0, 3.0]
+      6: [18.26794919243112, -0.5, 3.0]
+      7: [20.0, 0.5, 3.0]
+      8: [20.0, 4.0, 3.0]
+    ordered_targets_m:
+      1: [-3.0, 4.0, 3.0]
+      2: [3.0, 4.0, 3.0]
+      3: [-2.0, 12.0, 3.0]
+      4: [0.0, 12.0, 3.0]
+      5: [28.0, -4.0, 3.0]
+      6: [26.26794919243112, -0.5, 3.0]
+      7: [28.0, 0.5, 3.0]
+      8: [28.0, 4.0, 3.0]
+    nominal_assignment_P0: [2, 3, 0, 1, 4, 5, 6, 7]
+    nominal_assignment_P1: [0, 1, 2, 3, 4, 5, 6, 7]
+    predicted_P0: {d_min_m: 0.42748229992745784, hard_violations: 2}
+    predicted_P1: {d_min_m: 2.0, hard_violations: 0}
+    intended_residual_pair: [6, 7]
+    manipulation:
+      mechanism: post_planning_command_delay
+      affected_uavs: [7]
+      reference_uavs: [1, 2, 3, 4, 5, 6, 8]
+      delay_s: 0.4
+      timing_basis: ROS_simulation_time_and_execution_command_header
+      planner_input_includes_deviation: false
+
+  E3-C-02:
+    family: mixed_structural_and_residual_risk
+    selected_candidate: C02-REF-O1p5
+    construction: spatially_isolated_A01_plus_B02_reference_deviation_subset
+    frame: world_ENU
+    uav_ids: [1, 2, 3, 4, 5, 6, 7, 8]
+    duration_s: 10.0
+    structural_component_uavs: [1, 2, 3, 4]
+    residual_component_uavs: [5, 6, 7, 8]
+    initial_positions_m:
+      1: [-3.0, -3.0, 3.0]
+      2: [3.0, -3.0, 3.0]
+      3: [-3.0, 3.0, 3.0]
+      4: [3.0, 3.0, 3.0]
+      5: [25.0, 0.0, 3.0]
+      6: [22.5, 4.330127018922193, 3.0]
+      7: [17.5, 4.330127018922193, 3.0]
+      8: [15.0, 0.0, 3.0]
+    ordered_targets_m:
+      1: [-3.0, 4.0, 3.0]
+      2: [3.0, 4.0, 3.0]
+      3: [-2.0, 12.0, 3.0]
+      4: [0.0, 12.0, 3.0]
+      5: [22.4, 0.0, 3.0]
+      6: [21.2, 2.078460969082653, 3.0]
+      7: [18.8, 2.078460969082653, 3.0]
+      8: [17.6, 0.0, 3.0]
+    nominal_assignment_P0: [2, 3, 0, 1, 4, 5, 6, 7]
+    nominal_assignment_P1: [0, 1, 2, 3, 4, 5, 6, 7]
+    predicted_P0: {d_min_m: 0.42748229992745784, hard_violations: 2}
+    predicted_P1: {d_min_m: 2.0, hard_violations: 0}
+    intended_residual_pair: [6, 7]
+    manipulation:
+      mechanism: post_planning_temporary_reference_deviation
+      affected_uav: 7
+      activation_s_after_nominal_acceptance: 3.5
+      duration_s: 3.0
+      offset_m: [1.5, 0.0, 0.0]
+      offset_frame: world_ENU
+      endpoint_semantics: counterfactual_nominal_reference_at_reset_time_plus_offset
+      reset_semantics: validated_command_to_original_committed_target
+      timing_basis: ROS_simulation_time_and_execution_command_header
+      planner_input_includes_deviation: false

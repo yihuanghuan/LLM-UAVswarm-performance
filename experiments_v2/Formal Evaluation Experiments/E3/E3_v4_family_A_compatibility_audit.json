@@ -1,0 +1,109 @@
+{
+  "F1_attempt_count": 0,
+  "conclusion": "Family A remains unchanged and retains its planning manipulation under the frozen E3-v4 runtime.",
+  "formal_attempt_count": 0,
+  "motion_limits": {
+    "acceleration": 5.0,
+    "jerk": 10.0,
+    "velocity": 5.0
+  },
+  "old_E3_v3_registry_sha256": "b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2",
+  "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+  "production_method_changed": false,
+  "safety": {
+    "d_hard_m": 1.5,
+    "d_plan_m": 1.8
+  },
+  "scenarios": {
+    "E3-A-01": {
+      "compatibility_status": "PASS",
+      "geometry_duration_targets_unchanged": true,
+      "modes": {
+        "P0": {
+          "assignment": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "maximum_motion_metrics": {
+            "max_component_acceleration_mps2": 2.4056261216234405,
+            "max_component_jerk_mps3": 4.166666666666667,
+            "max_component_velocity_mps": 4.6875
+          },
+          "motion_limits_pass": true,
+          "predicted_d_min_m": 0.42748229992745784,
+          "predicted_hard_violations": 2
+        },
+        "P1": {
+          "assignment": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "maximum_motion_metrics": {
+            "max_component_acceleration_mps2": 1.4433756729740645,
+            "max_component_jerk_mps3": 2.5,
+            "max_component_velocity_mps": 2.8125
+          },
+          "motion_limits_pass": true,
+          "predicted_d_min_m": 2.0,
+          "predicted_hard_violations": 0
+        }
+      },
+      "source": "immutable E3-v3 registry",
+      "zero_execution_deviation": true
+    },
+    "E3-A-02": {
+      "compatibility_status": "PASS",
+      "geometry_duration_targets_unchanged": true,
+      "modes": {
+        "P0": {
+          "assignment": [
+            7,
+            0,
+            5,
+            2,
+            3,
+            4,
+            1,
+            6
+          ],
+          "maximum_motion_metrics": {
+            "max_component_acceleration_mps2": 1.4384358176421925,
+            "max_component_jerk_mps3": 1.5735435281577839,
+            "max_component_velocity_mps": 4.4378844817575
+          },
+          "motion_limits_pass": true,
+          "predicted_d_min_m": 0.0,
+          "predicted_hard_violations": 2
+        },
+        "P1": {
+          "assignment": [
+            7,
+            6,
+            1,
+            4,
+            3,
+            5,
+            2,
+            0
+          ],
+          "maximum_motion_metrics": {
+            "max_component_acceleration_mps2": 1.5508581857701416,
+            "max_component_jerk_mps3": 1.6965253724766176,
+            "max_component_velocity_mps": 4.784731714562961
+          },
+          "motion_limits_pass": true,
+          "predicted_d_min_m": 2.2483866045465772,
+          "predicted_hard_violations": 0
+        }
+      },
+      "source": "immutable E3-v3 registry",
+      "zero_execution_deviation": true
+    }
+  },
+  "schema": "E3_v4_family_A_compatibility_audit_v1",
+  "status": "PASS"
+}
