@@ -151,7 +151,7 @@ def build() -> dict[Path, bytes]:
         ))
     registry = {
         "registry_id": "E3-exact-factorial-v4",
-        "status": "CANDIDATE_FOR_HUMAN_REVIEW",
+        "status": "SEALED_FOR_FORMAL_EXECUTION",
         "supersedes_for_future_confirmation": "E3-exact-factorial-v3",
         "E3-v3_historical_results_remain_valid_and_immutable": True,
         "reason": [

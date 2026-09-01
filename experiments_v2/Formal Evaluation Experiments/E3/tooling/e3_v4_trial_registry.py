@@ -20,12 +20,13 @@ SEEDS = E3 / "E3_v4_formal_paired_seeds.yaml"
 ORDER = E3 / "E3_v4_formal_trial_order.txt"
 ORDER_META = E3 / "E3_v4_formal_trial_order.yaml"
 POLICY = REPO / "lfs_policy/config/lfs_policy.paper_current.yaml"
-REGISTRY_SHA256 = "80ddbb8701f1c7feb84ae64a7985f233742f522c1204131ab4dd6d09960bd79b"
+REGISTRY_SHA256 = "2b3dccc2ad27cf317029c2b7b014bca3a8b28fc8c0a196fd4c2e5abe0be9d4b7"
 SEEDS_SHA256 = "665600871ad3fb6cff324ab3ef9144b0d84b42acc19505283679b6ae01586841"
 ORDER_SHA256 = "60ee30a7100b53c4964e3f9f086ff3d137fb41282eebc4439760bf17f033b39b"
-ORDER_META_SHA256 = "394df275e186d85fda970e1f949da8be8ad8081d46544c582de5930c427eb113"
+ORDER_META_SHA256 = "90b4c6358d087303f05701b6c138d59b64a3ac784642cd0c2df4e757cb3e5e4c"
 POLICY_SHA256 = "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858"
 OLD_V3_SHA256 = "b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2"
+EXPECTED_REGISTRY_STATUS = "SEALED_FOR_FORMAL_EXECUTION"
 TRIAL = re.compile(r"^(E3-[ABC]-0[12])__(P[01]_F[01])__S([0-9]+)$")
 DELIVERY_TOLERANCES = {
     "command_delay_s": 0.05,
@@ -67,8 +68,8 @@ def _load() -> tuple[dict, dict, dict]:
     registry = yaml.safe_load(REGISTRY.read_text())
     seeds = yaml.safe_load(SEEDS.read_text())
     order_meta = yaml.safe_load(ORDER_META.read_text())
-    if registry["status"] != "CANDIDATE_FOR_HUMAN_REVIEW":
-        raise RegistryError("unexpected registry review status")
+    if registry["status"] != EXPECTED_REGISTRY_STATUS:
+        raise RegistryError("unexpected sealed registry status")
     if order_meta["attempt_count"] != 360 or order_meta["unique_attempt_count"] != 360:
         raise RegistryError("order cardinality mismatch")
     return registry, seeds, order_meta

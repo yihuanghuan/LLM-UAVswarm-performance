@@ -41,10 +41,10 @@ def test_registered_runtime_semantics(prefix, mechanism, predicted_hard):
     assert runtime["allocator_diagnostics"]["hard_violations"] == predicted_hard
 
 
-def test_candidate_registry_refuses_formal_launch():
+def formal_context():
     trial = registered_trial_ids()[0]
     identity = adapter_identity()
-    context = {
+    return trial, {
         "trial_id": trial,
         "campaign_position": 1,
         "execution_mode": "formal",
@@ -59,7 +59,37 @@ def test_candidate_registry_refuses_formal_launch():
         "policy_sha256": POLICY_SHA256,
         "attempt_output_dir": "/not-used",
     }
-    with pytest.raises(AdapterError, match="pending human registry activation"):
+
+
+def test_sealed_formal_context_validates_without_execution():
+    trial, context = formal_context()
+    mode, position, _identity = validate_context(trial, context)
+    assert mode == "formal"
+    assert position == 1
+
+
+def test_explicit_formal_authorization_remains_mandatory():
+    trial, context = formal_context()
+    context["formal_launch_authorized"] = False
+    with pytest.raises(AdapterError, match="authorization missing"):
+        validate_context(trial, context)
+
+
+def test_wrong_formal_dataset_class_fails():
+    trial, context = formal_context()
+    context["dataset_class"] = "engineering_validation"
+    with pytest.raises(AdapterError, match="dataset class missing"):
+        validate_context(trial, context)
+
+
+@pytest.mark.parametrize("field", [
+    "registry_sha256", "formal_seed_registry_sha256", "order_sha256",
+    "policy_sha256", "runner_tooling_bundle_sha256",
+])
+def test_wrong_frozen_identity_hash_fails(field):
+    trial, context = formal_context()
+    context[field] = "0" * 64
+    with pytest.raises(AdapterError):
         validate_context(trial, context)
 
 
