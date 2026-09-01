@@ -1,0 +1,306 @@
+{
+  "accepted_formal_result": true,
+  "attribution": {
+    "intended_pair": "2-3",
+    "intended_pair_event_count": 1,
+    "intended_pair_exposure_s": 2.5767738819122314,
+    "intended_pair_is_global_minimum": true,
+    "pairs_with_hard_events": [
+      "2-3"
+    ]
+  },
+  "condition": "P1_F0",
+  "coverage": {
+    "swarm_position": {
+      "1": {
+        "completeness_status": "COMPLETE",
+        "coverage_fraction": 1.0,
+        "dropped_duplicate_sample_count": 0,
+        "end_interpolated": true,
+        "expected_duration_s": 10.0,
+        "expected_end": 1788260518.2715974,
+        "expected_start": 1788260508.2715974,
+        "first_timestamp": 1788260508.2715974,
+        "last_timestamp": 1788260518.2715974,
+        "maximum_allowed_gap_s": 0.2,
+        "maximum_sample_gap_s": 0.01772618293762207,
+        "sample_count": 1002,
+        "start_interpolated": true
+      },
+      "2": {
+        "completeness_status": "COMPLETE",
+        "coverage_fraction": 1.0,
+        "dropped_duplicate_sample_count": 0,
+        "end_interpolated": true,
+        "expected_duration_s": 10.0,
+        "expected_end": 1788260518.2715974,
+        "expected_start": 1788260508.2715974,
+        "first_timestamp": 1788260508.2715974,
+        "last_timestamp": 1788260518.2715974,
+        "maximum_allowed_gap_s": 0.2,
+        "maximum_sample_gap_s": 0.015842914581298828,
+        "sample_count": 1002,
+        "start_interpolated": true
+      },
+      "3": {
+        "completeness_status": "COMPLETE",
+        "coverage_fraction": 1.0,
+        "dropped_duplicate_sample_count": 0,
+        "end_interpolated": true,
+        "expected_duration_s": 10.0,
+        "expected_end": 1788260518.2715974,
+        "expected_start": 1788260508.2715974,
+        "first_timestamp": 1788260508.2715974,
+        "last_timestamp": 1788260518.2715974,
+        "maximum_allowed_gap_s": 0.2,
+        "maximum_sample_gap_s": 0.017695188522338867,
+        "sample_count": 1002,
+        "start_interpolated": true
+      },
+      "4": {
+        "completeness_status": "COMPLETE",
+        "coverage_fraction": 1.0,
+        "dropped_duplicate_sample_count": 0,
+        "end_interpolated": true,
+        "expected_duration_s": 10.0,
+        "expected_end": 1788260518.2715974,
+        "expected_start": 1788260508.2715974,
+        "first_timestamp": 1788260508.2715974,
+        "last_timestamp": 1788260518.2715974,
+        "maximum_allowed_gap_s": 0.2,
+        "maximum_sample_gap_s": 0.014289379119873047,
+        "sample_count": 1002,
+        "start_interpolated": true
+      }
+    },
+    "synchronization_grid_sample_count": 4002
+  },
+  "dataset_class": "formal_evaluation",
+  "feedback": "F0",
+  "formal_cursor_consumed": false,
+  "manipulation_delivery": {
+    "absolute_timing_error_s": 1.4432899320127035e-15,
+    "acceptance_timestamps_s": {
+      "1": [
+        1788260508.2715974
+      ],
+      "2": [
+        1788260508.271627
+      ],
+      "3": [
+        1788260508.6685905
+      ],
+      "4": [
+        1788260508.2716467
+      ]
+    },
+    "actual_delay_s": 0.3999999999999986,
+    "authoritative_timing_basis": "execution-command ROS simulation-time header",
+    "command_payloads": {
+      "1": [
+        {
+          "bag_timestamp_s": 1788260508.271448,
+          "configuration_id": "paper-current-v11-c0-f-frozen",
+          "duration_s": 8.0,
+          "mission_id": 1171858222,
+          "target_m": [
+            8.0,
+            -4.0,
+            3.0
+          ],
+          "task_id": 1,
+          "timestamp_s": 62.2,
+          "uav_id": 1
+        }
+      ],
+      "2": [
+        {
+          "bag_timestamp_s": 1788260508.2714772,
+          "configuration_id": "paper-current-v11-c0-f-frozen",
+          "duration_s": 8.0,
+          "mission_id": 1171858222,
+          "target_m": [
+            6.267949192431123,
+            -0.5,
+            3.0
+          ],
+          "task_id": 1,
+          "timestamp_s": 62.2,
+          "uav_id": 2
+        }
+      ],
+      "3": [
+        {
+          "bag_timestamp_s": 1788260508.668464,
+          "configuration_id": "paper-current-v11-c0-f-frozen",
+          "duration_s": 8.0,
+          "mission_id": 1171858222,
+          "target_m": [
+            8.0,
+            0.5,
+            3.0
+          ],
+          "task_id": 1,
+          "timestamp_s": 62.6,
+          "uav_id": 3
+        }
+      ],
+      "4": [
+        {
+          "bag_timestamp_s": 1788260508.2715008,
+          "configuration_id": "paper-current-v11-c0-f-frozen",
+          "duration_s": 8.0,
+          "mission_id": 1171858222,
+          "target_m": [
+            8.0,
+            4.0,
+            3.0
+          ],
+          "task_id": 1,
+          "timestamp_s": 62.2,
+          "uav_id": 4
+        }
+      ]
+    },
+    "common_reference_command_timestamp": true,
+    "controller_acceptance_verified": true,
+    "exactly_one_nominal_command_per_uav": true,
+    "mechanism": "command_delay",
+    "planning_commitment": {
+      "commit_before_first_nominal_command": true,
+      "events": [
+        {
+          "assignment": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "assignment_mode": "safety_aware",
+          "event": "planning_committed",
+          "phase": "stage",
+          "ros_time_s": 49.6,
+          "runtime_spec_sha256": "02fd6c50b71778ac30f1c2f4c55899c5b6d6e41b58cc7b91d517d686284d85ec"
+        },
+        {
+          "assignment": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "assignment_mode": "safety_aware",
+          "event": "planning_committed",
+          "phase": "interaction",
+          "ros_time_s": 62.2,
+          "runtime_spec_sha256": "02fd6c50b71778ac30f1c2f4c55899c5b6d6e41b58cc7b91d517d686284d85ec"
+        }
+      ],
+      "matching_event_count": 1,
+      "verified": true
+    },
+    "registered_delay_s": 0.4,
+    "tolerance_s": 0.05,
+    "verified": true
+  },
+  "pre_activation": null,
+  "predicted": {
+    "assignment": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "d_min_m": 1.9999999999999998,
+    "hard_violations": 0
+  },
+  "raw_inventory": {
+    "agent.log": "b1b55231ce9a38055aa5ae0b5d22339cd3e683564e0d981d93b04f93772280e0",
+    "command_validation.json": "b098f5d9c919efcaf36ea9e8b63d61ab2a7203dac6f6f34219e8f2b1e774f6d8",
+    "controllers.log": "f2ca934b457d10c35a59c6c3712db6a2b0fc00b462a26b7cfc1736b4c333cf75",
+    "harness.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "harness.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "interaction.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "interaction_endpoint_snapshot.json": "4756525ece7882705b78e90dbadeb657921d36e86d2a8d1ca01c6c5e34beaa1a",
+    "interaction_result.json": "eea0a925f3fce88376d5e42e6cad3cd89e5c7e4461d57c15cf7e3a6d22e805af",
+    "physical_result.json": "18bd40cb1d398e79b7207db1160f23b1ea728565664e7699524f8bb123933720",
+    "readiness.log": "0819695fce5715ecf986fc7b880be3e211a31598a299a9c4e53900701967049b",
+    "rosbag.log": "c8e45f95d3948127889077f46db9a578f782279df832bbded1f915d425d320d3",
+    "rosbag/metadata.yaml": "1dafa100ffd79b376b230fa81e44cfbf5ef0ee3e99b2b66ed121c2c15836032e",
+    "rosbag/rosbag_0.db3": "4b768764ce08b5325df744ba305c4e493c360ba01b1c3dcae01a599cd570d3f8",
+    "runtime_provenance.json": "72e2cec64d624b03abb45ae516e84f67b469bd8c6c5649a48799af2a0b66fced",
+    "runtime_spec.json": "c28ba7f19eaf334827191bbe7c81b87dd69086342ee723802bea5ed0643546df",
+    "sitl.log": "fbeddb5a7b60e3ab7af58d2194e585ef19529187c0839690c6ccca71c8302450",
+    "stage.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stage_endpoint_snapshot.json": "4e23d372389253f6a2d7c50054ce5d05dc98fce2f73da50c6af88be252795164",
+    "stage_result.json": "c74a83c8b3b93a25365cde4151032d2d323188517118edc3c7814af248cddd1e"
+  },
+  "raw_inventory_sha256": "6e4f3281b5308ad801363d8505d15d7e2198581b14ae8312a361ad7f6be7aa05",
+  "realized": {
+    "any_pair_hard_risk_duration_s": 2.5767738819122314,
+    "d_min_m": 1.3974476119354657,
+    "d_min_pair": "2-3",
+    "d_min_time_relative_s": 4.137085676193237,
+    "hard_risk_event_count": 1,
+    "hard_risk_exposure_pair_s": 2.5767738819122314,
+    "pair_diagnostics": {
+      "1-2": {
+        "event_count": 0,
+        "events": [],
+        "exposure_duration_s": 0.0,
+        "minimum_distance_m": 3.8682447919629905
+      },
+      "1-3": {
+        "event_count": 0,
+        "events": [],
+        "exposure_duration_s": 0.0,
+        "minimum_distance_m": 4.464584666535328
+      },
+      "1-4": {
+        "event_count": 0,
+        "events": [],
+        "exposure_duration_s": 0.0,
+        "minimum_distance_m": 7.960042202856404
+      },
+      "2-3": {
+        "event_count": 1,
+        "events": [
+          {
+            "duration_s": 2.5767738819122314,
+            "end": 1788260513.8886695,
+            "start": 1788260511.3118956
+          }
+        ],
+        "exposure_duration_s": 2.5767738819122314,
+        "minimum_distance_m": 1.3974476119354657
+      },
+      "2-4": {
+        "event_count": 0,
+        "events": [],
+        "exposure_duration_s": 0.0,
+        "minimum_distance_m": 4.8004387610626695
+      },
+      "3-4": {
+        "event_count": 0,
+        "events": [],
+        "exposure_duration_s": 0.0,
+        "minimum_distance_m": 3.485163397468957
+      }
+    }
+  },
+  "runtime_spec_sha256": "02fd6c50b71778ac30f1c2f4c55899c5b6d6e41b58cc7b91d517d686284d85ec",
+  "scenario_id": "E3-B-01",
+  "schema": "E3_v4_formal_attempt_metrics_v1",
+  "seed": 959517,
+  "stability": {
+    "actual_d_min_le_0p25_m": false,
+    "control_debug_sample_count": 2000,
+    "failsafe_seen": false,
+    "interaction_termination_reason": "SUCCESS",
+    "mission_success": true,
+    "near_acceleration_limit_sample_fraction": 0.0,
+    "physical_attempt_status": "success",
+    "saturation_dominated": false
+  },
+  "trial_id": "E3-B-01__P1_F0__S959517"
+}
