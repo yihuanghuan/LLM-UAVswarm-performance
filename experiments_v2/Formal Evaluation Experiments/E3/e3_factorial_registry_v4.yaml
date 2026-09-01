@@ -1,0 +1,567 @@
+registry_id: E3-exact-factorial-v4
+status: CANDIDATE_FOR_HUMAN_REVIEW
+supersedes_for_future_confirmation: E3-exact-factorial-v3
+E3-v3_historical_results_remain_valid_and_immutable: true
+reason:
+- residual-risk manipulation failure in E3-v3 Family B
+- insufficient residual-risk persistence after planning in E3-v3 mixed-risk cases
+- human-approved replacement by deterministic post-planning execution deviations
+production_baseline: 6cf402debf23851b1eff3edc6f3ab49eae7127c4
+configuration_id: paper-current-v11-c0-f-frozen
+policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+old_E3_v3_registry_sha256: b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2
+scenario_count: 6
+paired_seeds:
+- 709169
+- 279520
+- 730940
+- 261093
+- 702055
+- 899696
+- 876320
+- 959517
+- 591774
+- 658212
+- 926184
+- 934882
+- 861723
+- 881128
+- 135275
+paired_seeds_per_scenario_condition: 15
+sample_size_rule: fixed before formal execution; no significance-triggered extension
+common_execution:
+  input_level: frozen allocator target set plus executable task fields; no LLM call
+  frame: world ENU
+  style: normal
+  safety_s: 1.0
+  q:
+    mode: direct
+  staging: move to exact initial geometry, require frozen-controller stable state
+    continuously for 2.0 s, then commit planning and start scored interaction
+  staging_is_scored: false
+  scoring_start: first nominal interaction execution-command timestamp t0
+  scoring_end: t0 plus registered duration plus 2.0 s
+  timeout: registered duration plus 6.0 s after t0
+  target_order: authoritative allocator input order shown per scenario
+  scenario_or_sample_extension_after_results: forbidden
+factorial_mapping:
+  conditions:
+    P0_F0:
+      assignment_mode: distance_hungarian
+      avoidance_mode: 'off'
+    P0_F1:
+      assignment_mode: distance_hungarian
+      avoidance_mode: iapf_dual
+    P1_F0:
+      assignment_mode: safety_aware
+      avoidance_mode: 'off'
+    P1_F1:
+      assignment_mode: safety_aware
+      avoidance_mode: iapf_dual
+  feedback_parameters_frozen:
+    iapf_escape_mode: id_order
+    iapf_filter_alpha: 0.2
+  invariant_flags:
+    lfs_runtime_mode: candidate_v2
+    control_mode: ladrc_acceleration
+    policy: lfs_policy.paper_current.yaml
+  no_condition_specific_tuning: true
+execution_deviation_contract:
+  introduced_only_after_planning_commitment: true
+  excluded_from_planner_input_and_prediction: true
+  authoritative_timing: ROS simulation time plus execution-command timestamps
+  command_delay_tolerance_s: 0.05
+  reference_activation_and_duration_tolerance_s: 0.05
+  reference_endpoint_tolerance_m: 0.15
+  activation_and_reset_acknowledgment_required: true
+  delivery_failure_class: INFRASTRUCTURE_FAILURE
+  production_runtime_semantics_changed: false
+qualification_provenance:
+  family_A_audit_sha256: d078b9e11614e12a17745eed3fbceadbf1d643bbf4e2e2a585437ef3e77398fc
+  family_B_registry_sha256: c774f29b09e16ef27854410893f2d4cff298f2570d252723f1b28946fb2042ce
+  family_B_evidence_sha256: 6b5bf5e63f6ae89218c44593ed5e9e1e1ca6c65569898ba60fa98f84eaa141a0
+  family_C_registry_sha256: 9f9bdc9b6f545805cc5f7f9f31a77407cb2b12e1ae4c3e9ccbc5b1169774101a
+  family_C_evidence_sha256: 7481080bd9b43da66773b9d3e18c37dc3047a8dda27a5427854550028d52ad12
+  F1_attempt_count: 0
+  formal_attempt_count: 0
+scenarios:
+- scenario_id: E3-A-01
+  family: A_predictable_structural_risk
+  label: four-UAV offset-trapezoid assignment-conflict target set
+  uav_ids:
+  - 1
+  - 2
+  - 3
+  - 4
+  duration_s: 6.0
+  initial_positions_m:
+    1:
+    - -3.0
+    - -3.0
+    - 3.0
+    2:
+    - 3.0
+    - -3.0
+    - 3.0
+    3:
+    - -3.0
+    - 3.0
+    - 3.0
+    4:
+    - 3.0
+    - 3.0
+    - 3.0
+  ordered_targets_m:
+    1:
+    - -3.0
+    - 4.0
+    - 3.0
+    2:
+    - 3.0
+    - 4.0
+    - 3.0
+    3:
+    - -2.0
+    - 12.0
+    - 3.0
+    4:
+    - 0.0
+    - 12.0
+    - 3.0
+  structural_risk: free distance-only assignment has two predicted hard conflicts;
+    the frozen safety-aware lexicographic assignment removes both while receiving
+    the identical target set and input order
+  manipulation:
+    type: none
+    planner_input_includes_deviation: false
+  source_E3_v3_scene_sha256: 47bc3d60e5b96a170692b28841606bea435f37b7350a30a566705c5e2b825ca6
+- scenario_id: E3-A-02
+  family: A_predictable_structural_risk
+  label: eight-UAV reversed-circle target set
+  uav_ids:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  duration_s: 9.5
+  initial_positions_m:
+    1:
+    - 6.0
+    - 0.0
+    - 3.0
+    2:
+    - 4.242640687119
+    - 4.242640687119
+    - 3.0
+    3:
+    - 0.0
+    - 6.0
+    - 3.0
+    4:
+    - -4.242640687119
+    - 4.242640687119
+    - 3.0
+    5:
+    - -6.0
+    - 0.0
+    - 3.0
+    6:
+    - -4.242640687119
+    - -4.242640687119
+    - 3.0
+    7:
+    - 0.0
+    - -6.0
+    - 3.0
+    8:
+    - 4.242640687119
+    - -4.242640687119
+    - 3.0
+  ordered_targets_m:
+    1:
+    - 4.242640687119
+    - 9.757359312881
+    - 3.0
+    2:
+    - 0.0
+    - 8.0
+    - 3.0
+    3:
+    - -4.242640687119
+    - 9.757359312881
+    - 3.0
+    4:
+    - -6.0
+    - 14.0
+    - 3.0
+    5:
+    - -4.242640687119
+    - 18.242640687119
+    - 3.0
+    6:
+    - 0.0
+    - 20.0
+    - 3.0
+    7:
+    - 4.242640687119
+    - 18.242640687119
+    - 3.0
+    8:
+    - 6.0
+    - 14.0
+    - 3.0
+  structural_risk: the reversed target geometry admits assignment-dependent multi-path
+    conflict; both planning modes receive the identical target set and input order
+  manipulation:
+    type: none
+    planner_input_includes_deviation: false
+  source_E3_v3_scene_sha256: eee181030bd1e8dd258896960d85398003c494eb3e152a8edb3b0d34ad91b8cb
+- scenario_id: E3-B-01
+  family: B_residual_execution_risk
+  label: B01-DELAY-D0p4
+  uav_ids:
+  - 1
+  - 2
+  - 3
+  - 4
+  duration_s: 8.0
+  initial_positions_m:
+    1:
+    - 0.0
+    - -4.0
+    - 3.0
+    2:
+    - -1.7320508075688772
+    - -0.5
+    - 3.0
+    3:
+    - 0.0
+    - 0.5
+    - 3.0
+    4:
+    - 0.0
+    - 4.0
+    - 3.0
+  ordered_targets_m:
+    1:
+    - 8.0
+    - -4.0
+    - 3.0
+    2:
+    - 6.267949192431123
+    - -0.5
+    - 3.0
+    3:
+    - 8.0
+    - 0.5
+    - 3.0
+    4:
+    - 8.0
+    - 4.0
+    - 3.0
+  intended_pair:
+  - 2
+  - 3
+  manipulation:
+    affected_uavs:
+    - 3
+    reference_uavs:
+    - 1
+    - 2
+    - 4
+    delay_s: 0.4
+    timing_basis: ROS_simulation_time_and_execution_command_header
+    planner_input_includes_deviation: false
+    type: command_delay
+  qualification_selected_candidate: B01-DELAY-D0p4
+- scenario_id: E3-B-02
+  family: B_residual_execution_risk
+  label: B02-REF-O1p5
+  uav_ids:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  duration_s: 10.0
+  initial_positions_m:
+    1:
+    - 5.0
+    - 0.0
+    - 3.0
+    2:
+    - 2.5
+    - 4.330127018922193
+    - 3.0
+    3:
+    - -2.5
+    - 4.330127018922193
+    - 3.0
+    4:
+    - -5.0
+    - 0.0
+    - 3.0
+    5:
+    - -2.5
+    - -4.330127018922193
+    - 3.0
+    6:
+    - 2.5
+    - -4.330127018922193
+    - 3.0
+  ordered_targets_m:
+    1:
+    - 2.4
+    - 0.0
+    - 3.0
+    2:
+    - 1.2
+    - 2.078460969082653
+    - 3.0
+    3:
+    - -1.2
+    - 2.078460969082653
+    - 3.0
+    4:
+    - -2.4
+    - 0.0
+    - 3.0
+    5:
+    - -1.2
+    - -2.078460969082653
+    - 3.0
+    6:
+    - 1.2
+    - -2.078460969082653
+    - 3.0
+  intended_pair:
+  - 2
+  - 3
+  manipulation:
+    affected_uav: 3
+    duration_s: 3.0
+    offset_m:
+    - 1.5
+    - 0.0
+    - 0.0
+    offset_frame: world_ENU
+    endpoint_semantics: counterfactual_nominal_reference_at_reset_time_plus_offset
+    reset_semantics: validated_command_to_original_committed_target
+    timing_basis: ROS_simulation_time_and_execution_command_header
+    planner_input_includes_deviation: false
+    type: reference_deviation
+    start_s: 3.5
+  qualification_selected_candidate: B02-REF-O1p5
+- scenario_id: E3-C-01
+  family: C_mixed_risk
+  label: spatially_isolated_A01_plus_B01_timing_deviation
+  uav_ids:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  duration_s: 8.0
+  initial_positions_m:
+    1:
+    - -3.0
+    - -3.0
+    - 3.0
+    2:
+    - 3.0
+    - -3.0
+    - 3.0
+    3:
+    - -3.0
+    - 3.0
+    - 3.0
+    4:
+    - 3.0
+    - 3.0
+    - 3.0
+    5:
+    - 20.0
+    - -4.0
+    - 3.0
+    6:
+    - 18.26794919243112
+    - -0.5
+    - 3.0
+    7:
+    - 20.0
+    - 0.5
+    - 3.0
+    8:
+    - 20.0
+    - 4.0
+    - 3.0
+  ordered_targets_m:
+    1:
+    - -3.0
+    - 4.0
+    - 3.0
+    2:
+    - 3.0
+    - 4.0
+    - 3.0
+    3:
+    - -2.0
+    - 12.0
+    - 3.0
+    4:
+    - 0.0
+    - 12.0
+    - 3.0
+    5:
+    - 28.0
+    - -4.0
+    - 3.0
+    6:
+    - 26.26794919243112
+    - -0.5
+    - 3.0
+    7:
+    - 28.0
+    - 0.5
+    - 3.0
+    8:
+    - 28.0
+    - 4.0
+    - 3.0
+  intended_pair:
+  - 6
+  - 7
+  manipulation:
+    affected_uavs:
+    - 7
+    reference_uavs:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 8
+    delay_s: 0.4
+    timing_basis: ROS_simulation_time_and_execution_command_header
+    planner_input_includes_deviation: false
+    type: command_delay
+  qualification_selected_candidate: C01-DELAY-D0p4
+- scenario_id: E3-C-02
+  family: C_mixed_risk
+  label: spatially_isolated_A01_plus_B02_reference_deviation_subset
+  uav_ids:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  duration_s: 10.0
+  initial_positions_m:
+    1:
+    - -3.0
+    - -3.0
+    - 3.0
+    2:
+    - 3.0
+    - -3.0
+    - 3.0
+    3:
+    - -3.0
+    - 3.0
+    - 3.0
+    4:
+    - 3.0
+    - 3.0
+    - 3.0
+    5:
+    - 25.0
+    - 0.0
+    - 3.0
+    6:
+    - 22.5
+    - 4.330127018922193
+    - 3.0
+    7:
+    - 17.5
+    - 4.330127018922193
+    - 3.0
+    8:
+    - 15.0
+    - 0.0
+    - 3.0
+  ordered_targets_m:
+    1:
+    - -3.0
+    - 4.0
+    - 3.0
+    2:
+    - 3.0
+    - 4.0
+    - 3.0
+    3:
+    - -2.0
+    - 12.0
+    - 3.0
+    4:
+    - 0.0
+    - 12.0
+    - 3.0
+    5:
+    - 22.4
+    - 0.0
+    - 3.0
+    6:
+    - 21.2
+    - 2.078460969082653
+    - 3.0
+    7:
+    - 18.8
+    - 2.078460969082653
+    - 3.0
+    8:
+    - 17.6
+    - 0.0
+    - 3.0
+  intended_pair:
+  - 6
+  - 7
+  manipulation:
+    affected_uav: 7
+    duration_s: 3.0
+    offset_m:
+    - 1.5
+    - 0.0
+    - 0.0
+    offset_frame: world_ENU
+    endpoint_semantics: counterfactual_nominal_reference_at_reset_time_plus_offset
+    reset_semantics: validated_command_to_original_committed_target
+    timing_basis: ROS_simulation_time_and_execution_command_header
+    planner_input_includes_deviation: false
+    type: reference_deviation
+    start_s: 3.5
+  qualification_selected_candidate: C02-REF-O1p5
+failure_accounting:
+  every_attempt_retained: true
+  all_attempt_denominator: true
+  no_replacement_seed: true
+  setup_or_infrastructure_failure: retained and separately labeled
+  no_manual_trial_deletion: true
+  append_only_journal: true
+governance:
+  scenario_selection_may_not_change_after_any_formal_outcome: true
+  Full_Method_is_P1_F1: true
+  production_runtime_modified: false
+  accepted_formal_results_created: false
+  formal_execution_requires_separate_human_authorization: true

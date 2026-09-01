@@ -1,0 +1,54 @@
+schema: E3_v4_formal_paired_seeds_v1
+status: FROZEN_BEFORE_FORMAL_EXECUTION
+dataset_class: future_confirmatory_formal_population
+namespace: E3-v4-confirmatory-formal-paired-seed-v1
+generation: for counter=0.., sha256(namespace|counter) first 64 bits modulo 900000
+  plus 100000; reject excluded/duplicate; take first 15
+excluded_E3_v3_formal_seeds:
+- 53101
+- 53102
+- 53103
+- 53104
+- 53105
+- 53106
+- 53107
+- 53108
+- 53109
+- 53110
+- 53111
+- 53112
+- 53113
+- 53114
+- 53115
+excluded_qualification_seeds:
+- 69707
+- 69912
+- 68907
+- 67442
+- 64654
+- 76174
+- 77507
+- 78307
+- 77571
+- 76333
+paired_seed_semantics: same scenario seed shared by all four P/F conditions
+paired_seeds:
+- 709169
+- 279520
+- 730940
+- 261093
+- 702055
+- 899696
+- 876320
+- 959517
+- 591774
+- 658212
+- 926184
+- 934882
+- 861723
+- 881128
+- 135275
+paired_seed_count: 15
+canonical_seed_list_sha256: f1ea79e7e49577d4cc06a990a95a79954d900f252414470c853f1e19219ab893
+qualification_use_forbidden: true
+formal_execution_started: false
