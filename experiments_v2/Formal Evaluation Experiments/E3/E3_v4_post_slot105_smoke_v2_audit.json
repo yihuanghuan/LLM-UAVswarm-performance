@@ -1,0 +1,92 @@
+{
+  "schema": "E3_v4_post_slot105_smoke_v2_audit_v1",
+  "baseline_head": "cbf2e3d6d524d1c698567780abb5c5fa920abead",
+  "v2_preregistration_commit": "c7d3305b90149f55cf11115b2ff0672d9f08ccfa",
+  "v1": {
+    "historical_recorded_status": "FAIL",
+    "historical_result_sha256": "de9dcaf787dd7b6645d2cd0471b0b38104ff35097a52a6485b31b634a8fbd7e7",
+    "historical_result_changed": false,
+    "core_readiness_assessment": "PASS",
+    "auxiliary_topic_enumeration_assessment": "NON_AUTHORITATIVE_SINGLE_SHOT_DDS_DISCOVERY",
+    "auxiliary_gazebo_model_query_assessment": "INVALID_CLI_ASSAY",
+    "adjudication_sha256": "6db191a77dd2674f741557c38662ae472991ae7fd4ce561db485bcd7081fa611"
+  },
+  "v2": {
+    "smoke_id": "E3-V4-INFRASTRUCTURE-SMOKE-AFTER-SLOT105-v2",
+    "status": "PASS",
+    "protocol_sha256": "2291635f1a6dabd09266f432b0749d5855f683c428d03dca43d7be180496a511",
+    "smoke_tool_sha256": "da1c78882f43fa196ebb74e6258d03fa84b5e35a9ad9941835e0c1a715e0e921",
+    "engineering_seed_namespace": "E3-v4-post-slot105-smoke-v2-seed",
+    "engineering_seed_namespace_sha256": "80de3bd4797d9dd98c9a41db4329f3037f4f9d0b8c34fefcd3481cfe85b7339b",
+    "engineering_seed": 3047956,
+    "seed_collision": false,
+    "number_of_runs": 1,
+    "output_location": "experiments_v2/Formal Evaluation Experiments/E3/results/formal_v4/infrastructure_smoke_after_slot105_v2",
+    "smoke_result_sha256": "4fd2e51e35b2a216fcc9efaefbd5229586545fc00aa826479913be1b9f6f679f",
+    "accepted_formal_result": false,
+    "formal_launch_authorized": false,
+    "campaign_position": null,
+    "registered_formal_trial_id": null,
+    "scientific_scene_executed": false,
+    "scientific_interaction_executed": false,
+    "rosbag_acquisition_started": false,
+    "core_check_count": 20,
+    "core_check_pass_count": 20,
+    "core_check_failures": [],
+    "maximum_readiness_age_s": 0.019945359003031626,
+    "live_process_counts": {
+      "gzserver": 1,
+      "px4_matches": 16,
+      "controllers": 8,
+      "micro_xrce_agent": 1
+    },
+    "diagnostic_only": {
+      "dds_topic_discovery": {
+        "observation_count": 5,
+        "topics_per_observation": [436, 444, 444, 444, 444],
+        "union_has_all_expected_vehicle_odometry_topics": true,
+        "sha256": "e976b83355453748de8c266cad52a68f44686fa2c977329d5b4e78f95cb65596"
+      },
+      "gazebo_model_introspection": {
+        "command_template": "gz model --model-name iris_<id> --info",
+        "successful_query_count": 8,
+        "sha256": "b4f5822982944edd437f763f32814c854baa5d3c96261fac2e31597456a5ea79"
+      }
+    },
+    "cleanup_verified": true
+  },
+  "formal_state": {
+    "campaign_journal_sha256_before": "f6a619ea20a9e1bc8c664db2a7c42aeb723f684ae7de1ad2d652d761ca10f6dd",
+    "campaign_journal_sha256_after": "f6a619ea20a9e1bc8c664db2a7c42aeb723f684ae7de1ad2d652d761ca10f6dd",
+    "raw_storage_ledger_sha256_before": "7233afd23c35abb69e3245111189499c729a138b62e86964baa730dd0d1309f5",
+    "raw_storage_ledger_sha256_after": "7233afd23c35abb69e3245111189499c729a138b62e86964baa730dd0d1309f5",
+    "formal_attempt_directory_count_before": 105,
+    "formal_attempt_directory_count_after": 105,
+    "formal_context_count_before": 105,
+    "formal_context_count_after": 105,
+    "journal_records": 105,
+    "consumed_slots": 105,
+    "success": 98,
+    "infrastructure_failure": 7,
+    "slot105_rerun_count": 0,
+    "slot106_started": false,
+    "next_campaign_position": 106,
+    "next_trial_id": "E3-A-02__P1_F0__S876320"
+  },
+  "frozen_sha256": {
+    "sealed_registry": "2b3dccc2ad27cf317029c2b7b014bca3a8b28fc8c0a196fd4c2e5abe0be9d4b7",
+    "formal_seeds": "665600871ad3fb6cff324ab3ef9144b0d84b42acc19505283679b6ae01586841",
+    "formal_order": "60ee30a7100b53c4964e3f9f086ff3d137fb41282eebc4439760bf17f033b39b",
+    "analysis_contract": "987ff29aa814a0dc5e9e64081fcf0fc79ceb3086b21a0e945bfe2f8252185c58",
+    "production_policy": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+    "E3_v3_registry": "b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2",
+    "execution_tooling_bundle": "78cb5dbc374983c64752433fa1c62c4990903b03b5b813f0248f13105eb074bf"
+  },
+  "changes": {
+    "formal_scientific_protocol_changes": 0,
+    "production_changes": 0,
+    "formal_execution_tooling_changes": 0,
+    "new_formal_attempts": 0
+  },
+  "final_status": "E3-v4 POST-SLOT105 INFRASTRUCTURE REVIEW: PASS"
+}
