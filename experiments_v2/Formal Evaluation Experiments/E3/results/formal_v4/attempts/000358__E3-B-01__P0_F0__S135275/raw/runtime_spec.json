@@ -1,0 +1,281 @@
+{
+  "accepted_formal_result": true,
+  "allocator_diagnostics": {
+    "allocator_version": "lexicographic-safety-aware-v2",
+    "d_hard": 1.5,
+    "d_plan": 1.8,
+    "distance": 32.0,
+    "final_assignment": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "hard_feasible": true,
+    "hard_violations": 0,
+    "hungarian_initial_assignment": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "iterations": 0,
+    "margin_cost": 0.0,
+    "margin_intrusion_m": 0.0,
+    "min_distance": 1.9999999999999998,
+    "planning_margin_met": true,
+    "residual_planning_risk": false,
+    "xy_crossings": 0
+  },
+  "allocator_metrics": {
+    "distance": 32.0,
+    "hard_violations": 0,
+    "margin_cost": 0.0,
+    "min_distance": 1.9999999999999998,
+    "xy_crossings": 0
+  },
+  "assigned_targets_m": [
+    [
+      8.0,
+      -4.0,
+      3.0
+    ],
+    [
+      6.267949192431123,
+      -0.5,
+      3.0
+    ],
+    [
+      8.0,
+      0.5,
+      3.0
+    ],
+    [
+      8.0,
+      4.0,
+      3.0
+    ]
+  ],
+  "assignment_mode": "distance_hungarian",
+  "avoidance_mode": "off",
+  "candidate_id": "E3-B-01",
+  "condition": "P0_F0",
+  "dataset_class": "formal_evaluation",
+  "delivery_tolerances": {
+    "command_delay_s": 0.05,
+    "controller_acceptance_timeout_ros_s": 1.0,
+    "effective_reference_endpoint_tolerance_m": 0.15,
+    "reference_activation_time_s": 0.05,
+    "reference_duration_s": 0.05,
+    "target_coordinate_m": 1e-06
+  },
+  "disturbance": {
+    "affected_uavs": [
+      3
+    ],
+    "delay_s": 0.4,
+    "planner_input_includes_deviation": false,
+    "reference_uavs": [
+      1,
+      2,
+      4
+    ],
+    "timing_basis": "ROS_simulation_time_and_execution_command_header",
+    "type": "command_delay"
+  },
+  "duration_s": 8.0,
+  "family": "B_residual_execution_risk",
+  "fixture_class": "E3_v4_registered_formal_scene",
+  "formal_cursor_consumed": false,
+  "formal_seed_registry_sha256": "665600871ad3fb6cff324ab3ef9144b0d84b42acc19505283679b6ae01586841",
+  "initial_positions_m": [
+    [
+      0.0,
+      -4.0,
+      3.0
+    ],
+    [
+      -1.7320508075688772,
+      -0.5,
+      3.0
+    ],
+    [
+      0.0,
+      0.5,
+      3.0
+    ],
+    [
+      0.0,
+      4.0,
+      3.0
+    ]
+  ],
+  "intended_pair": [
+    2,
+    3
+  ],
+  "manipulation": {
+    "affected_uavs": [
+      3
+    ],
+    "delay_s": 0.4,
+    "planner_input_includes_deviation": false,
+    "reference_uavs": [
+      1,
+      2,
+      4
+    ],
+    "timing_basis": "ROS_simulation_time_and_execution_command_header",
+    "type": "command_delay"
+  },
+  "order_sha256": "60ee30a7100b53c4964e3f9f086ff3d137fb41282eebc4439760bf17f033b39b",
+  "ordered_targets_m": [
+    [
+      8.0,
+      -4.0,
+      3.0
+    ],
+    [
+      6.267949192431123,
+      -0.5,
+      3.0
+    ],
+    [
+      8.0,
+      0.5,
+      3.0
+    ],
+    [
+      8.0,
+      4.0,
+      3.0
+    ]
+  ],
+  "policy_path": "/home/yihuang/learning/LLM_swarm_ws/e3_v4_redesign_worktree/lfs_policy/config/lfs_policy.paper_current.yaml",
+  "profiles": [
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 8.0,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 8.0,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 8.0,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    },
+    {
+      "acceleration_limit": 5.0,
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "duration": 8.0,
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "jerk_limit": 10.0,
+      "omega_c": [
+        1.5,
+        1.5,
+        1.75
+      ],
+      "omega_o": [
+        5.0,
+        5.0,
+        7.5
+      ],
+      "style": "normal",
+      "style_gain": 1.0,
+      "task_gain": 1.0,
+      "velocity_limit": 5.0
+    }
+  ],
+  "registered_input_hash": "1aca49a195b2e794bc29befcb14c1a9a23e72a4994d61be381275167630d82a5",
+  "registry_sha256": "2b3dccc2ad27cf317029c2b7b014bca3a8b28fc8c0a196fd4c2e5abe0be9d4b7",
+  "required_raw_schema": [
+    "clock",
+    "execution_commands",
+    "startup_events",
+    "per_uav_position_3d",
+    "per_uav_nominal_reference",
+    "hard_failures",
+    "manipulation_event_ledger"
+  ],
+  "runtime_spec_sha256": "427eb1bd66f74e634dd75b5ba1d82ed77b0d6d8080ac6c513201497998d0b82b",
+  "runtime_spec_type": "E3_v4_registered_physical_runtime_spec_v1",
+  "scenario_id": "E3-B-01",
+  "scoring": {
+    "end_offset_s": 10.0,
+    "t0": "first nominal interaction execution-command header timestamp"
+  },
+  "seed": 135275,
+  "spec_type": "E3_v4_registered_formal_spec_v1",
+  "staging": {
+    "scored": false,
+    "stable_continuous_s": 2.0
+  },
+  "timeout_after_t0_s": 14.0,
+  "trial_id": "E3-B-01__P0_F0__S135275",
+  "uav_ids": [
+    1,
+    2,
+    3,
+    4
+  ]
+}
