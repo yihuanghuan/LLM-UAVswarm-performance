@@ -1,0 +1,163 @@
+{
+  "bias_mission_id": 1957317579,
+  "command_publications": [
+    {
+      "mission_id": 1957317578,
+      "role": "nominal",
+      "ros_time_s": 59.9,
+      "uav_id": 1
+    },
+    {
+      "mission_id": 1957317578,
+      "role": "nominal",
+      "ros_time_s": 59.9,
+      "uav_id": 2
+    },
+    {
+      "mission_id": 1957317578,
+      "role": "nominal",
+      "ros_time_s": 59.9,
+      "uav_id": 3
+    },
+    {
+      "mission_id": 1957317578,
+      "role": "nominal",
+      "ros_time_s": 59.9,
+      "uav_id": 4
+    }
+  ],
+  "command_publish_count_by_uav": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1
+  },
+  "controller_events": [
+    {
+      "event": "command_accepted",
+      "failsafe": false,
+      "mission_id": 1957317578,
+      "stamp_s": 1788290647.5488682,
+      "uav_id": 1
+    },
+    {
+      "event": "command_accepted",
+      "failsafe": false,
+      "mission_id": 1957317578,
+      "stamp_s": 1788290647.5489688,
+      "uav_id": 2
+    },
+    {
+      "event": "command_accepted",
+      "failsafe": false,
+      "mission_id": 1957317578,
+      "stamp_s": 1788290647.548954,
+      "uav_id": 4
+    },
+    {
+      "event": "mission_trajectory_started",
+      "failsafe": false,
+      "mission_id": 1957317578,
+      "stamp_s": 1788290647.5488787,
+      "uav_id": 1
+    },
+    {
+      "event": "mission_trajectory_started",
+      "failsafe": false,
+      "mission_id": 1957317578,
+      "stamp_s": 1788290647.548986,
+      "uav_id": 2
+    },
+    {
+      "event": "mission_trajectory_started",
+      "failsafe": false,
+      "mission_id": 1957317578,
+      "stamp_s": 1788290647.5489662,
+      "uav_id": 4
+    },
+    {
+      "event": "command_accepted",
+      "failsafe": false,
+      "mission_id": 1957317578,
+      "stamp_s": 1788290647.5489278,
+      "uav_id": 3
+    },
+    {
+      "event": "mission_trajectory_started",
+      "failsafe": false,
+      "mission_id": 1957317578,
+      "stamp_s": 1788290647.548943,
+      "uav_id": 3
+    }
+  ],
+  "debug_mission_ids_seen": {
+    "1": [
+      597996473,
+      1957317578
+    ],
+    "2": [
+      597996473,
+      1957317578
+    ],
+    "3": [
+      1957317578
+    ],
+    "4": [
+      597996473,
+      1957317578
+    ]
+  },
+  "execution_command_t0_ros_s": 59.9,
+  "final_status": {
+    "1": {
+      "failsafe": false,
+      "is_hover_stable": true,
+      "mission_id": 1957317578,
+      "position_error": 0.20829005539417267,
+      "speed": 0.03780369088053703
+    },
+    "2": {
+      "failsafe": false,
+      "is_hover_stable": true,
+      "mission_id": 1957317578,
+      "position_error": 0.14595986902713776,
+      "speed": 0.044376760721206665
+    },
+    "3": {
+      "failsafe": false,
+      "is_hover_stable": true,
+      "mission_id": 1957317578,
+      "position_error": 0.034760866314172745,
+      "speed": 0.15179535746574402
+    },
+    "4": {
+      "failsafe": false,
+      "is_hover_stable": true,
+      "mission_id": 1957317578,
+      "position_error": 0.011807059869170189,
+      "speed": 0.006779539864510298
+    }
+  },
+  "finished_utc": "2026-09-01T19:24:15.533466+00:00",
+  "manipulation_ledger": [
+    {
+      "assignment": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "assignment_mode": "distance_hungarian",
+      "event": "planning_committed",
+      "phase": "interaction",
+      "ros_time_s": 59.900000000000006,
+      "runtime_spec_sha256": "79582ef43eef985e679f7391b58fed33b6bb574e7e54ece51ea76356997f8ad5"
+    }
+  ],
+  "mission_id": 1957317578,
+  "phase": "interaction",
+  "reset_mission_id": 1957317580,
+  "started_utc": "2026-09-01T19:24:07.499276+00:00",
+  "success": true,
+  "termination_reason": "SUCCESS"
+}
