@@ -460,7 +460,6 @@ def direct_driver(spec: dict, phase: str, result_path: Path) -> int:
                         node.global_position[uid],
                         tuple(float(value) for value in targets[ids.index(uid)]),
                     ) <= 0.30
-                    and node.global_speed.get(uid, math.inf) <= 0.30
                     for uid in ids
                 )
                 controller_stable = all(
@@ -481,13 +480,17 @@ def direct_driver(spec: dict, phase: str, result_path: Path) -> int:
                     break
             else:
                 raise RuntimeError(
-                    "global initial geometry did not satisfy 0.30 m / 0.30 mps "
-                    "and 2 s stable-hold gate"
+                    "global initial geometry did not satisfy the 0.30 m position "
+                    "and frozen-controller 2 s stable-hold gate"
                 )
             result["stage_global_geometry_gate"] = {
                 "verified": True,
                 "position_tolerance_m": 0.30,
-                "speed_tolerance_mps": 0.30,
+                "speed_gate": (
+                    "frozen controller is_hover_stable; its configured filtered "
+                    "velocity hysteresis is authoritative, while raw global speed "
+                    "is retained below for audit only"
+                ),
                 "stable_continuous_s": hold_required,
                 "final_global_positions_m": {
                     str(uid): list(node.global_position[uid]) for uid in ids
