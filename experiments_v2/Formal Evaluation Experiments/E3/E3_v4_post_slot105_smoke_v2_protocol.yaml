@@ -1,0 +1,102 @@
+schema: E3_v4_post_slot105_infrastructure_smoke_protocol_v2
+status: FROZEN_BEFORE_EXECUTION
+
+smoke_id: E3-V4-INFRASTRUCTURE-SMOKE-AFTER-SLOT105-v2
+dataset_class: engineering_validation
+accepted_formal_result: false
+formal_launch_authorized: false
+campaign_position: null
+registered_formal_trial_id: null
+
+engineering_seed:
+  namespace: E3-v4-post-slot105-smoke-v2-seed
+  namespace_sha256: 80de3bd4797d9dd98c9a41db4329f3037f4f9d0b8c34fefcd3481cfe85b7339b
+  rule: int(first_8_hex_of_namespace_sha256, 16) modulo 9000000 plus 1000000
+  value: 3047956
+  collision_check_files:
+    - E3_v4_formal_paired_seeds.yaml
+    - E3_v4_qualification_seeds.yaml
+    - E3_v4_B02_holdout_qualification_seeds.yaml
+  collision_found: false
+
+purpose: >-
+  Determine whether the unchanged eight-UAV Gazebo/PX4/controller
+  infrastructure can currently reach the same frozen readiness state required
+  before a formal attempt proceeds.
+
+execution:
+  number_of_runs: 1
+  automatic_retry: forbidden
+  readiness_utility: experiments-legacy/system_8uav/scripts/wait_swarm_ready.py
+  uav_ids: [1, 2, 3, 4, 5, 6, 7, 8]
+  readiness_timeout_s: 150
+  readiness_parameters: existing_utility_defaults
+  scientific_scene_executed: false
+  scientific_interaction_executed: false
+  rosbag_acquisition: false
+  output_directory: results/formal_v4/infrastructure_smoke_after_slot105_v2
+
+core_checks:
+  - px4_gazebo_launcher_alive_before_controllers
+  - readiness_process_returned_zero
+  - readiness_reported_true
+  - readiness_uav_count_is_8
+  - all_8_present
+  - all_8_fresh_under_existing_readiness_gate
+  - all_8_system_ready
+  - all_8_armed
+  - all_8_offboard
+  - all_8_failsafe_false
+  - all_8_finite_altitude
+  - gazebo_master_alive
+  - at_least_8_px4_processes_alive
+  - at_least_8_controller_processes_alive
+  - micro_xrce_agent_alive
+  - residual_simulator_controller_processes_absent
+  - campaign_journal_unchanged
+  - raw_storage_ledger_unchanged
+  - formal_attempt_directories_unchanged
+  - formal_contexts_unchanged
+
+pass_rule: status is PASS if and only if every named core_check is true
+
+diagnostic_only_checks:
+  dds_topic_discovery:
+    diagnostic_only: true
+    observation_count: 5
+    observation_interval_s: 1.0
+    aggregation: union_of_names
+    may_change_status: false
+    rationale: >-
+      Eight-of-eight success from the frozen readiness utility is authoritative;
+      a separately created CLI participant may have incomplete DDS discovery.
+  gazebo_model_introspection:
+    diagnostic_only: true
+    command_template: gz model --model-name iris_<id> --info
+    ids: [1, 2, 3, 4, 5, 6, 7, 8]
+    may_change_status: false
+    rationale: >-
+      The installed Gazebo Classic model CLI supports named read-only info
+      queries but no model --list option. Live gzserver, eight PX4 processes,
+      eight controllers, and eight-of-eight readiness remain authoritative.
+
+formal_state_invariants:
+  campaign_journal_records: 105
+  consumed_slots: 105
+  next_campaign_position: 106
+  next_trial_id: E3-A-02__P1_F0__S876320
+  slot105_rerun: false
+  slot106_started: false
+  journal_may_change: false
+  raw_storage_ledger_may_change: false
+  formal_attempt_directories_may_change: false
+  formal_contexts_may_change: false
+
+frozen_sha256:
+  sealed_registry: 2b3dccc2ad27cf317029c2b7b014bca3a8b28fc8c0a196fd4c2e5abe0be9d4b7
+  formal_seeds: 665600871ad3fb6cff324ab3ef9144b0d84b42acc19505283679b6ae01586841
+  formal_order: 60ee30a7100b53c4964e3f9f086ff3d137fb41282eebc4439760bf17f033b39b
+  analysis_contract: 987ff29aa814a0dc5e9e64081fcf0fc79ceb3086b21a0e945bfe2f8252185c58
+  production_policy: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+  E3_v3_registry: b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2
+  execution_tooling_bundle: 78cb5dbc374983c64752433fa1c62c4990903b03b5b813f0248f13105eb074bf

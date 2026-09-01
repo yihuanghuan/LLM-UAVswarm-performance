@@ -1,0 +1,45 @@
+{
+  "schema": "E3_v4_post_slot105_smoke_v1_adjudication_v1",
+  "baseline_commit": "cbf2e3d6d524d1c698567780abb5c5fa920abead",
+  "historical_smoke_result_sha256": "de9dcaf787dd7b6645d2cd0471b0b38104ff35097a52a6485b31b634a8fbd7e7",
+  "historical_recorded_status": "FAIL",
+  "historical_status_changed": false,
+  "core_readiness_assessment": "PASS",
+  "core_evidence": {
+    "readiness_return_code_zero": true,
+    "readiness_reported_true": true,
+    "uav_count": 8,
+    "all_8_present": true,
+    "all_8_system_ready": true,
+    "all_8_armed": true,
+    "all_8_offboard": true,
+    "all_8_failsafe_false": true,
+    "all_8_altitudes_finite": true,
+    "gzserver_process_count": 1,
+    "px4_matching_process_count": 16,
+    "controller_process_count": 8,
+    "micro_xrce_agent_process_count": 1,
+    "controller_log_records_vehicle_odometry_for_all_8": true,
+    "controller_log_records_ready_transition_for_all_8": true
+  },
+  "auxiliary_topic_enumeration_assessment": "NON_AUTHORITATIVE_SINGLE_SHOT_DDS_DISCOVERY",
+  "auxiliary_topic_evidence": {
+    "single_shot_complete": false,
+    "single_shot_vehicle_odometry_names_observed": [
+      "/px4_4/fmu/out/vehicle_odometry"
+    ],
+    "interpretation": "The new CLI participant's one discovery snapshot was incomplete relative to the already successful eight-UAV readiness observations; it is not evidence that odometry was absent."
+  },
+  "auxiliary_gazebo_model_query_assessment": "INVALID_CLI_ASSAY",
+  "auxiliary_gazebo_model_query_evidence": {
+    "command": "gz model --list",
+    "output": "Invalid arguments",
+    "installed_cli_help_has_list_option": false,
+    "interpretation": "The command is unsupported by the installed Gazebo Classic model subcommand and supplied no valid negative model-count observation."
+  },
+  "formal_campaign_effect": "NONE",
+  "formal_attempt_created": false,
+  "slot105_rerun": false,
+  "slot106_started": false,
+  "adjudication_statement": "The v1 smoke remains a historically retained FAIL under its all-checks-must-pass implementation. This adjudication does not retroactively convert that run into PASS; it separates valid core readiness evidence from unsuitable auxiliary engineering introspection checks."
+}
