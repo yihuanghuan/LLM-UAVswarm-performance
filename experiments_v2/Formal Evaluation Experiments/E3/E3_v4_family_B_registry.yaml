@@ -1,0 +1,85 @@
+schema: E3_v4_family_B_registry_v1
+status: QUALIFIED_FOR_FAMILY_C_DESIGN
+dataset_class: calibration_pilot
+accepted_formal_result: false
+formal_execution_permitted: false
+F1_permitted_during_qualification: false
+production_method_changed: false
+supersedes_for_E3_v4_only: external_wrench_Family_B_assay
+historical_wrench_evidence_immutable: true
+production_baseline: 6cf402debf23851b1eff3edc6f3ab49eae7127c4
+policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+old_E3_v3_registry_sha256: b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2
+qualification_grid_sha256: fd2ef8d93644d3efe16522b2a953fe529e05ec0227a9364aa20f14fa74793e7f
+qualification_evidence_sha256: 6b5bf5e63f6ae89218c44593ed5e9e1e1ca6c65569898ba60fa98f84eaa141a0
+qualification_seeds: [69707, 69912, 68907, 67442, 64654]
+qualification_conditions: [P0_F0, P1_F0]
+F1_attempt_count: 0
+formal_attempt_count: 0
+
+scenarios:
+  E3-B-01:
+    family: residual_execution_risk
+    selected_candidate: B01-DELAY-D0p4
+    mechanism: post_planning_command_delay
+    frame: world_ENU
+    uav_ids: [1, 2, 3, 4]
+    duration_s: 8.0
+    initial_positions_m:
+      1: [0.0, -4.0, 3.0]
+      2: [-1.7320508075688772, -0.5, 3.0]
+      3: [0.0, 0.5, 3.0]
+      4: [0.0, 4.0, 3.0]
+    ordered_targets_m:
+      1: [8.0, -4.0, 3.0]
+      2: [6.267949192431123, -0.5, 3.0]
+      3: [8.0, 0.5, 3.0]
+      4: [8.0, 4.0, 3.0]
+    nominal_assignment_P0: [0, 1, 2, 3]
+    nominal_assignment_P1: [0, 1, 2, 3]
+    predicted_d_min_m: 2.0
+    predicted_hard_violations: 0
+    intended_pair: [2, 3]
+    manipulation:
+      affected_uavs: [3]
+      reference_uavs: [1, 2, 4]
+      delay_s: 0.4
+      timing_basis: ROS_simulation_time_and_execution_command_header
+      planner_input_includes_deviation: false
+
+  E3-B-02:
+    family: residual_execution_risk
+    selected_candidate: B02-REF-O1p5
+    mechanism: post_planning_temporary_reference_deviation
+    frame: world_ENU
+    uav_ids: [1, 2, 3, 4, 5, 6]
+    duration_s: 10.0
+    initial_positions_m:
+      1: [5.0, 0.0, 3.0]
+      2: [2.5, 4.330127018922193, 3.0]
+      3: [-2.5, 4.330127018922193, 3.0]
+      4: [-5.0, 0.0, 3.0]
+      5: [-2.5, -4.330127018922193, 3.0]
+      6: [2.5, -4.330127018922193, 3.0]
+    ordered_targets_m:
+      1: [2.4, 0.0, 3.0]
+      2: [1.2, 2.078460969082653, 3.0]
+      3: [-1.2, 2.078460969082653, 3.0]
+      4: [-2.4, 0.0, 3.0]
+      5: [-1.2, -2.078460969082653, 3.0]
+      6: [1.2, -2.078460969082653, 3.0]
+    nominal_assignment_P0: [0, 1, 2, 3, 4, 5]
+    nominal_assignment_P1: [0, 1, 2, 3, 4, 5]
+    predicted_d_min_m: 2.4
+    predicted_hard_violations: 0
+    intended_pair: [2, 3]
+    manipulation:
+      affected_uav: 3
+      activation_s_after_nominal_acceptance: 3.5
+      duration_s: 3.0
+      offset_m: [1.5, 0.0, 0.0]
+      offset_frame: world_ENU
+      endpoint_semantics: counterfactual_nominal_reference_at_reset_time_plus_offset
+      reset_semantics: validated_command_to_original_committed_target
+      timing_basis: ROS_simulation_time_and_execution_command_header
+      planner_input_includes_deviation: false
