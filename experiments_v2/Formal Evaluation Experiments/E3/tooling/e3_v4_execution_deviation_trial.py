@@ -107,17 +107,17 @@ def direct_driver(spec: dict, phase: str, result_path: Path) -> int:
                 ) for uid in ids
             }
             self.event_publisher = self.create_publisher(String, EVENT_TOPIC, 20)
-            self.subscriptions = []
+            self._e3_subscriptions = []
             for uid in ids:
-                self.subscriptions.append(self.create_subscription(
+                self._e3_subscriptions.append(self.create_subscription(
                     UAVStatus, f"/uav{uid}/status",
                     lambda msg, value=uid: self._status(value, msg), 20,
                 ))
-                self.subscriptions.append(self.create_subscription(
+                self._e3_subscriptions.append(self.create_subscription(
                     StartupEvent, f"/uav{uid}/startup_event",
                     lambda msg, value=uid: self._event(value, msg), 40,
                 ))
-                self.subscriptions.append(self.create_subscription(
+                self._e3_subscriptions.append(self.create_subscription(
                     ControlTrackingDebug, f"/uav{uid}/control_tracking_debug",
                     lambda msg, value=uid: self.debug_seen[value].add(
                         int(msg.mission_id)

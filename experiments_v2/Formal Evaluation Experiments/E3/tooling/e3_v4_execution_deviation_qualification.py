@@ -264,22 +264,25 @@ def execute(
                 raise RuntimeError("physical harness did not retain a result")
             physical = json.loads(physical_path.read_text(encoding="utf-8"))
             status = str(physical.get("attempt_status", "infrastructure_failure"))
-            metrics_path = attempt_dir / "qualification_metrics.json"
-            metric_run = subprocess.run(
-                [sys.executable, str(METRICS), str(raw_dir), "--output", str(metrics_path)],
-                cwd=REPO_ROOT, env=_metrics_environment(), text=True,
-                capture_output=True,
-            )
-            (attempt_dir / "metrics.stdout.log").write_text(
-                metric_run.stdout + metric_run.stderr, encoding="utf-8"
-            )
-            if metric_run.returncode:
-                status = "infrastructure_failure"
-                raise RuntimeError("fail-closed manipulation/metric extraction failed")
-            metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
-            if not metrics["manipulation_delivery"]["verified"]:
-                status = "infrastructure_failure"
-                raise RuntimeError("manipulation delivery was not verified")
+            if status != "success":
+                error = str(physical.get("error", "physical harness failed"))
+            else:
+                metrics_path = attempt_dir / "qualification_metrics.json"
+                metric_run = subprocess.run(
+                    [sys.executable, str(METRICS), str(raw_dir), "--output", str(metrics_path)],
+                    cwd=REPO_ROOT, env=_metrics_environment(), text=True,
+                    capture_output=True,
+                )
+                (attempt_dir / "metrics.stdout.log").write_text(
+                    metric_run.stdout + metric_run.stderr, encoding="utf-8"
+                )
+                if metric_run.returncode:
+                    status = "infrastructure_failure"
+                    raise RuntimeError("fail-closed manipulation/metric extraction failed")
+                metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+                if not metrics["manipulation_delivery"]["verified"]:
+                    status = "infrastructure_failure"
+                    raise RuntimeError("manipulation delivery was not verified")
         except subprocess.TimeoutExpired as exc:
             status = "timeout"
             error = str(exc)
