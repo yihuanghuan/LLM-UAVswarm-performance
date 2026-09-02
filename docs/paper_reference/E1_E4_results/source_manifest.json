@@ -1,0 +1,442 @@
+{
+  "schema": "paper_reference_source_manifest_v1",
+  "document": "docs/paper_reference/E1_E4_results/E1_E4_experiment_results_reference.md",
+  "scope": [
+    "E1",
+    "E2",
+    "E3-v4",
+    "E4A",
+    "E4B"
+  ],
+  "excluded_from_evidence": [
+    "E3-v3 except non-quantitative historical motivation for E3-v4",
+    "E5"
+  ],
+  "base_commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+  "target_branch": "paper/E1-E4-experiment-results-reference-v1",
+  "immutable_sources": {
+    "E1": {
+      "branch": "formal/E1-candidate-semantics-v1",
+      "commit": "8f050943c74dc48529aa48f696146c07f7a4a83e"
+    },
+    "campaign_v2_raw": {
+      "branch": "formal/campaign-v2-results-v1",
+      "commit": "33538b91ab9e0c53b918cdc0e47e3b7fa6f08592"
+    },
+    "campaign_v2_analysis_source": {
+      "branch": "formal/analysis-results-v1",
+      "commit": "023bf48e521e3a6d2383da4699d8820dcf603da7"
+    },
+    "campaign_v2_final_analysis": {
+      "branch": "formal/analysis-results-v1",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f"
+    },
+    "E3_v4_final_analysis": {
+      "branch": "formal/E3-v4-analysis-v1",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1"
+    }
+  },
+  "files": [
+    {
+      "tag": "E1-PROTOCOL",
+      "experiment": "E1",
+      "commit": "8f050943c74dc48529aa48f696146c07f7a4a83e",
+      "path": "experiments_v2/Formal Evaluation Experiments/E1/e1_protocol_v1.yaml",
+      "blob_sha": "6969a7b00ce1bdb84bd6f34a880a9ca44f6b135c",
+      "role": "Formal protocol, endpoint definitions, scoring rules, retry policy, and latency definitions."
+    },
+    {
+      "tag": "E1-REGISTRY",
+      "experiment": "E1",
+      "commit": "8f050943c74dc48529aa48f696146c07f7a4a83e",
+      "path": "experiments_v2/Formal Evaluation Experiments/E1/e1_dataset_registry_v1.yaml",
+      "blob_sha": "e90116c4e7f1d939f0f55ce743cbabbdd850baaf",
+      "role": "Frozen command categories, validity strata, and unresolved-field opportunities."
+    },
+    {
+      "tag": "E1-DATA",
+      "experiment": "E1",
+      "commit": "8f050943c74dc48529aa48f696146c07f7a4a83e",
+      "path": "experiments_v2/Formal Evaluation Experiments/E1/e1_candidate_semantic_dataset_v1.jsonl",
+      "blob_sha": "6af748e4d95ade0579156ac0a75fdb13d0413d61",
+      "role": "Frozen candidate semantic command records and registered targets."
+    },
+    {
+      "tag": "E1-ORDER",
+      "experiment": "E1",
+      "commit": "8f050943c74dc48529aa48f696146c07f7a4a83e",
+      "path": "experiments_v2/Formal Evaluation Experiments/E1/e1_inference_order_v1.yaml",
+      "blob_sha": "5f1d1bb8baf51345b12b5eb451531a79a70fe32d",
+      "role": "Frozen inference order and provider-attempt execution structure."
+    },
+    {
+      "tag": "E1-SCORER",
+      "experiment": "E1",
+      "commit": "8f050943c74dc48529aa48f696146c07f7a4a83e",
+      "path": "experiments_v2/Formal Evaluation Experiments/E1/tooling/e1_scorer.py",
+      "blob_sha": "3ac0d3f71ff29d00ecfc49f01bcb0572cb228c04",
+      "role": "Frozen scoring implementation consulted to verify that semantic-field denominators count task instances."
+    },
+    {
+      "tag": "E1-SCORE",
+      "experiment": "E1",
+      "commit": "8f050943c74dc48529aa48f696146c07f7a4a83e",
+      "path": "experiments_v2/Formal Evaluation Experiments/E1/results/formal/E1-formal-v1-20260826T134119Z/score.json",
+      "blob_sha": "8668e20deb4c2b7399da5532f67bc45389e863c6",
+      "role": "Primary frozen E1 counts, proportions, retry distribution, and latency summaries."
+    },
+    {
+      "tag": "E1-AUDIT",
+      "experiment": "E1",
+      "commit": "8f050943c74dc48529aa48f696146c07f7a4a83e",
+      "path": "experiments_v2/Formal Evaluation Experiments/E1/results/formal/E1-formal-v1-20260826T134119Z/audit.json",
+      "blob_sha": "2b4ae47337227da768a07a8636b41dd815007fe5",
+      "role": "Formal completeness and integrity audit."
+    },
+    {
+      "tag": "E1-MANIFEST",
+      "experiment": "E1",
+      "commit": "8f050943c74dc48529aa48f696146c07f7a4a83e",
+      "path": "experiments_v2/Formal Evaluation Experiments/E1/results/formal/E1-formal-v1-20260826T134119Z/result_manifest.json",
+      "blob_sha": "d8d2ff147995277a29a5c737ba8dd43b1b885668",
+      "role": "Formal result identity, provider configuration, and artifact provenance."
+    },
+    {
+      "tag": "E1-RAW-MANIFEST",
+      "experiment": "E1",
+      "commit": "8f050943c74dc48529aa48f696146c07f7a4a83e",
+      "path": "experiments_v2/Formal Evaluation Experiments/E1/results/formal/E1-formal-v1-20260826T134119Z/raw_journal_archive_manifest.json",
+      "blob_sha": "0ebbc6b8a0cac03b746d2ecd0ed94d49a693ace5",
+      "role": "Archived raw-journal provenance and integrity record."
+    },
+    {
+      "tag": "C2-RAW-E2",
+      "experiment": "E2",
+      "commit": "33538b91ab9e0c53b918cdc0e47e3b7fa6f08592",
+      "path": "experiments_v2/Formal Evaluation Experiments/E2/e2_scenario_registry_v1.yaml",
+      "blob_sha": "eaef73d1307d28a361847db8ea138dbaadf95f5e",
+      "role": "Frozen E2 scenarios, Early/Late intervention, snapshots, pairing, and registered outcomes."
+    },
+    {
+      "tag": "C2-RAW-E4",
+      "experiment": "E4A/E4B",
+      "commit": "33538b91ab9e0c53b918cdc0e47e3b7fa6f08592",
+      "path": "experiments_v2/Formal Evaluation Experiments/E4/e4_motion_style_registry_v1.yaml",
+      "blob_sha": "fdbc40fabd1e7959c35849ff977a36ee296b3e02",
+      "role": "Frozen motion-style definitions, scenarios, metrics, authority hierarchy, and checks."
+    },
+    {
+      "tag": "CAMPAIGN-MANIFEST",
+      "experiment": "E2/E4A/E4B",
+      "commit": "33538b91ab9e0c53b918cdc0e47e3b7fa6f08592",
+      "path": "experiments_v2/Formal Evaluation Experiments/campaign_v2/campaign_v2_manifest.json",
+      "blob_sha": "02102685022d41e9bbceae92bbfa7c506562d946",
+      "role": "Frozen Campaign-v2 execution provenance and registered inventory."
+    },
+    {
+      "tag": "ANALYSIS-SEMANTICS",
+      "experiment": "E2/E4A/E4B",
+      "commit": "023bf48e521e3a6d2383da4699d8820dcf603da7",
+      "path": "experiments_v2/Formal Evaluation Experiments/analysis_freeze/analysis_semantics_v1.md",
+      "blob_sha": "d72690e33e375af74aa52578a81506557264782e",
+      "role": "Human-readable frozen endpoint, pairing, interval, and claim-adjudication semantics."
+    },
+    {
+      "tag": "ANALYSIS-SEMANTICS",
+      "experiment": "E2/E4A/E4B",
+      "commit": "023bf48e521e3a6d2383da4699d8820dcf603da7",
+      "path": "experiments_v2/Formal Evaluation Experiments/analysis_freeze/analysis_semantics_v1.yaml",
+      "blob_sha": "8935b6e1a3970ff4d1c5b0aa334f3ef0b5646530",
+      "role": "Machine-readable frozen analysis semantics."
+    },
+    {
+      "tag": "ANALYSIS-FREEZE-AUDIT",
+      "experiment": "E2/E4A/E4B",
+      "commit": "023bf48e521e3a6d2383da4699d8820dcf603da7",
+      "path": "experiments_v2/Formal Evaluation Experiments/analysis_freeze/analysis_freeze_audit.json",
+      "blob_sha": "41a816e533176503f2e8b4140fcdf865890d95c8",
+      "role": "Audit that the Campaign-v2 analysis semantics were frozen before final analysis."
+    },
+    {
+      "tag": "ANALYSIS-MANIFEST",
+      "experiment": "E2/E4A/E4B",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/analysis_manifest.json",
+      "blob_sha": "106071ad7956812e4d1821e597585b9e1b078e24",
+      "role": "Final analysis identity and input/output provenance."
+    },
+    {
+      "tag": "ANALYSIS-COMPLETION-AUDIT",
+      "experiment": "E2/E4A/E4B",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/audit/analysis_completion_audit.json",
+      "blob_sha": "4e7953ebb28517d7773e25b9bb07512a59c01613",
+      "role": "Final analysis completeness audit."
+    },
+    {
+      "tag": "ANALYSIS-REPLAY-AUDIT",
+      "experiment": "E2/E4A/E4B",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/audit/deterministic_replay_audit.json",
+      "blob_sha": "b2b930f646747ee5c957ab0829fd75dcb299ea11",
+      "role": "Deterministic replay and output-identity audit."
+    },
+    {
+      "tag": "E2-SUMMARY",
+      "experiment": "E2",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/E2/summary.json",
+      "blob_sha": "3291642a101d86417f1f04497aea9c7e3469a1e6",
+      "role": "Machine-readable final E2 sample counts, outcomes, paired effects, intervals, and effect sizes."
+    },
+    {
+      "tag": "E2-SUMMARY",
+      "experiment": "E2",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/E2/summary.md",
+      "blob_sha": "91883ac181d68473162e430af47d750b60d4017d",
+      "role": "Human-readable final E2 summary and interpretation."
+    },
+    {
+      "tag": "E2-CLAIM",
+      "experiment": "E2",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/E2/claim_adjudication.md",
+      "blob_sha": "7677e1a5379e0a4e0b7601d67c7a9327c47bde12",
+      "role": "Frozen E2 claim adjudication and bounded conclusion."
+    },
+    {
+      "tag": "E2-PAIRS",
+      "experiment": "E2",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/E2/paired_results.csv",
+      "blob_sha": "8c6761645a171fe7b0f1d0dc5c4bf2f107017f9e",
+      "role": "Pair-level Early/Late outcome contrasts used to cross-check E2 summaries."
+    },
+    {
+      "tag": "E2-ATTEMPTS",
+      "experiment": "E2",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/E2/per_attempt_scored.csv",
+      "blob_sha": "34d36fd74f34fe030c2b1b7c8f7e1521d96f88c5",
+      "role": "Attempt-level E2 completeness, condition, and outcome cross-check."
+    },
+    {
+      "tag": "E4A-SUMMARY",
+      "experiment": "E4A",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/E4A/summary.json",
+      "blob_sha": "3899b7ec5a3f739d5ad388a20e3a3e542507add5",
+      "role": "Machine-readable final E4A counts, pooled style contrasts, intervals, and intermediate-order counts."
+    },
+    {
+      "tag": "E4A-SUMMARY",
+      "experiment": "E4A",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/E4A/summary.md",
+      "blob_sha": "0f33845dcc67554432f4d2a0ea64335ec02c6727",
+      "role": "Human-readable final E4A summary and interpretation."
+    },
+    {
+      "tag": "E4A-CLAIM",
+      "experiment": "E4A",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/E4A/claim_adjudication.md",
+      "blob_sha": "f98f582738ca5a2a0ac1015c22fb0274f7f1114e",
+      "role": "Frozen partial-support adjudication and strict-ordering boundary."
+    },
+    {
+      "tag": "E4A-PAIRS",
+      "experiment": "E4A",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/E4A/paired_style_results.csv",
+      "blob_sha": "a59ea3a676d14c69220adfafa7de68259f2c7769",
+      "role": "Triplet-level paired style measurements used to cross-check frozen contrasts."
+    },
+    {
+      "tag": "E4A-ATTEMPTS",
+      "experiment": "E4A",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/E4A/per_attempt_scored.csv",
+      "blob_sha": "e4ffd5106f44fbf58438533466db31e287415bf3",
+      "role": "Attempt-level E4A completeness, style, scenario, and metric cross-check."
+    },
+    {
+      "tag": "E4B-SUMMARY",
+      "experiment": "E4B",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/E4B/summary.json",
+      "blob_sha": "8000e80eb0abe6a943abc94b8baa8862b802bb4f",
+      "role": "Machine-readable final E4B attempt, stratum, preservation, override, and interval results."
+    },
+    {
+      "tag": "E4B-SUMMARY",
+      "experiment": "E4B",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/E4B/summary.md",
+      "blob_sha": "9b92869b0ad30f6ad89450605caefd5387c66ca4",
+      "role": "Human-readable final E4B summary and interpretation."
+    },
+    {
+      "tag": "E4B-CLAIM",
+      "experiment": "E4B",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/E4B/claim_adjudication.md",
+      "blob_sha": "21a8530bab744431a6549d13a5ca884db14fd1c1",
+      "role": "Frozen E4B claim adjudication and guarantee boundary."
+    },
+    {
+      "tag": "E4B-CHECKS",
+      "experiment": "E4B",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/E4B/authority_checks.csv",
+      "blob_sha": "7155a48d6195cdedb4a86c2ea91ebe0edb42eb89",
+      "role": "Check-level applicability and pass/fail results for the six registered authority checks per attempt."
+    },
+    {
+      "tag": "E4B-ATTEMPTS",
+      "experiment": "E4B",
+      "commit": "511192273a61f97e2742a1cc6608e18ed960cc1f",
+      "path": "experiments_v2/Formal Evaluation Experiments/formal_analysis_results_v1/E4B/per_attempt_scored.csv",
+      "blob_sha": "1ae587b1cca67fe0af892361f8904d65920c9abc",
+      "role": "Attempt-level E4B completeness, scenario/style strata, priority preservation, and override cross-check."
+    },
+    {
+      "tag": "E3-REGISTRY",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/e3_factorial_registry_v4.yaml",
+      "blob_sha": "d248d2621ae8eb0210a671e9210ce3a496ef3aa0",
+      "role": "Sealed E3-v4 factorial registry, family/scenario definitions, factors, endpoints, seeds, and block structure."
+    },
+    {
+      "tag": "E3-CONTRACT",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_analysis_contract.md",
+      "blob_sha": "5447561ea7fd3b126ca2ad822c35d4deae86f97c",
+      "role": "Frozen E3-v4 estimands, endpoint semantics, missing-block policy, and confirmatory analysis contract."
+    },
+    {
+      "tag": "E3-COMPLETION",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_formal_campaign_completion_audit.md",
+      "blob_sha": "626d8d6b0440ddfd72bc5e8be58769a97bf7ac5c",
+      "role": "Human-readable campaign completion, slot accounting, and infrastructure-failure audit."
+    },
+    {
+      "tag": "E3-COMPLETION",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_formal_campaign_completion_audit.json",
+      "blob_sha": "8ec27598d44e4e5ab7dea40942e5c969bb5dcdee",
+      "role": "Machine-readable campaign completion and slot accounting audit."
+    },
+    {
+      "tag": "E3-FREEZE-AUDIT",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/analysis_v4/E3_v4_analysis_freeze_audit.md",
+      "blob_sha": "a46c9beb6afb62f7cf07a9b37fbc7f913ba8dd4a",
+      "role": "Human-readable audit of frozen inputs, contract, outputs, and reproducibility."
+    },
+    {
+      "tag": "E3-FREEZE-AUDIT",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/analysis_v4/E3_v4_analysis_freeze_audit.json",
+      "blob_sha": "b3a8755ecabb9dfc3869cee771f191dd0430725b",
+      "role": "Machine-readable E3-v4 analysis freeze audit."
+    },
+    {
+      "tag": "E3-ENDPOINT",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/analysis_v4/E3_v4_endpoint_availability_adjudication_v1.md",
+      "blob_sha": "57a7cf881fbd4c402932bb5c6377a79aaf59bb94",
+      "role": "Human-readable endpoint availability adjudication, including intervention-burden non-availability."
+    },
+    {
+      "tag": "E3-ENDPOINT",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/analysis_v4/E3_v4_endpoint_availability_adjudication_v1.json",
+      "blob_sha": "c2cad2c7646e6bd1402d9b1de5ee5f37c1e802df",
+      "role": "Machine-readable endpoint availability adjudication."
+    },
+    {
+      "tag": "E3-REPORT",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/analysis_v4/report/E3_v4_formal_analysis_report.md",
+      "blob_sha": "84ff65f8f60ba9b94aca7d6ddfe5ad85bc66fbed",
+      "role": "Authoritative human-readable confirmatory report and bounded C2 interpretation."
+    },
+    {
+      "tag": "E3-SUMMARY",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/analysis_v4/outputs/E3_v4_analysis_summary.json",
+      "blob_sha": "1fc10823e577070df45263dab3be34ba33dfb5fd",
+      "role": "Machine-readable primary population, family results, cell summaries, operations, and endpoint availability."
+    },
+    {
+      "tag": "E3-FACTORIAL",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/analysis_v4/outputs/E3_v4_primary_factorial_results.csv",
+      "blob_sha": "2cef1e739ec1cd92f2670e4b8f320dc202b240cf",
+      "role": "Frozen continuous factorial effects and confidence intervals."
+    },
+    {
+      "tag": "E3-BINARY",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/analysis_v4/outputs/E3_v4_binary_results.csv",
+      "blob_sha": "dcd612d20bdc7a52f7c6281dcbe2304357cc8d9b",
+      "role": "Frozen any-hard-risk factorial and within-planning-level binary contrasts."
+    },
+    {
+      "tag": "E3-MISSING",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/analysis_v4/outputs/E3_v4_missingness_table.csv",
+      "blob_sha": "3f0208eb4b78ef9383db4d6877912e0f27d60e00",
+      "role": "Attempt-level infrastructure-failure mechanism and block-completeness table."
+    },
+    {
+      "tag": "E3-MISSING",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/analysis_v4/outputs/E3_v4_missingness_summary.csv",
+      "blob_sha": "7ca3651dbc7589357830e6f5ab01108da840cead",
+      "role": "Frozen missingness counts by family, scenario, condition, and mechanism."
+    },
+    {
+      "tag": "E3-OPERATIONS",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/analysis_v4/outputs/E3_v4_operational_sensitivity.csv",
+      "blob_sha": "dca1548467e9f572abaf895091fa97b1d906b620",
+      "role": "Frozen mission-success, failsafe, and infrastructure-conditioned operational results."
+    },
+    {
+      "tag": "E3-CELL",
+      "experiment": "E3-v4",
+      "commit": "c62e9b43dbed0470feb46d4cf148081d681c26e1",
+      "path": "experiments_v2/Formal Evaluation Experiments/E3/analysis_v4/outputs/E3_v4_primary_cell_descriptives.csv",
+      "blob_sha": "c8e53b7bd2e2d2d5800768c76ee632061aa0329a",
+      "role": "Frozen four-cell descriptive values, including Family C P1_F0 and P1_F1 means and occurrence counts."
+    }
+  ],
+  "audit_policy": {
+    "preferred_evidence": "Frozen summaries and frozen analysis outputs; detailed CSV/JSON used for cross-checks.",
+    "new_inferential_statistics_run": false,
+    "confidence_intervals_modified": false,
+    "new_endpoints_defined": false,
+    "post_hoc_significance_tests_run": false,
+    "simple_presentation_arithmetic": "Only direct count divisions explicitly labeled as presentation calculations in the document.",
+    "source_discrepancies_found": false
+  }
+}
