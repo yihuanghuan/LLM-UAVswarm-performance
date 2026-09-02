@@ -1,0 +1,100 @@
+{
+  "activated_execution_tooling_bundle_sha256": "78cb5dbc374983c64752433fa1c62c4990903b03b5b813f0248f13105eb074bf",
+  "analysis_branch": "formal/E3-v4-analysis-v1",
+  "endpoint_mapping": {
+    "any_realized_hard_risk": {
+      "availability_reason": null,
+      "json_path": "metrics.realized.hard_risk_event_count",
+      "kind": "binary_derived",
+      "transform": "int(hard_risk_event_count > 0)"
+    },
+    "controller_near_limit_fraction": {
+      "availability_reason": null,
+      "json_path": "metrics.stability.near_acceleration_limit_sample_fraction",
+      "kind": "continuous",
+      "transform": null
+    },
+    "failsafe_seen": {
+      "availability_reason": null,
+      "json_path": "metrics.stability.failsafe_seen",
+      "kind": "binary",
+      "transform": null
+    },
+    "feedback_intervention_burden": {
+      "availability_reason": "PREREGISTERED_ENDPOINT_UNAVAILABLE_DUE_TO_INSTRUMENTATION_OMISSION",
+      "json_path": null,
+      "kind": "unavailable",
+      "transform": null
+    },
+    "hard_risk_event_count": {
+      "availability_reason": null,
+      "json_path": "metrics.realized.hard_risk_event_count",
+      "kind": "count",
+      "transform": null
+    },
+    "j_hard_pair_s": {
+      "availability_reason": null,
+      "json_path": "metrics.realized.hard_risk_exposure_pair_s",
+      "kind": "continuous",
+      "transform": null
+    },
+    "mission_success": {
+      "availability_reason": null,
+      "json_path": "metrics.stability.mission_success",
+      "kind": "binary",
+      "transform": null
+    },
+    "predicted_hard_conflict_count": {
+      "availability_reason": null,
+      "json_path": "metrics.predicted.hard_violations",
+      "kind": "count",
+      "transform": null
+    },
+    "predicted_min_separation_m": {
+      "availability_reason": null,
+      "json_path": "metrics.predicted.d_min_m",
+      "kind": "continuous",
+      "transform": null
+    },
+    "realized_min_separation_m": {
+      "availability_reason": null,
+      "json_path": "metrics.realized.d_min_m",
+      "kind": "continuous",
+      "transform": null
+    }
+  },
+  "files": {
+    "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_analysis_contract.md": "987ff29aa814a0dc5e9e64081fcf0fc79ceb3086b21a0e945bfe2f8252185c58",
+    "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_campaign_journal_contract.yaml": "7f00d14504fc914d396909c333700700b4ac68f0f2dddb77d5259ab69b257d84",
+    "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_formal_campaign_completion_audit.json": "61aeefba3eaca0d15da2944cfddc920f6e4d1b59890c20b2afba9f921d747dc5",
+    "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_formal_campaign_completion_audit.md": "1bc5ca721ad77b87d54a54b0c53773622c92b013740d43c36b3f8b150aa85eb2",
+    "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_formal_paired_seeds.yaml": "665600871ad3fb6cff324ab3ef9144b0d84b42acc19505283679b6ae01586841",
+    "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_formal_trial_order.txt": "60ee30a7100b53c4964e3f9f086ff3d137fb41282eebc4439760bf17f033b39b",
+    "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_formal_trial_order.yaml": "90b4c6358d087303f05701b6c138d59b64a3ac784642cd0c2df4e757cb3e5e4c",
+    "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_human_activation_audit.json": "ec238d4c7f964b1ed3829cf8a7ab34c9dfd6ef232a0c3405c4fd5790c17b8f77",
+    "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_human_activation_manifest.yaml": "49726b77d60fff8a83c3c7602a7b1236047265995a719e44a9657f8e0f31f993",
+    "experiments_v2/Formal Evaluation Experiments/E3/E3_v4_raw_storage_policy_v2.yaml": "5a0ffedcd1088f0516f669b15ec3d613c857b1a9304917b2f4db728fce18f2b9",
+    "experiments_v2/Formal Evaluation Experiments/E3/analysis_v4/E3_v4_endpoint_availability_adjudication_v1.json": "c91f8be3773baf7dade1bf512089a1b63169bd028c8eff451a30fb5b33568d1d",
+    "experiments_v2/Formal Evaluation Experiments/E3/e3_factorial_registry_v3.yaml": "b56344c6cd257e99851523d640d9a89d6def994884877e2303d8fab836e0faf2",
+    "experiments_v2/Formal Evaluation Experiments/E3/e3_factorial_registry_v4.yaml": "2b3dccc2ad27cf317029c2b7b014bca3a8b28fc8c0a196fd4c2e5abe0be9d4b7",
+    "experiments_v2/Formal Evaluation Experiments/E3/results/formal_v4/campaign_journal.jsonl": "d00e59091ad598bdd5c1ffbbfded888aa04f0e3a7089cf9c225b21c196f49066",
+    "experiments_v2/Formal Evaluation Experiments/E3/results/formal_v4/raw_archive_ledger.jsonl": "87ff7e952cb3829921e0c0a47b3a4b82d077a9f68355dcb351e407df5be3ba57",
+    "lfs_policy/config/lfs_policy.paper_current.yaml": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858"
+  },
+  "primary_population": "74 scientifically complete scenario-by-seed four-cell blocks",
+  "registry_provenance": {
+    "candidate_registry_sha256": "80ddbb8701f1c7feb84ae64a7985f233742f522c1204131ab4dd6d09960bd79b",
+    "candidate_scientific_payload_sha256": "43a4805a5c9bd881fc3cc8ff0785bbf3436a5fbbffc38596d05e985b88a896e0",
+    "candidate_vs_sealed_scientific_payload_equivalent": true,
+    "contract_candidate_hash_intentionally_unchanged": true,
+    "scientific_protocol_changes": 0,
+    "sealed_registry_sha256": "2b3dccc2ad27cf317029c2b7b014bca3a8b28fc8c0a196fd4c2e5abe0be9d4b7",
+    "sealed_scientific_payload_sha256": "43a4805a5c9bd881fc3cc8ff0785bbf3436a5fbbffc38596d05e985b88a896e0"
+  },
+  "schema": "E3_v4_analysis_input_manifest_v1",
+  "source_commit": "f61c8c174eb4ca836a54af999189550a2bf46f34",
+  "thresholds": {
+    "d_hard_m": 1.5,
+    "d_plan_m": 1.8
+  }
+}
