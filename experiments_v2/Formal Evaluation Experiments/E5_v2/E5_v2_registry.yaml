@@ -1,0 +1,172 @@
+registry_id: E5-end-to-end-v2
+status: CANDIDATE_FOR_HUMAN_REVIEW
+registry_version: 1
+accepted_formal_results_created: false
+formal_execution_started: false
+
+scientific_position:
+  evidence_class: integration_only
+  questions:
+    - Can prospectively feasible relative, qualitative, and auto semantics traverse the frozen end-to-end pipeline?
+    - Can the same frozen command-to-control pipeline operate at N=8, N=12, and N=16 in simulation?
+  excluded_claims:
+    - new causal evidence for C1 commitment timing
+    - new causal evidence for C2 planning-execution safety decomposition
+    - new causal evidence for C3 behavioral authority
+    - formal scalability or asymptotic complexity
+    - universal swarm-size generalization
+  maximum_scale_wording: The same command-to-control pipeline was additionally demonstrated on larger simulated swarms.
+
+baseline:
+  tag: paper-final-sim-v3
+  tag_object: e921c7824daf00cd7f3685b1844d48e4102008c9
+  commit: 6cf402debf23851b1eff3edc6f3ab49eae7127c4
+  configuration_id: paper-current-v11-c0-f-frozen
+  policy_path: lfs_policy/config/lfs_policy.paper_current.yaml
+  policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+  full_method:
+    lfs_runtime_mode: candidate_v2
+    assignment_mode: safety_aware
+    control_mode: ladrc_acceleration
+    avoidance_mode: iapf_dual
+    iapf_escape_mode: id_order
+
+common:
+  swarm_ids_by_n:
+    8: [1, 2, 3, 4, 5, 6, 7, 8]
+    12: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    16: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+  cold_start_spawn_rule: 'UAV i: [0.0, 3.0*i, 0.83] m'
+  readiness_gate: all registered PX4/controller instances ready, armed/offboard, stable, finite-state, and frozen fresh-state predicate satisfied before command submission
+  success_common:
+    - registered Candidate is validated without fallback
+    - deterministic resolver and planner accept every registered task
+    - mission reaches its registered completion event before timeout
+    - no controller, PX4, allocator, parser, resolver, or infrastructure hard failure
+    - actual d_min is at least frozen d_hard 1.50 m over the scored mission
+    - no retry, deletion, seed replacement, skipping, or reordering
+  formal_order_path: E5_v2_formal_trial_order.txt
+  seed_registry_path: E5_v2_seed_registry.yaml
+
+substudies:
+  E5-v2A:
+    purpose: Positive end-to-end realization of prospectively feasible under-specified commands.
+    N: 8
+    scenario_count: 3
+    seeds_per_scenario: 5
+    registered_attempts: 15
+  E5-v2B:
+    purpose: Demonstration of the same frozen pipeline at larger simulated swarm sizes.
+    swarm_sizes: [8, 12, 16]
+    task_families: [SIMPLE, UNDER_SPECIFIED, COMPOSITIONAL]
+    seeds_per_cell: 5
+    registered_attempts: 45
+
+scenarios:
+  E5-v2A:
+    - scenario_id: E5V2-A1-REL-COMPACT-CIRCLE
+      N: 8
+      exact_command: Have UAVs 1 through 8 form a compact circle centered at world-frame offset [3, 0, 1] meters from their current swarm centroid with automatic duration, using normal motion and safety factor 1.0.
+      candidate_semantic_ground_truth: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Circle}, c: {mode: relative, reference: current_swarm_centroid, offset: [3, 0, 1], frame: world}, r: {mode: qualitative, value: compact}, T: {mode: auto}, m: normal, s: 1.0, q: {mode: direct}}}]}}
+      feasibility_candidate_id: A1-CIRCLE-COMPACT-REL-3-0-1
+      mission_timeout_s: 25.0
+
+    - scenario_id: E5V2-A2-MAINTAIN-NORMAL-LINE
+      N: 8
+      exact_command: Have UAVs 1 through 8 form a normal-scale line around their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.
+      candidate_semantic_ground_truth: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Line}, c: {mode: maintain_current_centroid}, r: {mode: qualitative, value: normal}, T: {mode: auto}, m: smooth, s: 1.0, q: {mode: direct}}}]}}
+      feasibility_candidate_id: A2-LINE-NORMAL-MAINTAIN
+      mission_timeout_s: 30.0
+
+    - scenario_id: E5V2-A3-REL-SPACIOUS-SPHERE
+      N: 8
+      exact_command: Have UAVs 1 through 8 form a spacious sphere centered at world-frame offset [0, 0, 5] meters from their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.
+      candidate_semantic_ground_truth: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Sphere}, c: {mode: relative, reference: current_swarm_centroid, offset: [0, 0, 5], frame: world}, r: {mode: qualitative, value: spacious}, T: {mode: auto}, m: smooth, s: 1.0, q: {mode: direct}}}]}}
+      feasibility_candidate_id: A3-SPHERE-SPACIOUS-REL-0-0-5
+      mission_timeout_s: 30.0
+
+  E5-v2B:
+    - cell_id: E5V2-B-S1-N8
+      task_family: SIMPLE
+      N: 8
+      exact_command: Have UAVs 1 through 8 form a circle centered at [0, 18, 4] with radius 6 meters in 14 seconds using normal motion and safety factor 1.0.
+      candidate_semantic_ground_truth: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Circle}, c: {mode: absolute, value: [0, 18, 4]}, r: {mode: explicit, value: 6}, T: {mode: explicit, value: 14}, m: normal, s: 1.0, q: {mode: direct}}}]}}
+      feasibility_candidate_id: B-S1-CIRCLE-ABS-R6-T14
+      mission_timeout_s: 30.0
+    - cell_id: E5V2-B-S1-N12
+      task_family: SIMPLE
+      N: 12
+      exact_command: Have UAVs 1 through 12 form a circle centered at [0, 18, 4] with radius 6 meters in 14 seconds using normal motion and safety factor 1.0.
+      candidate_semantic_ground_truth: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], F: {type: Circle}, c: {mode: absolute, value: [0, 18, 4]}, r: {mode: explicit, value: 6}, T: {mode: explicit, value: 14}, m: normal, s: 1.0, q: {mode: direct}}}]}}
+      feasibility_candidate_id: B-S1-CIRCLE-ABS-R6-T14
+      mission_timeout_s: 30.0
+    - cell_id: E5V2-B-S1-N16
+      task_family: SIMPLE
+      N: 16
+      exact_command: Have UAVs 1 through 16 form a circle centered at [0, 18, 4] with radius 6 meters in 14 seconds using normal motion and safety factor 1.0.
+      candidate_semantic_ground_truth: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], F: {type: Circle}, c: {mode: absolute, value: [0, 18, 4]}, r: {mode: explicit, value: 6}, T: {mode: explicit, value: 14}, m: normal, s: 1.0, q: {mode: direct}}}]}}
+      feasibility_candidate_id: B-S1-CIRCLE-ABS-R6-T14
+      mission_timeout_s: 30.0
+
+    - cell_id: E5V2-B-S2-N8
+      task_family: UNDER_SPECIFIED
+      N: 8
+      exact_command: Have UAVs 1 through 8 form a normal-scale circle around their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.
+      candidate_semantic_ground_truth: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Circle}, c: {mode: maintain_current_centroid}, r: {mode: qualitative, value: normal}, T: {mode: auto}, m: smooth, s: 1.0, q: {mode: direct}}}]}}
+      feasibility_candidate_id: B-S2-CIRCLE-NORMAL-MAINTAIN
+      mission_timeout_s: 40.0
+    - cell_id: E5V2-B-S2-N12
+      task_family: UNDER_SPECIFIED
+      N: 12
+      exact_command: Have UAVs 1 through 12 form a normal-scale circle around their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.
+      candidate_semantic_ground_truth: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], F: {type: Circle}, c: {mode: maintain_current_centroid}, r: {mode: qualitative, value: normal}, T: {mode: auto}, m: smooth, s: 1.0, q: {mode: direct}}}]}}
+      feasibility_candidate_id: B-S2-CIRCLE-NORMAL-MAINTAIN
+      mission_timeout_s: 40.0
+    - cell_id: E5V2-B-S2-N16
+      task_family: UNDER_SPECIFIED
+      N: 16
+      exact_command: Have UAVs 1 through 16 form a normal-scale circle around their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.
+      candidate_semantic_ground_truth: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], F: {type: Circle}, c: {mode: maintain_current_centroid}, r: {mode: qualitative, value: normal}, T: {mode: auto}, m: smooth, s: 1.0, q: {mode: direct}}}]}}
+      feasibility_candidate_id: B-S2-CIRCLE-NORMAL-MAINTAIN
+      mission_timeout_s: 40.0
+
+    - cell_id: E5V2-B-S3-N8
+      task_family: COMPOSITIONAL
+      N: 8
+      exact_command: In parallel, UAVs 1 through 4 form a circle centered at [-6, 18, 4] with radius 3 meters in 14 seconds using normal motion and safety factor 1.25, while UAVs 5 through 8 form a circle centered at [6, 18, 4] with radius 3 meters in 14 seconds using smooth motion and safety factor 1.0. Complete the parallel group synchronously.
+      candidate_semantic_ground_truth: {lfs_version: '2.1', mission: {nodes: [{type: parallel, completion_mode: synchronized, tasks: [{task_id: 1, U: [1, 2, 3, 4], F: {type: Circle}, c: {mode: absolute, value: [-6, 18, 4]}, r: {mode: explicit, value: 3}, T: {mode: explicit, value: 14}, m: normal, s: 1.25, q: {mode: direct}}, {task_id: 2, U: [5, 6, 7, 8], F: {type: Circle}, c: {mode: absolute, value: [6, 18, 4]}, r: {mode: explicit, value: 3}, T: {mode: explicit, value: 14}, m: smooth, s: 1.0, q: {mode: direct}}]}]}}
+      feasibility_candidate_id: B-S3-PARALLEL-TWO-CIRCLES
+      mission_timeout_s: 45.0
+    - cell_id: E5V2-B-S3-N12
+      task_family: COMPOSITIONAL
+      N: 12
+      exact_command: In parallel, UAVs 1 through 6 form a circle centered at [-6, 18, 4] with radius 3 meters in 14 seconds using normal motion and safety factor 1.25, while UAVs 7 through 12 form a circle centered at [6, 18, 4] with radius 3 meters in 14 seconds using smooth motion and safety factor 1.0. Complete the parallel group synchronously.
+      candidate_semantic_ground_truth: {lfs_version: '2.1', mission: {nodes: [{type: parallel, completion_mode: synchronized, tasks: [{task_id: 1, U: [1, 2, 3, 4, 5, 6], F: {type: Circle}, c: {mode: absolute, value: [-6, 18, 4]}, r: {mode: explicit, value: 3}, T: {mode: explicit, value: 14}, m: normal, s: 1.25, q: {mode: direct}}, {task_id: 2, U: [7, 8, 9, 10, 11, 12], F: {type: Circle}, c: {mode: absolute, value: [6, 18, 4]}, r: {mode: explicit, value: 3}, T: {mode: explicit, value: 14}, m: smooth, s: 1.0, q: {mode: direct}}]}]}}
+      feasibility_candidate_id: B-S3-PARALLEL-TWO-CIRCLES
+      mission_timeout_s: 45.0
+    - cell_id: E5V2-B-S3-N16
+      task_family: COMPOSITIONAL
+      N: 16
+      exact_command: In parallel, UAVs 1 through 8 form a circle centered at [-6, 18, 4] with radius 3 meters in 14 seconds using normal motion and safety factor 1.25, while UAVs 9 through 16 form a circle centered at [6, 18, 4] with radius 3 meters in 14 seconds using smooth motion and safety factor 1.0. Complete the parallel group synchronously.
+      candidate_semantic_ground_truth: {lfs_version: '2.1', mission: {nodes: [{type: parallel, completion_mode: synchronized, tasks: [{task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Circle}, c: {mode: absolute, value: [-6, 18, 4]}, r: {mode: explicit, value: 3}, T: {mode: explicit, value: 14}, m: normal, s: 1.25, q: {mode: direct}}, {task_id: 2, U: [9, 10, 11, 12, 13, 14, 15, 16], F: {type: Circle}, c: {mode: absolute, value: [6, 18, 4]}, r: {mode: explicit, value: 3}, T: {mode: explicit, value: 14}, m: smooth, s: 1.0, q: {mode: direct}}]}]}}
+      feasibility_candidate_id: B-S3-PARALLEL-TWO-CIRCLES
+      mission_timeout_s: 45.0
+
+same_task_family_rule:
+  SIMPLE: Identical absolute center, Circle, explicit radius, explicit duration, motion style, safety factor, and completion semantics; only U expands with N.
+  UNDER_SPECIFIED: Identical maintain-current center, Circle, qualitative normal scale, auto duration, motion style, safety factor, and completion semantics; only U and legitimate state/geometry/timing resolutions vary with N.
+  COMPOSITIONAL: Identical synchronized two-Circle parallel graph, centers, radii, durations, styles, safety values, and completion semantics; only the equal registered ID partition changes with N.
+
+governance:
+  all_attempt_denominator: true
+  no_replacement: true
+  no_post_result_scenario_changes: true
+  no_method_semantic_changes: true
+  old_E5_v1_immutable: true
+  old_E5_v1_not_pooled: true
+  formal_seeds_frozen_before_execution: true
+  formal_order_frozen_before_execution: true
+  human_activation_required: true
+  candidate_registry_must_be_refused_by_formal_adapter: true
+  engineering_smoke_is_nonformal: true
+  formal_trials_created: 0

@@ -1,0 +1,277 @@
+{
+  "audit_id": "E5-v2-preflight-audit-v1",
+  "baseline_commit": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+  "branch": "formal/E5-v2-design-v1",
+  "change_classification": [
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_analysis_contract.md"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_engineering_scale_smoke_audit.md"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_engineering_scale_smoke_protocol.yaml"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_engineering_scale_smoke_results.json"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_feasibility_audit.json"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_feasibility_audit.md"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_formal_trial_order.txt"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_formal_trial_order_metadata.json"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_n_agnostic_audit.json"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_n_agnostic_audit.md"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_preflight_audit.json"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_preflight_audit.md"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_registry.yaml"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_relationship_to_E5_v1.md"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_scenario_design_candidates.yaml"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_seed_registry.yaml"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/tests/test_e5_v2_design.py"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/tooling/__init__.py"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/tooling/e5_v2_common.py"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/tooling/e5_v2_engineering_smoke.py"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/tooling/e5_v2_feasibility.py"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/tooling/e5_v2_formal_adapter.py"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/tooling/e5_v2_freeze.py"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/tooling/e5_v2_preflight.py"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/tooling/e5_v2_smoke_aggregate.py"
+    },
+    {
+      "classification": "E5_v2_experiment_only",
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/tooling/e5_v2_wait_ready.py"
+    }
+  ],
+  "checks": [
+    {
+      "check": "baseline_tag_resolution",
+      "evidence": {
+        "commit": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+        "tag": "paper-final-sim-v3"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "candidate_registry_not_activated",
+      "evidence": "CANDIDATE_FOR_HUMAN_REVIEW",
+      "status": "PASS"
+    },
+    {
+      "check": "formal_adapter_refuses_candidate",
+      "evidence": true,
+      "status": "PASS"
+    },
+    {
+      "check": "n_agnostic_method_audit",
+      "evidence": "E5_V2_N_AGNOSTIC_METHOD_AUDIT = PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "deterministic_feasibility",
+      "evidence": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "engineering_scale_smoke",
+      "evidence": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "attempt_population",
+      "evidence": {
+        "expected": 60,
+        "registered": 60
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "substudy_counts",
+      "evidence": {
+        "E5-v2A": 15,
+        "E5-v2B": 45
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "E5_v2B_cell_counts",
+      "evidence": {
+        "N12-COMPOSITIONAL": 5,
+        "N12-SIMPLE": 5,
+        "N12-UNDER_SPECIFIED": 5,
+        "N16-COMPOSITIONAL": 5,
+        "N16-SIMPLE": 5,
+        "N16-UNDER_SPECIFIED": 5,
+        "N8-COMPOSITIONAL": 5,
+        "N8-SIMPLE": 5,
+        "N8-UNDER_SPECIFIED": 5
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "formal_seed_uniqueness_and_exclusion",
+      "evidence": {
+        "count": 60,
+        "unique": 60
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "formal_order_determinism",
+      "evidence": {
+        "count": 60,
+        "sha256": "4ec9ee0e8de0cc4b015bfd3858365fe8bf0a07aeddcb591ab6f91221a7bb8f69"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "old_E5_v1_registry_unchanged",
+      "evidence": {
+        "sha256": "9bb6bc9b46b5211c50c8f2e29bd434235424beb2bb0fc36ec857a3298d89511e",
+        "source_commit": "33538b91ab9e0c53b918cdc0e47e3b7fa6f08592"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "old_E5_v1_path_unchanged_from_baseline",
+      "evidence": {
+        "diff": 0,
+        "path": "experiments_v2/Formal Evaluation Experiments/E5/e5_end_to_end_registry_v1.yaml"
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "production_method_changes_zero",
+      "evidence": {
+        "baseline": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+        "paths": [
+          "lfs_policy",
+          "location_allocate",
+          "minisnap_LADRC",
+          "schemas",
+          "uav_swarm_interfaces"
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "all_branch_changes_classified_allowed",
+      "evidence": {
+        "changed_path_count": 26
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "frozen_policy_unchanged",
+      "evidence": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+      "status": "PASS"
+    },
+    {
+      "check": "formal_execution_not_started",
+      "evidence": {
+        "forbidden_paths": [],
+        "formal_trials_created": 0
+      },
+      "status": "PASS"
+    },
+    {
+      "check": "required_preformal_artifacts",
+      "evidence": {
+        "missing": []
+      },
+      "status": "PASS"
+    }
+  ],
+  "formal_E5_v2_attempts_created": 0,
+  "hashes": {
+    "analysis_contract_sha256": "05802cb32e8dc2f990d9e0144f2cfd118b87228ab0c441578e084aeefc0d008a",
+    "candidate_registry_sha256": "7bc6b50de747753e09ca948e806c00961a0539804cff906df75308ff70b76567",
+    "formal_order_sha256": "4ec9ee0e8de0cc4b015bfd3858365fe8bf0a07aeddcb591ab6f91221a7bb8f69",
+    "formal_seed_registry_sha256": "1815deba3fab9c756603a358b4a3900b67ffb9bcb3e9f757282ab8894595d0cb",
+    "old_E5_v1_registry_sha256": "9bb6bc9b46b5211c50c8f2e29bd434235424beb2bb0fc36ec857a3298d89511e",
+    "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858"
+  },
+  "production_method_changes": 0,
+  "status": "PASS",
+  "target_state": "E5-v2 DESIGN/PREFLIGHT READY; FORMAL EXECUTION NOT STARTED; WAITING FOR HUMAN REVIEW / ACTIVATION",
+  "test_evidence": {
+    "E5_v2_design_tests": {
+      "command_environment": "project virtual environment",
+      "failed": 0,
+      "passed": 10
+    },
+    "frozen_baseline_existing_suite": {
+      "failed": 7,
+      "gating_for_E5_v2_design": false,
+      "passed": 199,
+      "reason": "Failures are pre-existing at paper-final-sim-v3: stale configuration expectations, an absent legacy replay script, and existing lint findings. Governance forbids editing production or closed evidence to repair them.",
+      "skipped": 1,
+      "total": 207
+    }
+  }
+}

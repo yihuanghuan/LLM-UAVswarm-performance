@@ -1,0 +1,61 @@
+protocol_id: E5-v2-engineering-scale-smoke-v1
+status: FROZEN_BEFORE_ENGINEERING_EXECUTION
+dataset_class: engineering_validation
+accepted_formal_result: false
+scientific_mission: false
+formal_trial_id: null
+formal_journal_entry: false
+baseline_commit: 6cf402debf23851b1eff3edc6f3ab49eae7127c4
+configuration_id: paper-current-v11-c0-f-frozen
+policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+
+purpose: Validate only scaled spawn, controller/PX4 connectivity, offboard/arm, stable hover/readiness, finite state, and cleanup before formal activation.
+
+smokes:
+  - {smoke_id: E5V2-ENG-HOVER-N8, N: 8, engineering_seed: 9900008, uav_ids: [1, 2, 3, 4, 5, 6, 7, 8]}
+  - {smoke_id: E5V2-ENG-HOVER-N12, N: 12, engineering_seed: 9900012, uav_ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
+  - {smoke_id: E5V2-ENG-HOVER-N16, N: 16, engineering_seed: 9900016, uav_ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]}
+
+fixed_runtime:
+  px4_launcher: /home/yihuang/PX4-Autopilot/Tools/simulation/gazebo-classic/sitl_multiple_run.sh
+  px4_arguments: ['-n', REGISTERED_N, '-m', iris, '-w', empty]
+  controller_launch: minisnap_LADRC/ladrc_controller/launch/swarm_launch.py
+  controller_arguments:
+    uav_ids: REGISTERED_UAV_IDS
+    control_mode: ladrc_acceleration
+    avoidance_mode: iapf_dual
+    iapf_escape_mode: id_order
+  simulator_spawn_timeout_s: 120.0
+  readiness_timeout_s: 240.0
+  readiness_hold_s: 1.0
+  freshness_timeout_s: 0.5
+  minimum_altitude_m: 1.0
+  speed_tolerance_mps: 0.30
+  post_readiness_observation_s: 3.0
+  identical_timeouts_for_all_N: true
+
+required_observations:
+  - gzserver alive
+  - exact PX4 process count N
+  - exact LADRC controller process count N
+  - all registered status topics observed
+  - all registered UAVs armed and offboard
+  - all registered UAV states finite
+  - continuous stable readiness hold achieved
+  - readiness elapsed time
+  - real-time factor where low-intrusion Gazebo statistics are available
+  - host load and available memory
+  - process-group and residual-process cleanup
+
+governance:
+  one_initial_smoke_per_N: true
+  retry_only_after_retaining_genuine_infrastructure_bug_evidence: true
+  no_registered_scientific_command: true
+  no_Candidate_payload: true
+  no_location_allocator_process: true
+  no_formal_seed: true
+  no_formal_result: true
+  no_formal_journal: true
+  stop_before_formal_if_stable_hover_fails_at_N12_or_N16: true
+  no_physics_fidelity_change_after_outcomes: true
+  no_timeout_change_after_outcomes: true
