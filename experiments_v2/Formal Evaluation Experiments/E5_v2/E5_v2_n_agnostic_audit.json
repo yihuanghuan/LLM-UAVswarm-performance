@@ -1,0 +1,194 @@
+{
+  "audit_id": "E5-v2-N-agnostic-method-audit-v1",
+  "baseline_commit": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+  "baseline_tag": "paper-final-sim-v3",
+  "conclusion": "E5_V2_N_AGNOSTIC_METHOD_AUDIT = PASS",
+  "method_semantic_change_required_for_N12_or_N16": false,
+  "production_method_change_authorized": false,
+  "classification_definitions": {
+    "METHOD-SEMANTIC_ASSUMPTION": "A fixed-N restriction in the tested scientific method; any such restriction would block E5-v2.",
+    "EXPERIMENT-INFRASTRUCTURE_ASSUMPTION": "A launcher, default list, readiness, logging, or campaign-specific fixed-N choice that may be parameterized without changing scientific semantics.",
+    "NONE-N-AGNOSTIC": "No fixed-N assumption; ordinary computations may legitimately depend on input cardinality."
+  },
+  "components": [
+    {
+      "component": "Candidate LFS runtime and schema",
+      "path": ["schemas/paper_candidate_schema_v2.json", "location_allocate/location_allocate/candidate_mission_runtime.py", "location_allocate/location_allocate/paper_lfs_validator.py"],
+      "N-dependent": true,
+      "classification": "NONE-N-AGNOSTIC",
+      "change_needed": false,
+      "allowed_for_E5_v2": true,
+      "reason": "U is a unique integer array with no maximum length; cardinality checks depend on formation semantics, not N=8. Mission compilation iterates all nodes/tasks."
+    },
+    {
+      "component": "Availability and UAV-ID handling",
+      "path": ["location_allocate/location_allocate/location_allocate.py", "location_allocate/location_allocate/validation_common.py", "uav_swarm_interfaces/msg/UAVExecutionCommand.msg"],
+      "N-dependent": true,
+      "classification": "EXPERIMENT-INFRASTRUCTURE_ASSUMPTION",
+      "change_needed": true,
+      "allowed_for_E5_v2": true,
+      "reason": "The production node default ALL_UAV_IDS ends at 10, but the uav_ids ROS parameter accepts any non-empty unique list and the Candidate parser consumes that dynamic availability. E5-v2 must pass registered IDs explicitly. uint8 IDs admit 1..16. No production edit is needed."
+    },
+    {
+      "component": "State ingest and fresh snapshot",
+      "path": ["location_allocate/location_allocate/state_ingest.py", "location_allocate/location_allocate/state_snapshot.py", "location_allocate/location_allocate/paper_runtime.py"],
+      "N-dependent": true,
+      "classification": "NONE-N-AGNOSTIC",
+      "change_needed": false,
+      "allowed_for_E5_v2": true,
+      "reason": "States are keyed by arbitrary integer ID; all-or-nothing freshness/skew checks iterate the requested participant set."
+    },
+    {
+      "component": "Relative and maintain-current center resolution",
+      "path": ["location_allocate/location_allocate/lfs_resolver.py"],
+      "N-dependent": true,
+      "classification": "NONE-N-AGNOSTIC",
+      "change_needed": false,
+      "allowed_for_E5_v2": true,
+      "reason": "The centroid divides summed participant positions by len(U); no fixed cardinality/topology occurs."
+    },
+    {
+      "component": "Formation unit geometry",
+      "path": ["location_allocate/location_allocate/formation_geometry.py"],
+      "N-dependent": true,
+      "classification": "NONE-N-AGNOSTIC",
+      "change_needed": false,
+      "allowed_for_E5_v2": true,
+      "reason": "Line, Circle, Polygon, and Sphere generate exactly count offsets. Triangle's exactly-three restriction is shape semantics, not an eight-agent assumption."
+    },
+    {
+      "component": "Qualitative-scale and workspace resolution",
+      "path": ["location_allocate/location_allocate/formation_geometry.py", "lfs_policy/config/lfs_policy.paper_current.yaml"],
+      "N-dependent": true,
+      "classification": "NONE-N-AGNOSTIC",
+      "change_needed": false,
+      "allowed_for_E5_v2": true,
+      "reason": "r_nominal and r_safe use the generated geometry's delta_min, so legitimate N-dependent scales arise without changing multipliers, safety floors, or workspace bounds."
+    },
+    {
+      "component": "Safety-aware allocator",
+      "path": ["location_allocate/location_allocate/safety_aware_allocator.py"],
+      "N-dependent": true,
+      "classification": "NONE-N-AGNOSTIC",
+      "change_needed": false,
+      "allowed_for_E5_v2": true,
+      "reason": "Nx3 arrays, Hungarian assignment, pair combinations, group-local swap ranges, and trajectory sampling derive size from inputs. The optional exhaustive fallback is bounded by candidate count for computational reasons and is not required for acceptance."
+    },
+    {
+      "component": "Assignment representation and command batching",
+      "path": ["location_allocate/location_allocate/late_resolution.py", "location_allocate/location_allocate/execution_command_builder.py", "uav_swarm_interfaces/msg/UAVExecutionCommand.msg"],
+      "N-dependent": true,
+      "classification": "NONE-N-AGNOSTIC",
+      "change_needed": false,
+      "allowed_for_E5_v2": true,
+      "reason": "Assignments are permutations of range(len(U)); one command/profile is generated per resolved participant."
+    },
+    {
+      "component": "Minimum-Jerk timing and profile generation",
+      "path": ["location_allocate/location_allocate/timing_resolution.py", "location_allocate/location_allocate/execution_profile_compiler.py", "minisnap_LADRC/ladrc_controller/include/ladrc_controller/minimum_jerk_trajectory.hpp"],
+      "N-dependent": true,
+      "classification": "NONE-N-AGNOSTIC",
+      "change_needed": false,
+      "allowed_for_E5_v2": true,
+      "reason": "Final duration is derived from the maximum assigned displacement and profiles are zipped across U/start/target. Analytic per-UAV limits are unchanged."
+    },
+    {
+      "component": "IAPF neighbor handling",
+      "path": ["minisnap_LADRC/ladrc_controller/src/ladrc_position_controller_node.cpp", "minisnap_LADRC/ladrc_controller/src/iapf_core.cpp", "minisnap_LADRC/ladrc_controller/include/ladrc_controller/iapf_core.hpp"],
+      "N-dependent": true,
+      "classification": "NONE-N-AGNOSTIC",
+      "change_needed": false,
+      "allowed_for_E5_v2": true,
+      "reason": "Each controller iterates a configured vector of neighbor IDs and accumulates all fresh neighbor interactions; no eight-neighbor topology is encoded. uint8 IDs and uint16 diagnostic counts cover N<=16."
+    },
+    {
+      "component": "LADRC controller launch and namespaces",
+      "path": ["minisnap_LADRC/ladrc_controller/launch/swarm_launch.py", "minisnap_LADRC/ladrc_controller/config/ladrc_params.yaml"],
+      "N-dependent": true,
+      "classification": "EXPERIMENT-INFRASTRUCTURE_ASSUMPTION",
+      "change_needed": true,
+      "allowed_for_E5_v2": true,
+      "reason": "Default launch/config ID lists end at 10, but swarm_launch parses the supplied uav_ids, creates one namespaced node per ID, and overrides neighbor_uav_ids with that full list. E5-v2 must pass the registered list; no controller source/config edit is required."
+    },
+    {
+      "component": "PX4 topic/service naming",
+      "path": ["minisnap_LADRC/ladrc_controller/launch/swarm_launch.py", "/home/yihuang/PX4-Autopilot/Tools/simulation/gazebo-classic/sitl_multiple_run.sh"],
+      "N-dependent": true,
+      "classification": "EXPERIMENT-INFRASTRUCTURE_ASSUMPTION",
+      "change_needed": true,
+      "allowed_for_E5_v2": true,
+      "reason": "Namespaces /px4_i, target system i+1, ports, spawn offsets, and -n instance creation are arithmetic in ID/N. The external launcher supports up to 255 instances. E5-v2 supplies -n 8/12/16."
+    },
+    {
+      "component": "Mission orchestration and sequential execution",
+      "path": ["location_allocate/location_allocate/mission_compiler.py", "location_allocate/location_allocate/mission_executor.py", "location_allocate/location_allocate/paper_runtime.py"],
+      "N-dependent": true,
+      "classification": "NONE-N-AGNOSTIC",
+      "change_needed": false,
+      "allowed_for_E5_v2": true,
+      "reason": "Nodes execute in graph order, snapshots use each task's U, and completion trackers iterate the resolved participants."
+    },
+    {
+      "component": "Parallel execution",
+      "path": ["location_allocate/location_allocate/late_resolution.py", "location_allocate/location_allocate/paper_runtime.py", "location_allocate/location_allocate/safety_aware_allocator.py"],
+      "N-dependent": true,
+      "classification": "NONE-N-AGNOSTIC",
+      "change_needed": false,
+      "allowed_for_E5_v2": true,
+      "reason": "Disjoint groups are flattened dynamically, d_plan aggregation remains the frozen maximum rule, assignment stays group-local, and synchronized completion uses dynamically resolved tasks."
+    },
+    {
+      "component": "Safety diagnostics",
+      "path": ["location_allocate/location_allocate/late_resolution.py", "location_allocate/location_allocate/safety_aware_allocator.py", "uav_swarm_interfaces/msg/IAPFDebug.msg", "uav_swarm_interfaces/msg/UAVStatus.msg"],
+      "N-dependent": true,
+      "classification": "NONE-N-AGNOSTIC",
+      "change_needed": false,
+      "allowed_for_E5_v2": true,
+      "reason": "Offending pairs, per-UAV dynamics, J_hard, d_min, active/stale neighbor counts, failsafe, and readiness are emitted per dynamic ID set."
+    },
+    {
+      "component": "Experiment readiness",
+      "path": ["experiments-legacy/system_8uav/scripts/readiness_gate.py", "experiments-legacy/system_8uav/scripts/wait_swarm_ready.py"],
+      "N-dependent": true,
+      "classification": "EXPERIMENT-INFRASTRUCTURE_ASSUMPTION",
+      "change_needed": true,
+      "allowed_for_E5_v2": true,
+      "reason": "The historical CLI default is IDs 1..8 and its directory name is system_8uav, but the gate and subscriptions already iterate --uav-ids. E5-v2 provides an experiment-local dynamic-ID readiness/smoke wrapper."
+    },
+    {
+      "component": "Legacy/calibration launchers and collectors",
+      "path": ["experiments_v2/Calibration Experiments/C0-D-safety/safety_pipeline/run_runtime_smoke.py", "experiments_v2/Calibration Experiments/C0-E-iapf/iapf_calibration_pipeline/run_integrated_smokes.py", "experiments-legacy/system_8uav"],
+      "N-dependent": true,
+      "classification": "EXPERIMENT-INFRASTRUCTURE_ASSUMPTION",
+      "change_needed": false,
+      "allowed_for_E5_v2": false,
+      "reason": "These closed calibration/legacy harnesses contain explicit eight-UAV lists. They are not production method code and will remain immutable; E5-v2 uses new experiment-local infrastructure."
+    },
+    {
+      "component": "Old E5-v1 registry availability",
+      "path": ["33538b91ab9e0c53b918cdc0e47e3b7fa6f08592:experiments_v2/Formal Evaluation Experiments/E5/e5_end_to_end_registry_v1.yaml"],
+      "N-dependent": true,
+      "classification": "EXPERIMENT-INFRASTRUCTURE_ASSUMPTION",
+      "change_needed": false,
+      "allowed_for_E5_v2": false,
+      "reason": "The old registry intentionally freezes availability [1..8]. It remains byte-immutable and is not reused or generalized."
+    }
+  ],
+  "hard_coded_findings": [
+    {
+      "finding": "Production orchestration/controller defaults list IDs only through 10.",
+      "classification": "EXPERIMENT-INFRASTRUCTURE_ASSUMPTION",
+      "E5_v2_action": "Always pass the exact registered IDs for N=8/12/16."
+    },
+    {
+      "finding": "Closed calibration and legacy smoke scripts contain literal eight-UAV lists.",
+      "classification": "EXPERIMENT-INFRASTRUCTURE_ASSUMPTION",
+      "E5_v2_action": "Do not edit or invoke them as the scaled E5-v2 harness."
+    },
+    {
+      "finding": "Old E5-v1 registry fixes availability and readiness at eight UAVs.",
+      "classification": "EXPERIMENT-INFRASTRUCTURE_ASSUMPTION",
+      "E5_v2_action": "Preserve E5-v1 unchanged; create a separate E5-v2 registry."
+    }
+  ]
+}

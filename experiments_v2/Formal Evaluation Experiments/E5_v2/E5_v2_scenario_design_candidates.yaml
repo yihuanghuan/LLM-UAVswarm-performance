@@ -1,0 +1,183 @@
+document_id: E5-v2-scenario-design-candidates-v1
+status: FROZEN_CANDIDATE_SELECTION_FOR_HUMAN_REVIEW
+created_utc: '2026-09-02T00:00:00Z'
+baseline_commit: 6cf402debf23851b1eff3edc6f3ab49eae7127c4
+policy_path: lfs_policy/config/lfs_policy.paper_current.yaml
+policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+
+design_state_models:
+  cold_start_spawn:
+    rule: 'UAV i starts at world [0, 3*i, 0.83] m, as frozen by the PX4 multi-instance launcher.'
+    z_m: 0.83
+  nominal_post_readiness_snapshot:
+    rule: 'UAV i is at world [0, 3*i, 1.50] m after the frozen controller startup takeoff/hover gate.'
+    z_m: 1.50
+  audit_rule: >-
+    Every candidate is checked under both state models. The post-readiness model
+    is the prospective nominal resolver input; formal execution must still log
+    and assess the actual frozen fresh snapshot.
+
+selection_rule_frozen_before_final_scenario_selection:
+  feasibility_question: Does a legal physical realization exist under the frozen policy?
+  excluded_objectives:
+    - maximize predicted minimum distance
+    - maximize workspace slack
+    - minimize travel distance
+    - predict or maximize mission success
+    - choose a best tracking case
+  E5_v2A_rule: >-
+    In the listed order, take the first feasible candidate for each preregistered
+    semantic coverage slot: (A1) relative+compact+auto Circle, (A2)
+    maintain-current+normal+auto with a non-Circle planar geometry, and (A3)
+    relative+spacious+auto Sphere. A candidate is feasible only when validation,
+    center resolution, qualitative scaling, workspace geometry, allocation,
+    hard-safety acceptance, final timing, and profile compilation all accept it
+    under both registered design state models.
+  E5_v2B_rule: >-
+    In the listed order, take the first task-family definition that is feasible
+    for all N in [8, 12, 16] without method-semantic changes. S1 uses the first
+    explicit duration from the preregistered grid [8, 10, 12, 14, 16] seconds
+    that remains unchanged by both planning and final dynamic-feasibility gates
+    in every N cell. No ranking by margin is performed.
+
+candidates:
+  - candidate_id: A1-CIRCLE-COMPACT-REL-3-0-1
+    substudy: E5-v2A
+    coverage_slot: A1
+    selected: true
+    evaluated_n: [8]
+    exact_commands:
+      8: Have UAVs 1 through 8 form a compact circle centered at world-frame offset [3, 0, 1] meters from their current swarm centroid with automatic duration, using normal motion and safety factor 1.0.
+    candidate_semantic_ground_truth_by_n:
+      8: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Circle}, c: {mode: relative, reference: current_swarm_centroid, offset: [3, 0, 1], frame: world}, r: {mode: qualitative, value: compact}, T: {mode: auto}, m: normal, s: 1.0, q: {mode: direct}}}]}}
+    selection_reason: First candidate in the A1 coverage slot; deterministic audit accepts both state models.
+
+  - candidate_id: A2-LINE-NORMAL-MAINTAIN
+    substudy: E5-v2A
+    coverage_slot: A2
+    selected: true
+    evaluated_n: [8]
+    exact_commands:
+      8: Have UAVs 1 through 8 form a normal-scale line around their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.
+    candidate_semantic_ground_truth_by_n:
+      8: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Line}, c: {mode: maintain_current_centroid}, r: {mode: qualitative, value: normal}, T: {mode: auto}, m: smooth, s: 1.0, q: {mode: direct}}}]}}
+    selection_reason: First candidate in the A2 coverage slot; deterministic audit accepts both state models.
+
+  - candidate_id: A3-SPHERE-SPACIOUS-REL-0-0-5
+    substudy: E5-v2A
+    coverage_slot: A3
+    selected: true
+    evaluated_n: [8]
+    exact_commands:
+      8: Have UAVs 1 through 8 form a spacious sphere centered at world-frame offset [0, 0, 5] meters from their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.
+    candidate_semantic_ground_truth_by_n:
+      8: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Sphere}, c: {mode: relative, reference: current_swarm_centroid, offset: [0, 0, 5], frame: world}, r: {mode: qualitative, value: spacious}, T: {mode: auto}, m: smooth, s: 1.0, q: {mode: direct}}}]}}
+    selection_reason: First candidate in the A3 coverage slot; deterministic audit accepts both state models.
+
+  - candidate_id: B-S1-CIRCLE-ABS-R6-T14
+    substudy: E5-v2B
+    task_family: SIMPLE
+    selected: true
+    evaluated_n: [8, 12, 16]
+    exact_commands:
+      8: Have UAVs 1 through 8 form a circle centered at [0, 18, 4] with radius 6 meters in 14 seconds using normal motion and safety factor 1.0.
+      12: Have UAVs 1 through 12 form a circle centered at [0, 18, 4] with radius 6 meters in 14 seconds using normal motion and safety factor 1.0.
+      16: Have UAVs 1 through 16 form a circle centered at [0, 18, 4] with radius 6 meters in 14 seconds using normal motion and safety factor 1.0.
+    candidate_semantic_ground_truth_by_n:
+      8: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Circle}, c: {mode: absolute, value: [0, 18, 4]}, r: {mode: explicit, value: 6}, T: {mode: explicit, value: 14}, m: normal, s: 1.0, q: {mode: direct}}}]}}
+      12: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], F: {type: Circle}, c: {mode: absolute, value: [0, 18, 4]}, r: {mode: explicit, value: 6}, T: {mode: explicit, value: 14}, m: normal, s: 1.0, q: {mode: direct}}}]}}
+      16: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], F: {type: Circle}, c: {mode: absolute, value: [0, 18, 4]}, r: {mode: explicit, value: 6}, T: {mode: explicit, value: 14}, m: normal, s: 1.0, q: {mode: direct}}}]}}
+    selection_reason: First S1 candidate whose explicit scale and explicit duration remain unchanged in all N cells.
+
+  - candidate_id: B-S2-CIRCLE-NORMAL-MAINTAIN
+    substudy: E5-v2B
+    task_family: UNDER_SPECIFIED
+    selected: true
+    evaluated_n: [8, 12, 16]
+    exact_commands:
+      8: Have UAVs 1 through 8 form a normal-scale circle around their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.
+      12: Have UAVs 1 through 12 form a normal-scale circle around their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.
+      16: Have UAVs 1 through 16 form a normal-scale circle around their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.
+    candidate_semantic_ground_truth_by_n:
+      8: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Circle}, c: {mode: maintain_current_centroid}, r: {mode: qualitative, value: normal}, T: {mode: auto}, m: smooth, s: 1.0, q: {mode: direct}}}]}}
+      12: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], F: {type: Circle}, c: {mode: maintain_current_centroid}, r: {mode: qualitative, value: normal}, T: {mode: auto}, m: smooth, s: 1.0, q: {mode: direct}}}]}}
+      16: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], F: {type: Circle}, c: {mode: maintain_current_centroid}, r: {mode: qualitative, value: normal}, T: {mode: auto}, m: smooth, s: 1.0, q: {mode: direct}}}]}}
+    selection_reason: First S2 definition; all three N cells are accepted without a method change.
+
+  - candidate_id: B-S3-PARALLEL-TWO-CIRCLES
+    substudy: E5-v2B
+    task_family: COMPOSITIONAL
+    selected: true
+    evaluated_n: [8, 12, 16]
+    exact_commands:
+      8: In parallel, UAVs 1 through 4 form a circle centered at [-6, 18, 4] with radius 3 meters in 14 seconds using normal motion and safety factor 1.25, while UAVs 5 through 8 form a circle centered at [6, 18, 4] with radius 3 meters in 14 seconds using smooth motion and safety factor 1.0. Complete the parallel group synchronously.
+      12: In parallel, UAVs 1 through 6 form a circle centered at [-6, 18, 4] with radius 3 meters in 14 seconds using normal motion and safety factor 1.25, while UAVs 7 through 12 form a circle centered at [6, 18, 4] with radius 3 meters in 14 seconds using smooth motion and safety factor 1.0. Complete the parallel group synchronously.
+      16: In parallel, UAVs 1 through 8 form a circle centered at [-6, 18, 4] with radius 3 meters in 14 seconds using normal motion and safety factor 1.25, while UAVs 9 through 16 form a circle centered at [6, 18, 4] with radius 3 meters in 14 seconds using smooth motion and safety factor 1.0. Complete the parallel group synchronously.
+    candidate_semantic_ground_truth_by_n:
+      8: {lfs_version: '2.1', mission: {nodes: [{type: parallel, completion_mode: synchronized, tasks: [{task_id: 1, U: [1, 2, 3, 4], F: {type: Circle}, c: {mode: absolute, value: [-6, 18, 4]}, r: {mode: explicit, value: 3}, T: {mode: explicit, value: 14}, m: normal, s: 1.25, q: {mode: direct}}, {task_id: 2, U: [5, 6, 7, 8], F: {type: Circle}, c: {mode: absolute, value: [6, 18, 4]}, r: {mode: explicit, value: 3}, T: {mode: explicit, value: 14}, m: smooth, s: 1.0, q: {mode: direct}}]}]}}
+      12: {lfs_version: '2.1', mission: {nodes: [{type: parallel, completion_mode: synchronized, tasks: [{task_id: 1, U: [1, 2, 3, 4, 5, 6], F: {type: Circle}, c: {mode: absolute, value: [-6, 18, 4]}, r: {mode: explicit, value: 3}, T: {mode: explicit, value: 14}, m: normal, s: 1.25, q: {mode: direct}}, {task_id: 2, U: [7, 8, 9, 10, 11, 12], F: {type: Circle}, c: {mode: absolute, value: [6, 18, 4]}, r: {mode: explicit, value: 3}, T: {mode: explicit, value: 14}, m: smooth, s: 1.0, q: {mode: direct}}]}]}}
+      16: {lfs_version: '2.1', mission: {nodes: [{type: parallel, completion_mode: synchronized, tasks: [{task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Circle}, c: {mode: absolute, value: [-6, 18, 4]}, r: {mode: explicit, value: 3}, T: {mode: explicit, value: 14}, m: normal, s: 1.25, q: {mode: direct}}, {task_id: 2, U: [9, 10, 11, 12, 13, 14, 15, 16], F: {type: Circle}, c: {mode: absolute, value: [6, 18, 4]}, r: {mode: explicit, value: 3}, T: {mode: explicit, value: 14}, m: smooth, s: 1.0, q: {mode: direct}}]}]}}
+    selection_reason: First S3 parallel composition accepted for every N; only the participant partition changes with N.
+
+  - candidate_id: R-A3-OLD-LIKE-SPHERE-SPACIOUS-REL-3-0-1
+    substudy: E5-v2A
+    coverage_slot: A3
+    selected: false
+    evaluated_n: [8]
+    exact_commands:
+      8: Have UAVs 1 through 8 form a spacious sphere centered at world-frame offset [3, 0, 1] meters from their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.
+    candidate_semantic_ground_truth_by_n:
+      8: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Sphere}, c: {mode: relative, reference: current_swarm_centroid, offset: [3, 0, 1], frame: world}, r: {mode: qualitative, value: spacious}, T: {mode: auto}, m: smooth, s: 1.0, q: {mode: direct}}}]}}
+    rejection_basis: Deterministic workspace/scale contradiction under both design state models; retained as a rejected design candidate, not run in Gazebo.
+
+  - candidate_id: R-A1-CIRCLE-COMPACT-REL-14-0-0
+    substudy: E5-v2A
+    coverage_slot: A1
+    selected: false
+    evaluated_n: [8]
+    exact_commands:
+      8: Have UAVs 1 through 8 form a compact circle centered at world-frame offset [14, 0, 0] meters from their current swarm centroid with automatic duration, using normal motion and safety factor 1.0.
+    candidate_semantic_ground_truth_by_n:
+      8: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Circle}, c: {mode: relative, reference: current_swarm_centroid, offset: [14, 0, 0], frame: world}, r: {mode: qualitative, value: compact}, T: {mode: auto}, m: normal, s: 1.0, q: {mode: direct}}}]}}
+    rejection_basis: Deterministic x-workspace/scale contradiction; retained without physical execution.
+
+  - candidate_id: R-B-S2-SPHERE-NORMAL-MAINTAIN
+    substudy: E5-v2B
+    task_family: UNDER_SPECIFIED
+    selected: false
+    evaluated_n: [8, 12, 16]
+    exact_commands:
+      8: Have UAVs 1 through 8 form a normal-scale sphere around their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.
+      12: Have UAVs 1 through 12 form a normal-scale sphere around their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.
+      16: Have UAVs 1 through 16 form a normal-scale sphere around their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.
+    candidate_semantic_ground_truth_by_n:
+      8: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Sphere}, c: {mode: maintain_current_centroid}, r: {mode: qualitative, value: normal}, T: {mode: auto}, m: smooth, s: 1.0, q: {mode: direct}}}]}}
+      12: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], F: {type: Sphere}, c: {mode: maintain_current_centroid}, r: {mode: qualitative, value: normal}, T: {mode: auto}, m: smooth, s: 1.0, q: {mode: direct}}}]}}
+      16: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], F: {type: Sphere}, c: {mode: maintain_current_centroid}, r: {mode: qualitative, value: normal}, T: {mode: auto}, m: smooth, s: 1.0, q: {mode: direct}}}]}}
+    rejection_basis: The maintain-current z center is too low for the frozen Sphere scale and workspace lower bound.
+
+  - candidate_id: R-B-S1-CIRCLE-ABS-R6-T10
+    substudy: E5-v2B
+    task_family: SIMPLE
+    selected: false
+    evaluated_n: [8, 12, 16]
+    exact_commands:
+      8: Have UAVs 1 through 8 form a circle centered at [0, 18, 4] with radius 6 meters in 10 seconds using normal motion and safety factor 1.0.
+      12: Have UAVs 1 through 12 form a circle centered at [0, 18, 4] with radius 6 meters in 10 seconds using normal motion and safety factor 1.0.
+      16: Have UAVs 1 through 16 form a circle centered at [0, 18, 4] with radius 6 meters in 10 seconds using normal motion and safety factor 1.0.
+    candidate_semantic_ground_truth_by_n:
+      8: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8], F: {type: Circle}, c: {mode: absolute, value: [0, 18, 4]}, r: {mode: explicit, value: 6}, T: {mode: explicit, value: 10}, m: normal, s: 1.0, q: {mode: direct}}}]}}
+      12: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], F: {type: Circle}, c: {mode: absolute, value: [0, 18, 4]}, r: {mode: explicit, value: 6}, T: {mode: explicit, value: 10}, m: normal, s: 1.0, q: {mode: direct}}}]}}
+      16: {lfs_version: '2.1', mission: {nodes: [{type: task, task: {task_id: 1, U: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], F: {type: Circle}, c: {mode: absolute, value: [0, 18, 4]}, r: {mode: explicit, value: 6}, T: {mode: explicit, value: 10}, m: normal, s: 1.0, q: {mode: direct}}}]}}
+    rejection_basis: Physically admissible, but the N=16 conservative planning bound raises T_plan; rejected by the frozen S1 selection rule, not by a success prediction.
+
+  - candidate_id: R-B-S3-PARALLEL-CLOSE-CENTERS
+    substudy: E5-v2B
+    task_family: COMPOSITIONAL
+    selected: false
+    evaluated_n: [8, 12, 16]
+    generator: parallel_close_centers
+    center_x_m: 3.5
+    radius_m: 3.0
+    duration_s: 14.0
+    rejection_basis: Joint parallel allocation deterministically violates d_hard for every tested N; retained without Gazebo execution.

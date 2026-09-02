@@ -1,0 +1,3880 @@
+{
+  "accepted_formal_result": false,
+  "analysis_environment": {
+    "numpy": "2.2.6",
+    "python": "3.10.12",
+    "scipy": "1.15.3"
+  },
+  "audit_id": "E5-v2-deterministic-feasibility-audit-v1",
+  "baseline_commit": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+  "candidate_count": 11,
+  "configuration_id": "paper-current-v11-c0-f-frozen",
+  "dataset_class": "design_analysis",
+  "formal_missions_run": 0,
+  "gazebo_runs": 0,
+  "llm_calls": 0,
+  "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+  "required_selected_scale_cells": 12,
+  "rows": [
+    {
+      "N": 8,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "A1-CIRCLE-COMPACT-REL-3-0-1",
+      "candidate_sha256": "8a6644ddd952da20c9dea1639dd2b7b3403853048d0072a9d2cd89036ad0b58f",
+      "coverage_slot": "A1",
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2A",
+      "task_family": null,
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 4.304510783326148,
+          "T_plan": 5.707656979719804,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            6,
+            7,
+            0,
+            5,
+            4,
+            3,
+            1,
+            2
+          ],
+          "c_exec": [
+            3.0,
+            13.5,
+            1.83
+          ],
+          "corrections": [
+            "final assignment safety re-evaluated once"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.7653668647301795,
+          "final_min_pairwise_m": 1.752179166239379,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 8.74030582409548,
+          "planning_margin_met": false,
+          "planning_min_pairwise_m": 1.752179166239379,
+          "predicted_peak_acceleration_mps2": 2.7234436968663864,
+          "predicted_peak_jerk_mps3": 6.575162324319884,
+          "predicted_peak_velocity_mps": 3.80718605321178,
+          "r_exec": 2.3518133367774783,
+          "r_nominal": 2.9397666709718475,
+          "r_safe": 2.3518133367774783,
+          "target_bounds_xyz": [
+            [
+              0.6481866632225217,
+              5.351813336777479
+            ],
+            [
+              11.148186663222521,
+              15.851813336777479
+            ],
+            [
+              1.83,
+              1.83
+            ]
+          ],
+          "target_min_pairwise_m": 1.7999999999999994,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 8,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "A1-CIRCLE-COMPACT-REL-3-0-1",
+      "candidate_sha256": "8a6644ddd952da20c9dea1639dd2b7b3403853048d0072a9d2cd89036ad0b58f",
+      "coverage_slot": "A1",
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2A",
+      "task_family": null,
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 4.304510783326148,
+          "T_plan": 5.707656979719804,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            6,
+            7,
+            0,
+            5,
+            4,
+            3,
+            1,
+            2
+          ],
+          "c_exec": [
+            3.0,
+            13.5,
+            2.5
+          ],
+          "corrections": [
+            "final assignment safety re-evaluated once"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.7653668647301795,
+          "final_min_pairwise_m": 1.752179166239379,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 8.74030582409548,
+          "planning_margin_met": false,
+          "planning_min_pairwise_m": 1.752179166239379,
+          "predicted_peak_acceleration_mps2": 2.7234436968663864,
+          "predicted_peak_jerk_mps3": 6.575162324319884,
+          "predicted_peak_velocity_mps": 3.80718605321178,
+          "r_exec": 2.3518133367774783,
+          "r_nominal": 2.9397666709718475,
+          "r_safe": 2.3518133367774783,
+          "target_bounds_xyz": [
+            [
+              0.6481866632225217,
+              5.351813336777479
+            ],
+            [
+              11.148186663222521,
+              15.851813336777479
+            ],
+            [
+              2.5,
+              2.5
+            ]
+          ],
+          "target_min_pairwise_m": 1.7999999999999994,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 8,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "A2-LINE-NORMAL-MAINTAIN",
+      "candidate_sha256": "89f6812cf723b0ecb3155f678d831988cb603d26f8d97e84b6ac00ad5d6665d4",
+      "coverage_slot": "A2",
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2A",
+      "task_family": null,
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 6.3984375,
+          "T_plan": 6.3984375,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            0,
+            6,
+            2,
+            4,
+            3,
+            5,
+            1,
+            7
+          ],
+          "c_exec": [
+            0.0,
+            13.5,
+            0.83
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 1.0,
+          "final_min_pairwise_m": 1.8,
+          "formation": {
+            "type": "Line"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 13.125,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.8,
+          "predicted_peak_acceleration_mps2": 1.8509335200844583,
+          "predicted_peak_jerk_mps3": 3.0062754210401437,
+          "predicted_peak_velocity_mps": 3.8461538461538463,
+          "r_exec": 2.25,
+          "r_nominal": 2.25,
+          "r_safe": 1.8,
+          "target_bounds_xyz": [
+            [
+              -7.875,
+              7.875
+            ],
+            [
+              13.5,
+              13.5
+            ],
+            [
+              0.83,
+              0.83
+            ]
+          ],
+          "target_min_pairwise_m": 2.25,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 8,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "A2-LINE-NORMAL-MAINTAIN",
+      "candidate_sha256": "89f6812cf723b0ecb3155f678d831988cb603d26f8d97e84b6ac00ad5d6665d4",
+      "coverage_slot": "A2",
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2A",
+      "task_family": null,
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 6.3984375,
+          "T_plan": 6.3984375,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            0,
+            6,
+            2,
+            4,
+            3,
+            5,
+            1,
+            7
+          ],
+          "c_exec": [
+            0.0,
+            13.5,
+            1.5
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 1.0,
+          "final_min_pairwise_m": 1.8,
+          "formation": {
+            "type": "Line"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 13.125,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.8,
+          "predicted_peak_acceleration_mps2": 1.8509335200844583,
+          "predicted_peak_jerk_mps3": 3.0062754210401437,
+          "predicted_peak_velocity_mps": 3.8461538461538463,
+          "r_exec": 2.25,
+          "r_nominal": 2.25,
+          "r_safe": 1.8,
+          "target_bounds_xyz": [
+            [
+              -7.875,
+              7.875
+            ],
+            [
+              13.5,
+              13.5
+            ],
+            [
+              1.5,
+              1.5
+            ]
+          ],
+          "target_min_pairwise_m": 2.25,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 8,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "A3-SPHERE-SPACIOUS-REL-0-0-5",
+      "candidate_sha256": "3b603b8488d5d00d7d5de55e9e0fbd1b727cd5884f25d1868ae8b1fa79c3db66",
+      "coverage_slot": "A3",
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2A",
+      "task_family": null,
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 4.938973772794869,
+          "T_plan": 7.394067695152971,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            7,
+            6,
+            5,
+            4,
+            2,
+            3,
+            1,
+            0
+          ],
+          "c_exec": [
+            0.0,
+            13.5,
+            5.83
+          ],
+          "corrections": [
+            "final assignment safety re-evaluated once"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.7559289460184545,
+          "final_min_pairwise_m": 2.407048532436621,
+          "formation": {
+            "type": "Sphere"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 9.139635009241264,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 2.407048532436621,
+          "predicted_peak_acceleration_mps2": 2.163190591142178,
+          "predicted_peak_jerk_mps3": 4.551661356395083,
+          "predicted_peak_velocity_mps": 3.469711812749712,
+          "r_exec": 3.7205877811845802,
+          "r_nominal": 2.976470224947664,
+          "r_safe": 2.3811761799581315,
+          "target_bounds_xyz": [
+            [
+              -3.626135424885325,
+              2.8363513152294924
+            ],
+            [
+              9.77941221881542,
+              17.22058778118458
+            ],
+            [
+              2.4812908904723217,
+              8.75237675261716
+            ]
+          ],
+          "target_min_pairwise_m": 2.8125,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 8,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "A3-SPHERE-SPACIOUS-REL-0-0-5",
+      "candidate_sha256": "3b603b8488d5d00d7d5de55e9e0fbd1b727cd5884f25d1868ae8b1fa79c3db66",
+      "coverage_slot": "A3",
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2A",
+      "task_family": null,
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 4.938973772794868,
+          "T_plan": 7.394067695152971,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            7,
+            6,
+            5,
+            4,
+            2,
+            3,
+            1,
+            0
+          ],
+          "c_exec": [
+            0.0,
+            13.5,
+            6.5
+          ],
+          "corrections": [
+            "final assignment safety re-evaluated once"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.7559289460184545,
+          "final_min_pairwise_m": 2.407048532436621,
+          "formation": {
+            "type": "Sphere"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 9.139635009241262,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 2.407048532436621,
+          "predicted_peak_acceleration_mps2": 2.1631905911421785,
+          "predicted_peak_jerk_mps3": 4.551661356395085,
+          "predicted_peak_velocity_mps": 3.469711812749712,
+          "r_exec": 3.7205877811845802,
+          "r_nominal": 2.976470224947664,
+          "r_safe": 2.3811761799581315,
+          "target_bounds_xyz": [
+            [
+              -3.626135424885325,
+              2.8363513152294924
+            ],
+            [
+              9.77941221881542,
+              17.22058778118458
+            ],
+            [
+              3.1512908904723216,
+              9.422376752617158
+            ]
+          ],
+          "target_min_pairwise_m": 2.8124999999999996,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 8,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S1-CIRCLE-ABS-R6-T14",
+      "candidate_sha256": "99d34989f6cf7054008582c1a76a878fb0d9eb30923fd1339c4f3a5d89fc778c",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "SIMPLE",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            7,
+            5,
+            6,
+            4,
+            0,
+            1,
+            3,
+            2
+          ],
+          "c_exec": [
+            0.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.7653668647301795,
+          "final_min_pairwise_m": 1.9967371960954385,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 11.99039946734142,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.9967371960954385,
+          "predicted_peak_acceleration_mps2": 0.3531969571510569,
+          "predicted_peak_jerk_mps3": 0.2621807463704392,
+          "predicted_peak_velocity_mps": 1.6058570715189402,
+          "r_exec": 6.0,
+          "r_nominal": 2.9397666709718475,
+          "r_safe": 2.3518133367774783,
+          "target_bounds_xyz": [
+            [
+              -6.0,
+              6.0
+            ],
+            [
+              12.0,
+              24.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 4.592201188381076,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 8,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S1-CIRCLE-ABS-R6-T14",
+      "candidate_sha256": "99d34989f6cf7054008582c1a76a878fb0d9eb30923fd1339c4f3a5d89fc778c",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "SIMPLE",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            5,
+            7,
+            6,
+            4,
+            0,
+            1,
+            3,
+            2
+          ],
+          "c_exec": [
+            0.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.7653668647301795,
+          "final_min_pairwise_m": 1.996737196095439,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 11.830924705466664,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.996737196095439,
+          "predicted_peak_acceleration_mps2": 0.3484993654828252,
+          "predicted_peak_jerk_mps3": 0.2586936888950437,
+          "predicted_peak_velocity_mps": 1.5844988444821426,
+          "r_exec": 6.0,
+          "r_nominal": 2.9397666709718475,
+          "r_safe": 2.3518133367774783,
+          "target_bounds_xyz": [
+            [
+              -6.0,
+              6.0
+            ],
+            [
+              12.0,
+              24.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 4.592201188381076,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 12,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S1-CIRCLE-ABS-R6-T14",
+      "candidate_sha256": "e741d2f66eef2129e1b7db0f564f2db43b52a3fe6a9ff88ba3ce57570724aa3f",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        19.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "SIMPLE",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            8,
+            10,
+            9,
+            11,
+            7,
+            6,
+            2,
+            3,
+            5,
+            0,
+            4,
+            1
+          ],
+          "c_exec": [
+            0.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.5176380902050409,
+          "final_min_pairwise_m": 1.8577738467630323,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 16.187924511808177,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.8577738467630323,
+          "predicted_peak_acceleration_mps2": 0.47684196808743845,
+          "predicted_peak_jerk_mps3": 0.3539633639608202,
+          "predicted_peak_velocity_mps": 2.168025604260024,
+          "r_exec": 6.0,
+          "r_nominal": 4.346666218300812,
+          "r_safe": 3.47733297464065,
+          "target_bounds_xyz": [
+            [
+              -6.0,
+              6.0
+            ],
+            [
+              12.0,
+              24.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 3.105828541230245,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 12,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S1-CIRCLE-ABS-R6-T14",
+      "candidate_sha256": "e741d2f66eef2129e1b7db0f564f2db43b52a3fe6a9ff88ba3ce57570724aa3f",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        19.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "SIMPLE",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            10,
+            8,
+            9,
+            11,
+            7,
+            6,
+            5,
+            2,
+            3,
+            4,
+            0,
+            1
+          ],
+          "c_exec": [
+            0.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.5176380902050409,
+          "final_min_pairwise_m": 1.8345833970654142,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 16.347782724271816,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.8345833970654142,
+          "predicted_peak_acceleration_mps2": 0.4815508549240739,
+          "predicted_peak_jerk_mps3": 0.35745880592431084,
+          "predicted_peak_velocity_mps": 2.189435186286404,
+          "r_exec": 6.0,
+          "r_nominal": 4.346666218300812,
+          "r_safe": 3.47733297464065,
+          "target_bounds_xyz": [
+            [
+              -6.0,
+              6.0
+            ],
+            [
+              12.0,
+              24.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 3.105828541230245,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 16,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S1-CIRCLE-ABS-R6-T14",
+      "candidate_sha256": "aa24fd453182eca8bef67551538e8cb3a2552e03b374897db5d50a50b9de1d35",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        25.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "SIMPLE",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            12,
+            13,
+            11,
+            14,
+            10,
+            9,
+            15,
+            0,
+            5,
+            3,
+            8,
+            4,
+            1,
+            7,
+            6,
+            2
+          ],
+          "c_exec": [
+            0.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.39018064403225605,
+          "final_min_pairwise_m": 1.8062034971440173,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 26.296206166913944,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.8062034971440173,
+          "predicted_peak_acceleration_mps2": 0.7745980463843707,
+          "predicted_peak_jerk_mps3": 0.5749899307634244,
+          "predicted_peak_velocity_mps": 3.521813325925975,
+          "r_exec": 6.0,
+          "r_nominal": 5.766559757418396,
+          "r_safe": 4.613247805934717,
+          "target_bounds_xyz": [
+            [
+              -6.0,
+              6.0
+            ],
+            [
+              12.0,
+              24.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 2.341083864193536,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 16,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S1-CIRCLE-ABS-R6-T14",
+      "candidate_sha256": "aa24fd453182eca8bef67551538e8cb3a2552e03b374897db5d50a50b9de1d35",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        25.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "SIMPLE",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            13,
+            14,
+            12,
+            11,
+            10,
+            15,
+            5,
+            0,
+            4,
+            1,
+            9,
+            2,
+            3,
+            8,
+            7,
+            6
+          ],
+          "c_exec": [
+            0.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.39018064403225605,
+          "final_min_pairwise_m": 1.852704075916544,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 26.223873832308662,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.852704075916544,
+          "predicted_peak_acceleration_mps2": 0.7724673783815403,
+          "predicted_peak_jerk_mps3": 0.5734083199484402,
+          "predicted_peak_velocity_mps": 3.512125959684196,
+          "r_exec": 6.0,
+          "r_nominal": 5.766559757418396,
+          "r_safe": 4.613247805934717,
+          "target_bounds_xyz": [
+            [
+              -6.0,
+              6.0
+            ],
+            [
+              12.0,
+              24.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 2.341083864193536,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 8,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S2-CIRCLE-NORMAL-MAINTAIN",
+      "candidate_sha256": "61a7adce01f861c59e3f3224153fc6fb0efab571e1c3b209b861b7ab40a91ada",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "UNDER_SPECIFIED",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 4.636306819923606,
+          "T_plan": 6.551886252098777,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            6,
+            7,
+            5,
+            4,
+            0,
+            1,
+            3,
+            2
+          ],
+          "c_exec": [
+            0.0,
+            13.5,
+            0.83
+          ],
+          "corrections": [
+            "final assignment safety re-evaluated once"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.7653668647301795,
+          "final_min_pairwise_m": 2.0908123260494182,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 7.5602333290281525,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 2.0908123260494182,
+          "predicted_peak_acceleration_mps2": 2.030627363471849,
+          "predicted_peak_jerk_mps3": 4.551661356395084,
+          "predicted_peak_velocity_mps": 3.0574847702079735,
+          "r_exec": 2.9397666709718475,
+          "r_nominal": 2.9397666709718475,
+          "r_safe": 2.3518133367774783,
+          "target_bounds_xyz": [
+            [
+              -2.9397666709718475,
+              2.9397666709718475
+            ],
+            [
+              10.560233329028152,
+              16.43976667097185
+            ],
+            [
+              0.83,
+              0.83
+            ]
+          ],
+          "target_min_pairwise_m": 2.25,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 8,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S2-CIRCLE-NORMAL-MAINTAIN",
+      "candidate_sha256": "61a7adce01f861c59e3f3224153fc6fb0efab571e1c3b209b861b7ab40a91ada",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "UNDER_SPECIFIED",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 4.636306819923606,
+          "T_plan": 6.551886252098777,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            6,
+            7,
+            5,
+            4,
+            0,
+            1,
+            3,
+            2
+          ],
+          "c_exec": [
+            0.0,
+            13.5,
+            1.5
+          ],
+          "corrections": [
+            "final assignment safety re-evaluated once"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.7653668647301795,
+          "final_min_pairwise_m": 2.0908123260494182,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 7.5602333290281525,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 2.0908123260494182,
+          "predicted_peak_acceleration_mps2": 2.030627363471849,
+          "predicted_peak_jerk_mps3": 4.551661356395084,
+          "predicted_peak_velocity_mps": 3.0574847702079735,
+          "r_exec": 2.9397666709718475,
+          "r_nominal": 2.9397666709718475,
+          "r_safe": 2.3518133367774783,
+          "target_bounds_xyz": [
+            [
+              -2.9397666709718475,
+              2.9397666709718475
+            ],
+            [
+              10.560233329028152,
+              16.43976667097185
+            ],
+            [
+              1.5,
+              1.5
+            ]
+          ],
+          "target_min_pairwise_m": 2.25,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 12,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S2-CIRCLE-NORMAL-MAINTAIN",
+      "candidate_sha256": "3993b48a3b12f646a2c0e84e6ce3792950a204a6497c267be8297f4324e18d4e",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        19.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "UNDER_SPECIFIED",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 6.298395030192372,
+          "T_plan": 10.162749781421645,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            10,
+            11,
+            8,
+            7,
+            9,
+            6,
+            0,
+            5,
+            4,
+            1,
+            2,
+            3
+          ],
+          "c_exec": [
+            0.0,
+            19.5,
+            0.83
+          ],
+          "corrections": [
+            "final assignment safety re-evaluated once"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.5176380902050409,
+          "final_min_pairwise_m": 1.7650975290170707,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 12.919784677317686,
+          "planning_margin_met": false,
+          "planning_min_pairwise_m": 1.7650975290170707,
+          "predicted_peak_acceleration_mps2": 1.8803333846390509,
+          "predicted_peak_jerk_mps3": 3.1025360668081,
+          "predicted_peak_velocity_mps": 3.846153846153846,
+          "r_exec": 4.346666218300812,
+          "r_nominal": 4.346666218300812,
+          "r_safe": 3.47733297464065,
+          "target_bounds_xyz": [
+            [
+              -4.346666218300812,
+              4.346666218300812
+            ],
+            [
+              15.153333781699189,
+              23.84666621830081
+            ],
+            [
+              0.83,
+              0.83
+            ]
+          ],
+          "target_min_pairwise_m": 2.249999999999999,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 12,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S2-CIRCLE-NORMAL-MAINTAIN",
+      "candidate_sha256": "3993b48a3b12f646a2c0e84e6ce3792950a204a6497c267be8297f4324e18d4e",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        19.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "UNDER_SPECIFIED",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 6.298395030192372,
+          "T_plan": 10.162749781421645,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            10,
+            11,
+            8,
+            7,
+            9,
+            6,
+            0,
+            5,
+            4,
+            1,
+            2,
+            3
+          ],
+          "c_exec": [
+            0.0,
+            19.5,
+            1.5
+          ],
+          "corrections": [
+            "final assignment safety re-evaluated once"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.5176380902050409,
+          "final_min_pairwise_m": 1.7650975290170707,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 12.919784677317686,
+          "planning_margin_met": false,
+          "planning_min_pairwise_m": 1.7650975290170707,
+          "predicted_peak_acceleration_mps2": 1.8803333846390509,
+          "predicted_peak_jerk_mps3": 3.1025360668081,
+          "predicted_peak_velocity_mps": 3.846153846153846,
+          "r_exec": 4.346666218300812,
+          "r_nominal": 4.346666218300812,
+          "r_safe": 3.47733297464065,
+          "target_bounds_xyz": [
+            [
+              -4.346666218300812,
+              4.346666218300812
+            ],
+            [
+              15.153333781699189,
+              23.84666621830081
+            ],
+            [
+              1.5,
+              1.5
+            ]
+          ],
+          "target_min_pairwise_m": 2.249999999999999,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 16,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S2-CIRCLE-NORMAL-MAINTAIN",
+      "candidate_sha256": "a23293d805bd44621ed4707afe8930ed444e321a5926ff28425cac30d2ef688a",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        25.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "UNDER_SPECIFIED",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 9.198291840393043,
+          "T_plan": 13.77994788174147,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            10,
+            14,
+            15,
+            9,
+            12,
+            0,
+            11,
+            8,
+            13,
+            3,
+            7,
+            6,
+            5,
+            4,
+            1,
+            2
+          ],
+          "c_exec": [
+            0.0,
+            25.5,
+            0.83
+          ],
+          "corrections": [
+            "final assignment safety re-evaluated once"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.39018064403225605,
+          "final_min_pairwise_m": 1.7411196972717948,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 18.868290954652394,
+          "planning_margin_met": false,
+          "planning_min_pairwise_m": 1.7411196972717948,
+          "predicted_peak_acceleration_mps2": 1.2875306252958967,
+          "predicted_peak_jerk_mps3": 1.4546625599681746,
+          "predicted_peak_velocity_mps": 3.8461538461538463,
+          "r_exec": 5.766559757418396,
+          "r_nominal": 5.766559757418396,
+          "r_safe": 4.613247805934717,
+          "target_bounds_xyz": [
+            [
+              -5.766559757418396,
+              5.766559757418396
+            ],
+            [
+              19.733440242581604,
+              31.266559757418396
+            ],
+            [
+              0.83,
+              0.83
+            ]
+          ],
+          "target_min_pairwise_m": 2.2499999999999996,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 16,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S2-CIRCLE-NORMAL-MAINTAIN",
+      "candidate_sha256": "a23293d805bd44621ed4707afe8930ed444e321a5926ff28425cac30d2ef688a",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        25.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "UNDER_SPECIFIED",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 9.198291840393043,
+          "T_plan": 13.77994788174147,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            10,
+            14,
+            15,
+            9,
+            12,
+            0,
+            11,
+            8,
+            13,
+            3,
+            7,
+            6,
+            5,
+            4,
+            1,
+            2
+          ],
+          "c_exec": [
+            0.0,
+            25.5,
+            1.5
+          ],
+          "corrections": [
+            "final assignment safety re-evaluated once"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.39018064403225605,
+          "final_min_pairwise_m": 1.7411196972717948,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 18.868290954652394,
+          "planning_margin_met": false,
+          "planning_min_pairwise_m": 1.7411196972717948,
+          "predicted_peak_acceleration_mps2": 1.2875306252958967,
+          "predicted_peak_jerk_mps3": 1.4546625599681746,
+          "predicted_peak_velocity_mps": 3.8461538461538463,
+          "r_exec": 5.766559757418396,
+          "r_nominal": 5.766559757418396,
+          "r_safe": 4.613247805934717,
+          "target_bounds_xyz": [
+            [
+              -5.766559757418396,
+              5.766559757418396
+            ],
+            [
+              19.733440242581604,
+              31.266559757418396
+            ],
+            [
+              1.5,
+              1.5
+            ]
+          ],
+          "target_min_pairwise_m": 2.2499999999999996,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 8,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S3-PARALLEL-TWO-CIRCLES",
+      "candidate_sha256": "4b27811b380c66f9418fe963da9a8aa9f3565a1abfbc881c3c00a386f332d346",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": {
+        "J_hard": 0,
+        "completion_mode": "synchronized",
+        "final_min_pairwise_m": 2.4,
+        "hard_safety_met": true,
+        "planning_min_pairwise_m": 2.4
+      },
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "COMPOSITIONAL",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            3,
+            2,
+            0,
+            1,
+            7,
+            6,
+            4,
+            5
+          ],
+          "c_exec": [
+            -6.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.875,
+          "delta_min_unit_geometry": 1.414213562373095,
+          "final_min_pairwise_m": 2.4,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 15.331304575932213,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 2.4,
+          "predicted_peak_acceleration_mps2": 0.4516088175480921,
+          "predicted_peak_jerk_mps3": 0.33523260734545657,
+          "predicted_peak_velocity_mps": 2.0532997199909215,
+          "r_exec": 3.0,
+          "r_nominal": 1.5909902576697321,
+          "r_safe": 1.3258252147247767,
+          "target_bounds_xyz": [
+            [
+              -9.0,
+              -3.0
+            ],
+            [
+              15.0,
+              21.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 4.242640687119285,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            3,
+            2,
+            0,
+            1,
+            7,
+            6,
+            4,
+            5
+          ],
+          "c_exec": [
+            6.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [
+            "d_plan raised to ParallelGroup maximum safety margin"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.875,
+          "delta_min_unit_geometry": 1.414213562373095,
+          "final_min_pairwise_m": 2.4,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 10.00244470117181,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 2.4,
+          "predicted_peak_acceleration_mps2": 0.2946384765701985,
+          "predicted_peak_jerk_mps3": 0.21871234769326114,
+          "predicted_peak_velocity_mps": 1.3396131296212244,
+          "r_exec": 3.0,
+          "r_nominal": 1.5909902576697321,
+          "r_safe": 1.3258252147247767,
+          "target_bounds_xyz": [
+            [
+              3.0,
+              9.0
+            ],
+            [
+              15.0,
+              21.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 4.242640687119285,
+          "uav_ids": [
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 8,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S3-PARALLEL-TWO-CIRCLES",
+      "candidate_sha256": "4b27811b380c66f9418fe963da9a8aa9f3565a1abfbc881c3c00a386f332d346",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": {
+        "J_hard": 0,
+        "completion_mode": "synchronized",
+        "final_min_pairwise_m": 2.4,
+        "hard_safety_met": true,
+        "planning_min_pairwise_m": 2.4
+      },
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "COMPOSITIONAL",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            3,
+            2,
+            0,
+            1,
+            7,
+            6,
+            4,
+            5
+          ],
+          "c_exec": [
+            -6.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.875,
+          "delta_min_unit_geometry": 1.414213562373095,
+          "final_min_pairwise_m": 2.4,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 15.20690632574555,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 2.4,
+          "predicted_peak_acceleration_mps2": 0.4479444622811539,
+          "predicted_peak_jerk_mps3": 0.33251252898860534,
+          "predicted_peak_velocity_mps": 2.036639240055208,
+          "r_exec": 3.0,
+          "r_nominal": 1.5909902576697321,
+          "r_safe": 1.3258252147247767,
+          "target_bounds_xyz": [
+            [
+              -9.0,
+              -3.0
+            ],
+            [
+              15.0,
+              21.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 4.242640687119285,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            3,
+            2,
+            0,
+            1,
+            7,
+            6,
+            4,
+            5
+          ],
+          "c_exec": [
+            6.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [
+            "d_plan raised to ParallelGroup maximum safety margin"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.875,
+          "delta_min_unit_geometry": 1.414213562373095,
+          "final_min_pairwise_m": 2.4,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 9.810708435174291,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 2.4,
+          "predicted_peak_acceleration_mps2": 0.28899056918310256,
+          "predicted_peak_jerk_mps3": 0.2145198637428781,
+          "predicted_peak_velocity_mps": 1.3139341654251282,
+          "r_exec": 3.0,
+          "r_nominal": 1.5909902576697321,
+          "r_safe": 1.3258252147247767,
+          "target_bounds_xyz": [
+            [
+              3.0,
+              9.0
+            ],
+            [
+              15.0,
+              21.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 4.242640687119285,
+          "uav_ids": [
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 12,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S3-PARALLEL-TWO-CIRCLES",
+      "candidate_sha256": "7f77bd460c1a6a22361df78688fa1d9a156165ed24636e1386c051027bf4ca97",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        19.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": {
+        "J_hard": 0,
+        "completion_mode": "synchronized",
+        "final_min_pairwise_m": 1.8795656443143827,
+        "hard_safety_met": true,
+        "planning_min_pairwise_m": 1.8795656443143827
+      },
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "COMPOSITIONAL",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            4,
+            3,
+            5,
+            2,
+            0,
+            1,
+            10,
+            9,
+            11,
+            8,
+            6,
+            7
+          ],
+          "c_exec": [
+            -6.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.875,
+          "delta_min_unit_geometry": 0.9999999999999997,
+          "final_min_pairwise_m": 1.8795656443143827,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 15.331304575932213,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.8795656443143827,
+          "predicted_peak_acceleration_mps2": 0.4516088175480921,
+          "predicted_peak_jerk_mps3": 0.33523260734545657,
+          "predicted_peak_velocity_mps": 2.0532997199909215,
+          "r_exec": 3.0,
+          "r_nominal": 2.250000000000001,
+          "r_safe": 1.8750000000000007,
+          "target_bounds_xyz": [
+            [
+              -9.0,
+              -3.0
+            ],
+            [
+              15.401923788646684,
+              20.598076211353316
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 2.999999999999999,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            4,
+            3,
+            5,
+            2,
+            0,
+            1,
+            10,
+            9,
+            11,
+            8,
+            6,
+            7
+          ],
+          "c_exec": [
+            6.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [
+            "d_plan raised to ParallelGroup maximum safety margin"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.875,
+          "delta_min_unit_geometry": 0.9999999999999997,
+          "final_min_pairwise_m": 1.8795656443143827,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 17.777764201383704,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.8795656443143827,
+          "predicted_peak_acceleration_mps2": 0.5236733136356415,
+          "predicted_peak_jerk_mps3": 0.3887266224792355,
+          "predicted_peak_velocity_mps": 2.3809505626853174,
+          "r_exec": 3.0,
+          "r_nominal": 2.250000000000001,
+          "r_safe": 1.8750000000000007,
+          "target_bounds_xyz": [
+            [
+              3.0,
+              9.0
+            ],
+            [
+              15.401923788646684,
+              20.598076211353316
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 2.999999999999999,
+          "uav_ids": [
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 12,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S3-PARALLEL-TWO-CIRCLES",
+      "candidate_sha256": "7f77bd460c1a6a22361df78688fa1d9a156165ed24636e1386c051027bf4ca97",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        19.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": {
+        "J_hard": 0,
+        "completion_mode": "synchronized",
+        "final_min_pairwise_m": 1.8795656443143827,
+        "hard_safety_met": true,
+        "planning_min_pairwise_m": 1.8795656443143827
+      },
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "COMPOSITIONAL",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            4,
+            3,
+            5,
+            2,
+            0,
+            1,
+            10,
+            9,
+            11,
+            8,
+            6,
+            7
+          ],
+          "c_exec": [
+            -6.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.875,
+          "delta_min_unit_geometry": 0.9999999999999997,
+          "final_min_pairwise_m": 1.8795656443143827,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 15.20690632574555,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.8795656443143827,
+          "predicted_peak_acceleration_mps2": 0.4479444622811539,
+          "predicted_peak_jerk_mps3": 0.33251252898860534,
+          "predicted_peak_velocity_mps": 2.036639240055208,
+          "r_exec": 3.0,
+          "r_nominal": 2.250000000000001,
+          "r_safe": 1.8750000000000007,
+          "target_bounds_xyz": [
+            [
+              -9.0,
+              -3.0
+            ],
+            [
+              15.401923788646684,
+              20.598076211353316
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 2.999999999999999,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            4,
+            3,
+            5,
+            2,
+            0,
+            1,
+            10,
+            9,
+            11,
+            8,
+            6,
+            7
+          ],
+          "c_exec": [
+            6.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [
+            "d_plan raised to ParallelGroup maximum safety margin"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.875,
+          "delta_min_unit_geometry": 0.9999999999999997,
+          "final_min_pairwise_m": 1.8795656443143827,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 17.67059704707229,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.8795656443143827,
+          "predicted_peak_acceleration_mps2": 0.5205165286667651,
+          "predicted_peak_jerk_mps3": 0.3863833173558081,
+          "predicted_peak_velocity_mps": 2.366597818804325,
+          "r_exec": 3.0,
+          "r_nominal": 2.250000000000001,
+          "r_safe": 1.8750000000000007,
+          "target_bounds_xyz": [
+            [
+              3.0,
+              9.0
+            ],
+            [
+              15.401923788646684,
+              20.598076211353316
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 2.999999999999999,
+          "uav_ids": [
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 16,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S3-PARALLEL-TWO-CIRCLES",
+      "candidate_sha256": "e6e527501b0bd85620663f918319efb0328e9785349d55fa3a0531c8732baf6d",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        25.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": {
+        "J_hard": 0,
+        "completion_mode": "synchronized",
+        "final_min_pairwise_m": 2.121320343559642,
+        "hard_safety_met": true,
+        "planning_min_pairwise_m": 2.121320343559642
+      },
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "COMPOSITIONAL",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            6,
+            5,
+            4,
+            7,
+            0,
+            3,
+            1,
+            2,
+            14,
+            13,
+            12,
+            15,
+            11,
+            8,
+            9,
+            10
+          ],
+          "c_exec": [
+            -6.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.875,
+          "delta_min_unit_geometry": 0.7653668647301795,
+          "final_min_pairwise_m": 2.121320343559642,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 13.785822427407078,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 2.121320343559642,
+          "predicted_peak_acceleration_mps2": 0.40608409640121723,
+          "predicted_peak_jerk_mps3": 0.3014392659054026,
+          "predicted_peak_velocity_mps": 1.8463155036705907,
+          "r_exec": 3.0,
+          "r_nominal": 2.9397666709718475,
+          "r_safe": 2.4498055591432064,
+          "target_bounds_xyz": [
+            [
+              -9.0,
+              -3.0
+            ],
+            [
+              15.0,
+              21.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 2.2961005941905372,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            6,
+            5,
+            4,
+            7,
+            0,
+            3,
+            1,
+            2,
+            14,
+            13,
+            12,
+            15,
+            11,
+            8,
+            9,
+            10
+          ],
+          "c_exec": [
+            6.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [
+            "d_plan raised to ParallelGroup maximum safety margin"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.875,
+          "delta_min_unit_geometry": 0.7653668647301795,
+          "final_min_pairwise_m": 2.121320343559642,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 27.839700070223458,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 2.121320343559642,
+          "predicted_peak_acceleration_mps2": 0.8200642004949978,
+          "predicted_peak_jerk_mps3": 0.6087397974538657,
+          "predicted_peak_velocity_mps": 3.7285312594049276,
+          "r_exec": 3.0,
+          "r_nominal": 2.9397666709718475,
+          "r_safe": 2.4498055591432064,
+          "target_bounds_xyz": [
+            [
+              3.0,
+              9.0
+            ],
+            [
+              15.0,
+              21.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 2.296100594190538,
+          "uav_ids": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 16,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "B-S3-PARALLEL-TWO-CIRCLES",
+      "candidate_sha256": "e6e527501b0bd85620663f918319efb0328e9785349d55fa3a0531c8732baf6d",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        25.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": {
+        "J_hard": 0,
+        "completion_mode": "synchronized",
+        "final_min_pairwise_m": 2.121320343559642,
+        "hard_safety_met": true,
+        "planning_min_pairwise_m": 2.121320343559642
+      },
+      "resolver": "PASS",
+      "selected": true,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "COMPOSITIONAL",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            6,
+            5,
+            4,
+            7,
+            0,
+            3,
+            1,
+            2,
+            14,
+            13,
+            12,
+            15,
+            11,
+            8,
+            9,
+            10
+          ],
+          "c_exec": [
+            -6.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.875,
+          "delta_min_unit_geometry": 0.7653668647301795,
+          "final_min_pairwise_m": 2.121320343559642,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 13.647344063956181,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 2.121320343559642,
+          "predicted_peak_acceleration_mps2": 0.4020049882167624,
+          "predicted_peak_jerk_mps3": 0.29841131335181154,
+          "predicted_peak_velocity_mps": 1.8277692942798456,
+          "r_exec": 3.0,
+          "r_nominal": 2.9397666709718475,
+          "r_safe": 2.4498055591432064,
+          "target_bounds_xyz": [
+            [
+              -9.0,
+              -3.0
+            ],
+            [
+              15.0,
+              21.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 2.2961005941905372,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "J_hard": 0,
+          "T_exec": 14.0,
+          "T_plan": 14.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            6,
+            5,
+            4,
+            7,
+            0,
+            3,
+            1,
+            2,
+            14,
+            13,
+            12,
+            15,
+            11,
+            8,
+            9,
+            10
+          ],
+          "c_exec": [
+            6.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [
+            "d_plan raised to ParallelGroup maximum safety margin"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.875,
+          "delta_min_unit_geometry": 0.7653668647301795,
+          "final_min_pairwise_m": 2.121320343559642,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 27.77138815399763,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 2.121320343559642,
+          "predicted_peak_acceleration_mps2": 0.8180519605347,
+          "predicted_peak_jerk_mps3": 0.6072460966617558,
+          "predicted_peak_velocity_mps": 3.719382342053254,
+          "r_exec": 3.0,
+          "r_nominal": 2.9397666709718475,
+          "r_safe": 2.4498055591432064,
+          "target_bounds_xyz": [
+            [
+              3.0,
+              9.0
+            ],
+            [
+              15.0,
+              21.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 2.296100594190538,
+          "uav_ids": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 8,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-A3-OLD-LIKE-SPHERE-SPACIOUS-REL-3-0-1",
+      "candidate_sha256": "a4593754d8370dbef78da514370b3f643ece6821897e191701b9c904b1b8290c",
+      "coverage_slot": "A3",
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": null,
+      "failure_reason": "workspace scale limit conflicts with d_plan(s) or requested scale",
+      "failure_type": "GeometryError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2A",
+      "task_family": null,
+      "tasks": [],
+      "validation": "REJECTED"
+    },
+    {
+      "N": 8,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-A3-OLD-LIKE-SPHERE-SPACIOUS-REL-3-0-1",
+      "candidate_sha256": "a4593754d8370dbef78da514370b3f643ece6821897e191701b9c904b1b8290c",
+      "coverage_slot": "A3",
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": null,
+      "failure_reason": "workspace scale limit conflicts with d_plan(s) or requested scale",
+      "failure_type": "GeometryError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2A",
+      "task_family": null,
+      "tasks": [],
+      "validation": "REJECTED"
+    },
+    {
+      "N": 8,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-A1-CIRCLE-COMPACT-REL-14-0-0",
+      "candidate_sha256": "9624be2f87d8f4e42da7ae31e1cdc37ed327f1da409cbc9fd56876dae8de5560",
+      "coverage_slot": "A1",
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": null,
+      "failure_reason": "workspace scale limit conflicts with d_plan(s) or requested scale",
+      "failure_type": "GeometryError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2A",
+      "task_family": null,
+      "tasks": [],
+      "validation": "REJECTED"
+    },
+    {
+      "N": 8,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-A1-CIRCLE-COMPACT-REL-14-0-0",
+      "candidate_sha256": "9624be2f87d8f4e42da7ae31e1cdc37ed327f1da409cbc9fd56876dae8de5560",
+      "coverage_slot": "A1",
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": null,
+      "failure_reason": "workspace scale limit conflicts with d_plan(s) or requested scale",
+      "failure_type": "GeometryError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2A",
+      "task_family": null,
+      "tasks": [],
+      "validation": "REJECTED"
+    },
+    {
+      "N": 8,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-B-S2-SPHERE-NORMAL-MAINTAIN",
+      "candidate_sha256": "58204ffb38a6fce566b3e1eb189d10e814a6fd155ca3b342ef5e6ff362d5a58a",
+      "coverage_slot": null,
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": null,
+      "failure_reason": "workspace scale limit conflicts with d_plan(s) or requested scale",
+      "failure_type": "GeometryError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "UNDER_SPECIFIED",
+      "tasks": [],
+      "validation": "REJECTED"
+    },
+    {
+      "N": 8,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-B-S2-SPHERE-NORMAL-MAINTAIN",
+      "candidate_sha256": "58204ffb38a6fce566b3e1eb189d10e814a6fd155ca3b342ef5e6ff362d5a58a",
+      "coverage_slot": null,
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": null,
+      "failure_reason": "workspace scale limit conflicts with d_plan(s) or requested scale",
+      "failure_type": "GeometryError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "UNDER_SPECIFIED",
+      "tasks": [],
+      "validation": "REJECTED"
+    },
+    {
+      "N": 12,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-B-S2-SPHERE-NORMAL-MAINTAIN",
+      "candidate_sha256": "e3d11a097bb79727c9fb23cdcbc6bb147c62b6810401b61395c9d2280d3c06cb",
+      "coverage_slot": null,
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": null,
+      "failure_reason": "workspace scale limit conflicts with d_plan(s) or requested scale",
+      "failure_type": "GeometryError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        19.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "UNDER_SPECIFIED",
+      "tasks": [],
+      "validation": "REJECTED"
+    },
+    {
+      "N": 12,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-B-S2-SPHERE-NORMAL-MAINTAIN",
+      "candidate_sha256": "e3d11a097bb79727c9fb23cdcbc6bb147c62b6810401b61395c9d2280d3c06cb",
+      "coverage_slot": null,
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": null,
+      "failure_reason": "workspace scale limit conflicts with d_plan(s) or requested scale",
+      "failure_type": "GeometryError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        19.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "UNDER_SPECIFIED",
+      "tasks": [],
+      "validation": "REJECTED"
+    },
+    {
+      "N": 16,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-B-S2-SPHERE-NORMAL-MAINTAIN",
+      "candidate_sha256": "8a9288777d102d2a089b1b1c3e572d0e1bfe4c62325d1be2983437901078c3d5",
+      "coverage_slot": null,
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": null,
+      "failure_reason": "workspace scale limit conflicts with d_plan(s) or requested scale",
+      "failure_type": "GeometryError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        25.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "UNDER_SPECIFIED",
+      "tasks": [],
+      "validation": "REJECTED"
+    },
+    {
+      "N": 16,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-B-S2-SPHERE-NORMAL-MAINTAIN",
+      "candidate_sha256": "8a9288777d102d2a089b1b1c3e572d0e1bfe4c62325d1be2983437901078c3d5",
+      "coverage_slot": null,
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": null,
+      "failure_reason": "workspace scale limit conflicts with d_plan(s) or requested scale",
+      "failure_type": "GeometryError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        25.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "UNDER_SPECIFIED",
+      "tasks": [],
+      "validation": "REJECTED"
+    },
+    {
+      "N": 8,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "R-B-S1-CIRCLE-ABS-R6-T10",
+      "candidate_sha256": "3d76a64d64573bace0f7eef2db254080bba799b90495d6dcfbbcb460100717d7",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": false,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "SIMPLE",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 10.0,
+          "T_plan": 10.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            7,
+            5,
+            6,
+            4,
+            0,
+            1,
+            3,
+            2
+          ],
+          "c_exec": [
+            0.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.7653668647301795,
+          "final_min_pairwise_m": 1.9967371960954385,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 11.99039946734142,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.9967371960954385,
+          "predicted_peak_acceleration_mps2": 0.6922660360160715,
+          "predicted_peak_jerk_mps3": 0.7194239680404851,
+          "predicted_peak_velocity_mps": 2.248199900126516,
+          "r_exec": 6.0,
+          "r_nominal": 2.9397666709718475,
+          "r_safe": 2.3518133367774783,
+          "target_bounds_xyz": [
+            [
+              -6.0,
+              6.0
+            ],
+            [
+              12.0,
+              24.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 4.592201188381076,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 8,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "R-B-S1-CIRCLE-ABS-R6-T10",
+      "candidate_sha256": "3d76a64d64573bace0f7eef2db254080bba799b90495d6dcfbbcb460100717d7",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": false,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "SIMPLE",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 10.0,
+          "T_plan": 10.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            5,
+            7,
+            6,
+            4,
+            0,
+            1,
+            3,
+            2
+          ],
+          "c_exec": [
+            0.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.7653668647301795,
+          "final_min_pairwise_m": 1.996737196095439,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 11.830924705466664,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.996737196095439,
+          "predicted_peak_acceleration_mps2": 0.6830587563463374,
+          "predicted_peak_jerk_mps3": 0.7098554823279999,
+          "predicted_peak_velocity_mps": 2.2182983822749995,
+          "r_exec": 6.0,
+          "r_nominal": 2.9397666709718475,
+          "r_safe": 2.3518133367774783,
+          "target_bounds_xyz": [
+            [
+              -6.0,
+              6.0
+            ],
+            [
+              12.0,
+              24.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 4.592201188381076,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 12,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "R-B-S1-CIRCLE-ABS-R6-T10",
+      "candidate_sha256": "6dc065ac90e3f261ece3b10039c11b0a7319c83cf09e6402a530aed653835bdb",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        19.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": false,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "SIMPLE",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 10.0,
+          "T_plan": 10.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            8,
+            10,
+            9,
+            11,
+            7,
+            6,
+            2,
+            3,
+            5,
+            0,
+            4,
+            1
+          ],
+          "c_exec": [
+            0.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.5176380902050409,
+          "final_min_pairwise_m": 1.8577738467630323,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 16.187924511808177,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.8577738467630323,
+          "predicted_peak_acceleration_mps2": 0.9346102574513793,
+          "predicted_peak_jerk_mps3": 0.9712754707084906,
+          "predicted_peak_velocity_mps": 3.035235845964033,
+          "r_exec": 6.0,
+          "r_nominal": 4.346666218300812,
+          "r_safe": 3.47733297464065,
+          "target_bounds_xyz": [
+            [
+              -6.0,
+              6.0
+            ],
+            [
+              12.0,
+              24.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 3.105828541230245,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 12,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "R-B-S1-CIRCLE-ABS-R6-T10",
+      "candidate_sha256": "6dc065ac90e3f261ece3b10039c11b0a7319c83cf09e6402a530aed653835bdb",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        19.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": false,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "SIMPLE",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 10.0,
+          "T_plan": 10.0,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            10,
+            8,
+            9,
+            11,
+            7,
+            6,
+            5,
+            2,
+            3,
+            4,
+            0,
+            1
+          ],
+          "c_exec": [
+            0.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.5176380902050409,
+          "final_min_pairwise_m": 1.8345833970654142,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 16.347782724271816,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.8345833970654142,
+          "predicted_peak_acceleration_mps2": 0.9438396756511849,
+          "predicted_peak_jerk_mps3": 0.980866963456309,
+          "predicted_peak_velocity_mps": 3.0652092608009656,
+          "r_exec": 6.0,
+          "r_nominal": 4.346666218300812,
+          "r_safe": 3.47733297464065,
+          "target_bounds_xyz": [
+            [
+              -6.0,
+              6.0
+            ],
+            [
+              12.0,
+              24.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 3.105828541230245,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 16,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "R-B-S1-CIRCLE-ABS-R6-T10",
+      "candidate_sha256": "8e5554b484c2a228399a493a9e60c7af742913f4a5906cdbd0fa33c2604eb62a",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        25.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": false,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "SIMPLE",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 10.0,
+          "T_plan": 13.552236957878947,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            12,
+            13,
+            11,
+            14,
+            10,
+            9,
+            15,
+            0,
+            5,
+            3,
+            8,
+            4,
+            1,
+            7,
+            6,
+            2
+          ],
+          "c_exec": [
+            0.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [
+            "planning duration raised above explicit request for feasibility",
+            "final assignment safety re-evaluated once"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.39018064403225605,
+          "final_min_pairwise_m": 1.8062034971440173,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 26.296206166913944,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.8062034971440173,
+          "predicted_peak_acceleration_mps2": 1.5182121709133665,
+          "predicted_peak_jerk_mps3": 1.5777723700148367,
+          "predicted_peak_velocity_mps": 4.930538656296365,
+          "r_exec": 6.0,
+          "r_nominal": 5.766559757418396,
+          "r_safe": 4.613247805934717,
+          "target_bounds_xyz": [
+            [
+              -6.0,
+              6.0
+            ],
+            [
+              12.0,
+              24.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 2.341083864193536,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 16,
+      "allocator": "PASS",
+      "auto_T_valid": true,
+      "candidate_id": "R-B-S1-CIRCLE-ABS-R6-T10",
+      "candidate_sha256": "8e5554b484c2a228399a493a9e60c7af742913f4a5906cdbd0fa33c2604eb62a",
+      "coverage_slot": null,
+      "dynamic_feasibility": "PASS",
+      "failure_reason": null,
+      "failure_type": null,
+      "feasible": true,
+      "geometry": "PASS",
+      "initial_centroid": [
+        0.0,
+        25.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "PASS",
+      "selected": false,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "SIMPLE",
+      "tasks": [
+        {
+          "J_hard": 0,
+          "T_exec": 10.0,
+          "T_plan": 13.532512931824598,
+          "allocator_version": "lexicographic-safety-aware-v2",
+          "assignment": [
+            13,
+            14,
+            12,
+            11,
+            10,
+            15,
+            5,
+            0,
+            4,
+            1,
+            9,
+            2,
+            3,
+            8,
+            7,
+            6
+          ],
+          "c_exec": [
+            0.0,
+            18.0,
+            4.0
+          ],
+          "corrections": [
+            "planning duration raised above explicit request for feasibility",
+            "final assignment safety re-evaluated once"
+          ],
+          "d_hard": 1.5,
+          "d_plan": 1.8,
+          "delta_min_unit_geometry": 0.39018064403225605,
+          "final_min_pairwise_m": 1.852704075916544,
+          "formation": {
+            "type": "Circle"
+          },
+          "hard_safety_met": true,
+          "max_assigned_displacement_m": 26.223873832308662,
+          "planning_margin_met": true,
+          "planning_min_pairwise_m": 1.852704075916544,
+          "predicted_peak_acceleration_mps2": 1.514036061627819,
+          "predicted_peak_jerk_mps3": 1.5734324299385198,
+          "predicted_peak_velocity_mps": 4.916976343557875,
+          "r_exec": 6.0,
+          "r_nominal": 5.766559757418396,
+          "r_safe": 4.613247805934717,
+          "target_bounds_xyz": [
+            [
+              -6.0,
+              6.0
+            ],
+            [
+              12.0,
+              24.0
+            ],
+            [
+              4.0,
+              4.0
+            ]
+          ],
+          "target_min_pairwise_m": 2.341083864193536,
+          "uav_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+          ]
+        }
+      ],
+      "validation": "PASS"
+    },
+    {
+      "N": 8,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-B-S3-PARALLEL-CLOSE-CENTERS",
+      "candidate_sha256": "0bb7f7b9ac6fcf812efd3a17b10ab54949aed72220dfeb77f2c4d30e6cfe9b96",
+      "coverage_slot": null,
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": "parallel_nominal_trajectory_d_hard_violation",
+      "failure_reason": "parallel nominal trajectory violates d_hard",
+      "failure_type": "LateResolutionError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "COMPOSITIONAL",
+      "tasks": [],
+      "validation": "REJECTED"
+    },
+    {
+      "N": 8,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-B-S3-PARALLEL-CLOSE-CENTERS",
+      "candidate_sha256": "0bb7f7b9ac6fcf812efd3a17b10ab54949aed72220dfeb77f2c4d30e6cfe9b96",
+      "coverage_slot": null,
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": "parallel_nominal_trajectory_d_hard_violation",
+      "failure_reason": "parallel nominal trajectory violates d_hard",
+      "failure_type": "LateResolutionError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        13.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "COMPOSITIONAL",
+      "tasks": [],
+      "validation": "REJECTED"
+    },
+    {
+      "N": 12,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-B-S3-PARALLEL-CLOSE-CENTERS",
+      "candidate_sha256": "933164c2c5f5aac8ea81ae9e462857c0ebe2be4d68808edc2b5c745e403c3873",
+      "coverage_slot": null,
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": "parallel_nominal_trajectory_d_hard_violation",
+      "failure_reason": "parallel nominal trajectory violates d_hard",
+      "failure_type": "LateResolutionError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        19.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "COMPOSITIONAL",
+      "tasks": [],
+      "validation": "REJECTED"
+    },
+    {
+      "N": 12,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-B-S3-PARALLEL-CLOSE-CENTERS",
+      "candidate_sha256": "933164c2c5f5aac8ea81ae9e462857c0ebe2be4d68808edc2b5c745e403c3873",
+      "coverage_slot": null,
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": "parallel_nominal_trajectory_d_hard_violation",
+      "failure_reason": "parallel nominal trajectory violates d_hard",
+      "failure_type": "LateResolutionError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        19.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "COMPOSITIONAL",
+      "tasks": [],
+      "validation": "REJECTED"
+    },
+    {
+      "N": 16,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-B-S3-PARALLEL-CLOSE-CENTERS",
+      "candidate_sha256": "15fe3635f9031b439db0cdf46069d19c4a0f34644edb6f1811ff7f42cf40560b",
+      "coverage_slot": null,
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": "parallel_nominal_trajectory_d_hard_violation",
+      "failure_reason": "parallel nominal trajectory violates d_hard",
+      "failure_type": "LateResolutionError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        25.5,
+        0.83
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "cold_start_spawn",
+      "substudy": "E5-v2B",
+      "task_family": "COMPOSITIONAL",
+      "tasks": [],
+      "validation": "REJECTED"
+    },
+    {
+      "N": 16,
+      "allocator": "NOT_REACHED_OR_REJECTED",
+      "auto_T_valid": false,
+      "candidate_id": "R-B-S3-PARALLEL-CLOSE-CENTERS",
+      "candidate_sha256": "15fe3635f9031b439db0cdf46069d19c4a0f34644edb6f1811ff7f42cf40560b",
+      "coverage_slot": null,
+      "dynamic_feasibility": "NOT_REACHED_OR_REJECTED",
+      "failure_code": "parallel_nominal_trajectory_d_hard_violation",
+      "failure_reason": "parallel nominal trajectory violates d_hard",
+      "failure_type": "LateResolutionError",
+      "feasible": false,
+      "geometry": "REJECTED",
+      "initial_centroid": [
+        0.0,
+        25.5,
+        1.5
+      ],
+      "initial_min_pairwise_m": 3.0,
+      "parallel_group": null,
+      "resolver": "REJECTED",
+      "selected": false,
+      "state_model": "nominal_post_readiness",
+      "substudy": "E5-v2B",
+      "task_family": "COMPOSITIONAL",
+      "tasks": [],
+      "validation": "REJECTED"
+    }
+  ],
+  "selected_candidate_count": 6,
+  "selected_scale_cells": 12,
+  "selection_rule": {
+    "E5_v2A_rule": "In the listed order, take the first feasible candidate for each preregistered semantic coverage slot: (A1) relative+compact+auto Circle, (A2) maintain-current+normal+auto with a non-Circle planar geometry, and (A3) relative+spacious+auto Sphere. A candidate is feasible only when validation, center resolution, qualitative scaling, workspace geometry, allocation, hard-safety acceptance, final timing, and profile compilation all accept it under both registered design state models.",
+    "E5_v2B_rule": "In the listed order, take the first task-family definition that is feasible for all N in [8, 12, 16] without method-semantic changes. S1 uses the first explicit duration from the preregistered grid [8, 10, 12, 14, 16] seconds that remains unchanged by both planning and final dynamic-feasibility gates in every N cell. No ranking by margin is performed.",
+    "excluded_objectives": [
+      "maximize predicted minimum distance",
+      "maximize workspace slack",
+      "minimize travel distance",
+      "predict or maximize mission success",
+      "choose a best tracking case"
+    ],
+    "feasibility_question": "Does a legal physical realization exist under the frozen policy?"
+  },
+  "state_models": {
+    "audit_rule": "Every candidate is checked under both state models. The post-readiness model is the prospective nominal resolver input; formal execution must still log and assess the actual frozen fresh snapshot.",
+    "cold_start_spawn": {
+      "rule": "UAV i starts at world [0, 3*i, 0.83] m, as frozen by the PX4 multi-instance launcher.",
+      "z_m": 0.83
+    },
+    "nominal_post_readiness_snapshot": {
+      "rule": "UAV i is at world [0, 3*i, 1.50] m after the frozen controller startup takeoff/hover gate.",
+      "z_m": 1.5
+    }
+  },
+  "status": "PASS"
+}
