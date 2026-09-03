@@ -1,0 +1,88 @@
+{
+  "N": 16,
+  "attempt_id": "E5V2-B-S2-N16-R2",
+  "candidate": {
+    "lfs_version": "2.1",
+    "mission": {
+      "nodes": [
+        {
+          "task": {
+            "F": {
+              "type": "Circle"
+            },
+            "T": {
+              "mode": "auto"
+            },
+            "U": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16
+            ],
+            "c": {
+              "mode": "maintain_current_centroid"
+            },
+            "m": "smooth",
+            "q": {
+              "mode": "direct"
+            },
+            "r": {
+              "mode": "qualitative",
+              "value": "normal"
+            },
+            "s": 1.0,
+            "task_id": 1
+          },
+          "type": "task"
+        }
+      ]
+    }
+  },
+  "candidate_ground_truth_injected": false,
+  "candidate_source": "real_semantic_frontend",
+  "compiled_mission_type": "CompiledMission",
+  "exact_command": "Have UAVs 1 through 16 form a normal-scale circle around their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.",
+  "fallback_used": false,
+  "latencies_s": {
+    "T_LLM": 13.881391067,
+    "T_mission_execution": 13.099364775
+  },
+  "schema": "E5_v2_formal_semantic_runtime_result_v1",
+  "seed": 5202042,
+  "stages": {
+    "candidate_parsing": {
+      "success": true
+    },
+    "candidate_validation": {
+      "success": true
+    },
+    "mission_completion": {
+      "success": true
+    },
+    "runtime": {
+      "success": true
+    },
+    "semantic_frontend": {
+      "success": true
+    }
+  },
+  "success": true,
+  "timestamps_ns": {
+    "mission_dispatch_started": 1788420078366272681,
+    "mission_terminal": 1788420091465640451,
+    "worker_finished": 1788420091465640972,
+    "worker_started": 1788420064185405034
+  }
+}

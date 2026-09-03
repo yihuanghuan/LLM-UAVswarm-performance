@@ -1,0 +1,221 @@
+{
+  "records": [
+    {
+      "allocator_mode": "lexicographic-safety-aware-v2",
+      "allocator_version": "lexicographic-safety-aware-v2",
+      "assignment_mode": "safety_aware",
+      "candidate_lfs": {
+        "F": {
+          "type": "Line"
+        },
+        "T": {
+          "mode": "auto"
+        },
+        "U": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "c": {
+          "mode": "maintain_current_centroid"
+        },
+        "m": "smooth",
+        "q": {
+          "mode": "direct"
+        },
+        "r": {
+          "mode": "qualitative",
+          "value": "normal"
+        },
+        "s": 1.0,
+        "task_id": 1
+      },
+      "center_source": "candidate.maintain_current_centroid",
+      "code_git_sha": "b92415e560c00788b07a13b810ccac4a1be1d7aa",
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "corrections": [
+        "final assignment safety re-evaluated once"
+      ],
+      "d_hard": 1.5,
+      "d_plan": 1.8,
+      "delta_min": 1.0,
+      "final_assignment": [
+        0,
+        6,
+        1,
+        3,
+        4,
+        5,
+        2,
+        7
+      ],
+      "final_assignment_metrics": {
+        "J_distance": 60.39490532523008,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "d_hard": 1.5,
+        "d_plan": 1.8,
+        "hard_feasible": true,
+        "margin_intrusion_m": 0.0,
+        "min_3d_distance": 1.800344726233973,
+        "planning_margin_met": true,
+        "residual_planning_risk": false,
+        "xy_crossings": 0
+      },
+      "geometry_version": "paper-unit-geometry-v3",
+      "hungarian_initial_assignment": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "iapf_enter_distance": 1.6,
+      "iapf_exit_distance": 1.7,
+      "iapf_repulsion_scale": 1.0,
+      "per_uav_dynamics": [
+        {
+          "distance": 13.11733398929489,
+          "predicted_a_peak": 1.8520152396008622,
+          "predicted_j_peak": 3.0097902928688938,
+          "predicted_v_peak": 3.846153846153846,
+          "uav_id": 1
+        },
+        {
+          "distance": 9.378529637739758,
+          "predicted_a_peak": 1.3241394805009499,
+          "predicted_j_peak": 2.151916501332424,
+          "predicted_v_peak": 2.7498932227309694,
+          "uav_id": 2
+        },
+        {
+          "distance": 7.195171090820085,
+          "predicted_a_peak": 1.0158746070359577,
+          "predicted_j_peak": 1.65094188516925,
+          "predicted_v_peak": 2.1097072764387397,
+          "uav_id": 3
+        },
+        {
+          "distance": 1.874168824475543,
+          "predicted_a_peak": 0.26461087499534797,
+          "predicted_j_peak": 0.430030609856204,
+          "predicted_v_peak": 0.549527948170032,
+          "uav_id": 4
+        },
+        {
+          "distance": 1.868737807314204,
+          "predicted_a_peak": 0.26384407843763724,
+          "predicted_j_peak": 0.428784455512193,
+          "predicted_v_peak": 0.5479355112037507,
+          "uav_id": 5
+        },
+        {
+          "distance": 5.627301982215698,
+          "predicted_a_peak": 0.7945096951411718,
+          "predicted_j_peak": 1.2911921656441048,
+          "predicted_v_peak": 1.6499899430807656,
+          "uav_id": 6
+        },
+        {
+          "distance": 8.217170051758139,
+          "predicted_a_peak": 1.1601689927745695,
+          "predicted_j_peak": 1.885440949877352,
+          "predicted_v_peak": 2.409369177064663,
+          "uav_id": 7
+        },
+        {
+          "distance": 13.11649194161176,
+          "predicted_a_peak": 1.8518963522459393,
+          "predicted_j_peak": 3.009597083871937,
+          "predicted_v_peak": 3.84590694804652,
+          "uav_id": 8
+        }
+      ],
+      "planning_assignment_metrics": {
+        "J_distance": 60.39490532523008,
+        "J_margin": 0.0,
+        "N_hard": 0,
+        "d_hard": 1.5,
+        "d_plan": 1.8,
+        "hard_feasible": true,
+        "margin_intrusion_m": 0.0,
+        "min_3d_distance": 1.800344726233973,
+        "planning_margin_met": true,
+        "residual_planning_risk": false,
+        "xy_crossings": 0
+      },
+      "policy_hash": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+      "r_exec": 2.25,
+      "r_nominal": 2.25,
+      "r_safe": 1.8,
+      "rejection_reason": null,
+      "resolved_center": [
+        0.003404257251531817,
+        13.498554691701429,
+        1.4993890821933746
+      ],
+      "safety_factor": 1.0,
+      "schema_hash": "be6063a533f05b8d0b6e87353a40fb294975261fa1514cd5d34ced19ce2bffe7",
+      "schema_version": "paper-candidate-schema-v2",
+      "snapshot_epoch": 1788422721.1679845,
+      "state_timestamps": {
+        "1": {
+          "effective_source": "source_timestamp",
+          "receive": 1788422721.1674175,
+          "source": 1788422721.1565392
+        },
+        "2": {
+          "effective_source": "source_timestamp",
+          "receive": 1788422721.1675522,
+          "source": 1788422721.152627
+        },
+        "3": {
+          "effective_source": "source_timestamp",
+          "receive": 1788422721.1676462,
+          "source": 1788422721.1607125
+        },
+        "4": {
+          "effective_source": "source_timestamp",
+          "receive": 1788422721.167729,
+          "source": 1788422721.1567547
+        },
+        "5": {
+          "effective_source": "source_timestamp",
+          "receive": 1788422721.16781,
+          "source": 1788422721.1569257
+        },
+        "6": {
+          "effective_source": "source_timestamp",
+          "receive": 1788422721.1678913,
+          "source": 1788422721.1571236
+        },
+        "7": {
+          "effective_source": "source_timestamp",
+          "receive": 1788422721.1679718,
+          "source": 1788422721.157286
+        },
+        "8": {
+          "effective_source": "source_timestamp",
+          "receive": 1788422721.1668437,
+          "source": 1788422721.148893
+        }
+      },
+      "t_exec": 6.3947003197812595,
+      "t_plan": 6.401891465016281,
+      "t_request": {
+        "mode": "auto"
+      },
+      "task_id": 1,
+      "unit_geometry": "paper-unit-geometry-v3",
+      "warnings": []
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "J_hard": {
+    "available": false,
+    "reason": "preregistered continuous endpoint unavailable due to pre-analysis semantic ambiguity",
+    "value": null
+  },
+  "actual_d_min": {
+    "available": true,
+    "reason": null,
+    "synchronized_sample_count": 4690,
+    "unit": "m",
+    "value": 2.029771197643623
+  },
+  "candidate_correctness": {
+    "available": true,
+    "reason": null,
+    "value": true
+  },
+  "classification_basis": "valid Candidate reached scientific terminal",
+  "completion_time": {
+    "available": true,
+    "reason": null,
+    "unit": "s",
+    "value": 5.8833136558532715
+  },
+  "failsafe": {
+    "available": true,
+    "reason": null,
+    "value": false
+  },
+  "final_error": {
+    "available": true,
+    "per_uav_final_error_m": [
+      0.05913349015395874,
+      0.04720670091370448,
+      0.012782610046164999,
+      0.03894559274009157,
+      0.024548765967182085,
+      0.021397305898000478,
+      0.04592805837747525,
+      0.0541644134719823
+    ],
+    "reason": null,
+    "unit": "m",
+    "value": 0.05913349015395874
+  },
+  "hard_failure": {
+    "available": true,
+    "reason": null,
+    "value": false
+  },
+  "infrastructure_failure": false,
+  "latency": {
+    "T_LLM": {
+      "available": true,
+      "reason": null,
+      "unit": "s",
+      "value": 14.01194949
+    },
+    "T_allocator": {
+      "available": false,
+      "reason": "stage timestamp unavailable",
+      "unit": "s",
+      "value": null
+    },
+    "T_geometry": {
+      "available": false,
+      "reason": "stage timestamp unavailable",
+      "unit": "s",
+      "value": null
+    },
+    "T_mission_execution": {
+      "available": true,
+      "reason": null,
+      "unit": "s",
+      "value": 5.988009495
+    },
+    "T_profile": {
+      "available": false,
+      "reason": "stage timestamp unavailable",
+      "unit": "s",
+      "value": null
+    },
+    "T_state_resolution": {
+      "available": false,
+      "reason": "stage timestamp unavailable",
+      "unit": "s",
+      "value": null
+    },
+    "T_validation": {
+      "available": false,
+      "reason": "stage timestamp unavailable",
+      "unit": "s",
+      "value": null
+    }
+  },
+  "mission_completion": {
+    "available": true,
+    "reason": null,
+    "value": true
+  },
+  "mission_success": {
+    "available": true,
+    "reason": null,
+    "value": true
+  },
+  "resolved_values": [
+    {
+      "T_exec": 4.6363514223420745,
+      "c_exec": [
+        0.00546040581411944,
+        13.500023290487661,
+        1.5016987472772598
+      ],
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "d_hard": 1.5,
+      "d_plan": 1.8,
+      "policy_hash": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+      "r_exec": 2.9397666709718475,
+      "rejection_reason": null,
+      "rejection_stage": null,
+      "task_id": 1
+    }
+  ],
+  "resolver_success": {
+    "available": true,
+    "reason": null,
+    "value": true
+  },
+  "schema": "E5_v2_formal_metrics_v1",
+  "scientific_complete": true,
+  "tracking_rmse": {
+    "available": true,
+    "covered_duration_s": 46.87979078292847,
+    "per_uav_rmse_m": {
+      "1": 0.1883431678260885,
+      "2": 0.13893265012334052,
+      "3": 0.07905796805410384,
+      "4": 0.07640281942260714,
+      "5": 0.07958713641839692,
+      "6": 0.07484889667904876,
+      "7": 0.1485942017882182,
+      "8": 0.18673304996175813
+    },
+    "reason": null,
+    "unit": "m",
+    "value": 0.13026404380393583
+  }
+}

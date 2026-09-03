@@ -1,0 +1,118 @@
+{
+  "N": 8,
+  "attempt_id": "E5V2-B-S3-N8-R1",
+  "candidate": {
+    "lfs_version": "2.1",
+    "mission": {
+      "nodes": [
+        {
+          "completion_mode": "synchronized",
+          "tasks": [
+            {
+              "F": {
+                "type": "Circle"
+              },
+              "T": {
+                "mode": "explicit",
+                "value": 14
+              },
+              "U": [
+                1,
+                2,
+                3,
+                4
+              ],
+              "c": {
+                "mode": "absolute",
+                "value": [
+                  -6,
+                  18,
+                  4
+                ]
+              },
+              "m": "normal",
+              "q": {
+                "mode": "direct"
+              },
+              "r": {
+                "mode": "explicit",
+                "value": 3
+              },
+              "s": 1.25,
+              "task_id": 1
+            },
+            {
+              "F": {
+                "type": "Circle"
+              },
+              "T": {
+                "mode": "explicit",
+                "value": 14
+              },
+              "U": [
+                5,
+                6,
+                7,
+                8
+              ],
+              "c": {
+                "mode": "absolute",
+                "value": [
+                  6,
+                  18,
+                  4
+                ]
+              },
+              "m": "smooth",
+              "q": {
+                "mode": "direct"
+              },
+              "r": {
+                "mode": "explicit",
+                "value": 3
+              },
+              "s": 1.0,
+              "task_id": 2
+            }
+          ],
+          "type": "parallel"
+        }
+      ]
+    }
+  },
+  "candidate_ground_truth_injected": false,
+  "candidate_source": "real_semantic_frontend",
+  "compiled_mission_type": "CompiledMission",
+  "exact_command": "In parallel, UAVs 1 through 4 form a circle centered at [-6, 18, 4] with radius 3 meters in 14 seconds using normal motion and safety factor 1.25, while UAVs 5 through 8 form a circle centered at [6, 18, 4] with radius 3 meters in 14 seconds using smooth motion and safety factor 1.0. Complete the parallel group synchronously.",
+  "fallback_used": false,
+  "latencies_s": {
+    "T_LLM": 23.152594179,
+    "T_mission_execution": 15.094600552
+  },
+  "schema": "E5_v2_formal_semantic_runtime_result_v1",
+  "seed": 5202046,
+  "stages": {
+    "candidate_parsing": {
+      "success": true
+    },
+    "candidate_validation": {
+      "success": true
+    },
+    "mission_completion": {
+      "success": true
+    },
+    "runtime": {
+      "success": true
+    },
+    "semantic_frontend": {
+      "success": true
+    }
+  },
+  "success": true,
+  "timestamps_ns": {
+    "mission_dispatch_started": 1788419470877169311,
+    "mission_terminal": 1788419485971771396,
+    "worker_finished": 1788419485971771897,
+    "worker_started": 1788419447563912457
+  }
+}

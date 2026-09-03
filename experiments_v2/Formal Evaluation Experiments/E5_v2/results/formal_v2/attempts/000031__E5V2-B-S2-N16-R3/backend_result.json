@@ -1,0 +1,919 @@
+{
+  "formal_execution_tooling_bundle_sha256": "2800b1a4540ffde75573f5ea7bf580b415302d5c4d86f0ab86898c69f7b02572",
+  "launch_plan": {
+    "N": 16,
+    "agent": [
+      "MicroXRCEAgent",
+      "udp4",
+      "-p",
+      "8888"
+    ],
+    "controllers": [
+      "ros2",
+      "launch",
+      "ladrc_controller",
+      "swarm_launch.py",
+      "uav_ids:=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]",
+      "control_mode:=ladrc_acceleration",
+      "avoidance_mode:=iapf_dual",
+      "iapf_escape_mode:=id_order",
+      "lfs_policy_file:=/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/lfs_policy/config/lfs_policy.paper_current.yaml"
+    ],
+    "environment": {
+      "E5_V2_ATTEMPT_ID": "E5V2-B-S2-N16-R3",
+      "E5_V2_FORMAL_SEED": "5202043",
+      "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp",
+      "ROS_DOMAIN_ID": "86",
+      "ROS_HOME": "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/results/formal_v2/.transactions/000031__E5V2-B-S2-N16-R3__1788421330911178304/ros_home"
+    },
+    "raw_pending_root": "/home/yihuang/learning/LLM_swarm_ws/e5_v2_formal_raw_archive_v1/.pending/000031__E5V2-B-S2-N16-R3",
+    "readiness": [
+      "/usr/bin/python3",
+      "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/tooling/e5_v2_formal_readiness.py",
+      "--uav-ids",
+      "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16",
+      "--timeout",
+      "240.0",
+      "--hold",
+      "1.0",
+      "--freshness",
+      "0.5",
+      "--minimum-altitude",
+      "1.0",
+      "--speed-tolerance",
+      "0.3"
+    ],
+    "rosbag": [
+      "ros2",
+      "bag",
+      "record",
+      "--storage",
+      "sqlite3",
+      "-o",
+      "/home/yihuang/learning/LLM_swarm_ws/e5_v2_formal_raw_archive_v1/.pending/000031__E5V2-B-S2-N16-R3/rosbag",
+      "/clock",
+      "/uav1/status",
+      "/uav1/startup_event",
+      "/uav1/execution_command",
+      "/uav1/trajectory_metrics",
+      "/uav1/control_tracking_debug",
+      "/uav1/iapf_debug",
+      "/uav1/control_adaptation",
+      "/uav1/swarm_state",
+      "/px4_1/fmu/out/vehicle_status",
+      "/px4_1/fmu/out/vehicle_odometry",
+      "/uav2/status",
+      "/uav2/startup_event",
+      "/uav2/execution_command",
+      "/uav2/trajectory_metrics",
+      "/uav2/control_tracking_debug",
+      "/uav2/iapf_debug",
+      "/uav2/control_adaptation",
+      "/uav2/swarm_state",
+      "/px4_2/fmu/out/vehicle_status",
+      "/px4_2/fmu/out/vehicle_odometry",
+      "/uav3/status",
+      "/uav3/startup_event",
+      "/uav3/execution_command",
+      "/uav3/trajectory_metrics",
+      "/uav3/control_tracking_debug",
+      "/uav3/iapf_debug",
+      "/uav3/control_adaptation",
+      "/uav3/swarm_state",
+      "/px4_3/fmu/out/vehicle_status",
+      "/px4_3/fmu/out/vehicle_odometry",
+      "/uav4/status",
+      "/uav4/startup_event",
+      "/uav4/execution_command",
+      "/uav4/trajectory_metrics",
+      "/uav4/control_tracking_debug",
+      "/uav4/iapf_debug",
+      "/uav4/control_adaptation",
+      "/uav4/swarm_state",
+      "/px4_4/fmu/out/vehicle_status",
+      "/px4_4/fmu/out/vehicle_odometry",
+      "/uav5/status",
+      "/uav5/startup_event",
+      "/uav5/execution_command",
+      "/uav5/trajectory_metrics",
+      "/uav5/control_tracking_debug",
+      "/uav5/iapf_debug",
+      "/uav5/control_adaptation",
+      "/uav5/swarm_state",
+      "/px4_5/fmu/out/vehicle_status",
+      "/px4_5/fmu/out/vehicle_odometry",
+      "/uav6/status",
+      "/uav6/startup_event",
+      "/uav6/execution_command",
+      "/uav6/trajectory_metrics",
+      "/uav6/control_tracking_debug",
+      "/uav6/iapf_debug",
+      "/uav6/control_adaptation",
+      "/uav6/swarm_state",
+      "/px4_6/fmu/out/vehicle_status",
+      "/px4_6/fmu/out/vehicle_odometry",
+      "/uav7/status",
+      "/uav7/startup_event",
+      "/uav7/execution_command",
+      "/uav7/trajectory_metrics",
+      "/uav7/control_tracking_debug",
+      "/uav7/iapf_debug",
+      "/uav7/control_adaptation",
+      "/uav7/swarm_state",
+      "/px4_7/fmu/out/vehicle_status",
+      "/px4_7/fmu/out/vehicle_odometry",
+      "/uav8/status",
+      "/uav8/startup_event",
+      "/uav8/execution_command",
+      "/uav8/trajectory_metrics",
+      "/uav8/control_tracking_debug",
+      "/uav8/iapf_debug",
+      "/uav8/control_adaptation",
+      "/uav8/swarm_state",
+      "/px4_8/fmu/out/vehicle_status",
+      "/px4_8/fmu/out/vehicle_odometry",
+      "/uav9/status",
+      "/uav9/startup_event",
+      "/uav9/execution_command",
+      "/uav9/trajectory_metrics",
+      "/uav9/control_tracking_debug",
+      "/uav9/iapf_debug",
+      "/uav9/control_adaptation",
+      "/uav9/swarm_state",
+      "/px4_9/fmu/out/vehicle_status",
+      "/px4_9/fmu/out/vehicle_odometry",
+      "/uav10/status",
+      "/uav10/startup_event",
+      "/uav10/execution_command",
+      "/uav10/trajectory_metrics",
+      "/uav10/control_tracking_debug",
+      "/uav10/iapf_debug",
+      "/uav10/control_adaptation",
+      "/uav10/swarm_state",
+      "/px4_10/fmu/out/vehicle_status",
+      "/px4_10/fmu/out/vehicle_odometry",
+      "/uav11/status",
+      "/uav11/startup_event",
+      "/uav11/execution_command",
+      "/uav11/trajectory_metrics",
+      "/uav11/control_tracking_debug",
+      "/uav11/iapf_debug",
+      "/uav11/control_adaptation",
+      "/uav11/swarm_state",
+      "/px4_11/fmu/out/vehicle_status",
+      "/px4_11/fmu/out/vehicle_odometry",
+      "/uav12/status",
+      "/uav12/startup_event",
+      "/uav12/execution_command",
+      "/uav12/trajectory_metrics",
+      "/uav12/control_tracking_debug",
+      "/uav12/iapf_debug",
+      "/uav12/control_adaptation",
+      "/uav12/swarm_state",
+      "/px4_12/fmu/out/vehicle_status",
+      "/px4_12/fmu/out/vehicle_odometry",
+      "/uav13/status",
+      "/uav13/startup_event",
+      "/uav13/execution_command",
+      "/uav13/trajectory_metrics",
+      "/uav13/control_tracking_debug",
+      "/uav13/iapf_debug",
+      "/uav13/control_adaptation",
+      "/uav13/swarm_state",
+      "/px4_13/fmu/out/vehicle_status",
+      "/px4_13/fmu/out/vehicle_odometry",
+      "/uav14/status",
+      "/uav14/startup_event",
+      "/uav14/execution_command",
+      "/uav14/trajectory_metrics",
+      "/uav14/control_tracking_debug",
+      "/uav14/iapf_debug",
+      "/uav14/control_adaptation",
+      "/uav14/swarm_state",
+      "/px4_14/fmu/out/vehicle_status",
+      "/px4_14/fmu/out/vehicle_odometry",
+      "/uav15/status",
+      "/uav15/startup_event",
+      "/uav15/execution_command",
+      "/uav15/trajectory_metrics",
+      "/uav15/control_tracking_debug",
+      "/uav15/iapf_debug",
+      "/uav15/control_adaptation",
+      "/uav15/swarm_state",
+      "/px4_15/fmu/out/vehicle_status",
+      "/px4_15/fmu/out/vehicle_odometry",
+      "/uav16/status",
+      "/uav16/startup_event",
+      "/uav16/execution_command",
+      "/uav16/trajectory_metrics",
+      "/uav16/control_tracking_debug",
+      "/uav16/iapf_debug",
+      "/uav16/control_adaptation",
+      "/uav16/swarm_state",
+      "/px4_16/fmu/out/vehicle_status",
+      "/px4_16/fmu/out/vehicle_odometry"
+    ],
+    "runtime_submission_path": "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/results/formal_v2/.transactions/000031__E5V2-B-S2-N16-R3__1788421330911178304/runtime_submission.json",
+    "semantic_result_path": "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/results/formal_v2/.transactions/000031__E5V2-B-S2-N16-R3__1788421330911178304/semantic_result.json",
+    "semantic_worker": [
+      "/home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python",
+      "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/tooling/e5_v2_formal_trial.py",
+      "--runtime-submission",
+      "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/results/formal_v2/.transactions/000031__E5V2-B-S2-N16-R3__1788421330911178304/runtime_submission.json",
+      "--output",
+      "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/results/formal_v2/.transactions/000031__E5V2-B-S2-N16-R3__1788421330911178304/semantic_result.json"
+    ],
+    "sitl": [
+      "bash",
+      "/home/yihuang/PX4-Autopilot/Tools/simulation/gazebo-classic/sitl_multiple_run.sh",
+      "-n",
+      "16",
+      "-m",
+      "iris",
+      "-w",
+      "empty"
+    ],
+    "topic_count": 161,
+    "uav_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ]
+  },
+  "process_counts_after_cleanup": {
+    "agent": 0,
+    "controllers": 0,
+    "gzserver": 0,
+    "px4": 0
+  },
+  "process_counts_before": {
+    "agent": 0,
+    "controllers": 0,
+    "gzserver": 0,
+    "px4": 0
+  },
+  "raw_acquisition_started": true,
+  "resolution_trace_path": "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/results/formal_v2/.transactions/000031__E5V2-B-S2-N16-R3__1788421330911178304/ros_home/candidate_resolution_trace.jsonl",
+  "runtime_pin": {
+    "file_sha256": {
+      "install/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node": "bb60b1b85d9e3a70cc07e2b316732e1fd0edd543804599efbd82dfb339c807ff",
+      "install/ladrc_controller/share/ladrc_controller/launch/swarm_launch.py": "eebe0d26d7d6d9408078c99dd735c4076b36eb79f1ebc8d02be64af24d9782dd",
+      "install/lfs_policy/share/lfs_policy/config/lfs_policy.paper_current.yaml": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+      "install/uav_swarm_interfaces/share/uav_swarm_interfaces/msg/UAVExecutionCommand.msg": "10d329b9d8bc859a453ad62cb21a4eae11b1c57b85758d9a4cee1716e07a0058",
+      "px4/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/iris/iris.sdf.jinja": "33402f400ecb23631c2a93b82b168cb712371cc331ccf8c03227c949e3c052fa",
+      "px4/Tools/simulation/gazebo-classic/sitl_multiple_run.sh": "4c3d7b6146fa99cdf28f8ebc54db4d4a80344ed958961529bbf3a2c8fe812336"
+    },
+    "gazebo_submodule_commit": "da7206e057703cc645770f02437013358b71e1c0",
+    "httpx": "0.28.1",
+    "numpy": "2.2.6",
+    "openai": "2.34.0",
+    "px4_commit": "30e763b6780061d70a14894e3e8b06e6a656f9b8",
+    "python": "3.10.12",
+    "ros_python": {
+      "modules": {
+        "rclpy": "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py",
+        "rosbag2_py": "/opt/ros/humble/local/lib/python3.10/dist-packages/rosbag2_py/__init__.py",
+        "rosidl_runtime_py": "/opt/ros/humble/lib/python3.10/site-packages/rosidl_runtime_py/__init__.py"
+      },
+      "status": "PASS"
+    },
+    "scipy": "1.15.3",
+    "status": "PASS"
+  },
+  "schema": "E5_v2_physical_backend_result_v1",
+  "semantic_result": {
+    "N": 16,
+    "attempt_id": "E5V2-B-S2-N16-R3",
+    "candidate": {
+      "lfs_version": "2.1",
+      "mission": {
+        "nodes": [
+          {
+            "task": {
+              "F": {
+                "type": "Circle"
+              },
+              "T": {
+                "mode": "auto"
+              },
+              "U": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16
+              ],
+              "c": {
+                "mode": "maintain_current_centroid"
+              },
+              "m": "smooth",
+              "q": {
+                "mode": "direct"
+              },
+              "r": {
+                "mode": "qualitative",
+                "value": "normal"
+              },
+              "s": 1.0,
+              "task_id": 1
+            },
+            "type": "task"
+          }
+        ]
+      }
+    },
+    "candidate_ground_truth_injected": false,
+    "candidate_source": "real_semantic_frontend",
+    "compiled_mission_type": "CompiledMission",
+    "exact_command": "Have UAVs 1 through 16 form a normal-scale circle around their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.",
+    "fallback_used": false,
+    "latencies_s": {
+      "T_LLM": 17.234744537,
+      "T_mission_execution": 13.962922098
+    },
+    "schema": "E5_v2_formal_semantic_runtime_result_v1",
+    "seed": 5202043,
+    "stages": {
+      "candidate_parsing": {
+        "success": true
+      },
+      "candidate_validation": {
+        "success": true
+      },
+      "mission_completion": {
+        "success": true
+      },
+      "runtime": {
+        "success": true
+      },
+      "semantic_frontend": {
+        "success": true
+      }
+    },
+    "success": true,
+    "timestamps_ns": {
+      "mission_dispatch_started": 1788421392831963177,
+      "mission_terminal": 1788421406794888331,
+      "worker_finished": 1788421406794888962,
+      "worker_started": 1788421375235447095
+    }
+  },
+  "semantic_worker_returncode": 0,
+  "spec": {
+    "N": 16,
+    "analysis_contract_sha256": "05802cb32e8dc2f990d9e0144f2cfd118b87228ab0c441578e084aeefc0d008a",
+    "attempt_id": "E5V2-B-S2-N16-R3",
+    "campaign_position": 31,
+    "candidate_ground_truth_sha256": "a23293d805bd44621ed4707afe8930ed444e321a5926ff28425cac30d2ef688a",
+    "candidate_semantic_ground_truth": {
+      "lfs_version": "2.1",
+      "mission": {
+        "nodes": [
+          {
+            "task": {
+              "F": {
+                "type": "Circle"
+              },
+              "T": {
+                "mode": "auto"
+              },
+              "U": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16
+              ],
+              "c": {
+                "mode": "maintain_current_centroid"
+              },
+              "m": "smooth",
+              "q": {
+                "mode": "direct"
+              },
+              "r": {
+                "mode": "qualitative",
+                "value": "normal"
+              },
+              "s": 1.0,
+              "task_id": 1
+            },
+            "type": "task"
+          }
+        ]
+      }
+    },
+    "canonical_index": 43,
+    "cold_start_repeat": 3,
+    "exact_command": "Have UAVs 1 through 16 form a normal-scale circle around their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.",
+    "mission_timeout_s": 40.0,
+    "order_sha256": "4ec9ee0e8de0cc4b015bfd3858365fe8bf0a07aeddcb591ab6f91221a7bb8f69",
+    "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+    "production_baseline": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+    "registry_sha256": "e915575f23b1bd83810f3a8e5aa8092806b9076960c5a2f1fc2bb5faa73ad985",
+    "scenario_id": "E5V2-B-S2-N16",
+    "schema": "E5_v2_formal_trial_spec_v1",
+    "seed": 5202043,
+    "seed_registry_sha256": "1815deba3fab9c756603a358b4a3900b67ffb9bcb3e9f757282ab8894595d0cb",
+    "substudy": "E5-v2B",
+    "task_family": "UNDER_SPECIFIED",
+    "uav_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ]
+  },
+  "stage_outcomes": {
+    "candidate_parsing": {
+      "success": true
+    },
+    "candidate_validation": {
+      "success": true
+    },
+    "infrastructure_readiness": {
+      "elapsed_s": 24.624592710999423,
+      "ready": true,
+      "schema": "E5_v2_formal_readiness_v1",
+      "state": {
+        "1": {
+          "age_s": 3.2832002034410834e-05,
+          "position": [
+            0.008146536536514759,
+            3.0186513364315033,
+            1.4928929805755615
+          ],
+          "present": true,
+          "velocity": [
+            0.004217433277517557,
+            0.017661647871136665,
+            -0.14223626255989075
+          ]
+        },
+        "10": {
+          "age_s": 0.010087230999488384,
+          "position": [
+            0.031340859830379486,
+            30.001158655504696,
+            1.4975879192352295
+          ],
+          "present": true,
+          "velocity": [
+            0.07885375618934631,
+            -0.034872982650995255,
+            -0.14309659600257874
+          ]
+        },
+        "11": {
+          "age_s": 0.0067578460002550855,
+          "position": [
+            0.02696273662149906,
+            33.008351707831025,
+            1.521486759185791
+          ],
+          "present": true,
+          "velocity": [
+            0.09424294531345367,
+            -0.06706967204809189,
+            -0.04483353719115257
+          ]
+        },
+        "12": {
+          "age_s": 0.009759729000506923,
+          "position": [
+            0.046363573521375656,
+            36.0211032833904,
+            1.532566785812378
+          ],
+          "present": true,
+          "velocity": [
+            0.0970408022403717,
+            -0.06832349300384521,
+            -0.1447860449552536
+          ]
+        },
+        "13": {
+          "age_s": 0.006422619000659324,
+          "position": [
+            0.022355560213327408,
+            39.03099363297224,
+            1.5513744354248047
+          ],
+          "present": true,
+          "velocity": [
+            0.22719959914684296,
+            -0.05722709372639656,
+            -0.03918174281716347
+          ]
+        },
+        "14": {
+          "age_s": 0.008938151993788779,
+          "position": [
+            -0.008681670762598515,
+            41.98436028137803,
+            1.5910148620605469
+          ],
+          "present": true,
+          "velocity": [
+            0.2695070803165436,
+            0.0119935916736722,
+            0.04070628434419632
+          ]
+        },
+        "15": {
+          "age_s": 0.008445029990980402,
+          "position": [
+            -0.005917837377637625,
+            45.00004393827112,
+            1.6130962371826172
+          ],
+          "present": true,
+          "velocity": [
+            0.27331051230430603,
+            0.007302324287593365,
+            -0.4404575228691101
+          ]
+        },
+        "16": {
+          "age_s": 0.0024516639969078824,
+          "position": [
+            0.040314752608537674,
+            47.995687849354,
+            1.6778842210769653
+          ],
+          "present": true,
+          "velocity": [
+            0.2087925672531128,
+            -0.041564084589481354,
+            -0.22526605427265167
+          ]
+        },
+        "2": {
+          "age_s": 0.015995807989384048,
+          "position": [
+            0.016634326428174973,
+            6.015138050541282,
+            1.494438648223877
+          ],
+          "present": true,
+          "velocity": [
+            -0.006799161899834871,
+            -0.03460516408085823,
+            -0.17875134944915771
+          ]
+        },
+        "3": {
+          "age_s": 0.011472892001620494,
+          "position": [
+            0.002355800475925207,
+            9.024221386760473,
+            1.4943186044692993
+          ],
+          "present": true,
+          "velocity": [
+            -0.0002186434285249561,
+            0.00032985000871121883,
+            -0.13870133459568024
+          ]
+        },
+        "4": {
+          "age_s": 0.003858865995425731,
+          "position": [
+            0.019645530730485916,
+            12.016597837209702,
+            1.4937371015548706
+          ],
+          "present": true,
+          "velocity": [
+            -0.023167448118329048,
+            0.02301836758852005,
+            -0.1538066267967224
+          ]
+        },
+        "5": {
+          "age_s": 0.003341567993629724,
+          "position": [
+            0.020694835111498833,
+            15.001177217578515,
+            1.4981751441955566
+          ],
+          "present": true,
+          "velocity": [
+            0.028896460309624672,
+            0.0030767705757170916,
+            -0.056582387536764145
+          ]
+        },
+        "6": {
+          "age_s": 0.0028971869905944914,
+          "position": [
+            -0.003026739228516817,
+            17.993542642798275,
+            1.5012788772583008
+          ],
+          "present": true,
+          "velocity": [
+            0.031065884977579117,
+            0.031756043434143066,
+            -0.11613491177558899
+          ]
+        },
+        "7": {
+          "age_s": 0.002792551997117698,
+          "position": [
+            -0.0008220378076657653,
+            20.993570619728416,
+            1.4950793981552124
+          ],
+          "present": true,
+          "velocity": [
+            0.03311142697930336,
+            0.03785024210810661,
+            -0.14806830883026123
+          ]
+        },
+        "8": {
+          "age_s": 0.0076013130019418895,
+          "position": [
+            0.007629074156284332,
+            24.002461219439283,
+            1.5034271478652954
+          ],
+          "present": true,
+          "velocity": [
+            0.02025775983929634,
+            0.02046988159418106,
+            -0.11738627403974533
+          ]
+        },
+        "9": {
+          "age_s": 0.007162081994465552,
+          "position": [
+            0.023001329973340034,
+            27.000016975827748,
+            1.5047072172164917
+          ],
+          "present": true,
+          "velocity": [
+            0.052690815180540085,
+            -0.018354620784521103,
+            -0.09066370129585266
+          ]
+        }
+      },
+      "status": {
+        "1": {
+          "age_s": 0.012576684996020049,
+          "altitude": 1.494057297706604,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.011447859928011894,
+          "system_ready": true
+        },
+        "10": {
+          "age_s": 0.010181666992139071,
+          "altitude": 1.4994553327560425,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.0457749105989933,
+          "system_ready": true
+        },
+        "11": {
+          "age_s": 0.00942073499027174,
+          "altitude": 1.5214470624923706,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.024031952023506165,
+          "system_ready": true
+        },
+        "12": {
+          "age_s": 0.005362576994230039,
+          "altitude": 1.532566785812378,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.04753001779317856,
+          "system_ready": true
+        },
+        "13": {
+          "age_s": 0.013083732992527075,
+          "altitude": 1.5509517192840576,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.058749906718730927,
+          "system_ready": true
+        },
+        "14": {
+          "age_s": 0.009032508998643607,
+          "altitude": 1.5910148620605469,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.09029112011194229,
+          "system_ready": true
+        },
+        "15": {
+          "age_s": 0.012511913999333046,
+          "altitude": 1.6165045499801636,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.1783730834722519,
+          "system_ready": true
+        },
+        "16": {
+          "age_s": 0.0006751129985786974,
+          "altitude": 1.6778842210769653,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.22097541391849518,
+          "system_ready": true
+        },
+        "2": {
+          "age_s": 0.0019107830012217164,
+          "altitude": 1.494438648223877,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.025965586304664612,
+          "system_ready": true
+        },
+        "3": {
+          "age_s": 0.009485695991315879,
+          "altitude": 1.4943186044692993,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.022912168875336647,
+          "system_ready": true
+        },
+        "4": {
+          "age_s": 0.019383742997888476,
+          "altitude": 1.4957079887390137,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.0163109190762043,
+          "system_ready": true
+        },
+        "5": {
+          "age_s": 0.015504949988098815,
+          "altitude": 1.496546983718872,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.02129966765642166,
+          "system_ready": true
+        },
+        "6": {
+          "age_s": 0.006871006989968009,
+          "altitude": 1.5013582706451416,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.004138956777751446,
+          "system_ready": true
+        },
+        "7": {
+          "age_s": 0.013555895988247357,
+          "altitude": 1.4970208406448364,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.013989383354783058,
+          "system_ready": true
+        },
+        "8": {
+          "age_s": 0.0011144739983137697,
+          "altitude": 1.5034271478652954,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.007327872794121504,
+          "system_ready": true
+        },
+        "9": {
+          "age_s": 0.007528345988248475,
+          "altitude": 1.5046656131744385,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.01788502000272274,
+          "system_ready": true
+        }
+      },
+      "success": true,
+      "uav_count": 16,
+      "uav_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ]
+    },
+    "infrastructure_spawn": {
+      "elapsed_s": 15.916312656001537,
+      "process_counts": {
+        "agent": 1,
+        "controllers": 0,
+        "gzserver": 1,
+        "px4": 16
+      },
+      "success": true
+    },
+    "mission_completion": {
+      "success": true
+    },
+    "runtime": {
+      "success": true
+    },
+    "semantic_frontend": {
+      "success": true
+    }
+  },
+  "timestamps_ns": {
+    "finished": 1788421408184227732,
+    "raw_acquisition_started": 1788421374373838181,
+    "started": 1788421331450412278
+  }
+}

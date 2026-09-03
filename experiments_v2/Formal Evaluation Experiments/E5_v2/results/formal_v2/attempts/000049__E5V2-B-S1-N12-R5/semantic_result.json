@@ -1,0 +1,90 @@
+{
+  "N": 12,
+  "attempt_id": "E5V2-B-S1-N12-R5",
+  "candidate": {
+    "lfs_version": "2.1",
+    "mission": {
+      "nodes": [
+        {
+          "task": {
+            "F": {
+              "type": "Circle"
+            },
+            "T": {
+              "mode": "explicit",
+              "value": 14
+            },
+            "U": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12
+            ],
+            "c": {
+              "mode": "absolute",
+              "value": [
+                0,
+                18,
+                4
+              ]
+            },
+            "m": "normal",
+            "q": {
+              "mode": "direct"
+            },
+            "r": {
+              "mode": "explicit",
+              "value": 6
+            },
+            "s": 1.0,
+            "task_id": 1
+          },
+          "type": "task"
+        }
+      ]
+    }
+  },
+  "candidate_ground_truth_injected": false,
+  "candidate_source": "real_semantic_frontend",
+  "compiled_mission_type": "CompiledMission",
+  "exact_command": "Have UAVs 1 through 12 form a circle centered at [0, 18, 4] with radius 6 meters in 14 seconds using normal motion and safety factor 1.0.",
+  "fallback_used": false,
+  "latencies_s": {
+    "T_LLM": 13.019190928,
+    "T_mission_execution": 15.638964904
+  },
+  "schema": "E5_v2_formal_semantic_runtime_result_v1",
+  "seed": 5202025,
+  "stages": {
+    "candidate_parsing": {
+      "success": true
+    },
+    "candidate_validation": {
+      "success": true
+    },
+    "mission_completion": {
+      "success": true
+    },
+    "runtime": {
+      "success": true
+    },
+    "semantic_frontend": {
+      "success": true
+    }
+  },
+  "success": true,
+  "timestamps_ns": {
+    "mission_dispatch_started": 1788422969271205860,
+    "mission_terminal": 1788422984910172357,
+    "worker_finished": 1788422984910172928,
+    "worker_started": 1788422955743947129
+  }
+}

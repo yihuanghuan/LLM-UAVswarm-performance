@@ -1,0 +1,87 @@
+{
+  "N": 8,
+  "attempt_id": "E5V2-A1-REL-COMPACT-CIRCLE-R1",
+  "candidate": {
+    "lfs_version": "2.1",
+    "mission": {
+      "nodes": [
+        {
+          "task": {
+            "F": {
+              "type": "Circle"
+            },
+            "T": {
+              "mode": "auto"
+            },
+            "U": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "c": {
+              "frame": "world",
+              "mode": "relative",
+              "offset": [
+                3,
+                0,
+                1
+              ],
+              "reference": "current_swarm_centroid"
+            },
+            "m": "normal",
+            "q": {
+              "mode": "direct"
+            },
+            "r": {
+              "mode": "qualitative",
+              "value": "compact"
+            },
+            "s": 1.0,
+            "task_id": 1
+          },
+          "type": "task"
+        }
+      ]
+    }
+  },
+  "candidate_ground_truth_injected": false,
+  "candidate_source": "real_semantic_frontend",
+  "compiled_mission_type": "CompiledMission",
+  "exact_command": "Have UAVs 1 through 8 form a compact circle centered at world-frame offset [3, 0, 1] meters from their current swarm centroid with automatic duration, using normal motion and safety factor 1.0.",
+  "fallback_used": false,
+  "latencies_s": {
+    "T_LLM": 20.33420195,
+    "T_mission_execution": 5.711893782
+  },
+  "schema": "E5_v2_formal_semantic_runtime_result_v1",
+  "seed": 5202001,
+  "stages": {
+    "candidate_parsing": {
+      "success": true
+    },
+    "candidate_validation": {
+      "success": true
+    },
+    "mission_completion": {
+      "success": true
+    },
+    "runtime": {
+      "success": true
+    },
+    "semantic_frontend": {
+      "success": true
+    }
+  },
+  "success": true,
+  "timestamps_ns": {
+    "mission_dispatch_started": 1788418746445777260,
+    "mission_terminal": 1788418752157672103,
+    "worker_finished": 1788418752157672765,
+    "worker_started": 1788418725964176457
+  }
+}

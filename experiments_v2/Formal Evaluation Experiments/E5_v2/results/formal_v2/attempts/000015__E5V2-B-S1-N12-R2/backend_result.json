@@ -1,0 +1,775 @@
+{
+  "formal_execution_tooling_bundle_sha256": "2800b1a4540ffde75573f5ea7bf580b415302d5c4d86f0ab86898c69f7b02572",
+  "launch_plan": {
+    "N": 12,
+    "agent": [
+      "MicroXRCEAgent",
+      "udp4",
+      "-p",
+      "8888"
+    ],
+    "controllers": [
+      "ros2",
+      "launch",
+      "ladrc_controller",
+      "swarm_launch.py",
+      "uav_ids:=[1,2,3,4,5,6,7,8,9,10,11,12]",
+      "control_mode:=ladrc_acceleration",
+      "avoidance_mode:=iapf_dual",
+      "iapf_escape_mode:=id_order",
+      "lfs_policy_file:=/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/lfs_policy/config/lfs_policy.paper_current.yaml"
+    ],
+    "environment": {
+      "E5_V2_ATTEMPT_ID": "E5V2-B-S1-N12-R2",
+      "E5_V2_FORMAL_SEED": "5202022",
+      "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp",
+      "ROS_DOMAIN_ID": "86",
+      "ROS_HOME": "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/results/formal_v2/.transactions/000015__E5V2-B-S1-N12-R2__1788419764596354092/ros_home"
+    },
+    "raw_pending_root": "/home/yihuang/learning/LLM_swarm_ws/e5_v2_formal_raw_archive_v1/.pending/000015__E5V2-B-S1-N12-R2",
+    "readiness": [
+      "/usr/bin/python3",
+      "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/tooling/e5_v2_formal_readiness.py",
+      "--uav-ids",
+      "1,2,3,4,5,6,7,8,9,10,11,12",
+      "--timeout",
+      "240.0",
+      "--hold",
+      "1.0",
+      "--freshness",
+      "0.5",
+      "--minimum-altitude",
+      "1.0",
+      "--speed-tolerance",
+      "0.3"
+    ],
+    "rosbag": [
+      "ros2",
+      "bag",
+      "record",
+      "--storage",
+      "sqlite3",
+      "-o",
+      "/home/yihuang/learning/LLM_swarm_ws/e5_v2_formal_raw_archive_v1/.pending/000015__E5V2-B-S1-N12-R2/rosbag",
+      "/clock",
+      "/uav1/status",
+      "/uav1/startup_event",
+      "/uav1/execution_command",
+      "/uav1/trajectory_metrics",
+      "/uav1/control_tracking_debug",
+      "/uav1/iapf_debug",
+      "/uav1/control_adaptation",
+      "/uav1/swarm_state",
+      "/px4_1/fmu/out/vehicle_status",
+      "/px4_1/fmu/out/vehicle_odometry",
+      "/uav2/status",
+      "/uav2/startup_event",
+      "/uav2/execution_command",
+      "/uav2/trajectory_metrics",
+      "/uav2/control_tracking_debug",
+      "/uav2/iapf_debug",
+      "/uav2/control_adaptation",
+      "/uav2/swarm_state",
+      "/px4_2/fmu/out/vehicle_status",
+      "/px4_2/fmu/out/vehicle_odometry",
+      "/uav3/status",
+      "/uav3/startup_event",
+      "/uav3/execution_command",
+      "/uav3/trajectory_metrics",
+      "/uav3/control_tracking_debug",
+      "/uav3/iapf_debug",
+      "/uav3/control_adaptation",
+      "/uav3/swarm_state",
+      "/px4_3/fmu/out/vehicle_status",
+      "/px4_3/fmu/out/vehicle_odometry",
+      "/uav4/status",
+      "/uav4/startup_event",
+      "/uav4/execution_command",
+      "/uav4/trajectory_metrics",
+      "/uav4/control_tracking_debug",
+      "/uav4/iapf_debug",
+      "/uav4/control_adaptation",
+      "/uav4/swarm_state",
+      "/px4_4/fmu/out/vehicle_status",
+      "/px4_4/fmu/out/vehicle_odometry",
+      "/uav5/status",
+      "/uav5/startup_event",
+      "/uav5/execution_command",
+      "/uav5/trajectory_metrics",
+      "/uav5/control_tracking_debug",
+      "/uav5/iapf_debug",
+      "/uav5/control_adaptation",
+      "/uav5/swarm_state",
+      "/px4_5/fmu/out/vehicle_status",
+      "/px4_5/fmu/out/vehicle_odometry",
+      "/uav6/status",
+      "/uav6/startup_event",
+      "/uav6/execution_command",
+      "/uav6/trajectory_metrics",
+      "/uav6/control_tracking_debug",
+      "/uav6/iapf_debug",
+      "/uav6/control_adaptation",
+      "/uav6/swarm_state",
+      "/px4_6/fmu/out/vehicle_status",
+      "/px4_6/fmu/out/vehicle_odometry",
+      "/uav7/status",
+      "/uav7/startup_event",
+      "/uav7/execution_command",
+      "/uav7/trajectory_metrics",
+      "/uav7/control_tracking_debug",
+      "/uav7/iapf_debug",
+      "/uav7/control_adaptation",
+      "/uav7/swarm_state",
+      "/px4_7/fmu/out/vehicle_status",
+      "/px4_7/fmu/out/vehicle_odometry",
+      "/uav8/status",
+      "/uav8/startup_event",
+      "/uav8/execution_command",
+      "/uav8/trajectory_metrics",
+      "/uav8/control_tracking_debug",
+      "/uav8/iapf_debug",
+      "/uav8/control_adaptation",
+      "/uav8/swarm_state",
+      "/px4_8/fmu/out/vehicle_status",
+      "/px4_8/fmu/out/vehicle_odometry",
+      "/uav9/status",
+      "/uav9/startup_event",
+      "/uav9/execution_command",
+      "/uav9/trajectory_metrics",
+      "/uav9/control_tracking_debug",
+      "/uav9/iapf_debug",
+      "/uav9/control_adaptation",
+      "/uav9/swarm_state",
+      "/px4_9/fmu/out/vehicle_status",
+      "/px4_9/fmu/out/vehicle_odometry",
+      "/uav10/status",
+      "/uav10/startup_event",
+      "/uav10/execution_command",
+      "/uav10/trajectory_metrics",
+      "/uav10/control_tracking_debug",
+      "/uav10/iapf_debug",
+      "/uav10/control_adaptation",
+      "/uav10/swarm_state",
+      "/px4_10/fmu/out/vehicle_status",
+      "/px4_10/fmu/out/vehicle_odometry",
+      "/uav11/status",
+      "/uav11/startup_event",
+      "/uav11/execution_command",
+      "/uav11/trajectory_metrics",
+      "/uav11/control_tracking_debug",
+      "/uav11/iapf_debug",
+      "/uav11/control_adaptation",
+      "/uav11/swarm_state",
+      "/px4_11/fmu/out/vehicle_status",
+      "/px4_11/fmu/out/vehicle_odometry",
+      "/uav12/status",
+      "/uav12/startup_event",
+      "/uav12/execution_command",
+      "/uav12/trajectory_metrics",
+      "/uav12/control_tracking_debug",
+      "/uav12/iapf_debug",
+      "/uav12/control_adaptation",
+      "/uav12/swarm_state",
+      "/px4_12/fmu/out/vehicle_status",
+      "/px4_12/fmu/out/vehicle_odometry"
+    ],
+    "runtime_submission_path": "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/results/formal_v2/.transactions/000015__E5V2-B-S1-N12-R2__1788419764596354092/runtime_submission.json",
+    "semantic_result_path": "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/results/formal_v2/.transactions/000015__E5V2-B-S1-N12-R2__1788419764596354092/semantic_result.json",
+    "semantic_worker": [
+      "/home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python",
+      "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/tooling/e5_v2_formal_trial.py",
+      "--runtime-submission",
+      "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/results/formal_v2/.transactions/000015__E5V2-B-S1-N12-R2__1788419764596354092/runtime_submission.json",
+      "--output",
+      "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/results/formal_v2/.transactions/000015__E5V2-B-S1-N12-R2__1788419764596354092/semantic_result.json"
+    ],
+    "sitl": [
+      "bash",
+      "/home/yihuang/PX4-Autopilot/Tools/simulation/gazebo-classic/sitl_multiple_run.sh",
+      "-n",
+      "12",
+      "-m",
+      "iris",
+      "-w",
+      "empty"
+    ],
+    "topic_count": 121,
+    "uav_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ]
+  },
+  "process_counts_after_cleanup": {
+    "agent": 0,
+    "controllers": 0,
+    "gzserver": 0,
+    "px4": 0
+  },
+  "process_counts_before": {
+    "agent": 0,
+    "controllers": 0,
+    "gzserver": 0,
+    "px4": 0
+  },
+  "raw_acquisition_started": true,
+  "resolution_trace_path": "/home/yihuang/learning/LLM_swarm_ws/e5_v2_design_worktree/experiments_v2/Formal Evaluation Experiments/E5_v2/results/formal_v2/.transactions/000015__E5V2-B-S1-N12-R2__1788419764596354092/ros_home/candidate_resolution_trace.jsonl",
+  "runtime_pin": {
+    "file_sha256": {
+      "install/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node": "bb60b1b85d9e3a70cc07e2b316732e1fd0edd543804599efbd82dfb339c807ff",
+      "install/ladrc_controller/share/ladrc_controller/launch/swarm_launch.py": "eebe0d26d7d6d9408078c99dd735c4076b36eb79f1ebc8d02be64af24d9782dd",
+      "install/lfs_policy/share/lfs_policy/config/lfs_policy.paper_current.yaml": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+      "install/uav_swarm_interfaces/share/uav_swarm_interfaces/msg/UAVExecutionCommand.msg": "10d329b9d8bc859a453ad62cb21a4eae11b1c57b85758d9a4cee1716e07a0058",
+      "px4/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/iris/iris.sdf.jinja": "33402f400ecb23631c2a93b82b168cb712371cc331ccf8c03227c949e3c052fa",
+      "px4/Tools/simulation/gazebo-classic/sitl_multiple_run.sh": "4c3d7b6146fa99cdf28f8ebc54db4d4a80344ed958961529bbf3a2c8fe812336"
+    },
+    "gazebo_submodule_commit": "da7206e057703cc645770f02437013358b71e1c0",
+    "httpx": "0.28.1",
+    "numpy": "2.2.6",
+    "openai": "2.34.0",
+    "px4_commit": "30e763b6780061d70a14894e3e8b06e6a656f9b8",
+    "python": "3.10.12",
+    "ros_python": {
+      "modules": {
+        "rclpy": "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py",
+        "rosbag2_py": "/opt/ros/humble/local/lib/python3.10/dist-packages/rosbag2_py/__init__.py",
+        "rosidl_runtime_py": "/opt/ros/humble/lib/python3.10/site-packages/rosidl_runtime_py/__init__.py"
+      },
+      "status": "PASS"
+    },
+    "scipy": "1.15.3",
+    "status": "PASS"
+  },
+  "schema": "E5_v2_physical_backend_result_v1",
+  "semantic_result": {
+    "N": 12,
+    "attempt_id": "E5V2-B-S1-N12-R2",
+    "candidate": {
+      "lfs_version": "2.1",
+      "mission": {
+        "nodes": [
+          {
+            "task": {
+              "F": {
+                "type": "Circle"
+              },
+              "T": {
+                "mode": "explicit",
+                "value": 14
+              },
+              "U": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12
+              ],
+              "c": {
+                "mode": "absolute",
+                "value": [
+                  0,
+                  18,
+                  4
+                ]
+              },
+              "m": "normal",
+              "q": {
+                "mode": "direct"
+              },
+              "r": {
+                "mode": "explicit",
+                "value": 6
+              },
+              "s": 1.0,
+              "task_id": 1
+            },
+            "type": "task"
+          }
+        ]
+      }
+    },
+    "candidate_ground_truth_injected": false,
+    "candidate_source": "real_semantic_frontend",
+    "compiled_mission_type": "CompiledMission",
+    "exact_command": "Have UAVs 1 through 12 form a circle centered at [0, 18, 4] with radius 6 meters in 14 seconds using normal motion and safety factor 1.0.",
+    "fallback_used": false,
+    "latencies_s": {
+      "T_LLM": 14.6003309,
+      "T_mission_execution": 15.64306426
+    },
+    "schema": "E5_v2_formal_semantic_runtime_result_v1",
+    "seed": 5202022,
+    "stages": {
+      "candidate_parsing": {
+        "success": true
+      },
+      "candidate_validation": {
+        "success": true
+      },
+      "mission_completion": {
+        "success": true
+      },
+      "runtime": {
+        "success": true
+      },
+      "semantic_frontend": {
+        "success": true
+      }
+    },
+    "success": true,
+    "timestamps_ns": {
+      "mission_dispatch_started": 1788419820342073516,
+      "mission_terminal": 1788419835985139230,
+      "worker_finished": 1788419835985139590,
+      "worker_started": 1788419805532856018
+    }
+  },
+  "semantic_worker_returncode": 0,
+  "spec": {
+    "N": 12,
+    "analysis_contract_sha256": "05802cb32e8dc2f990d9e0144f2cfd118b87228ab0c441578e084aeefc0d008a",
+    "attempt_id": "E5V2-B-S1-N12-R2",
+    "campaign_position": 15,
+    "candidate_ground_truth_sha256": "e741d2f66eef2129e1b7db0f564f2db43b52a3fe6a9ff88ba3ce57570724aa3f",
+    "candidate_semantic_ground_truth": {
+      "lfs_version": "2.1",
+      "mission": {
+        "nodes": [
+          {
+            "task": {
+              "F": {
+                "type": "Circle"
+              },
+              "T": {
+                "mode": "explicit",
+                "value": 14
+              },
+              "U": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12
+              ],
+              "c": {
+                "mode": "absolute",
+                "value": [
+                  0,
+                  18,
+                  4
+                ]
+              },
+              "m": "normal",
+              "q": {
+                "mode": "direct"
+              },
+              "r": {
+                "mode": "explicit",
+                "value": 6
+              },
+              "s": 1.0,
+              "task_id": 1
+            },
+            "type": "task"
+          }
+        ]
+      }
+    },
+    "canonical_index": 22,
+    "cold_start_repeat": 2,
+    "exact_command": "Have UAVs 1 through 12 form a circle centered at [0, 18, 4] with radius 6 meters in 14 seconds using normal motion and safety factor 1.0.",
+    "mission_timeout_s": 30.0,
+    "order_sha256": "4ec9ee0e8de0cc4b015bfd3858365fe8bf0a07aeddcb591ab6f91221a7bb8f69",
+    "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+    "production_baseline": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+    "registry_sha256": "e915575f23b1bd83810f3a8e5aa8092806b9076960c5a2f1fc2bb5faa73ad985",
+    "scenario_id": "E5V2-B-S1-N12",
+    "schema": "E5_v2_formal_trial_spec_v1",
+    "seed": 5202022,
+    "seed_registry_sha256": "1815deba3fab9c756603a358b4a3900b67ffb9bcb3e9f757282ab8894595d0cb",
+    "substudy": "E5-v2B",
+    "task_family": "SIMPLE",
+    "uav_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ]
+  },
+  "stage_outcomes": {
+    "candidate_parsing": {
+      "success": true
+    },
+    "candidate_validation": {
+      "success": true
+    },
+    "infrastructure_readiness": {
+      "elapsed_s": 23.668148929005838,
+      "ready": true,
+      "schema": "E5_v2_formal_readiness_v1",
+      "state": {
+        "1": {
+          "age_s": 0.003110607009148225,
+          "position": [
+            0.020281989127397537,
+            3.006492095068097,
+            1.5121216773986816
+          ],
+          "present": true,
+          "velocity": [
+            0.013718993403017521,
+            0.027367444708943367,
+            -0.1265585720539093
+          ]
+        },
+        "10": {
+          "age_s": 0.005455852995510213,
+          "position": [
+            0.009187962859869003,
+            29.9986554577481,
+            1.5990699529647827
+          ],
+          "present": true,
+          "velocity": [
+            0.2975170314311981,
+            0.01856308989226818,
+            -0.022731943055987358
+          ]
+        },
+        "11": {
+          "age_s": 0.009917306000716053,
+          "position": [
+            0.0013417089357972145,
+            32.99866575724445,
+            1.6033343076705933
+          ],
+          "present": true,
+          "velocity": [
+            0.2467777580022812,
+            -0.022613707929849625,
+            -0.39855682849884033
+          ]
+        },
+        "12": {
+          "age_s": 0.009784287001821212,
+          "position": [
+            0.0089867003262043,
+            35.988781332969666,
+            1.6861237287521362
+          ],
+          "present": true,
+          "velocity": [
+            0.2311350405216217,
+            -0.015564757399260998,
+            -0.13946257531642914
+          ]
+        },
+        "2": {
+          "age_s": 0.007019968004897237,
+          "position": [
+            -0.00672420347109437,
+            5.996149949263781,
+            1.5043728351593018
+          ],
+          "present": true,
+          "velocity": [
+            0.026998938992619514,
+            0.013591255061328411,
+            -0.11462099850177765
+          ]
+        },
+        "3": {
+          "age_s": 0.006668550995527767,
+          "position": [
+            0.007301826495677233,
+            9.00376190803945,
+            1.4979417324066162
+          ],
+          "present": true,
+          "velocity": [
+            -0.008684800937771797,
+            0.010779855772852898,
+            -0.12272043526172638
+          ]
+        },
+        "4": {
+          "age_s": 0.006373198004439473,
+          "position": [
+            0.020021693781018257,
+            12.005220366641879,
+            1.5021908283233643
+          ],
+          "present": true,
+          "velocity": [
+            -0.02394789271056652,
+            0.014834864065051079,
+            -0.07294462621212006
+          ]
+        },
+        "5": {
+          "age_s": 0.01465026699588634,
+          "position": [
+            0.0030563881155103445,
+            14.982373842969537,
+            1.5129176378250122
+          ],
+          "present": true,
+          "velocity": [
+            0.006761247757822275,
+            0.011738135479390621,
+            -0.15288414061069489
+          ]
+        },
+        "6": {
+          "age_s": 0.0106560679996619,
+          "position": [
+            0.009163303300738335,
+            17.999427647329867,
+            1.5049998760223389
+          ],
+          "present": true,
+          "velocity": [
+            -0.0040367343463003635,
+            0.042863525450229645,
+            0.004785061348229647
+          ]
+        },
+        "7": {
+          "age_s": 0.002496308006811887,
+          "position": [
+            0.0021215537562966347,
+            21.00003972473496,
+            1.5252180099487305
+          ],
+          "present": true,
+          "velocity": [
+            -0.032156020402908325,
+            0.030091634020209312,
+            -0.04923005402088165
+          ]
+        },
+        "8": {
+          "age_s": 0.006067527006962337,
+          "position": [
+            0.005381689872592688,
+            24.01391397137195,
+            1.5010051727294922
+          ],
+          "present": true,
+          "velocity": [
+            0.02649502456188202,
+            0.06678760051727295,
+            -0.21518662571907043
+          ]
+        },
+        "9": {
+          "age_s": 0.005745554008171894,
+          "position": [
+            0.0022241994738578796,
+            27.00986462086439,
+            1.5267218351364136
+          ],
+          "present": true,
+          "velocity": [
+            0.2586081027984619,
+            0.0193912535905838,
+            0.054860152304172516
+          ]
+        }
+      },
+      "status": {
+        "1": {
+          "age_s": 0.015772045007906854,
+          "altitude": 1.5136263370513916,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.020424114540219307,
+          "system_ready": true
+        },
+        "10": {
+          "age_s": 0.01787018899631221,
+          "altitude": 1.5986794233322144,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.09128853678703308,
+          "system_ready": true
+        },
+        "11": {
+          "age_s": 0.014507681000395678,
+          "altitude": 1.6064131259918213,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.19558344781398773,
+          "system_ready": true
+        },
+        "12": {
+          "age_s": 2.6138004614040256e-05,
+          "altitude": 1.6861237287521362,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.20135140419006348,
+          "system_ready": true
+        },
+        "2": {
+          "age_s": 0.003999659005785361,
+          "altitude": 1.5043728351593018,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.0032039412762969732,
+          "system_ready": true
+        },
+        "3": {
+          "age_s": 0.002264184004161507,
+          "altitude": 1.4979417324066162,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.020590443164110184,
+          "system_ready": true
+        },
+        "4": {
+          "age_s": 0.01825291500426829,
+          "altitude": 1.5019886493682861,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.010479362681508064,
+          "system_ready": true
+        },
+        "5": {
+          "age_s": 0.002773747008177452,
+          "altitude": 1.5129176378250122,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.021384859457612038,
+          "system_ready": true
+        },
+        "6": {
+          "age_s": 0.004611333002685569,
+          "altitude": 1.5049998760223389,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.02158571593463421,
+          "system_ready": true
+        },
+        "7": {
+          "age_s": 0.00912085700838361,
+          "altitude": 1.525219202041626,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.01872716099023819,
+          "system_ready": true
+        },
+        "8": {
+          "age_s": 0.014207660002284683,
+          "altitude": 1.5040451288223267,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.09739026427268982,
+          "system_ready": true
+        },
+        "9": {
+          "age_s": 0.011706621997291222,
+          "altitude": 1.5258065462112427,
+          "armed": true,
+          "failsafe": false,
+          "offboard": true,
+          "present": true,
+          "speed": 0.10347828269004822,
+          "system_ready": true
+        }
+      },
+      "success": true,
+      "uav_count": 12,
+      "uav_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ]
+    },
+    "infrastructure_spawn": {
+      "elapsed_s": 13.729924724000739,
+      "process_counts": {
+        "agent": 1,
+        "controllers": 0,
+        "gzserver": 1,
+        "px4": 12
+      },
+      "success": true
+    },
+    "mission_completion": {
+      "success": true
+    },
+    "runtime": {
+      "success": true
+    },
+    "semantic_frontend": {
+      "success": true
+    }
+  },
+  "timestamps_ns": {
+    "finished": 1788419837248962818,
+    "raw_acquisition_started": 1788419804822352540,
+    "started": 1788419765075522872
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "N": 8,
+  "attempt_id": "E5V2-A3-REL-SPACIOUS-SPHERE-R5",
+  "candidate": {
+    "lfs_version": "2.1",
+    "mission": {
+      "nodes": [
+        {
+          "task": {
+            "F": {
+              "type": "Sphere"
+            },
+            "T": {
+              "mode": "auto"
+            },
+            "U": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "c": {
+              "frame": "world",
+              "mode": "relative",
+              "offset": [
+                0,
+                0,
+                5
+              ],
+              "reference": "current_swarm_centroid"
+            },
+            "m": "smooth",
+            "q": {
+              "mode": "direct"
+            },
+            "r": {
+              "mode": "qualitative",
+              "value": "spacious"
+            },
+            "s": 1.0,
+            "task_id": 1
+          },
+          "type": "task"
+        }
+      ]
+    }
+  },
+  "candidate_ground_truth_injected": false,
+  "candidate_source": "real_semantic_frontend",
+  "compiled_mission_type": "CompiledMission",
+  "exact_command": "Have UAVs 1 through 8 form a spacious sphere centered at world-frame offset [0, 0, 5] meters from their current swarm centroid with automatic duration, using smooth motion and safety factor 1.0.",
+  "fallback_used": false,
+  "latencies_s": {
+    "T_LLM": 21.210804613,
+    "T_mission_execution": 6.759617966
+  },
+  "schema": "E5_v2_formal_semantic_runtime_result_v1",
+  "seed": 5202015,
+  "stages": {
+    "candidate_parsing": {
+      "success": true
+    },
+    "candidate_validation": {
+      "success": true
+    },
+    "mission_completion": {
+      "success": true
+    },
+    "runtime": {
+      "success": true
+    },
+    "semantic_frontend": {
+      "success": true
+    }
+  },
+  "success": true,
+  "timestamps_ns": {
+    "mission_dispatch_started": 1788423492514887336,
+    "mission_terminal": 1788423499274507417,
+    "worker_finished": 1788423499274507878,
+    "worker_started": 1788423471172614895
+  }
+}

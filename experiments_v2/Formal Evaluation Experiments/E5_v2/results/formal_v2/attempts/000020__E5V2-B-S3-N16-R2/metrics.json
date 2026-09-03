@@ -1,0 +1,181 @@
+{
+  "J_hard": {
+    "available": false,
+    "reason": "preregistered continuous endpoint unavailable due to pre-analysis semantic ambiguity",
+    "value": null
+  },
+  "actual_d_min": {
+    "available": true,
+    "reason": null,
+    "synchronized_sample_count": 24006,
+    "unit": "m",
+    "value": 2.08486324811914
+  },
+  "candidate_correctness": {
+    "available": true,
+    "reason": null,
+    "value": true
+  },
+  "classification_basis": "valid Candidate reached scientific terminal",
+  "completion_time": {
+    "available": true,
+    "reason": null,
+    "unit": "s",
+    "value": 15.033413887023926
+  },
+  "failsafe": {
+    "available": true,
+    "reason": null,
+    "value": false
+  },
+  "final_error": {
+    "available": true,
+    "per_uav_final_error_m": [
+      0.025562224984362333,
+      0.02513636462701052,
+      0.03412944981863078,
+      0.011818298021776214,
+      0.010835708095035422,
+      0.0071855245282042395,
+      0.004975979232830956,
+      0.008656906129194817,
+      0.053270359764306774,
+      0.050017253035134955,
+      0.06511660271122877,
+      0.08541786639043786,
+      0.06507119961036231,
+      0.09321864517008209,
+      0.08499472011627172,
+      0.10042020099621946
+    ],
+    "reason": null,
+    "unit": "m",
+    "value": 0.10042020099621946
+  },
+  "hard_failure": {
+    "available": true,
+    "reason": null,
+    "value": false
+  },
+  "infrastructure_failure": false,
+  "latency": {
+    "T_LLM": {
+      "available": true,
+      "reason": null,
+      "unit": "s",
+      "value": 18.913817836
+    },
+    "T_allocator": {
+      "available": false,
+      "reason": "stage timestamp unavailable",
+      "unit": "s",
+      "value": null
+    },
+    "T_geometry": {
+      "available": false,
+      "reason": "stage timestamp unavailable",
+      "unit": "s",
+      "value": null
+    },
+    "T_mission_execution": {
+      "available": true,
+      "reason": null,
+      "unit": "s",
+      "value": 16.450934507
+    },
+    "T_profile": {
+      "available": false,
+      "reason": "stage timestamp unavailable",
+      "unit": "s",
+      "value": null
+    },
+    "T_state_resolution": {
+      "available": false,
+      "reason": "stage timestamp unavailable",
+      "unit": "s",
+      "value": null
+    },
+    "T_validation": {
+      "available": false,
+      "reason": "stage timestamp unavailable",
+      "unit": "s",
+      "value": null
+    }
+  },
+  "mission_completion": {
+    "available": true,
+    "reason": null,
+    "value": true
+  },
+  "mission_success": {
+    "available": true,
+    "reason": null,
+    "value": true
+  },
+  "resolved_values": [
+    {
+      "T_exec": 14.0,
+      "c_exec": [
+        -6.0,
+        18.0,
+        4.0
+      ],
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "d_hard": 1.5,
+      "d_plan": 1.875,
+      "policy_hash": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+      "r_exec": 3.0,
+      "rejection_reason": null,
+      "rejection_stage": null,
+      "task_id": 1
+    },
+    {
+      "T_exec": 14.0,
+      "c_exec": [
+        6.0,
+        18.0,
+        4.0
+      ],
+      "configuration_id": "paper-current-v11-c0-f-frozen",
+      "d_hard": 1.5,
+      "d_plan": 1.875,
+      "policy_hash": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+      "r_exec": 3.0,
+      "rejection_reason": null,
+      "rejection_stage": null,
+      "task_id": 2
+    }
+  ],
+  "resolver_success": {
+    "available": true,
+    "reason": null,
+    "value": true
+  },
+  "schema": "E5_v2_formal_metrics_v1",
+  "scientific_complete": true,
+  "tracking_rmse": {
+    "available": true,
+    "covered_duration_s": 240.27872800827026,
+    "per_uav_rmse_m": {
+      "1": 0.04134292119062163,
+      "10": 0.0773166768748875,
+      "11": 0.08073377362042972,
+      "12": 0.11399003483257385,
+      "13": 0.1017806855119799,
+      "14": 0.13679010612115375,
+      "15": 0.13856525781796286,
+      "16": 0.14522435332473083,
+      "2": 0.03818835743246977,
+      "3": 0.03889566197431904,
+      "4": 0.020884933557359237,
+      "5": 0.018006223049891454,
+      "6": 0.028953712468517235,
+      "7": 0.01880399756841051,
+      "8": 0.024992423417060594,
+      "9": 0.07286764838561763
+    },
+    "reason": null,
+    "unit": "m",
+    "value": 0.08193815148408987
+  }
+}

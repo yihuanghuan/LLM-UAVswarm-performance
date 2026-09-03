@@ -1,0 +1,180 @@
+{
+  "schema": "E5_v2_formal_campaign_completion_audit_v1",
+  "generated_at": "2026-09-03T16:28:36+08:00",
+  "result": "PASS",
+  "target_state": "E5_V2_FORMAL_CAMPAIGN_COMPLETE_WAITING_FOR_ANALYSIS_AUTHORIZATION",
+  "campaign_accounting": {
+    "registered": 60,
+    "consumed": 60,
+    "journal_records": 60,
+    "raw_ledger_records": 60,
+    "attempt_directories": 60,
+    "unresolved_transactions": 0,
+    "unique_attempt_ids": 60,
+    "exact_frozen_order_complete": true,
+    "replacement_attempts": 0,
+    "additional_samples": 0,
+    "slot1_physical_execution_count": 1,
+    "slot1_physical_rerun_count": 0
+  },
+  "terminal_status_counts": {
+    "mission_success": 60,
+    "scientific_failure": 0,
+    "semantic_frontend_failure": 0,
+    "infrastructure_failure": 0,
+    "other_terminal": 0
+  },
+  "completeness": {
+    "scientific_complete": 60,
+    "infrastructure_failure": 0,
+    "unavailable_scientific_complete": 0
+  },
+  "by_substudy": {
+    "E5-v2A": {
+      "registered": 15,
+      "scientific_complete": 15,
+      "infrastructure_failure": 0,
+      "mission_success": 15
+    },
+    "E5-v2B": {
+      "registered": 45,
+      "scientific_complete": 45,
+      "infrastructure_failure": 0,
+      "mission_success": 45
+    }
+  },
+  "by_N": {
+    "8": {
+      "registered": 30,
+      "scientific_complete": 30,
+      "infrastructure_failure": 0,
+      "mission_success": 30
+    },
+    "12": {
+      "registered": 15,
+      "scientific_complete": 15,
+      "infrastructure_failure": 0,
+      "mission_success": 15
+    },
+    "16": {
+      "registered": 15,
+      "scientific_complete": 15,
+      "infrastructure_failure": 0,
+      "mission_success": 15
+    }
+  },
+  "by_task_family": {
+    "SIMPLE": {
+      "registered": 15,
+      "scientific_complete": 15,
+      "infrastructure_failure": 0,
+      "mission_success": 15
+    },
+    "UNDER_SPECIFIED": {
+      "registered": 15,
+      "scientific_complete": 15,
+      "infrastructure_failure": 0,
+      "mission_success": 15
+    },
+    "COMPOSITIONAL": {
+      "registered": 15,
+      "scientific_complete": 15,
+      "infrastructure_failure": 0,
+      "mission_success": 15
+    }
+  },
+  "by_E5_v2A_scenario": {
+    "E5V2-A1-REL-COMPACT-CIRCLE": {
+      "registered": 5,
+      "scientific_complete": 5,
+      "infrastructure_failure": 0,
+      "mission_success": 5
+    },
+    "E5V2-A2-MAINTAIN-NORMAL-LINE": {
+      "registered": 5,
+      "scientific_complete": 5,
+      "infrastructure_failure": 0,
+      "mission_success": 5
+    },
+    "E5V2-A3-REL-SPACIOUS-SPHERE": {
+      "registered": 5,
+      "scientific_complete": 5,
+      "infrastructure_failure": 0,
+      "mission_success": 5
+    }
+  },
+  "by_E5_v2B_scenario": {
+    "E5V2-B-S1-N8": {"registered": 5, "scientific_complete": 5, "infrastructure_failure": 0, "mission_success": 5},
+    "E5V2-B-S1-N12": {"registered": 5, "scientific_complete": 5, "infrastructure_failure": 0, "mission_success": 5},
+    "E5V2-B-S1-N16": {"registered": 5, "scientific_complete": 5, "infrastructure_failure": 0, "mission_success": 5},
+    "E5V2-B-S2-N8": {"registered": 5, "scientific_complete": 5, "infrastructure_failure": 0, "mission_success": 5},
+    "E5V2-B-S2-N12": {"registered": 5, "scientific_complete": 5, "infrastructure_failure": 0, "mission_success": 5},
+    "E5V2-B-S2-N16": {"registered": 5, "scientific_complete": 5, "infrastructure_failure": 0, "mission_success": 5},
+    "E5V2-B-S3-N8": {"registered": 5, "scientific_complete": 5, "infrastructure_failure": 0, "mission_success": 5},
+    "E5V2-B-S3-N12": {"registered": 5, "scientific_complete": 5, "infrastructure_failure": 0, "mission_success": 5},
+    "E5V2-B-S3-N16": {"registered": 5, "scientific_complete": 5, "infrastructure_failure": 0, "mission_success": 5}
+  },
+  "raw_storage": {
+    "RAW_ARCHIVE_VERIFIED": 60,
+    "PRE_RAW_ACQUISITION_INFRASTRUCTURE_FAILURE": 0,
+    "RAW_EVIDENCE_LOSS": 0,
+    "RAW_ARCHIVE_PENDING": 0,
+    "all_published_archives_independently_reverified": true
+  },
+  "endpoint_availability": {
+    "J_hard": {
+      "available": 0,
+      "registered": 60,
+      "status": "PREREGISTERED_ENDPOINT_UNAVAILABLE_DUE_TO_SEMANTIC_AMBIGUITY"
+    },
+    "T_validation": {"available": 0, "registered": 60},
+    "T_state_resolution": {"available": 0, "registered": 60},
+    "T_geometry": {"available": 0, "registered": 60},
+    "T_allocator": {"available": 0, "registered": 60},
+    "T_profile": {"available": 0, "registered": 60}
+  },
+  "frozen_identities": {
+    "sealed_registry_sha256": "e915575f23b1bd83810f3a8e5aa8092806b9076960c5a2f1fc2bb5faa73ad985",
+    "scientific_payload_sha256": "96ab0893ee099c1003f6a5aad6896decde97c4b9c8d885d38141b8a4dbae81ed",
+    "formal_seed_registry_sha256": "1815deba3fab9c756603a358b4a3900b67ffb9bcb3e9f757282ab8894595d0cb",
+    "formal_order_sha256": "4ec9ee0e8de0cc4b015bfd3858365fe8bf0a07aeddcb591ab6f91221a7bb8f69",
+    "analysis_contract_sha256": "05802cb32e8dc2f990d9e0144f2cfd118b87228ab0c441578e084aeefc0d008a",
+    "production_policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+    "old_E5_v1_registry_sha256": "9bb6bc9b46b5211c50c8f2e29bd434235424beb2bb0fc36ec857a3298d89511e"
+  },
+  "mixed_tooling_provenance": {
+    "slot_1": {
+      "physical_execution_bundle_sha256": "422d82b593ba927dffaee3c14bcf8b6996304a8ae302cdc525ab3c525b786ecb",
+      "transaction_recovery_bundle_sha256": "29eb7421d2095ba88e60df0ed224ad035348b534cb57877a32d967bd933027bb"
+    },
+    "slots_2_through_60": {
+      "physical_execution_bundle_sha256": "2800b1a4540ffde75573f5ea7bf580b415302d5c4d86f0ab86898c69f7b02572"
+    },
+    "scientific_method_and_protocol_unchanged_across_amendment": true,
+    "byte_identical_instrumentation_across_all_attempts_claimed": false
+  },
+  "chain_and_inventory_identities": {
+    "journal_chain_tip_sha256": "c39fcdbf0418b979209c70387932794eb0cd514a5a0b9bdaf32057dd286acb38",
+    "journal_record_inventory_sha256": "fa4e3db2530bcc496279e3d7df0f454b4f8fdd278343131809f0bb78723bb06e",
+    "raw_ledger_chain_tip_sha256": "a09a5612ba93a32f3be9ab43c3bf6fe43358c09a02e3484ec93ee5b9342565d8",
+    "raw_ledger_record_inventory_sha256": "d7d8adfcc5964d33e9070cad4eb9b07dbc0bbdcd1cae80d3f5e1927ad6eed68c",
+    "compact_results_inventory_sha256": "cb1a0ef155cf7b9856c5cec93221c493a3c1715220ad57a0ff08389856fd1860",
+    "compact_results_inventory_file_count": 1261
+  },
+  "change_audit": {
+    "scientific_protocol_changes": 0,
+    "registry_changes": 0,
+    "formal_seed_changes": 0,
+    "formal_order_changes": 0,
+    "analysis_contract_changes": 0,
+    "production_method_changes": 0,
+    "old_E5_v1_changes": 0
+  },
+  "reporting_boundary": {
+    "scientific_analysis_started": false,
+    "scientific_comparative_interpretation_in_this_audit": false,
+    "E5_v2_is_integration_evidence_only": true,
+    "formal_or_asymptotic_scalability_claimed": false,
+    "E5_v1_and_E5_v2_success_rates_pooled": false
+  }
+}
