@@ -1,8 +1,20 @@
 registry_id: E5-end-to-end-v2
-status: CANDIDATE_FOR_HUMAN_REVIEW
+status: SEALED_FOR_FORMAL_EXECUTION
 registry_version: 1
 accepted_formal_results_created: false
 formal_execution_started: false
+
+activation:
+  approved: true
+  decision: activate_candidate_for_formal_execution
+  activation_date_utc: '2026-09-03'
+  candidate_commit: e2b0b3fe4ad93d81ae2477a7bc3e37ce1eb24377
+  candidate_registry_sha256: 7bc6b50de747753e09ca948e806c00961a0539804cff906df75308ff70b76567
+  candidate_scientific_payload_sha256: 96ab0893ee099c1003f6a5aad6896decde97c4b9c8d885d38141b8a4dbae81ed
+  human_activation_manifest: E5_v2_human_activation_manifest.yaml
+  activation_audit_json: E5_v2_activation_audit.json
+  activation_audit_markdown: E5_v2_activation_audit.md
+  separate_formal_launch_authorization_required: true
 
 scientific_position:
   evidence_class: integration_only

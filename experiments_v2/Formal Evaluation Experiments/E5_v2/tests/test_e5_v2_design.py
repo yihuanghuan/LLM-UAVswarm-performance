@@ -38,6 +38,7 @@ from e5_v2_common import (  # noqa: E402
     uav_ids,
 )
 from e5_v2_formal_adapter import (  # noqa: E402
+    ACTIVATION_MANIFEST_PATH,
     FormalActivationError,
     assert_formal_activation,
 )
@@ -67,7 +68,7 @@ def test_candidate_registry_completeness_and_exact_ground_truth():
     registry = load_yaml(REGISTRY_PATH)
     conditions = flatten_conditions(registry)
     assert registry["registry_id"] == "E5-end-to-end-v2"
-    assert registry["status"] == "CANDIDATE_FOR_HUMAN_REVIEW"
+    assert registry["status"] == "SEALED_FOR_FORMAL_EXECUTION"
     assert len(conditions) == 12
     assert len(registry["scenarios"]["E5-v2A"]) == 3
     assert len(registry["scenarios"]["E5-v2B"]) == 9
@@ -135,8 +136,8 @@ def test_trial_order_is_deterministic_exact_and_interleaved():
         assert {item["substudy"] for item in block} == {"E5-v2A", "E5-v2B"}
 
 
-def test_formal_adapter_refuses_candidate_and_requires_human_activation():
-    with pytest.raises(FormalActivationError, match="refuses non-activated"):
+def test_formal_adapter_accepts_only_sealed_registry_and_human_activation():
+    with pytest.raises(FormalActivationError, match="required"):
         assert_formal_activation(REGISTRY_PATH, None)
     completed = subprocess.run(
         [
@@ -147,10 +148,11 @@ def test_formal_adapter_refuses_candidate_and_requires_human_activation():
         text=True,
         capture_output=True,
     )
-    assert completed.returncode == 2
+    assert completed.returncode == 0, completed.stdout + completed.stderr
     result = json.loads(completed.stdout)
-    assert result["authorized"] is False
+    assert result["authorized"] is True
     assert result["formal_execution_started"] is False
+    assert ACTIVATION_MANIFEST_PATH.is_file()
 
 
 def test_old_e5_v1_registry_byte_hash_unchanged():
