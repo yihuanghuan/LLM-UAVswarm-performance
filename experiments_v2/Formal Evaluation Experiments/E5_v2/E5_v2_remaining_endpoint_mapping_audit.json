@@ -1,0 +1,315 @@
+{
+  "schema": "E5_v2_remaining_endpoint_mapping_audit_v1",
+  "prospective_cutoff_commit": "9276cbe1dcff8299d3edcd73e10cc3a686b2441c",
+  "audit_result": "PASS",
+  "J_hard_scope": "excluded_from_remaining-endpoint audit and governed by E5_v2_endpoint_availability_adjudication_v1",
+  "summary": {
+    "endpoint_count": 22,
+    "EXACT_MAPPING_CONFIRMED": 17,
+    "PREREGISTERED_BUT_UNAVAILABLE": 5,
+    "SEMANTIC_AMBIGUITY_REQUIRES_HUMAN_REVIEW": 0
+  },
+  "prospective_sources": {
+    "analysis_contract": {
+      "path": "E5_v2_analysis_contract.md",
+      "sha256": "05802cb32e8dc2f990d9e0144f2cfd118b87228ab0c441578e084aeefc0d008a"
+    },
+    "registry": {
+      "path": "E5_v2_registry.yaml",
+      "sha256": "e915575f23b1bd83810f3a8e5aa8092806b9076960c5a2f1fc2bb5faa73ad985"
+    },
+    "classification_policy": {
+      "path": "E5_v2_formal_classification_policy_v1.md",
+      "sha256": "aca54b60ff51835b936dc20a3871eac4fa5e03c95d68b5b39716f27bf7e53451"
+    },
+    "metric_implementation": {
+      "path": "tooling/e5_v2_formal_metrics.py",
+      "sha256": "2129862ea6e3bcabdd4b744a41ff05312e82c5a9bc2ca389ffc57a6acf9bce8e"
+    },
+    "orchestrator_implementation": {
+      "path": "tooling/e5_v2_formal_orchestrator.py",
+      "sha256": "2f0ef3289842e116f908cd391ea11ea4865d5a5db6671595a98d4431485bc678"
+    },
+    "semantic_runtime_implementation": {
+      "path": "tooling/e5_v2_formal_trial.py",
+      "sha256": "36ebceda47c1cba38543e4700a77a5743242b8d9de7eeb0622985d1619ed9be6"
+    }
+  },
+  "endpoints": [
+    {
+      "endpoint": "Candidate correctness",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract binary summaries; registry exact candidate_semantic_ground_truth; e5_v2_formal_metrics.py candidate_correct",
+      "implemented_source": "canonical_sha256(runtime Candidate) == canonical_sha256(registered Candidate semantic ground truth)",
+      "mathematical_or_boolean_semantics": "Boolean exact canonical-JSON equality; no Candidate gives NA, not false",
+      "unit": "boolean",
+      "interval": "one semantic frontend result for the registered attempt",
+      "aggregation": "whole Candidate object",
+      "availability_condition": "real semantic frontend produced a valid Candidate object",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    },
+    {
+      "endpoint": "resolver success",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract stage outcomes and binary summaries; classification policy; e5_v2_formal_orchestrator.py _stage_outcomes",
+      "implemented_source": "candidate valid AND at least one complete resolution record AND no unresolved task rejection",
+      "mathematical_or_boolean_semantics": "Boolean resolver acceptance over every registered task represented in the frozen trace",
+      "unit": "boolean",
+      "interval": "registered attempt resolution stage",
+      "aggregation": "all registered tasks must resolve without rejection",
+      "availability_condition": "stage record is always emitted; false if no successful trace",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    },
+    {
+      "endpoint": "scientific completeness",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract population/denominator rules; classification policy; e5_v2_formal_metrics.py classify_attempt",
+      "implemented_source": "not infrastructure_failure AND valid Candidate AND scientific_terminal_reached; forced false for RAW_EVIDENCE_LOSS",
+      "mathematical_or_boolean_semantics": "Boolean evidence-valid scientific terminal classification",
+      "unit": "boolean",
+      "interval": "whole attempt",
+      "aggregation": "conjunction of required stage classifications",
+      "availability_condition": "always available for a retained attempt",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    },
+    {
+      "endpoint": "infrastructure failure",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract infrastructure outcomes; classification policy pre-command startup/readiness/raw-recorder rule",
+      "implemented_source": "e5_v2_formal_metrics.py classify_attempt plus terminal raw disposition",
+      "mathematical_or_boolean_semantics": "Boolean true for startup, spawn, controller launch, readiness, or raw-recorder failure before command submission",
+      "unit": "boolean",
+      "interval": "pre-command infrastructure stage",
+      "aggregation": "any registered infrastructure gate failure",
+      "availability_condition": "always available for a retained attempt",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED",
+      "implementation_alignment": "Frozen semantics are exact. The v1 classifier keyed only on readiness and omitted the PRE_RAW disposition after successful readiness; the infrastructure amendment must align that implementation without changing semantics."
+    },
+    {
+      "endpoint": "mission completion",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract mission-success rule; registry success_common; e5_v2_formal_trial.py",
+      "implemented_source": "execute_runtime_payload returns after registered production completion tracking before timeout",
+      "mathematical_or_boolean_semantics": "Boolean all registered tasks reached their registered completion event",
+      "unit": "boolean",
+      "interval": "dispatch through registered mission terminal",
+      "aggregation": "production mission relation semantics over all tasks",
+      "availability_condition": "always emitted; false on non-completion or earlier terminal failure",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    },
+    {
+      "endpoint": "mission success",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract Outcome classification; registry success_common; e5_v2_formal_metrics.py extract_metrics",
+      "implemented_source": "Candidate exact and valid, resolver/planner success, mission completion, no infrastructure failure/failsafe/hard failure, actual d_min available and >=1.50 m; order/no-replacement enforced by gates",
+      "mathematical_or_boolean_semantics": "Boolean conjunction of every frozen end-to-end success requirement",
+      "unit": "boolean",
+      "interval": "whole retained attempt and scored mission interval",
+      "aggregation": "all requirements must be true",
+      "availability_condition": "always available; missing required continuous evidence makes success false",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    },
+    {
+      "endpoint": "actual d_min",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract actual d_min and scored-mission threshold; e5_v2_formal_metrics.py synchronized_minimum_distance/read_rosbag_evidence",
+      "implemented_source": "minimum Euclidean separation over every UAV pair at all union timestamps where every UAV position is linearly interpolable with a bracketing gap <=0.20 s",
+      "mathematical_or_boolean_semantics": "min over synchronized time samples and unordered registered UAV pairs of Euclidean position distance",
+      "unit": "m",
+      "interval": "first execution-command timestamp through all-UAV completion terminal, or last covered status when terminal absent",
+      "aggregation": "minimum across time and pairs",
+      "availability_condition": "at least two samples per UAV and at least one all-UAV synchronized sample within gap rule",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    },
+    {
+      "endpoint": "tracking RMSE",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract continuous outcomes; e5_v2_formal_metrics.py time_weighted_tracking_rmse/read_rosbag_evidence",
+      "implemented_source": "square root of summed trapezoidal integrals of per-UAV 3-D squared tracking-error magnitude divided by summed covered duration; gaps >0.20 s omitted",
+      "mathematical_or_boolean_semantics": "sqrt(sum_i integral ||e_i(t)||^2 dt / sum_i covered_duration_i)",
+      "unit": "m",
+      "interval": "same scored mission interval as raw evidence reader",
+      "aggregation": "duration-weighted across UAVs and time",
+      "availability_condition": "positive covered duration from at least one UAV with two samples and valid gaps",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    },
+    {
+      "endpoint": "final error",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract continuous outcomes; e5_v2_formal_metrics.py _latest_error_norm",
+      "implemented_source": "maximum across registered UAVs of the Euclidean norm of each UAV's latest tracking-error sample in the scored interval",
+      "mathematical_or_boolean_semantics": "max_i ||e_i(t_i,last)||_2",
+      "unit": "m",
+      "interval": "latest per-UAV sample within the scored mission interval",
+      "aggregation": "maximum across registered UAVs",
+      "availability_condition": "every registered UAV has at least one scored tracking-error sample",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    },
+    {
+      "endpoint": "completion time",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract continuous outcomes; e5_v2_formal_metrics.py read_rosbag_evidence",
+      "implemented_source": "timestamp of first post-final-dispatch state at which all registered UAV statuses are hover-stable with mission_id>0, minus first dispatch timestamp",
+      "mathematical_or_boolean_semantics": "terminal_completion_time - first_dispatch_time",
+      "unit": "s",
+      "interval": "first dispatch to observed all-UAV completion terminal",
+      "aggregation": "single mission duration",
+      "availability_condition": "execution dispatch and all-UAV completion terminal observed",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    },
+    {
+      "endpoint": "failsafe",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract binary summaries and mission success; registry success_common; e5_v2_formal_metrics.py read_rosbag_evidence",
+      "implemented_source": "any scored UAV status has failsafe true, armed false, or offboard false",
+      "mathematical_or_boolean_semantics": "Boolean any failsafe or unintended disarm/offboard over scored statuses",
+      "unit": "boolean",
+      "interval": "scored mission interval",
+      "aggregation": "logical OR across registered UAVs and time",
+      "availability_condition": "always emitted; requires scored status evidence for a positive observation",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    },
+    {
+      "endpoint": "hard failure",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract binary summaries/mission success; classification policy; e5_v2_formal_orchestrator.py _stage_outcomes",
+      "implemented_source": "cleanup error OR post-resolution runtime terminal error other than registered timeout",
+      "mathematical_or_boolean_semantics": "Boolean hard component/control/runtime failure classification distinct from timeout and scientific rejection",
+      "unit": "boolean",
+      "interval": "whole attempt",
+      "aggregation": "logical OR across hard terminal conditions",
+      "availability_condition": "always emitted for retained attempt",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    },
+    {
+      "endpoint": "resolved c_exec",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract E5-v2A resolved values; registry frozen state semantics; resolver trace schema read by e5_v2_formal_metrics.py _resolved_values",
+      "implemented_source": "resolved_center field from the frozen resolver trace per task",
+      "mathematical_or_boolean_semantics": "deterministically resolved execution center vector",
+      "unit": "m in registered frame",
+      "interval": "state-resolution event per task",
+      "aggregation": "reported per task without cross-task aggregation",
+      "availability_condition": "successful resolver trace contains resolved_center",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    },
+    {
+      "endpoint": "resolved r_exec",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract E5-v2A resolved values; registry qualitative policy identity; resolver trace schema read by e5_v2_formal_metrics.py _resolved_values",
+      "implemented_source": "r_exec field from the frozen resolver trace per task",
+      "mathematical_or_boolean_semantics": "deterministically resolved execution scale",
+      "unit": "m",
+      "interval": "geometry/scale-resolution event per task",
+      "aggregation": "reported per task without cross-task aggregation",
+      "availability_condition": "successful resolver trace contains r_exec",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    },
+    {
+      "endpoint": "resolved T_exec",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract E5-v2A resolved values; registry auto-T policy identity; resolver trace schema read by e5_v2_formal_metrics.py _resolved_values",
+      "implemented_source": "t_exec field from the frozen resolver trace per task",
+      "mathematical_or_boolean_semantics": "deterministically resolved execution-profile duration",
+      "unit": "s",
+      "interval": "timing-resolution event per task",
+      "aggregation": "reported per task without cross-task aggregation",
+      "availability_condition": "successful resolver trace contains t_exec",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    },
+    {
+      "endpoint": "T_LLM",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract requires LLM latency separately; e5_v2_formal_trial.py perf_counter instrumentation",
+      "implemented_source": "elapsed monotonic perf_counter around parse_candidate_mission(exact_command, availability), including provider/frontend parsing and its frozen internal retry behavior",
+      "mathematical_or_boolean_semantics": "worker-local end timestamp minus start timestamp",
+      "unit": "s",
+      "interval": "semantic frontend invocation",
+      "aggregation": "one elapsed duration per attempt",
+      "availability_condition": "semantic worker reaches the timing finally block",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    },
+    {
+      "endpoint": "T_validation",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract: report only when observable without method-semantic change; frozen implementation emits NA when absent",
+      "implemented_source": "no independent pre-slot-1 validation timestamp was recorded by e5_v2_formal_trial.py",
+      "mathematical_or_boolean_semantics": "no retrospective split from T_LLM is permitted",
+      "unit": "s",
+      "interval": "not independently observed",
+      "aggregation": "none",
+      "availability_condition": "unavailable for current frozen observation path",
+      "mapping_status": "PREREGISTERED_BUT_UNAVAILABLE"
+    },
+    {
+      "endpoint": "T_state_resolution",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract conditional observability rule; frozen implementation emits NA when absent",
+      "implemented_source": "no independent pre-slot-1 state-resolution timestamp was recorded",
+      "mathematical_or_boolean_semantics": "no retrospective decomposition from mission execution is permitted",
+      "unit": "s",
+      "interval": "not independently observed",
+      "aggregation": "none",
+      "availability_condition": "unavailable for current frozen observation path",
+      "mapping_status": "PREREGISTERED_BUT_UNAVAILABLE"
+    },
+    {
+      "endpoint": "T_geometry",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract conditional observability rule; frozen implementation emits NA when absent",
+      "implemented_source": "no independent pre-slot-1 geometry timestamp was recorded",
+      "mathematical_or_boolean_semantics": "no retrospective decomposition from mission execution is permitted",
+      "unit": "s",
+      "interval": "not independently observed",
+      "aggregation": "none",
+      "availability_condition": "unavailable for current frozen observation path",
+      "mapping_status": "PREREGISTERED_BUT_UNAVAILABLE"
+    },
+    {
+      "endpoint": "T_allocator",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract conditional observability rule; frozen implementation emits NA when absent",
+      "implemented_source": "no independent pre-slot-1 allocator timestamp was recorded",
+      "mathematical_or_boolean_semantics": "no retrospective decomposition from mission execution is permitted",
+      "unit": "s",
+      "interval": "not independently observed",
+      "aggregation": "none",
+      "availability_condition": "unavailable for current frozen observation path",
+      "mapping_status": "PREREGISTERED_BUT_UNAVAILABLE"
+    },
+    {
+      "endpoint": "T_profile",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract conditional observability rule; frozen implementation emits NA when absent",
+      "implemented_source": "no independent pre-slot-1 profile-compilation timestamp was recorded",
+      "mathematical_or_boolean_semantics": "no retrospective decomposition from mission execution is permitted",
+      "unit": "s",
+      "interval": "not independently observed",
+      "aggregation": "none",
+      "availability_condition": "unavailable for current frozen observation path",
+      "mapping_status": "PREREGISTERED_BUT_UNAVAILABLE"
+    },
+    {
+      "endpoint": "T_mission_execution",
+      "preregistered": true,
+      "exact_prospective_source": "analysis contract latency decomposition; e5_v2_formal_trial.py perf_counter instrumentation",
+      "implemented_source": "elapsed monotonic perf_counter around execute_runtime_payload(node, candidate), including deterministic resolution/compilation/dispatch and physical mission wait",
+      "mathematical_or_boolean_semantics": "worker-local end timestamp minus start timestamp",
+      "unit": "s",
+      "interval": "runtime payload invocation through return or terminal exception",
+      "aggregation": "one elapsed duration per attempt; not presented as deterministic compute-only latency",
+      "availability_condition": "semantic worker reaches the runtime timing finally block",
+      "mapping_status": "EXACT_MAPPING_CONFIRMED"
+    }
+  ],
+  "implementation_alignment_actions": [
+    {
+      "endpoint": "infrastructure failure",
+      "action": "treat PRE_RAW_ACQUISITION_INFRASTRUCTURE_FAILURE as infrastructure_failure=true even when readiness previously passed",
+      "classification": "raw_storage_error_handling_only",
+      "scientific_semantics_change": false
+    }
+  ],
+  "scientific_metric_values_consulted": false,
+  "recovery_gate": "PASS"
+}

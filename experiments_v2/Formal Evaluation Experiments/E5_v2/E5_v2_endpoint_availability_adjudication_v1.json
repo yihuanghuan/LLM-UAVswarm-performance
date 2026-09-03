@@ -1,0 +1,75 @@
+{
+  "schema": "E5_v2_endpoint_availability_adjudication_v1",
+  "decision": "CONTINUE_E5_V2_WITH_PREREGISTERED_J_HARD_UNAVAILABLE",
+  "decision_stage": "after_one_physical_attempt_but_before_any_scientific_metric_extraction",
+  "physical_attempts_before_decision": 1,
+  "accepted_formal_results_before_decision": 0,
+  "scientific_metric_values_viewed_before_decision": false,
+  "authority": "human_adjudication",
+  "endpoint": {
+    "name": "J_hard",
+    "preregistered": true,
+    "intended_role": "continuous_safety_outcome",
+    "status": "PREREGISTERED_ENDPOINT_UNAVAILABLE_DUE_TO_SEMANTIC_AMBIGUITY",
+    "availability_expected": "0/60",
+    "replacement_definition": null,
+    "proxy": null,
+    "raw_rederivation": "prohibited",
+    "imputation": "prohibited"
+  },
+  "reason": "The frozen E5-v2 artifacts did not uniquely define the mathematical functional, unit, scored interval, threshold convention, interpolation convention, or cross-pair/task aggregation for the preregistered continuous endpoint before slot-1 execution.",
+  "rejected_substitutes": [
+    "int(not d_min_ok)",
+    "planner hard_violations",
+    "C0-E hard-duration",
+    "E3-v4 pair-second exposure",
+    "any-pair union duration",
+    "hard-risk event count",
+    "distance-deficit integral"
+  ],
+  "required_per_attempt_representation": {
+    "available": false,
+    "value": null,
+    "reason": "preregistered continuous endpoint unavailable due to pre-analysis semantic ambiguity"
+  },
+  "prohibited_handling": [
+    "zero output",
+    "binary implementation reported as J_hard",
+    "renaming the binary implementation as a new scientific endpoint",
+    "post-hoc replacement or proxy endpoint",
+    "raw rederivation under a newly selected definition"
+  ],
+  "reportable_endpoints_preserved": [
+    "all-attempt mission success",
+    "scientific completeness",
+    "Candidate correctness",
+    "resolver success",
+    "mission completion",
+    "actual minimum separation d_min",
+    "tracking RMSE",
+    "final error",
+    "failsafe",
+    "hard failure",
+    "resolved c_exec",
+    "resolved r_exec",
+    "resolved T_exec",
+    "completion time",
+    "registered latency components when available"
+  ],
+  "unreportable_nonpreregistered_substitutes": [
+    "continuous J_hard",
+    "hard-risk exposure duration",
+    "pair-seconds",
+    "hard-risk event count",
+    "hard-risk deficit integral"
+  ],
+  "mission_success_semantics_unchanged": true,
+  "mission_success_hard_distance_criterion": "actual d_min >= d_hard = 1.50 m",
+  "analysis_contract_edited": false,
+  "scientific_position": "integration_evidence_only",
+  "source_ambiguity_audit": {
+    "json": "E5_v2_J_hard_semantics_audit.json",
+    "markdown": "E5_v2_J_hard_semantics_audit.md",
+    "conclusion": "PREREGISTERED_ENDPOINT_SEMANTICS_AMBIGUOUS"
+  }
+}
