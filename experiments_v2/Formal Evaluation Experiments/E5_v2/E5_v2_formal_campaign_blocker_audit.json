@@ -1,0 +1,117 @@
+{
+  "accepted_formal_results": 0,
+  "archive_ledger_records": 0,
+  "attempt_directories": 0,
+  "blocker": {
+    "classification": "FORMAL_EXECUTION_ENVIRONMENT_AND_TRANSACTION_BLOCKER",
+    "primary_error": "ModuleNotFoundError: No module named 'rosbag2_py' during frozen metric extraction",
+    "root_cause": "The formal launch process set PYTHONPATH to the E5_v2 tooling directory only, masking the ambient /opt/ros/humble Python module paths required by rosbag2_py.",
+    "secondary_error": "PermissionError while the frozen RAW_EVIDENCE_LOSS path attempted to rename the already read-only verified archive directory",
+    "scientific_result_direction_used_in_stop_decision": false,
+    "stage": "post-physical-attempt metric extraction and pre-journal durable publication"
+  },
+  "blocker_slot": {
+    "N": 12,
+    "accepted_formal_result_published": false,
+    "attempt_id": "E5V2-B-S2-N12-R1",
+    "campaign_position": 1,
+    "journal_consumed": false,
+    "physical_scientific_attempt_executed": true,
+    "raw_acquisition_started": true,
+    "readiness_success": true,
+    "scenario_id": "E5V2-B-S2-N12",
+    "seed": 5202036,
+    "semantic_worker_returncode": 0,
+    "semantic_worker_terminal": true,
+    "substudy": "E5-v2B",
+    "task_family": "UNDER_SPECIFIED"
+  },
+  "campaign_action": {
+    "ad_hoc_fix_applied": false,
+    "campaign_stopped": true,
+    "formal_slot_rerun_performed": false,
+    "human_review_required": true,
+    "slot_2_started": false
+  },
+  "cleanup": {
+    "MicroXRCEAgent": 0,
+    "controllers": 0,
+    "gzserver": 0,
+    "px4": 0,
+    "status": "PASS"
+  },
+  "counts": {
+    "archive_ledger_records": 0,
+    "attempt_directories": 0,
+    "journal_records": 0,
+    "last_successfully_consumed_slot": 0,
+    "registered_slots": 60,
+    "unresolved_formal_transactions": 1
+  },
+  "evidence_integrity": {
+    "formal_transaction_packaging": "UNRESOLVED",
+    "overall": "PRESERVED_BUT_TRANSACTION_UNRESOLVED",
+    "raw_archive": {
+      "archive_reference": "/home/yihuang/learning/LLM_swarm_ws/e5_v2_formal_raw_archive_v1/attempts/000001__E5V2-B-S2-N12-R1",
+      "file_count": 2,
+      "files": [
+        {
+          "bytes": 61225,
+          "path": "rosbag/metadata.yaml",
+          "sha256": "73feae6d49b958a3586f76dbeabf95087d91e29e8d21063a7e9f3802dbd30603"
+        },
+        {
+          "bytes": 45821952,
+          "path": "rosbag/rosbag_0.db3",
+          "sha256": "8c73098c6481d4a885cb42210b9d1808b06695fa3741aab4f60bbf6174694a5c"
+        }
+      ],
+      "inventory_sha256": "ff97ad4ef665754e23fc90e06803844580bcfaacd2ae89034d3ecaf8bc56fbda",
+      "ros2_bag_info_readable": true,
+      "rosbag_duration_s": 25.149640563,
+      "rosbag_message_count": 110197,
+      "status": "PRESERVED_AND_INDEPENDENTLY_READABLE",
+      "total_bytes": 45883177
+    },
+    "raw_archive_pending_entries": 0,
+    "raw_evidence_loss_recorded": false,
+    "transaction": {
+      "file_count": 30,
+      "inventory_sha256": "2c0c1d9d961ccc63ffee0776f4b36c9ec0b111c9cb6f877b2e28dcc06bbc9152",
+      "path": "results/formal_v2/.transactions/000001__E5V2-B-S2-N12-R1__1788405481555191643",
+      "status": "PRESERVED",
+      "total_bytes": 633319
+    }
+  },
+  "frozen_identities": {
+    "analysis_contract_sha256": "05802cb32e8dc2f990d9e0144f2cfd118b87228ab0c441578e084aeefc0d008a",
+    "formal_execution_tooling_bundle_sha256": "422d82b593ba927dffaee3c14bcf8b6996304a8ae302cdc525ab3c525b786ecb",
+    "formal_order_sha256": "4ec9ee0e8de0cc4b015bfd3858365fe8bf0a07aeddcb591ab6f91221a7bb8f69",
+    "production_baseline": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+    "production_policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+    "registry_sha256": "e915575f23b1bd83810f3a8e5aa8092806b9076960c5a2f1fc2bb5faa73ad985",
+    "scientific_payload_sha256": "96ab0893ee099c1003f6a5aad6896decde97c4b9c8d885d38141b8a4dbae81ed",
+    "seed_registry_sha256": "1815deba3fab9c756603a358b4a3900b67ffb9bcb3e9f757282ab8894595d0cb"
+  },
+  "governance": {
+    "old_E5_v1_changes": 0,
+    "production_method_changes": 0,
+    "scientific_protocol_changes": 0
+  },
+  "journal_records": 0,
+  "launch_authorization": {
+    "external_manifest_path": "/home/yihuang/learning/LLM_swarm_ws/E5_v2_formal_launch_authorization_v1.yaml",
+    "manifest_sha256": "787e80a5c5c2ceb64c63094e5bfb633dbd4701d6b4923c76ee9458932f57e18e",
+    "validator_passed_before_launch": true
+  },
+  "next_registered_trial": {
+    "automatic_resumption_permissible": false,
+    "journal_derived_attempt_id": "E5V2-B-S2-N12-R1",
+    "journal_derived_position": 1,
+    "reason": "The journal still points to slot 1, but slot 1 was physically executed and cannot be rerun. Human-approved audited transaction recovery is required before any later slot can become eligible.",
+    "rerun_slot_1_permitted": false
+  },
+  "prelaunch_head": "9276cbe1dcff8299d3edcd73e10cc3a686b2441c",
+  "schema": "E5_v2_formal_campaign_blocker_audit_v1",
+  "status": "BLOCKED_WAITING_FOR_HUMAN_REVIEW"
+}
