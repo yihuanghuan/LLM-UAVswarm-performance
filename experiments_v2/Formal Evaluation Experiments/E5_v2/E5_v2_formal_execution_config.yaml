@@ -1,0 +1,76 @@
+config_id: E5-v2-formal-execution-infrastructure-v1
+status: FROZEN_BEFORE_FORMAL_SLOT_1
+launch_authorized: false
+separate_human_launch_authorization_required: true
+
+identities:
+  sealed_registry_sha256: e915575f23b1bd83810f3a8e5aa8092806b9076960c5a2f1fc2bb5faa73ad985
+  scientific_payload_sha256: 96ab0893ee099c1003f6a5aad6896decde97c4b9c8d885d38141b8a4dbae81ed
+  seed_registry_sha256: 1815deba3fab9c756603a358b4a3900b67ffb9bcb3e9f757282ab8894595d0cb
+  formal_order_sha256: 4ec9ee0e8de0cc4b015bfd3858365fe8bf0a07aeddcb591ab6f91221a7bb8f69
+  analysis_contract_sha256: 05802cb32e8dc2f990d9e0144f2cfd118b87228ab0c441578e084aeefc0d008a
+  production_policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+  production_baseline: 6cf402debf23851b1eff3edc6f3ab49eae7127c4
+
+runtime:
+  install_root: /home/yihuang/learning/LLM_swarm_ws/e5_v2_build/install
+  px4_root: /home/yihuang/PX4-Autopilot
+  semantic_python: /home/yihuang/learning/LLM_swarm_ws/llm_env/bin/python
+  raw_archive_root: /home/yihuang/learning/LLM_swarm_ws/e5_v2_formal_raw_archive_v1
+  ros_domain_id: 86
+  rmw_implementation: rmw_fastrtps_cpp
+  simulator_spawn_timeout_s: 120.0
+  readiness_timeout_s: 240.0
+  readiness_hold_s: 1.0
+  freshness_timeout_s: 0.5
+  minimum_altitude_m: 1.0
+  speed_tolerance_mps: 0.30
+  rosbag_shutdown_timeout_s: 30.0
+  process_shutdown_timeout_s: 12.0
+  post_terminal_capture_s: 1.0
+
+controller:
+  control_mode: ladrc_acceleration
+  avoidance_mode: iapf_dual
+  iapf_escape_mode: id_order
+  lfs_runtime_mode: candidate_v2
+  assignment_mode: safety_aware
+
+runtime_pins:
+  python: 3.10.12
+  numpy: 2.2.6
+  scipy: 1.15.3
+  openai: 2.34.0
+  httpx: 0.28.1
+  px4_commit: 30e763b6780061d70a14894e3e8b06e6a656f9b8
+  gazebo_submodule_commit: da7206e057703cc645770f02437013358b71e1c0
+  file_sha256:
+    install/ladrc_controller/lib/ladrc_controller/ladrc_position_controller_node: bb60b1b85d9e3a70cc07e2b316732e1fd0edd543804599efbd82dfb339c807ff
+    install/ladrc_controller/share/ladrc_controller/launch/swarm_launch.py: eebe0d26d7d6d9408078c99dd735c4076b36eb79f1ebc8d02be64af24d9782dd
+    install/lfs_policy/share/lfs_policy/config/lfs_policy.paper_current.yaml: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+    install/uav_swarm_interfaces/share/uav_swarm_interfaces/msg/UAVExecutionCommand.msg: 10d329b9d8bc859a453ad62cb21a4eae11b1c57b85758d9a4cee1716e07a0058
+    px4/Tools/simulation/gazebo-classic/sitl_multiple_run.sh: 4c3d7b6146fa99cdf28f8ebc54db4d4a80344ed958961529bbf3a2c8fe812336
+    px4/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/iris/iris.sdf.jinja: 33402f400ecb23631c2a93b82b168cb712371cc331ccf8c03227c949e3c052fa
+
+raw_capture:
+  storage_id: sqlite3
+  global_topics: [/clock]
+  per_uav_suffixes:
+    - status
+    - startup_event
+    - execution_command
+    - trajectory_metrics
+    - control_tracking_debug
+    - iapf_debug
+    - control_adaptation
+    - swarm_state
+  per_px4_suffixes:
+    - fmu/out/vehicle_status
+    - fmu/out/vehicle_odometry
+  identical_rule_for_all_N: true
+
+launch_authorization:
+  repository_contains_authorization: false
+  required_external_manifest_schema: E5_v2_formal_launch_authorization_v1
+  required_environment_variable: E5_V2_FORMAL_LAUNCH_TOKEN_SHA256
+  authorization_scope: continuous exact-order slots 1 through 60 until a fail-closed campaign blocker
