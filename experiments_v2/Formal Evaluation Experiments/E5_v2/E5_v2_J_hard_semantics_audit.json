@@ -1,0 +1,135 @@
+{
+  "schema": "E5_v2_J_hard_semantics_audit_v1",
+  "audit_date": "2026-09-03",
+  "conclusion": "PREREGISTERED_ENDPOINT_SEMANTICS_AMBIGUOUS",
+  "blocking_status": "BLOCKED_AT_E5_V2_J_HARD_SEMANTIC_AMBIGUITY",
+  "prospective_cutoff": {
+    "commit": "9276cbe1dcff8299d3edcd73e10cc3a686b2441c",
+    "description": "E5-v2 tooling-freeze commit before slot 1 physical execution",
+    "slot1_scientific_values_consulted": false
+  },
+  "authoritative_blocked_state": {
+    "commit": "e76c6f64efeb962d9255e0aa1b7910eb297e005e",
+    "registered_attempts": 60,
+    "journal_records": 0,
+    "raw_ledger_records": 0,
+    "published_attempt_directories": 0,
+    "unresolved_formal_transactions": 1,
+    "physically_executed_scientific_attempts": 1,
+    "accepted_formal_results": 0,
+    "slot1_physical_rerun_permitted": false,
+    "slot2_started": false
+  },
+  "slot1_identity": {
+    "campaign_position": 1,
+    "attempt_id": "E5V2-B-S2-N12-R1",
+    "seed": 5202036,
+    "N": 12,
+    "task_family": "UNDER_SPECIFIED"
+  },
+  "sources_examined": [
+    {
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_analysis_contract.md",
+      "sha256_at_prospective_cutoff": "05802cb32e8dc2f990d9e0144f2cfd118b87228ab0c441578e084aeefc0d008a",
+      "finding": "Names J_hard as a continuous E5-v2A/E5-v2B outcome and freezes d_hard=1.50 m for mission success, but supplies no mathematical definition, unit, scored-interval rule specific to J_hard, threshold-crossing interpolation, or pair/time aggregation rule."
+    },
+    {
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_registry.yaml",
+      "sha256_at_prospective_cutoff": "e915575f23b1bd83810f3a8e5aa8092806b9076960c5a2f1fc2bb5faa73ad985",
+      "finding": "Freezes actual d_min >= 1.50 m as a binary mission-success condition but does not define J_hard."
+    },
+    {
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/E5_v2_formal_classification_policy_v1.md",
+      "sha256_at_prospective_cutoff": "aca54b60ff51835b936dc20a3871eac4fa5e03c95d68b5b39716f27bf7e53451",
+      "finding": "Classifies a hard-distance violation as scientific failure and requires registered-interval coverage for continuous metrics, but does not define J_hard."
+    },
+    {
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/tooling/e5_v2_formal_metrics.py",
+      "sha256_at_prospective_cutoff": "2129862ea6e3bcabdd4b744a41ff05312e82c5a9bc2ca389ffc57a6acf9bce8e",
+      "finding": "Implements J_hard as int(not d_min_ok), a dimensionless whole-attempt binary threshold indicator. This conflicts with the contract's continuous-outcome designation and cannot establish the omitted continuous semantics."
+    },
+    {
+      "path": "experiments_v2/Formal Evaluation Experiments/E5_v2/tooling/e5_v2_feasibility.py",
+      "sha256_at_prospective_cutoff": "1dcc881b475cc89d0d2fce2892c03c9f45f9d4766070ddaed19d464e7dfa9e61",
+      "finding": "Labels allocator final_metrics.hard_violations as J_hard in the offline design precheck. That value is an integer nominal-planning violation count, not an exact definition for the observed closed-loop continuous endpoint."
+    },
+    {
+      "path": "experiments_v2/Calibration Experiments/C0-E-iapf/iapf_calibration_pipeline/extract_trial_metrics.py",
+      "sha256_at_prospective_cutoff": "f769d8a29c50bcf2a12395747b6985fee8dae67dea30234042806922bd216195",
+      "finding": "Defines separate C0-E hard_violation_count and hard_violation_duration_s values on a fixed 0.02 s grid using an any-pair distance <1.50 m indicator. No E5-v2 artifact explicitly or unambiguously inherits either metric as J_hard."
+    }
+  ],
+  "repository_search_result": {
+    "exact_J_hard_occurrences_outside_E5_v2": 0,
+    "explicit_E5_v2_inheritance_of_prior_metric_definition_found": false,
+    "exact_auditable_prospective_E5_v2_mapping_found": false
+  },
+  "non_equivalent_prospective_representations": [
+    {
+      "representation": "whole-attempt binary hard-threshold indicator",
+      "expression": "int(not (d_min >= 1.50 m))",
+      "unit": "dimensionless",
+      "status": "implemented by frozen formal metric code but inconsistent with continuous-outcome designation"
+    },
+    {
+      "representation": "nominal planner hard-violation count",
+      "expression": "allocator final_metrics.hard_violations",
+      "unit": "count",
+      "status": "used by E5-v2 feasibility tooling, but represents planned geometry/assignment rather than observed continuous closed-loop exposure"
+    },
+    {
+      "representation": "C0-E any-pair hard-violation duration",
+      "expression": "0.02 s times the number of fixed-grid samples for which any pair distance is <1.50 m",
+      "unit": "s",
+      "status": "prospectively existed elsewhere in the repository but was not incorporated or inherited by E5-v2"
+    }
+  ],
+  "unresolved_semantics": [
+    "mathematical functional: event indicator, event count, union exposure duration, summed pair-time exposure, distance deficit integral, or another quantity",
+    "unit",
+    "J_hard-specific scored interval",
+    "strict versus inclusive threshold convention at exactly d_hard",
+    "sampling and interpolation convention at threshold crossings",
+    "aggregation across UAV pairs and simultaneous violations",
+    "aggregation across sequential or parallel task intervals",
+    "coverage-gap treatment"
+  ],
+  "governance_determination": "Selecting among these non-equivalent definitions after slot 1 physical execution would create a post-execution endpoint definition. The existing int(not d_min_ok) mapping cannot be silently retained as a continuous endpoint or silently replaced.",
+  "required_action": "Human adjudication is required before any slot-1 scientific metric extraction, recovery packaging, ledger publication, or journal publication.",
+  "recovery_actions_performed": {
+    "metric_extraction": false,
+    "compact_attempt_publication": false,
+    "raw_ledger_publication": false,
+    "journal_publication": false,
+    "infrastructure_amendment": false,
+    "recovery_tool_created": false,
+    "slot1_rerun": false,
+    "slot2_execution": false
+  },
+  "preserved_evidence": {
+    "raw_archive": {
+      "file_count": 2,
+      "total_bytes": 45883177,
+      "inventory_sha256": "ff97ad4ef665754e23fc90e06803844580bcfaacd2ae89034d3ecaf8bc56fbda",
+      "rosbag_message_count": 110197,
+      "rosbag_duration_s": 25.149640563,
+      "ros2_bag_info": "PASS",
+      "modified": false
+    },
+    "unresolved_transaction": {
+      "file_count": 30,
+      "total_bytes": 633319,
+      "inventory_sha256": "2c0c1d9d961ccc63ffee0776f4b36c9ec0b111c9cb6f877b2e28dcc06bbc9152",
+      "modified": false
+    }
+  },
+  "frozen_identity_changes": {
+    "scientific_payload_changes": 0,
+    "registry_changes": 0,
+    "seed_changes": 0,
+    "order_changes": 0,
+    "analysis_contract_changes": 0,
+    "production_method_changes": 0,
+    "old_E5_v1_changes": 0
+  }
+}
