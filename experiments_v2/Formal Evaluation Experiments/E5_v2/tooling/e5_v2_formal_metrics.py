@@ -15,6 +15,10 @@ from e5_v2_formal_common import canonical_sha256
 
 D_HARD_M = 1.50
 MAX_INTERPOLATION_GAP_S = 0.20
+J_HARD_UNAVAILABLE_REASON = (
+    "preregistered continuous endpoint unavailable due to pre-analysis "
+    "semantic ambiguity"
+)
 
 
 def available(value: Any, unit: str | None = None) -> Dict[str, Any]:
@@ -121,7 +125,10 @@ def _latest_error_norm(error_series: Dict[int, Sequence[Sequence[float]]]):
 
 
 def classify_attempt(stage: Dict[str, Any], raw_disposition: str) -> Dict[str, Any]:
-    infra_failure = not bool(stage.get("infrastructure_readiness", {}).get("success"))
+    infra_failure = (
+        raw_disposition == "PRE_RAW_ACQUISITION_INFRASTRUCTURE_FAILURE"
+        or not bool(stage.get("infrastructure_readiness", {}).get("success"))
+    )
     candidate_valid = bool(stage.get("candidate_validation", {}).get("success"))
     scientific_terminal = bool(stage.get("scientific_terminal_reached"))
     scientific_complete = (not infra_failure and candidate_valid and scientific_terminal)
@@ -172,8 +179,9 @@ def extract_metrics(spec: Dict[str, Any], stage: Dict[str, Any],
         "mission_completion": available(mission_completion),
         "mission_success": available(mission_success),
         "actual_d_min": d_min,
-        "J_hard": (available(int(not d_min_ok)) if d_min["available"]
-                   else unavailable(d_min["reason"])),
+        # Human availability adjudication after the pre-analysis ambiguity
+        # audit: no proxy, replacement, rederivation, or zero imputation.
+        "J_hard": unavailable(J_HARD_UNAVAILABLE_REASON),
         "tracking_rmse": tracking,
         "final_error": final_error,
         "completion_time": (available(float(completion_time), "s")

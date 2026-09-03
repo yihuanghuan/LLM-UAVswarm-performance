@@ -132,13 +132,25 @@ def raw_evidence_loss(spec: Dict[str, Any], reason: str,
         "archive_verification": "FAILED",
         "campaign_stop": True,
     }
-    source = Path(existing_archive) if existing_archive is not None else (
-        Path(pending) if pending is not None else None)
-    if ((source is None or not source.exists()) and archive_root is not None):
-        possibly_published = Path(archive_root) / "attempts" / (
-            f"{spec['campaign_position']:06d}__{spec['attempt_id']}")
-        if possibly_published.exists():
-            source = possibly_published
+    # A published archive is immutable evidence. Never move or relabel it merely
+    # because a later reader/packager failed. Genuine integrity failures retain
+    # the archive in place and describe the mismatch in the terminal record.
+    if existing_archive is not None:
+        source = Path(existing_archive)
+        record["archive_reference"] = str(source)
+        if source.exists():
+            try:
+                records = inventory(source)
+                record.update({
+                    "file_inventory": records,
+                    "inventory_sha256": canonical_sha256(records),
+                    "total_bytes": sum(item["bytes"] for item in records),
+                })
+            except Exception as exc:
+                record["archive_inventory_error"] = str(exc)
+        return record
+
+    source = Path(pending) if pending is not None else None
     if source is not None and source.exists() and archive_root is not None:
         target = Path(archive_root) / "evidence_loss" / (
             f"{spec['campaign_position']:06d}__{spec['attempt_id']}")
@@ -166,6 +178,40 @@ def raw_evidence_loss(spec: Dict[str, Any], reason: str,
         except OSError:
             pass
     return record
+
+
+def verify_existing_raw_archive(
+    spec: Dict[str, Any], archive: Path,
+    expected_inventory: List[Dict[str, Any]] | None = None,
+) -> Dict[str, Any]:
+    """Verify an already-published archive without modifying or relabeling it."""
+    archive = Path(archive)
+    if not archive.is_dir():
+        raise EvidenceIntegrityError(f"published raw archive missing: {archive}")
+    first = inventory(archive)
+    names = {item["path"] for item in first}
+    if (not first
+            or not any(name.endswith("metadata.yaml") for name in names)
+            or not any(name.endswith((".db3", ".mcap")) for name in names)):
+        raise EvidenceIntegrityError("published raw archive lacks bag metadata/payload")
+    if expected_inventory is not None and first != expected_inventory:
+        raise EvidenceIntegrityError("published raw archive inventory mismatch")
+    if inventory(archive) != first:
+        raise EvidenceIntegrityError("published raw archive changed during verification")
+    return {
+        "campaign_position": spec["campaign_position"],
+        "attempt_id": spec["attempt_id"],
+        "disposition": "RAW_ARCHIVE_VERIFIED",
+        "raw_acquisition_started": True,
+        "archive_reference": str(archive),
+        "file_inventory": first,
+        "inventory_sha256": canonical_sha256(first),
+        "total_bytes": sum(item["bytes"] for item in first),
+        "reason": None,
+        "archive_verification": "PASS",
+        "verification_passes": 2,
+        "campaign_stop": False,
+    }
 
 
 def verify_and_publish_raw(spec: Dict[str, Any], pending: Path,

@@ -201,7 +201,13 @@ def test_final_bundle_exact_hashes_and_excludes_smoke():
     assert "e5_v2_wait_ready.py" not in names
 
 
-def test_rehearsal_leaves_real_formal_state_empty():
+def test_rehearsal_leaves_real_formal_state_empty_or_preserves_recovered_prefix():
+    existing = CampaignJournal().state()
+    if existing["consumed_slots"]:
+        assert existing["consumed_slots"] == 1
+        assert existing["completed_attempt_ids"] == ["E5V2-B-S2-N12-R1"]
+        assert existing["next_attempt"]["campaign_position"] == 2
+        return
     result = run_rehearsal()
     assert result["result"] == "PASS"
     assert result["registered_commands_physically_submitted"] == 0

@@ -17,14 +17,15 @@ from e5_v2_formal_common import (
     ANALYSIS_PATH, ATTEMPTS_ROOT, CLASSIFICATION_PATH, CONFIG_PATH,
     EXPECTED_ANALYSIS_SHA256, EXPECTED_ORDER_SHA256, EXPECTED_REGISTRY_SHA256,
     EXPECTED_SEED_SHA256, FORMAL_ROOT, RAW_POLICY_PATH, EvidenceIntegrityError,
-    FormalInfrastructureError, canonical_sha256, exclusive_json, inventory, load_attempt_specs,
+    FormalInfrastructureError, RecoverableTransactionError, canonical_sha256,
+    exclusive_json, inventory, load_attempt_specs,
     load_json, load_yaml, sha256_file, validate_external_launch_authorization,
     verify_final_tooling_bundle, verify_frozen_identities,
 )
 from e5_v2_formal_metrics import extract_metrics, read_jsonl, read_rosbag_evidence
 from e5_v2_raw_storage import (
     RawArchiveLedger, assert_no_pending_raw, pre_raw_failure, raw_evidence_loss,
-    verify_and_publish_raw,
+    verify_and_publish_raw, verify_existing_raw_archive,
 )
 from e5_v2_common import POLICY_SHA256
 
@@ -95,6 +96,25 @@ def _make_read_only_tree(root: Path) -> None:
     Path(root).chmod(0o555)
 
 
+def read_verified_evidence_or_block(
+    spec: Dict[str, Any], disposition: Dict[str, Any], trace_path: Path | None,
+    reader=read_rosbag_evidence,
+) -> Dict[str, Any]:
+    """Keep a verified archive immutable when only the metric reader fails."""
+    try:
+        return reader(
+            Path(disposition["archive_reference"]) / "rosbag", spec["uav_ids"],
+            trace_path)
+    except Exception as exc:
+        verify_existing_raw_archive(
+            spec, Path(disposition["archive_reference"]),
+            disposition["file_inventory"])
+        raise RecoverableTransactionError(
+            "post-archive metric/packaging environment failure; verified archive "
+            f"retained unchanged: {type(exc).__name__}: {exc}"
+        ) from exc
+
+
 def finalize_attempt(spec: Dict[str, Any], backend: Dict[str, Any],
                      transaction_root: Path, journal: CampaignJournal,
                      ledger: RawArchiveLedger, bundle_sha: str,
@@ -123,13 +143,12 @@ def finalize_attempt(spec: Dict[str, Any], backend: Dict[str, Any],
                 "latencies_s": backend.get("semantic_result", {}).get("latencies_s", {})}
     if disposition["disposition"] == "RAW_ARCHIVE_VERIFIED":
         try:
-            evidence.update(read_rosbag_evidence(
-                Path(disposition["archive_reference"]) / "rosbag", spec["uav_ids"],
-                trace_path))
-        except Exception as exc:
-            # Acquisition began, so an unreadable required bag is evidence loss.
+            evidence.update(read_verified_evidence_or_block(
+                spec, disposition, trace_path))
+        except EvidenceIntegrityError as integrity_exc:
             disposition = raw_evidence_loss(
-                spec, f"metric raw read failed: {exc}", archive_root=archive_root,
+                spec, f"verified raw archive integrity failed: {integrity_exc}",
+                archive_root=archive_root,
                 existing_archive=Path(disposition["archive_reference"]))
     metrics = extract_metrics(spec, stages, evidence, disposition["disposition"])
     stages["scientific_metrics"] = {
@@ -148,6 +167,13 @@ def finalize_attempt(spec: Dict[str, Any], backend: Dict[str, Any],
         "process_counts_after_cleanup": backend.get("process_counts_after_cleanup"),
         "launch_plan": backend.get("launch_plan"),
         "formal_execution_tooling_bundle_sha256": bundle_sha,
+        "physical_execution_tooling_bundle_sha256": bundle_sha,
+        "transaction_recovery_tooling_bundle_sha256": None,
+        "physical_execution_tooling_bundle_sha256": bundle_sha,
+        "transaction_recovery_tooling_bundle_sha256": None,
+        "recovered_from_preserved_physical_attempt": False,
+        "physical_rerun": False,
+        "recovery_after_formal_blocker": False,
     })
     exclusive_json(staging / "semantic_result.json", semantic)
     exclusive_json(staging / "candidate.json", {
@@ -267,11 +293,12 @@ def assert_campaign_consistency(journal: CampaignJournal,
 def run_campaign(authorization_path: Path) -> int:
     verify_frozen_identities()
     bundle = verify_final_tooling_bundle()
-    validate_external_launch_authorization(authorization_path)
     journal, ledger = CampaignJournal(), RawArchiveLedger()
     archive_root = Path(load_yaml(CONFIG_PATH)["runtime"]["raw_archive_root"])
     state = assert_campaign_consistency(
         journal, ledger, archive_root, verify_archives=True)
+    validate_external_launch_authorization(
+        authorization_path, completed_attempt_ids=state["completed_attempt_ids"])
     specs = load_attempt_specs()
     for spec in specs[state["consumed_slots"]:]:
         state = assert_campaign_consistency(journal, ledger, archive_root)

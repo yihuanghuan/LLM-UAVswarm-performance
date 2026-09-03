@@ -35,6 +35,8 @@ ANALYSIS_PATH = E5_DIR / "E5_v2_analysis_contract.md"
 CLASSIFICATION_PATH = E5_DIR / "E5_v2_formal_classification_policy_v1.md"
 RAW_POLICY_PATH = E5_DIR / "E5_v2_raw_storage_policy_v1.md"
 TOOLING_BUNDLE_PATH = E5_DIR / "E5_v2_formal_execution_tooling_bundle.json"
+TOOLING_BUNDLE_V2_PATH = E5_DIR / "E5_v2_formal_execution_tooling_bundle_v2.json"
+RECOVERY_BUNDLE_PATH = E5_DIR / "E5_v2_slot1_recovery_tooling_bundle_v1.json"
 FORMAL_ROOT = E5_DIR / "results/formal_v2"
 ATTEMPTS_ROOT = FORMAL_ROOT / "attempts"
 JOURNAL_ROOT = FORMAL_ROOT / "campaign_journal"
@@ -59,6 +61,10 @@ class FormalInfrastructureError(RuntimeError):
 
 class EvidenceIntegrityError(FormalInfrastructureError):
     """Raw or compact evidence integrity was lost; campaign must stop."""
+
+
+class RecoverableTransactionError(FormalInfrastructureError):
+    """Post-archive packaging failed while verified raw evidence remains intact."""
 
 
 def canonical_sha256(value: Any) -> str:
@@ -280,6 +286,7 @@ def verify_runtime_environment() -> Dict[str, Any]:
     for label in pins["file_sha256"]:
         prefix, relative = label.split("/", 1)
         actual_files[label] = sha256_file(roots[prefix] / relative)
+    ros_python = verify_ros_python_environment()
     actual = {
         "python": platform.python_version(),
         "numpy": numpy.__version__,
@@ -295,38 +302,75 @@ def verify_runtime_environment() -> Dict[str, Any]:
     }
     if any(actual[key] != pins[key] for key in actual):
         raise FormalInfrastructureError(f"formal runtime pin mismatch: {actual}")
-    return {"status": "PASS", **actual}
+    return {"status": "PASS", **actual, "ros_python": ros_python}
 
 
-def validate_external_launch_authorization(path: Path) -> Dict[str, Any]:
-    """Require a separately supplied launch manifest and non-repository token."""
+def verify_ros_python_environment() -> Dict[str, Any]:
+    """Require ROS 2 Humble Python modules in the pinned interpreter process."""
+    try:
+        import rclpy
+        import rosbag2_py
+        import rosidl_runtime_py
+    except ImportError as exc:
+        raise FormalInfrastructureError(
+            "formal process lacks ROS 2 Humble Python modules; invoke through "
+            "tooling/e5_v2_formal_environment.sh"
+        ) from exc
+    return {
+        "status": "PASS",
+        "modules": {
+            "rclpy": str(Path(rclpy.__file__).resolve()),
+            "rosbag2_py": str(Path(rosbag2_py.__file__).resolve()),
+            "rosidl_runtime_py": str(Path(rosidl_runtime_py.__file__).resolve()),
+        },
+    }
+
+
+def validate_external_launch_authorization(
+    path: Path, completed_attempt_ids: Iterable[str] = (),
+) -> Dict[str, Any]:
+    """Require a separately supplied resume manifest and non-repository token."""
     authorization = load_yaml(Path(path))
-    bundle = load_json(TOOLING_BUNDLE_PATH)
+    bundle = load_json(TOOLING_BUNDLE_V2_PATH)
+    completed = list(completed_attempt_ids)
     expected = {
-        "schema": "E5_v2_formal_launch_authorization_v1",
+        "schema": "E5_v2_formal_resume_authorization_v1",
         "authorized": True,
         "registry_sha256": EXPECTED_REGISTRY_SHA256,
         "formal_execution_tooling_bundle_sha256": bundle["bundle_sha256"],
-        "start_position": 1,
+        "start_position": 2,
+        "completed_prefix_length": 1,
+        "completed_slot_attempt_id": "E5V2-B-S2-N12-R1",
+        "completed_slot_seed": 5202036,
+        "slot1_physical_execution_count": 1,
+        "slot1_transactionally_recovered": True,
+        "slot1_rerun_permitted": False,
         "continuous_exact_order": True,
     }
     mismatches = {
         key: authorization.get(key)
         for key, value in expected.items() if authorization.get(key) != value
     }
-    supplied = os.environ.get("E5_V2_FORMAL_LAUNCH_TOKEN_SHA256")
-    if mismatches or supplied != sha256_file(Path(path)):
+    exact_prefix = [item["attempt_id"] for item in load_attempt_specs()[:len(completed)]]
+    prefix_valid = (
+        len(completed) >= 1
+        and completed == exact_prefix
+        and completed[0] == "E5V2-B-S2-N12-R1"
+    )
+    supplied = os.environ.get("E5_V2_FORMAL_RESUME_TOKEN_SHA256")
+    if mismatches or not prefix_valid or supplied != sha256_file(Path(path)):
         raise FormalInfrastructureError(
-            f"separate formal launch authorization mismatch: {mismatches}"
+            "separate formal resume authorization mismatch: "
+            f"fields={mismatches}, prefix_valid={prefix_valid}"
         )
     return authorization
 
 
 def verify_final_tooling_bundle() -> Dict[str, Any]:
-    """Verify every frozen execution input against the final bundle manifest."""
-    bundle = load_json(TOOLING_BUNDLE_PATH)
+    """Verify every amended future-execution input against bundle v2."""
+    bundle = load_json(TOOLING_BUNDLE_V2_PATH)
     records = bundle.get("files")
-    if bundle.get("schema") != "E5_v2_formal_execution_tooling_bundle_v1":
+    if bundle.get("schema") != "E5_v2_formal_execution_tooling_bundle_v2":
         raise FormalInfrastructureError("final tooling bundle schema mismatch")
     if not isinstance(records, list) or not records:
         raise FormalInfrastructureError("final tooling bundle has no files")

@@ -108,7 +108,8 @@ def run_physical_trial(spec: Dict[str, Any], completed_attempt_ids: List[str],
         seed=spec["seed"], n=spec["N"], scenario_id=spec["scenario_id"],
         substudy=spec["substudy"], task_family=spec.get("task_family"),
         completed_attempt_ids=completed_attempt_ids)
-    validate_external_launch_authorization(launch_authorization)
+    validate_external_launch_authorization(
+        launch_authorization, completed_attempt_ids=completed_attempt_ids)
     bundle = verify_final_tooling_bundle()
     runtime_pin = verify_runtime_environment()
     initial = process_counts()

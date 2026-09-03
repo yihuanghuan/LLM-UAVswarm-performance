@@ -1,0 +1,80 @@
+{
+  "schema": "E5_v2_formal_infrastructure_amendment_v1",
+  "status": "FROZEN_BEFORE_SLOT1_RECOVERY_AND_BEFORE_SLOT2",
+  "amendment_timing": "after slot-1 physical execution; before slot-1 accepted-result publication; before slot-2 execution",
+  "slot1_physical_executions": 1,
+  "accepted_results_before_amendment": 0,
+  "journal_records_before_amendment": 0,
+  "scientific_payload_changes": 0,
+  "registry_changes": 0,
+  "seed_changes": 0,
+  "order_changes": 0,
+  "analysis_contract_changes": 0,
+  "production_method_changes": 0,
+  "J_hard_scientific_handling": {
+    "classification": "endpoint_availability_adjudication_only",
+    "new_endpoint_definition": false,
+    "replacement": null,
+    "proxy": null
+  },
+  "root_causes": [
+    {
+      "id": "ROS_PYTHON_ENVIRONMENT_VISIBILITY",
+      "description": "The pinned orchestrator process did not expose ROS 2 Humble Python module paths, although physical subprocesses were ROS-sourced.",
+      "correction": "Invoke the pinned Python interpreter through a deterministic wrapper that sources /opt/ros/humble/setup.bash and the frozen install/setup.bash, preserves ROS PYTHONPATH, and adds E5-v2 tooling visibility.",
+      "classification": "formal_environment_only"
+    },
+    {
+      "id": "VERIFIED_ARCHIVE_MISCLASSIFIED_AFTER_READER_FAILURE",
+      "description": "A post-archive metric-reader environment exception entered RAW_EVIDENCE_LOSS handling and attempted to move a read-only verified archive.",
+      "correction": "Reverify and retain an already-published archive in place; raise a recoverable transaction blocker when the archive remains intact. Reserve RAW_EVIDENCE_LOSS for missing, corrupt, or unverifiable required raw evidence.",
+      "classification": "raw_storage_error_handling_only"
+    }
+  ],
+  "tooling_changes": [
+    {
+      "path": "tooling/e5_v2_formal_environment.sh",
+      "change": "deterministic ROS/install/tooling environment wrapper using the pinned semantic interpreter",
+      "classification": "formal_environment_only"
+    },
+    {
+      "path": "tooling/e5_v2_formal_common.py",
+      "change": "ROS Python import gate, tooling-bundle-v2 pin, and exact slot-1-prefix resume authorization validation",
+      "classifications": ["formal_environment_only", "resume_gate_only"]
+    },
+    {
+      "path": "tooling/e5_v2_formal_metrics.py",
+      "change": "always emit adjudicated J_hard NA and align pre-raw infrastructure classification",
+      "classifications": ["unavailable_endpoint_enforcement", "raw_storage_error_handling_only"]
+    },
+    {
+      "path": "tooling/e5_v2_raw_storage.py",
+      "change": "immutable verification of existing archives and no relabel/move on later reader failure",
+      "classification": "raw_storage_error_handling_only"
+    },
+    {
+      "path": "tooling/e5_v2_formal_orchestrator.py",
+      "change": "recoverable post-archive packaging blocker, provenance fields, and resume-prefix authorization ordering",
+      "classifications": ["raw_storage_error_handling_only", "resume_gate_only"]
+    },
+    {
+      "path": "tooling/e5_v2_formal_backend.py",
+      "change": "pass the validated completed prefix into the external resume authorization gate",
+      "classification": "resume_gate_only"
+    },
+    {
+      "path": "tooling/e5_v2_recover_preserved_attempt.py",
+      "change": "physical-path-free, identity-pinned, exactly-once preserved transaction recovery",
+      "classification": "transaction_recovery_only"
+    },
+    {
+      "path": "tooling/e5_v2_formal_tooling_freeze.py",
+      "change": "freeze distinct recovery-v1 and future-execution-v2 bundles without overwriting bundle v1",
+      "classifications": ["transaction_recovery_only", "resume_gate_only"]
+    }
+  ],
+  "allowed_classifications_only": true,
+  "original_slot1_physical_execution_bundle_sha256": "422d82b593ba927dffaee3c14bcf8b6996304a8ae302cdc525ab3c525b786ecb",
+  "slot1_rerun_permitted": false,
+  "slot2_execution_authorized": false
+}
