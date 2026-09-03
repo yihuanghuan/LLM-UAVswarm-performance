@@ -1,0 +1,89 @@
+{
+  "schema": "E5_v2_slot1_transaction_recovery_audit_v1",
+  "status": "PASS",
+  "human_J_hard_adjudication": "PASS",
+  "remaining_endpoint_mapping_audit": "PASS",
+  "remaining_endpoint_summary": {
+    "EXACT_MAPPING_CONFIRMED": 17,
+    "PREREGISTERED_BUT_UNAVAILABLE": 5,
+    "SEMANTIC_AMBIGUITY_REQUIRES_HUMAN_REVIEW": 0
+  },
+  "raw_integrity": "PASS",
+  "raw_inventory_sha256": "ff97ad4ef665754e23fc90e06803844580bcfaacd2ae89034d3ecaf8bc56fbda",
+  "transaction_integrity": "PASS",
+  "transaction_inventory_sha256": "2c0c1d9d961ccc63ffee0776f4b36c9ec0b111c9cb6f877b2e28dcc06bbc9152",
+  "slot1_physical_execution_count": 1,
+  "slot1_physical_rerun_count": 0,
+  "metric_extraction_from_preserved_evidence": "PASS",
+  "compact_packaging": "PASS",
+  "raw_ledger_publication": "PASS",
+  "journal_publication": "PASS",
+  "J_hard_available": false,
+  "J_hard_value": null,
+  "J_hard_reason": "preregistered continuous endpoint unavailable due to pre-analysis semantic ambiguity",
+  "counts": {
+    "registered": 60,
+    "consumed": 1,
+    "journal": 1,
+    "raw_ledger": 1,
+    "attempt_dirs": 1,
+    "unresolved_transactions": 0
+  },
+  "completed_prefix": [
+    "E5V2-B-S2-N12-R1"
+  ],
+  "slot1_provenance": {
+    "recovered_from_preserved_physical_attempt": true,
+    "physical_rerun": false,
+    "recovery_after_formal_blocker": true,
+    "original_physical_execution_tooling_bundle_sha256": "422d82b593ba927dffaee3c14bcf8b6996304a8ae302cdc525ab3c525b786ecb",
+    "transaction_recovery_tooling_bundle_sha256": "29eb7421d2095ba88e60df0ed224ad035348b534cb57877a32d967bd933027bb"
+  },
+  "future_execution_tooling": {
+    "schema": "E5_v2_formal_execution_tooling_bundle_v2",
+    "bundle_sha256": "2800b1a4540ffde75573f5ea7bf580b415302d5c4d86f0ab86898c69f7b02572",
+    "scope": "future physical formal slots 2 through 60",
+    "actual_resume_authorization_created": false
+  },
+  "frozen_identity_changes": {
+    "scientific_payload_changes": 0,
+    "analysis_contract_changes": 0,
+    "registry_changes": 0,
+    "seed_changes": 0,
+    "order_changes": 0,
+    "production_method_changes": 0,
+    "old_E5_v1_changes": 0
+  },
+  "frozen_identities": {
+    "registry_sha256": "e915575f23b1bd83810f3a8e5aa8092806b9076960c5a2f1fc2bb5faa73ad985",
+    "scientific_payload_sha256": "96ab0893ee099c1003f6a5aad6896decde97c4b9c8d885d38141b8a4dbae81ed",
+    "seed_registry_sha256": "1815deba3fab9c756603a358b4a3900b67ffb9bcb3e9f757282ab8894595d0cb",
+    "formal_order_sha256": "4ec9ee0e8de0cc4b015bfd3858365fe8bf0a07aeddcb591ab6f91221a7bb8f69",
+    "analysis_contract_sha256": "05802cb32e8dc2f990d9e0144f2cfd118b87228ab0c441578e084aeefc0d008a",
+    "production_policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+    "old_E5_v1_registry_sha256": "9bb6bc9b46b5211c50c8f2e29bd434235424beb2bb0fc36ec857a3298d89511e"
+  },
+  "durable_records": {
+    "journal_record_sha256": "2ee3a9239346858b6ed72eb50693ce8f3f238d497d7e76c7d682071c2ac1f08a",
+    "raw_ledger_record_sha256": "3612f17e1ea521784bb20fa6e2552045c24928fb047fa6e5ca04f9a9e30dbe56"
+  },
+  "nonformal_validation": {
+    "ROS_Python_imports": "PASS",
+    "preserved_bag_open_and_message_types": "PASS",
+    "dry_recovery_publication": false,
+    "full_test_suite": "46 passed",
+    "scientific_metric_values_printed": false,
+    "physical_execution_invoked_by_recovery": false
+  },
+  "next_frozen_slot": {
+    "campaign_position": 2,
+    "attempt_id": "E5V2-B-S2-N8-R1",
+    "seed": 5202031,
+    "N": 8,
+    "scenario_id": "E5V2-B-S2-N8",
+    "substudy": "E5-v2B",
+    "task_family": "UNDER_SPECIFIED"
+  },
+  "slot2_executed": false,
+  "target_state": "FORMAL_CAMPAIGN_PAUSED_AFTER_RECOVERED_SLOT_1_WAITING_FOR_RESUME_AUTHORIZATION"
+}

@@ -53,6 +53,17 @@ def _successful_stages():
     }
 
 
+def _preserved_source_context():
+    context = recovery.default_context()
+    if context.transaction_root.is_dir():
+        return context
+    recovered = (
+        E5_DIR / "results/formal_v2/recovered_transaction_evidence" /
+        context.transaction_root.name)
+    return recovery.RecoveryContext(
+        transaction_root=recovered, raw_archive=context.raw_archive)
+
+
 def test_j_hard_is_always_unavailable_and_has_no_proxy():
     spec = load_attempt_specs()[0]
     for evidence in ({"candidate": None}, synthetic_fixture(spec["N"])):
@@ -140,10 +151,17 @@ def test_recovery_source_has_no_physical_backend_path():
     assert not any(token in source for token in forbidden)
 
 
-def test_recovery_refuses_wrong_raw_and_transaction_hash(monkeypatch):
+def test_recovery_refuses_wrong_raw_and_transaction_hash(tmp_path, monkeypatch):
     monkeypatch.setattr(recovery, "_verify_bundle", lambda _path: {
         "bundle_sha256": "synthetic"})
-    context = recovery.default_context()
+    source = _preserved_source_context()
+    context = recovery.RecoveryContext(
+        transaction_root=source.transaction_root, raw_archive=source.raw_archive,
+        attempts_root=tmp_path / "attempts", journal_root=tmp_path / "journal",
+        ledger_root=tmp_path / "ledger",
+        recovered_transactions_root=tmp_path / "recovered",
+        recovery_bundle_path=tmp_path / "bundle.json", make_read_only=False,
+        synthetic_rehearsal=True)
     with pytest.raises(EvidenceIntegrityError, match="transaction inventory"):
         recovery.verify_recovery_gate(context, expected_transaction_sha="0" * 64)
     with pytest.raises(EvidenceIntegrityError, match="raw inventory"):
@@ -166,10 +184,11 @@ def _synthetic_metrics(spec):
 
 
 def test_recovery_exactly_once_publication_and_prefix(tmp_path, monkeypatch):
-    source = recovery.default_context()
+    source = _preserved_source_context()
     transaction = tmp_path / source.transaction_root.name
     raw = tmp_path / "raw"
     shutil.copytree(source.transaction_root, transaction)
+    transaction.chmod(0o755)
     shutil.copytree(source.raw_archive, raw)
     state = tmp_path / "state"
     context = recovery.RecoveryContext(
@@ -202,10 +221,11 @@ def test_recovery_exactly_once_publication_and_prefix(tmp_path, monkeypatch):
 
 
 def test_recovery_refuses_nonempty_prefix(tmp_path, monkeypatch):
-    source = recovery.default_context()
+    source = _preserved_source_context()
     transaction = tmp_path / source.transaction_root.name
     raw = tmp_path / "raw"
     shutil.copytree(source.transaction_root, transaction)
+    transaction.chmod(0o755)
     shutil.copytree(source.raw_archive, raw)
     journal = tmp_path / "state/journal"
     journal.mkdir(parents=True)
