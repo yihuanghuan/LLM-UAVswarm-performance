@@ -1,0 +1,55 @@
+schema: large_swarm_infrastructure_profile_v2
+status: FROZEN_BEFORE_PROFILE_V2_EXECUTION
+dataset_class: supplementary_infrastructure_diagnostic
+accepted_formal_result: false
+source_v1_commit: adf56c7256ccb7f3e63d78ec2ffb254d1f88b647
+production_baseline:
+  tag: paper-final-sim-v3
+  commit: 6cf402debf23851b1eff3edc6f3ab49eae7127c4
+  policy_sha256: 6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858
+test_order: [24, 28, 32]
+stop_at_first_failure: true
+parking_layout: unchanged_v1_deterministic_grid
+fixed_runtime:
+  ros_domain_id: 96
+  rmw_implementation: rmw_fastrtps_cpp
+  gazebo_world: empty.world
+  gazebo_physics: unchanged_v1
+  readiness_timeout_s: 300
+  readiness_hold_s: 5
+  freshness_timeout_s: 0.5
+  minimum_altitude_m: 1.0
+  speed_tolerance_mps: 0.30
+  cleanup_grace_s: 15
+profile_differences_from_v1:
+  px4_startup:
+    class: deterministic_staggered_process_startup
+    rule: after each model spawn, require that PX4 instance's vehicle_odometry and vehicle_status XRCE output writers exist before starting the next instance
+    per_instance_writer_gate_timeout_s: 30
+    inter_instance_settle_s: 0.5
+  pre_controller_stage_A:
+    class: observation_only_estimator_gate
+    rule: require all registered PX4 logs to show simulator connection, XRCE synchronization, and odometry/status writer creation
+  controller_startup:
+    class: deterministic_batched_controller_startup
+    batch_size: 4
+    inter_batch_interval_s: 5
+    full_neighbor_set_preserved_for_every_controller: true
+  diagnostics:
+    class: observation_only
+    summary_interval_s: 1
+    dds_diagnostic_subscriptions_added: 0
+unchanged:
+  production_method: true
+  controller_parameters: true
+  control_frequency: true
+  readiness_predicate: true
+  readiness_timeout: true
+  gazebo_physics_fidelity: true
+  middleware_implementation: true
+  xrce_topology: true
+  px4_estimator_parameters: true
+  safety_functionality: true
+justification:
+  root_cause: PX4/XRCE entity-creation requests accumulated during burst startup; later clients created participant/readers but did not create output writers before the frozen timeout
+  non_outcome_basis: profile values were frozen from v1 startup timelines before any profile-v2 execution

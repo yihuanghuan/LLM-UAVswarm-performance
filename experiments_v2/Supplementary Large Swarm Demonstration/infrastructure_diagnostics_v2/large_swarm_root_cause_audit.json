@@ -1,0 +1,81 @@
+{
+  "schema": "large_swarm_root_cause_audit_v2",
+  "audit_basis": "immutable v1 retained evidence only",
+  "source_commit": "adf56c7256ccb7f3e63d78ec2ffb254d1f88b647",
+  "v1_results_immutable": {
+    "20": "PASS",
+    "24": "FAIL",
+    "28": "FAIL",
+    "32": "FAIL"
+  },
+  "first_failed_size": 24,
+  "root_cause_conclusion": "SUPPORTED method-external PX4-to-MicroXRCE entity-creation startup backlog; simultaneous controller discovery/activation is a possible amplifier",
+  "method_limitation_inferred": false,
+  "N24": {
+    "px4_processes": 24,
+    "controller_processes": 24,
+    "simulator_connections": 24,
+    "dds_participants_initialized": 24,
+    "px4_complete_output_writer_sets": 18,
+    "vehicle_odometry_observed_by_controller": 19,
+    "vehicle_status_observed": 24,
+    "armed_offboard": 17,
+    "fresh_finite_swarm_states": 18,
+    "failsafe_at_final_snapshot": 0,
+    "cleanup_residual_processes": 0,
+    "tail_pattern": "UAV20-24 never produced PX4 odometry/status writers; UAV19 produced them only at the 300 s timeout boundary; UAV17 had finite fresh state but never armed/offboard",
+    "max_timesync_rtt_ms": 568,
+    "memory_available_kib": 17581100,
+    "load_average_1m": 12.3,
+    "cpu_count": 24
+  },
+  "larger_size_compact": {
+    "N28": {
+      "complete_output_writer_sets": 17,
+      "armed_offboard": 16,
+      "fresh_finite_states": 17,
+      "max_timesync_rtt_ms": 832,
+      "cleanup_residual_processes": 0
+    },
+    "N32": {
+      "complete_output_writer_sets": 9,
+      "armed_offboard": 8,
+      "fresh_finite_states": 21,
+      "max_timesync_rtt_ms": 2420,
+      "cleanup_residual_processes": 0
+    }
+  },
+  "hypotheses": {
+    "H1": {
+      "classification": "SUPPORTED",
+      "evidence": "All simulator TCP connections formed, but timesync RTT rose from <=220 ms at N20 to 568/832/2420 ms at N24/N28/N32; PX4 height-estimate instability, transient failsafe logs, and strongly displaced final states appeared only in failed larger-N runs."
+    },
+    "H2": {
+      "classification": "SUPPORTED",
+      "evidence": "N24 client keys 21-25 created a participant and 29 readers each but zero output writers; client 20 completed writers only at timeout. The same startup-order tail truncation occurred at N28/N32."
+    },
+    "H3": {
+      "classification": "POSSIBLE",
+      "evidence": "v1 created all controllers together (552 neighbor subscriptions at N24) and initiated arm/offboard concurrently. Writer backlog was already present before controller launch, so this cannot be the sole cause, but it can amplify discovery and activation contention."
+    },
+    "H4": {
+      "classification": "UNSUPPORTED",
+      "evidence": "The same audited deterministic grid and matching ENU offsets passed at N20; failures form a startup-order tail, not a spatial row/coordinate pattern; every simulator TCP port matched its UAV ID."
+    },
+    "H5": {
+      "classification": "POSSIBLE",
+      "evidence": "Load increased with N and timing degradation was visible, but N24 one-minute load 12.3 remained below 24 logical CPUs and >17 GiB memory remained available. No direct CPU exhaustion or OOM evidence exists; reliable RTF was unavailable."
+    },
+    "H6": {
+      "classification": "SUPPORTED",
+      "mechanism": "method-external startup-concurrency backlog",
+      "evidence": "PX4 instances were launched roughly one model-spawn apart without waiting for the preceding XRCE output entities. Entity completion lag accumulated by launch order: N24 UAV19 completed only at timeout while later clients never completed."
+    }
+  },
+  "profile_v2_justified": true,
+  "allowed_change_classes": [
+    "deterministic_staggered_process_startup",
+    "deterministic_batched_controller_startup",
+    "observation_only_diagnostics"
+  ]
+}
