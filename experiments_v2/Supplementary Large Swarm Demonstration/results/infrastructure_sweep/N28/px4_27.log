@@ -1,0 +1,59 @@
+INFO  [px4] instance: 27
+
+______  __   __    ___ 
+| ___ \ \ \ / /   /   |
+| |_/ /  \ V /   / /| |
+|  __/   /   \  / /_| |
+| |     / /^\ \ \___  |
+\_|     \/   \/     |_/
+
+px4 starting.
+
+INFO  [px4] startup script: /bin/sh etc/init.d-posix/rcS 27
+INFO  [init] found model autostart file as SYS_AUTOSTART=10015
+INFO  [param] selected parameter default file parameters.bson
+INFO  [param] selected parameter backup file parameters_backup.bson
+  SYS_AUTOCONFIG: curr: 0 -> new: 1
+  MAV_SYS_ID: curr: 1 -> new: 28
+  UXRCE_DDS_KEY: curr: 1 -> new: 28
+  SYS_AUTOSTART: curr: 0 -> new: 10015
+  CAL_ACC0_ID: curr: 0 -> new: 1310988
+  CAL_GYRO0_ID: curr: 0 -> new: 1310988
+  CAL_ACC1_ID: curr: 0 -> new: 1310996
+  CAL_GYRO1_ID: curr: 0 -> new: 1310996
+  CAL_ACC2_ID: curr: 0 -> new: 1311004
+  CAL_GYRO2_ID: curr: 0 -> new: 1311004
+  CAL_MAG0_ID: curr: 0 -> new: 197388
+  CAL_MAG0_PRIO: curr: -1 -> new: 50
+  CAL_MAG1_ID: curr: 0 -> new: 197644
+  CAL_MAG1_PRIO: curr: -1 -> new: 50
+  SENS_BOARD_X_OFF: curr: 0.0000 -> new: 0.0000
+  SENS_DPRES_OFF: curr: 0.0000 -> new: 0.0010
+INFO  [dataman] data manager file './dataman' size is 7872608 bytes
+INFO  [init] PX4_SIM_HOSTNAME: localhost
+INFO  [simulator_mavlink] Waiting for simulator to accept connection on TCP port 4587
+INFO  [simulator_mavlink] Simulator connected on TCP port 4587.
+INFO  [lockstep_scheduler] setting initial absolute time to 18632000 us
+WARN  [vehicle_angular_velocity] no gyro selected, using sensor_gyro_fifo:0 1310988
+INFO  [commander] LED: open /dev/led0 failed (22)
+WARN  [health_and_arming_checks] Preflight Fail: ekf2 missing data
+  UXRCE_DDS_DOM_ID: curr: 0 -> new: 96
+INFO  [uxrce_dds_client] init UDP agent IP:127.0.0.1, port:8888
+INFO  [mavlink] mode: Normal, data rate: 4000000 B/s on udp port 18597 remote port 14550
+INFO  [mavlink] mode: Onboard, data rate: 4000000 B/s on udp port 14607 remote port 14549
+INFO  [mavlink] mode: Onboard, data rate: 4000 B/s on udp port 14307 remote port 14057
+INFO  [mavlink] mode: Gimbal, data rate: 400000 B/s on udp port 13057 remote port 13307
+INFO  [logger] logger started (mode=all)
+INFO  [logger] Start file log (type: full)
+INFO  [logger] [logger] ./log/2026-09-04/03_59_56.ulg	
+INFO  [logger] Opened full log file: ./log/2026-09-04/03_59_56.ulg
+INFO  [mavlink] MAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)
+INFO  [mavlink] MAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)
+INFO  [px4] Startup script returned successfully
+INFO  [tone_alarm] home set
+INFO  [commander] [32mReady for takeoff![0m
+WARN  [timesync] RTT too high for timesync: 768 ms
+WARN  [health_and_arming_checks] Preflight Fail: height estimate not stable
+
+PX4 Exiting...
+Exiting NOW.

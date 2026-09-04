@@ -1,0 +1,1522 @@
+schema: large_swarm_scenario_candidates_v1
+status: FROZEN_BEFORE_ANY_SHOWCASE_MISSION
+selection_rule: largest N in [24,28,32] passing infrastructure and all D1/D2/D3 deterministic
+  feasibility gates
+candidates:
+- candidate_id: D1
+  task_family: LARGE_SIMPLE_FORMATION
+  selected: true
+  evaluated_n:
+  - 24
+  - 28
+  - 32
+  candidate_semantic_ground_truth_by_n:
+    24:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: task
+          task:
+            task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            F:
+              type: Circle
+            c:
+              mode: absolute
+              value:
+              - 0.0
+              - 12.5
+              - 4.0
+            r:
+              mode: explicit
+              value: 10.0
+            T:
+              mode: explicit
+              value: 16.0
+            m: normal
+            s: 1.0
+            q:
+              mode: direct
+    28:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: task
+          task:
+            task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            - 25
+            - 26
+            - 27
+            - 28
+            F:
+              type: Circle
+            c:
+              mode: absolute
+              value:
+              - 0.0
+              - 12.5
+              - 4.0
+            r:
+              mode: explicit
+              value: 10.0
+            T:
+              mode: explicit
+              value: 16.0
+            m: normal
+            s: 1.0
+            q:
+              mode: direct
+    32:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: task
+          task:
+            task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            - 25
+            - 26
+            - 27
+            - 28
+            - 29
+            - 30
+            - 31
+            - 32
+            F:
+              type: Circle
+            c:
+              mode: absolute
+              value:
+              - 0.0
+              - 12.5
+              - 4.0
+            r:
+              mode: explicit
+              value: 10.0
+            T:
+              mode: explicit
+              value: 16.0
+            m: normal
+            s: 1.0
+            q:
+              mode: direct
+  design_disposition_basis: Representative unified Circle; first listed D1 candidate.
+  exact_commands_by_n:
+    24: Have UAVs 1 through 24 form a circle centered at [0, 12.5, 4] with radius
+      10 meters in 16 seconds using normal motion and safety factor 1.0.
+    28: Have UAVs 1 through 28 form a circle centered at [0, 12.5, 4] with radius
+      10 meters in 16 seconds using normal motion and safety factor 1.0.
+    32: Have UAVs 1 through 32 form a circle centered at [0, 12.5, 4] with radius
+      10 meters in 16 seconds using normal motion and safety factor 1.0.
+- candidate_id: D2
+  task_family: LARGE_UNDER_SPECIFIED_FORMATION
+  selected: true
+  evaluated_n:
+  - 24
+  - 28
+  - 32
+  candidate_semantic_ground_truth_by_n:
+    24:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: task
+          task:
+            task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            F:
+              type: Circle
+            c:
+              mode: maintain_current_centroid
+            r:
+              mode: qualitative
+              value: normal
+            T:
+              mode: auto
+            m: smooth
+            s: 1.0
+            q:
+              mode: direct
+    28:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: task
+          task:
+            task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            - 25
+            - 26
+            - 27
+            - 28
+            F:
+              type: Circle
+            c:
+              mode: maintain_current_centroid
+            r:
+              mode: qualitative
+              value: normal
+            T:
+              mode: auto
+            m: smooth
+            s: 1.0
+            q:
+              mode: direct
+    32:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: task
+          task:
+            task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            - 25
+            - 26
+            - 27
+            - 28
+            - 29
+            - 30
+            - 31
+            - 32
+            F:
+              type: Circle
+            c:
+              mode: maintain_current_centroid
+            r:
+              mode: qualitative
+              value: normal
+            T:
+              mode: auto
+            m: smooth
+            s: 1.0
+            q:
+              mode: direct
+  design_disposition_basis: Registered maintain-current + qualitative normal + auto-T
+    structure.
+  exact_commands_by_n:
+    24: Have UAVs 1 through 24 form a normal-scale circle around their current swarm
+      centroid with automatic duration, using smooth motion and safety factor 1.0.
+    28: Have UAVs 1 through 28 form a normal-scale circle around their current swarm
+      centroid with automatic duration, using smooth motion and safety factor 1.0.
+    32: Have UAVs 1 through 32 form a normal-scale circle around their current swarm
+      centroid with automatic duration, using smooth motion and safety factor 1.0.
+- candidate_id: D3
+  task_family: LARGE_COMPOSITIONAL_FORMATION
+  selected: true
+  evaluated_n:
+  - 24
+  - 28
+  - 32
+  candidate_semantic_ground_truth_by_n:
+    24:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: parallel
+          completion_mode: synchronized
+          tasks:
+          - task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 9
+            - 10
+            - 11
+            - 12
+            - 17
+            - 18
+            - 19
+            - 20
+            c:
+              mode: absolute
+              value:
+              - -7.0
+              - 12.5
+              - 4.0
+            F: &id001
+              type: Circle
+            r: &id002
+              mode: explicit
+              value: 5.0
+            T: &id003
+              mode: explicit
+              value: 16.0
+            m: normal
+            s: 1.0
+            q: &id004
+              mode: direct
+          - task_id: 2
+            U:
+            - 5
+            - 6
+            - 7
+            - 8
+            - 13
+            - 14
+            - 15
+            - 16
+            - 21
+            - 22
+            - 23
+            - 24
+            c:
+              mode: absolute
+              value:
+              - 7.0
+              - 12.5
+              - 4.0
+            F: *id001
+            r: *id002
+            T: *id003
+            m: normal
+            s: 1.0
+            q: *id004
+    28:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: parallel
+          completion_mode: synchronized
+          tasks:
+          - task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 9
+            - 10
+            - 11
+            - 12
+            - 17
+            - 18
+            - 19
+            - 20
+            - 25
+            - 26
+            c:
+              mode: absolute
+              value:
+              - -7.0
+              - 12.5
+              - 4.0
+            F: &id005
+              type: Circle
+            r: &id006
+              mode: explicit
+              value: 5.0
+            T: &id007
+              mode: explicit
+              value: 16.0
+            m: normal
+            s: 1.0
+            q: &id008
+              mode: direct
+          - task_id: 2
+            U:
+            - 5
+            - 6
+            - 7
+            - 8
+            - 13
+            - 14
+            - 15
+            - 16
+            - 21
+            - 22
+            - 23
+            - 24
+            - 27
+            - 28
+            c:
+              mode: absolute
+              value:
+              - 7.0
+              - 12.5
+              - 4.0
+            F: *id005
+            r: *id006
+            T: *id007
+            m: normal
+            s: 1.0
+            q: *id008
+    32:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: parallel
+          completion_mode: synchronized
+          tasks:
+          - task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 9
+            - 10
+            - 11
+            - 12
+            - 17
+            - 18
+            - 19
+            - 20
+            - 25
+            - 26
+            - 27
+            - 28
+            c:
+              mode: absolute
+              value:
+              - -7.0
+              - 12.5
+              - 4.0
+            F: &id009
+              type: Circle
+            r: &id010
+              mode: explicit
+              value: 5.0
+            T: &id011
+              mode: explicit
+              value: 16.0
+            m: normal
+            s: 1.0
+            q: &id012
+              mode: direct
+          - task_id: 2
+            U:
+            - 5
+            - 6
+            - 7
+            - 8
+            - 13
+            - 14
+            - 15
+            - 16
+            - 21
+            - 22
+            - 23
+            - 24
+            - 29
+            - 30
+            - 31
+            - 32
+            c:
+              mode: absolute
+              value:
+              - 7.0
+              - 12.5
+              - 4.0
+            F: *id009
+            r: *id010
+            T: *id011
+            m: normal
+            s: 1.0
+            q: *id012
+  design_disposition_basis: 'First feasible D3 candidate: two spatially partitioned
+    equal synchronized Circle subgroups with fixed separated centers.'
+  exact_commands_by_n:
+    24: In parallel, UAVs 1, 2, 3, 4, 9, 10, 11, 12, 17, 18, 19, 20 form a circle
+      centered at [-7, 12.5, 4] with radius 5 meters in 16 seconds using normal motion
+      and safety factor 1.0, while UAVs 5, 6, 7, 8, 13, 14, 15, 16, 21, 22, 23, 24
+      form a circle centered at [7, 12.5, 4] with radius 5 meters in 16 seconds using
+      normal motion and safety factor 1.0. Complete the parallel group synchronously.
+    28: In parallel, UAVs 1, 2, 3, 4, 9, 10, 11, 12, 17, 18, 19, 20, 25, 26 form a
+      circle centered at [-7, 12.5, 4] with radius 5 meters in 16 seconds using normal
+      motion and safety factor 1.0, while UAVs 5, 6, 7, 8, 13, 14, 15, 16, 21, 22,
+      23, 24, 27, 28 form a circle centered at [7, 12.5, 4] with radius 5 meters in
+      16 seconds using normal motion and safety factor 1.0. Complete the parallel
+      group synchronously.
+    32: In parallel, UAVs 1, 2, 3, 4, 9, 10, 11, 12, 17, 18, 19, 20, 25, 26, 27, 28
+      form a circle centered at [-7, 12.5, 4] with radius 5 meters in 16 seconds using
+      normal motion and safety factor 1.0, while UAVs 5, 6, 7, 8, 13, 14, 15, 16,
+      21, 22, 23, 24, 29, 30, 31, 32 form a circle centered at [7, 12.5, 4] with radius
+      5 meters in 16 seconds using normal motion and safety factor 1.0. Complete the
+      parallel group synchronously.
+- candidate_id: R-D1-R8
+  task_family: LARGE_SIMPLE_FORMATION
+  selected: false
+  evaluated_n:
+  - 24
+  - 28
+  - 32
+  candidate_semantic_ground_truth_by_n:
+    24:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: task
+          task:
+            task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            F:
+              type: Circle
+            c:
+              mode: absolute
+              value:
+              - 0.0
+              - 12.5
+              - 4.0
+            r:
+              mode: explicit
+              value: 8.0
+            T:
+              mode: explicit
+              value: 16.0
+            m: normal
+            s: 1.0
+            q:
+              mode: direct
+    28:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: task
+          task:
+            task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            - 25
+            - 26
+            - 27
+            - 28
+            F:
+              type: Circle
+            c:
+              mode: absolute
+              value:
+              - 0.0
+              - 12.5
+              - 4.0
+            r:
+              mode: explicit
+              value: 8.0
+            T:
+              mode: explicit
+              value: 16.0
+            m: normal
+            s: 1.0
+            q:
+              mode: direct
+    32:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: task
+          task:
+            task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            - 25
+            - 26
+            - 27
+            - 28
+            - 29
+            - 30
+            - 31
+            - 32
+            F:
+              type: Circle
+            c:
+              mode: absolute
+              value:
+              - 0.0
+              - 12.5
+              - 4.0
+            r:
+              mode: explicit
+              value: 8.0
+            T:
+              mode: explicit
+              value: 16.0
+            m: normal
+            s: 1.0
+            q:
+              mode: direct
+  design_disposition_basis: Examined smaller radius; reject if frozen geometry must
+    alter or reject it.
+  exact_commands_by_n: {}
+- candidate_id: R-D1-T8
+  task_family: LARGE_SIMPLE_FORMATION
+  selected: false
+  evaluated_n:
+  - 24
+  - 28
+  - 32
+  candidate_semantic_ground_truth_by_n:
+    24:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: task
+          task:
+            task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            F:
+              type: Circle
+            c:
+              mode: absolute
+              value:
+              - 0.0
+              - 12.5
+              - 4.0
+            r:
+              mode: explicit
+              value: 10.0
+            T:
+              mode: explicit
+              value: 8.0
+            m: normal
+            s: 1.0
+            q:
+              mode: direct
+    28:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: task
+          task:
+            task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            - 25
+            - 26
+            - 27
+            - 28
+            F:
+              type: Circle
+            c:
+              mode: absolute
+              value:
+              - 0.0
+              - 12.5
+              - 4.0
+            r:
+              mode: explicit
+              value: 10.0
+            T:
+              mode: explicit
+              value: 8.0
+            m: normal
+            s: 1.0
+            q:
+              mode: direct
+    32:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: task
+          task:
+            task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            - 25
+            - 26
+            - 27
+            - 28
+            - 29
+            - 30
+            - 31
+            - 32
+            F:
+              type: Circle
+            c:
+              mode: absolute
+              value:
+              - 0.0
+              - 12.5
+              - 4.0
+            r:
+              mode: explicit
+              value: 10.0
+            T:
+              mode: explicit
+              value: 8.0
+            m: normal
+            s: 1.0
+            q:
+              mode: direct
+  design_disposition_basis: Examined shorter explicit duration; reject if frozen dynamic
+    gate must alter or reject it.
+  exact_commands_by_n: {}
+- candidate_id: R-D2-SPHERE
+  task_family: LARGE_UNDER_SPECIFIED_FORMATION
+  selected: false
+  evaluated_n:
+  - 24
+  - 28
+  - 32
+  candidate_semantic_ground_truth_by_n:
+    24:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: task
+          task:
+            task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            F:
+              type: Sphere
+            c:
+              mode: maintain_current_centroid
+            r:
+              mode: qualitative
+              value: normal
+            T:
+              mode: auto
+            m: smooth
+            s: 1.0
+            q:
+              mode: direct
+    28:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: task
+          task:
+            task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            - 25
+            - 26
+            - 27
+            - 28
+            F:
+              type: Sphere
+            c:
+              mode: maintain_current_centroid
+            r:
+              mode: qualitative
+              value: normal
+            T:
+              mode: auto
+            m: smooth
+            s: 1.0
+            q:
+              mode: direct
+    32:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: task
+          task:
+            task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            - 25
+            - 26
+            - 27
+            - 28
+            - 29
+            - 30
+            - 31
+            - 32
+            F:
+              type: Sphere
+            c:
+              mode: maintain_current_centroid
+            r:
+              mode: qualitative
+              value: normal
+            T:
+              mode: auto
+            m: smooth
+            s: 1.0
+            q:
+              mode: direct
+  design_disposition_basis: Examined Sphere at post-readiness centroid; expected lower-workspace
+    conflict.
+  exact_commands_by_n: {}
+- candidate_id: R-D3-CONTIGUOUS-HALVES
+  task_family: LARGE_COMPOSITIONAL_FORMATION
+  selected: false
+  evaluated_n:
+  - 24
+  - 28
+  - 32
+  candidate_semantic_ground_truth_by_n:
+    24:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: parallel
+          completion_mode: synchronized
+          tasks:
+          - task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            c:
+              mode: absolute
+              value:
+              - -7.0
+              - 12.5
+              - 4.0
+            F: &id013
+              type: Circle
+            r: &id014
+              mode: explicit
+              value: 5.0
+            T: &id015
+              mode: explicit
+              value: 16.0
+            m: normal
+            s: 1.0
+            q: &id016
+              mode: direct
+          - task_id: 2
+            U:
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            c:
+              mode: absolute
+              value:
+              - 7.0
+              - 12.5
+              - 4.0
+            F: *id013
+            r: *id014
+            T: *id015
+            m: normal
+            s: 1.0
+            q: *id016
+    28:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: parallel
+          completion_mode: synchronized
+          tasks:
+          - task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            c:
+              mode: absolute
+              value:
+              - -7.0
+              - 12.5
+              - 4.0
+            F: &id017
+              type: Circle
+            r: &id018
+              mode: explicit
+              value: 5.0
+            T: &id019
+              mode: explicit
+              value: 16.0
+            m: normal
+            s: 1.0
+            q: &id020
+              mode: direct
+          - task_id: 2
+            U:
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            - 25
+            - 26
+            - 27
+            - 28
+            c:
+              mode: absolute
+              value:
+              - 7.0
+              - 12.5
+              - 4.0
+            F: *id017
+            r: *id018
+            T: *id019
+            m: normal
+            s: 1.0
+            q: *id020
+    32:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: parallel
+          completion_mode: synchronized
+          tasks:
+          - task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            c:
+              mode: absolute
+              value:
+              - -7.0
+              - 12.5
+              - 4.0
+            F: &id021
+              type: Circle
+            r: &id022
+              mode: explicit
+              value: 5.0
+            T: &id023
+              mode: explicit
+              value: 16.0
+            m: normal
+            s: 1.0
+            q: &id024
+              mode: direct
+          - task_id: 2
+            U:
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            - 25
+            - 26
+            - 27
+            - 28
+            - 29
+            - 30
+            - 31
+            - 32
+            c:
+              mode: absolute
+              value:
+              - 7.0
+              - 12.5
+              - 4.0
+            F: *id021
+            r: *id022
+            T: *id023
+            m: normal
+            s: 1.0
+            q: *id024
+  design_disposition_basis: Rejected because contiguous-ID halves create deterministic
+    cross-group nominal hard conflicts from the parking layout.
+  exact_commands_by_n: {}
+- candidate_id: R-D3-CLOSE
+  task_family: LARGE_COMPOSITIONAL_FORMATION
+  selected: false
+  evaluated_n:
+  - 24
+  - 28
+  - 32
+  candidate_semantic_ground_truth_by_n:
+    24:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: parallel
+          completion_mode: synchronized
+          tasks:
+          - task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 9
+            - 10
+            - 11
+            - 12
+            - 17
+            - 18
+            - 19
+            - 20
+            c:
+              mode: absolute
+              value:
+              - -5.0
+              - 12.5
+              - 4.0
+            F: &id025
+              type: Circle
+            r: &id026
+              mode: explicit
+              value: 5.0
+            T: &id027
+              mode: explicit
+              value: 16.0
+            m: normal
+            s: 1.0
+            q: &id028
+              mode: direct
+          - task_id: 2
+            U:
+            - 5
+            - 6
+            - 7
+            - 8
+            - 13
+            - 14
+            - 15
+            - 16
+            - 21
+            - 22
+            - 23
+            - 24
+            c:
+              mode: absolute
+              value:
+              - 5.0
+              - 12.5
+              - 4.0
+            F: *id025
+            r: *id026
+            T: *id027
+            m: normal
+            s: 1.0
+            q: *id028
+    28:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: parallel
+          completion_mode: synchronized
+          tasks:
+          - task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 9
+            - 10
+            - 11
+            - 12
+            - 17
+            - 18
+            - 19
+            - 20
+            - 25
+            - 26
+            c:
+              mode: absolute
+              value:
+              - -5.0
+              - 12.5
+              - 4.0
+            F: &id029
+              type: Circle
+            r: &id030
+              mode: explicit
+              value: 5.0
+            T: &id031
+              mode: explicit
+              value: 16.0
+            m: normal
+            s: 1.0
+            q: &id032
+              mode: direct
+          - task_id: 2
+            U:
+            - 5
+            - 6
+            - 7
+            - 8
+            - 13
+            - 14
+            - 15
+            - 16
+            - 21
+            - 22
+            - 23
+            - 24
+            - 27
+            - 28
+            c:
+              mode: absolute
+              value:
+              - 5.0
+              - 12.5
+              - 4.0
+            F: *id029
+            r: *id030
+            T: *id031
+            m: normal
+            s: 1.0
+            q: *id032
+    32:
+      lfs_version: '2.1'
+      mission:
+        nodes:
+        - type: parallel
+          completion_mode: synchronized
+          tasks:
+          - task_id: 1
+            U:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 9
+            - 10
+            - 11
+            - 12
+            - 17
+            - 18
+            - 19
+            - 20
+            - 25
+            - 26
+            - 27
+            - 28
+            c:
+              mode: absolute
+              value:
+              - -5.0
+              - 12.5
+              - 4.0
+            F: &id033
+              type: Circle
+            r: &id034
+              mode: explicit
+              value: 5.0
+            T: &id035
+              mode: explicit
+              value: 16.0
+            m: normal
+            s: 1.0
+            q: &id036
+              mode: direct
+          - task_id: 2
+            U:
+            - 5
+            - 6
+            - 7
+            - 8
+            - 13
+            - 14
+            - 15
+            - 16
+            - 21
+            - 22
+            - 23
+            - 24
+            - 29
+            - 30
+            - 31
+            - 32
+            c:
+              mode: absolute
+              value:
+              - 5.0
+              - 12.5
+              - 4.0
+            F: *id033
+            r: *id034
+            T: *id035
+            m: normal
+            s: 1.0
+            q: *id036
+  design_disposition_basis: Examined closer subgroup centers; reject on frozen joint
+    safety if applicable.
+  exact_commands_by_n: {}

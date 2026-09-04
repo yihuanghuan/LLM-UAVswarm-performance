@@ -1,0 +1,47 @@
+INFO  [px4] instance: 20
+
+______  __   __    ___ 
+| ___ \ \ \ / /   /   |
+| |_/ /  \ V /   / /| |
+|  __/   /   \  / /_| |
+| |     / /^\ \ \___  |
+\_|     \/   \/     |_/
+
+px4 starting.
+
+INFO  [px4] startup script: /bin/sh etc/init.d-posix/rcS 20
+INFO  [init] found model autostart file as SYS_AUTOSTART=10015
+INFO  [param] selected parameter default file parameters.bson
+INFO  [param] importing from 'parameters.bson'
+INFO  [parameters] BSON document size 331 bytes, decoded 331 bytes (INT32:14, FLOAT:3)
+INFO  [param] selected parameter backup file parameters_backup.bson
+INFO  [dataman] data manager file './dataman' size is 7872608 bytes
+INFO  [init] PX4_SIM_HOSTNAME: localhost
+INFO  [simulator_mavlink] Waiting for simulator to accept connection on TCP port 4580
+INFO  [simulator_mavlink] Simulator connected on TCP port 4580.
+INFO  [lockstep_scheduler] setting initial absolute time to 15192000 us
+WARN  [vehicle_angular_velocity] no gyro selected, using sensor_gyro_fifo:0 1310988
+INFO  [commander] LED: open /dev/led0 failed (22)
+WARN  [health_and_arming_checks] Preflight Fail: ekf2 missing data
+INFO  [uxrce_dds_client] init UDP agent IP:127.0.0.1, port:8888
+INFO  [mavlink] mode: Normal, data rate: 4000000 B/s on udp port 18590 remote port 14550
+INFO  [mavlink] mode: Onboard, data rate: 4000000 B/s on udp port 14600 remote port 14549
+INFO  [mavlink] mode: Onboard, data rate: 4000 B/s on udp port 14300 remote port 14050
+INFO  [mavlink] mode: Gimbal, data rate: 400000 B/s on udp port 13050 remote port 13300
+INFO  [logger] logger started (mode=all)
+INFO  [logger] Start file log (type: full)
+INFO  [logger] [logger] ./log/2026-09-04/03_53_39.ulg	
+INFO  [logger] Opened full log file: ./log/2026-09-04/03_53_39.ulg
+INFO  [mavlink] MAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)
+INFO  [mavlink] MAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)
+INFO  [px4] Startup script returned successfully
+INFO  [tone_alarm] home set
+INFO  [commander] [32mReady for takeoff![0m
+WARN  [timesync] RTT too high for timesync: 80 ms
+WARN  [timesync] RTT too high for timesync: 12 ms
+WARN  [timesync] RTT too high for timesync: 32 ms
+WARN  [health_and_arming_checks] Preflight Fail: height estimate not stable
+WARN  [timesync] RTT too high for timesync: 56 ms
+
+PX4 Exiting...
+Exiting NOW.

@@ -1,0 +1,492 @@
+{
+  "accepted_formal_results": 0,
+  "dataset_class": "supplementary_infrastructure_validation",
+  "engineering_recoveries": [
+    "tooling_recovery_001",
+    "tooling_recovery_002"
+  ],
+  "largest_successfully_tested_N": 20,
+  "observed_ceiling_wording": "largest successfully tested supplementary configuration = N=20",
+  "rows": [
+    {
+      "N_requested": 20,
+      "all_states_finite": true,
+      "armed_offboard_count": 20,
+      "cleanup": {
+        "after": {
+          "agent": [],
+          "allocator": [],
+          "controllers": [],
+          "gzserver": [],
+          "px4": []
+        },
+        "before": {
+          "agent": [],
+          "allocator": [],
+          "controllers": [],
+          "gzserver": [],
+          "px4": []
+        },
+        "success": true
+      },
+      "evidence_path": "results/infrastructure_sweep/N20_recovery1/result.json",
+      "evidence_sha256": "87128e84be1e3b53e09b5c8c3116c30eaee8cc96ab47842c8c30a1be14148742",
+      "failsafe_count": 0,
+      "failure": null,
+      "fresh_state_count": 20,
+      "gazebo_stats": {
+        "available": false,
+        "real_time_factor_samples": [],
+        "returncode": 124,
+        "stdout_sha256": "7c3b765b5d859ff782a8e197d3f5c8d25eb588e11ae1ba6fe18815e65399b455"
+      },
+      "gzserver_alive": true,
+      "host_diagnostics_after": {
+        "cpu_count": 24,
+        "load_average": [
+          3.7,
+          1.87,
+          1.01
+        ],
+        "memory_kib": {
+          "MemAvailable": 18923204,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 0,
+          "allocator": 0,
+          "controllers": 0,
+          "gzserver": 0,
+          "px4": 0
+        },
+        "scoped_process_rss_kib": 0
+      },
+      "host_diagnostics_at_readiness": {
+        "cpu_count": 24,
+        "load_average": [
+          3.32,
+          1.73,
+          0.96
+        ],
+        "memory_kib": {
+          "MemAvailable": 17836692,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 1,
+          "allocator": 0,
+          "controllers": 20,
+          "gzserver": 1,
+          "px4": 20
+        },
+        "scoped_process_rss_kib": 1757136
+      },
+      "host_diagnostics_before": {
+        "cpu_count": 24,
+        "load_average": [
+          0.73,
+          1.18,
+          0.75
+        ],
+        "memory_kib": {
+          "MemAvailable": 18938752,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 0,
+          "allocator": 0,
+          "controllers": 0,
+          "gzserver": 0,
+          "px4": 0
+        },
+        "scoped_process_rss_kib": 0
+      },
+      "micro_xrce_agent_alive": true,
+      "models_spawned": 20,
+      "process_counts_at_readiness": {
+        "agent": 1,
+        "allocator": 0,
+        "controllers": 20,
+        "gzserver": 1,
+        "px4": 20
+      },
+      "readiness_elapsed_s": 30.931563203019323,
+      "readiness_success": true,
+      "spawn_elapsed_s": 0.12136777499108575,
+      "stable_hover_duration_s": 5.0,
+      "startup_failure_stage": null,
+      "success": true,
+      "topic_connectivity": {
+        "authoritative_connectivity_gate": "direct readiness subscriptions",
+        "cli_state_topics_present": 13,
+        "cli_status_topics_present": 13,
+        "command_returncode": 0,
+        "direct_state_streams_observed": 20,
+        "direct_status_streams_observed": 20,
+        "total_topic_count": 997
+      }
+    },
+    {
+      "N_requested": 24,
+      "all_states_finite": false,
+      "armed_offboard_count": 17,
+      "cleanup": {
+        "after": {
+          "agent": [],
+          "allocator": [],
+          "controllers": [],
+          "gzserver": [],
+          "px4": []
+        },
+        "before": {
+          "agent": [],
+          "allocator": [],
+          "controllers": [],
+          "gzserver": [],
+          "px4": []
+        },
+        "success": true
+      },
+      "evidence_path": "results/infrastructure_sweep/N24/result.json",
+      "evidence_sha256": "84fa130047172eaefd42a839c30a0f6140583202d5c0f88947feb3c40829c1dd",
+      "failsafe_count": 0,
+      "failure": "RuntimeError: one or more frozen infrastructure PASS gates failed",
+      "fresh_state_count": 18,
+      "gazebo_stats": {
+        "available": false,
+        "real_time_factor_samples": [],
+        "returncode": 124,
+        "stdout_sha256": "f2763ce4d378ec960b918c11ed80ea3c9e593af21b7d82e7e2090b2db2806f48"
+      },
+      "gzserver_alive": true,
+      "host_diagnostics_after": {
+        "cpu_count": 24,
+        "load_average": [
+          11.0,
+          7.93,
+          3.98
+        ],
+        "memory_kib": {
+          "MemAvailable": 18936928,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 0,
+          "allocator": 0,
+          "controllers": 0,
+          "gzserver": 0,
+          "px4": 0
+        },
+        "scoped_process_rss_kib": 0
+      },
+      "host_diagnostics_at_readiness": {
+        "cpu_count": 24,
+        "load_average": [
+          12.3,
+          8.07,
+          3.98
+        ],
+        "memory_kib": {
+          "MemAvailable": 17581100,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 1,
+          "allocator": 0,
+          "controllers": 24,
+          "gzserver": 1,
+          "px4": 24
+        },
+        "scoped_process_rss_kib": 2136100
+      },
+      "host_diagnostics_before": {
+        "cpu_count": 24,
+        "load_average": [
+          2.88,
+          1.78,
+          0.99
+        ],
+        "memory_kib": {
+          "MemAvailable": 18907760,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 0,
+          "allocator": 0,
+          "controllers": 0,
+          "gzserver": 0,
+          "px4": 0
+        },
+        "scoped_process_rss_kib": 0
+      },
+      "micro_xrce_agent_alive": true,
+      "models_spawned": 24,
+      "process_counts_at_readiness": {
+        "agent": 1,
+        "allocator": 0,
+        "controllers": 24,
+        "gzserver": 1,
+        "px4": 24
+      },
+      "readiness_elapsed_s": 300.0001045210229,
+      "readiness_success": false,
+      "spawn_elapsed_s": 0.12691976898349822,
+      "stable_hover_duration_s": 5.0,
+      "startup_failure_stage": "readiness",
+      "success": false,
+      "topic_connectivity": {
+        "authoritative_connectivity_gate": "direct readiness subscriptions",
+        "cli_state_topics_present": 24,
+        "cli_status_topics_present": 24,
+        "command_returncode": 0,
+        "direct_state_streams_observed": 24,
+        "direct_status_streams_observed": 24,
+        "total_topic_count": 1126
+      }
+    },
+    {
+      "N_requested": 28,
+      "all_states_finite": false,
+      "armed_offboard_count": 16,
+      "cleanup": {
+        "after": {
+          "agent": [],
+          "allocator": [],
+          "controllers": [],
+          "gzserver": [],
+          "px4": []
+        },
+        "before": {
+          "agent": [],
+          "allocator": [],
+          "controllers": [],
+          "gzserver": [],
+          "px4": []
+        },
+        "success": true
+      },
+      "evidence_path": "results/infrastructure_sweep/N28/result.json",
+      "evidence_sha256": "99a355eb79227ee4a282d730e55dc08a1d4699424ac5c2194ec0b54202444f06",
+      "failsafe_count": 0,
+      "failure": "RuntimeError: one or more frozen infrastructure PASS gates failed",
+      "fresh_state_count": 17,
+      "gazebo_stats": {
+        "available": false,
+        "real_time_factor_samples": [],
+        "returncode": 124,
+        "stdout_sha256": "6335013a729c57065ea193f9f211c02e409349dd60a9db469b92aaa2d5ef7995"
+      },
+      "gzserver_alive": true,
+      "host_diagnostics_after": {
+        "cpu_count": 24,
+        "load_average": [
+          7.62,
+          8.76,
+          5.71
+        ],
+        "memory_kib": {
+          "MemAvailable": 18900872,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 0,
+          "allocator": 0,
+          "controllers": 0,
+          "gzserver": 0,
+          "px4": 0
+        },
+        "scoped_process_rss_kib": 0
+      },
+      "host_diagnostics_at_readiness": {
+        "cpu_count": 24,
+        "load_average": [
+          8.68,
+          9.02,
+          5.73
+        ],
+        "memory_kib": {
+          "MemAvailable": 17291192,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 1,
+          "allocator": 0,
+          "controllers": 28,
+          "gzserver": 1,
+          "px4": 28
+        },
+        "scoped_process_rss_kib": 2565400
+      },
+      "host_diagnostics_before": {
+        "cpu_count": 24,
+        "load_average": [
+          5.64,
+          6.94,
+          3.81
+        ],
+        "memory_kib": {
+          "MemAvailable": 18898376,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 0,
+          "allocator": 0,
+          "controllers": 0,
+          "gzserver": 0,
+          "px4": 0
+        },
+        "scoped_process_rss_kib": 0
+      },
+      "micro_xrce_agent_alive": true,
+      "models_spawned": 28,
+      "process_counts_at_readiness": {
+        "agent": 1,
+        "allocator": 0,
+        "controllers": 28,
+        "gzserver": 1,
+        "px4": 28
+      },
+      "readiness_elapsed_s": 300.00039534899406,
+      "readiness_success": false,
+      "spawn_elapsed_s": 0.13257553699077107,
+      "stable_hover_duration_s": 5.0,
+      "startup_failure_stage": "readiness",
+      "success": false,
+      "topic_connectivity": {
+        "authoritative_connectivity_gate": "direct readiness subscriptions",
+        "cli_state_topics_present": 16,
+        "cli_status_topics_present": 16,
+        "command_returncode": 0,
+        "direct_state_streams_observed": 28,
+        "direct_status_streams_observed": 28,
+        "total_topic_count": 817
+      }
+    },
+    {
+      "N_requested": 32,
+      "all_states_finite": false,
+      "armed_offboard_count": 8,
+      "cleanup": {
+        "after": {
+          "agent": [],
+          "allocator": [],
+          "controllers": [],
+          "gzserver": [],
+          "px4": []
+        },
+        "before": {
+          "agent": [],
+          "allocator": [],
+          "controllers": [],
+          "gzserver": [],
+          "px4": []
+        },
+        "success": true
+      },
+      "evidence_path": "results/infrastructure_sweep/N32/result.json",
+      "evidence_sha256": "98ada69388f16ffc8f4746005008a38cef94bd29a5715056bb511bda0e297f96",
+      "failsafe_count": 0,
+      "failure": "RuntimeError: one or more frozen infrastructure PASS gates failed",
+      "fresh_state_count": 21,
+      "gazebo_stats": {
+        "available": false,
+        "real_time_factor_samples": [],
+        "returncode": 124,
+        "stdout_sha256": "142212c65aa36e83afcc4e24c2dc5c366dabf64cdb30d8d060f5e4e434e43c24"
+      },
+      "gzserver_alive": true,
+      "host_diagnostics_after": {
+        "cpu_count": 24,
+        "load_average": [
+          11.34,
+          11.62,
+          8.13
+        ],
+        "memory_kib": {
+          "MemAvailable": 18870784,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 0,
+          "allocator": 0,
+          "controllers": 0,
+          "gzserver": 0,
+          "px4": 0
+        },
+        "scoped_process_rss_kib": 0
+      },
+      "host_diagnostics_at_readiness": {
+        "cpu_count": 24,
+        "load_average": [
+          12.87,
+          11.91,
+          8.19
+        ],
+        "memory_kib": {
+          "MemAvailable": 16874580,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 1,
+          "allocator": 0,
+          "controllers": 32,
+          "gzserver": 1,
+          "px4": 32
+        },
+        "scoped_process_rss_kib": 3052424
+      },
+      "host_diagnostics_before": {
+        "cpu_count": 24,
+        "load_average": [
+          4.33,
+          7.8,
+          5.5
+        ],
+        "memory_kib": {
+          "MemAvailable": 18950056,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 0,
+          "allocator": 0,
+          "controllers": 0,
+          "gzserver": 0,
+          "px4": 0
+        },
+        "scoped_process_rss_kib": 0
+      },
+      "micro_xrce_agent_alive": true,
+      "models_spawned": 32,
+      "process_counts_at_readiness": {
+        "agent": 1,
+        "allocator": 0,
+        "controllers": 32,
+        "gzserver": 1,
+        "px4": 32
+      },
+      "readiness_elapsed_s": 300.0005327499821,
+      "readiness_success": false,
+      "spawn_elapsed_s": 0.13998212502337992,
+      "stable_hover_duration_s": 5.0,
+      "startup_failure_stage": "readiness",
+      "success": false,
+      "topic_connectivity": {
+        "authoritative_connectivity_gate": "direct readiness subscriptions",
+        "cli_state_topics_present": 15,
+        "cli_status_topics_present": 17,
+        "command_returncode": 0,
+        "direct_state_streams_observed": 32,
+        "direct_status_streams_observed": 32,
+        "total_topic_count": 1088
+      }
+    }
+  ],
+  "schema": "large_swarm_infrastructure_results_v1",
+  "scientific_missions": 0,
+  "tested_sizes": [
+    20,
+    24,
+    28,
+    32
+  ]
+}

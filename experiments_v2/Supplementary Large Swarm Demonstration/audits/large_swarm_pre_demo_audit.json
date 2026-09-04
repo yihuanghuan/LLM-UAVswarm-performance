@@ -1,0 +1,214 @@
+{
+  "E5_v2_analysis_changes": 0,
+  "E5_v2_analysis_remote_head": "bc760d5795ff87c62df6e86875d9a906cc449e2d",
+  "E5_v2_formal_changes": 0,
+  "all_scoped_runtime_processes_zero": true,
+  "artifact_hashes": {
+    "demo_protocol": "0a73524c395052e842e39f4dcbd88b4e23b71f9e6b65830a33df1a6db1d4a481",
+    "infrastructure_results": "9c77194ad179c336d3868f14d5acda31e3716325fd1b34839fc646d053744918",
+    "parking_layout_audit": "fe7ed510f1d75b9dd6e92ecd03c0c41ef0a8005e2e01bff3cfbf1228f980f85a",
+    "scenario_candidates": "cf299b3115455db047537e8d7bac933774753cd6c0687c64004b39500922e382",
+    "scenario_feasibility": "787546376a052bafcaad672ee662de36a386d1c5fcb37a7ab9a7a7d08de6e034"
+  },
+  "checks": {
+    "all_cleanup_pass": true,
+    "four_requested_sizes_present": true,
+    "method_identity": true,
+    "no_showcase_missions": true,
+    "policy_unchanged": true,
+    "protocol_unsealed": true,
+    "runtime_processes_zero": true,
+    "scenario_selected_cells_feasible": true,
+    "selection_rule_exact": true
+  },
+  "demo_protocol_status": "CANDIDATE_FOR_HUMAN_REVIEW",
+  "engineering_recoveries": [
+    "tooling_recovery_001",
+    "tooling_recovery_002"
+  ],
+  "infrastructure_results": [
+    {
+      "N": 20,
+      "armed_offboard_count": 20,
+      "cleanup": "PASS",
+      "controller_process_count": 20,
+      "fresh_state_count": 20,
+      "gazebo_real_time_factor": {
+        "available": false,
+        "real_time_factor_samples": [],
+        "returncode": 124,
+        "stdout_sha256": "7c3b765b5d859ff782a8e197d3f5c8d25eb588e11ae1ba6fe18815e65399b455"
+      },
+      "models_spawned": 20,
+      "px4_process_count": 20,
+      "readiness_elapsed_s": 30.931563203019323,
+      "resource_diagnostics": {
+        "cpu_count": 24,
+        "load_average": [
+          3.32,
+          1.73,
+          0.96
+        ],
+        "memory_kib": {
+          "MemAvailable": 17836692,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 1,
+          "allocator": 0,
+          "controllers": 20,
+          "gzserver": 1,
+          "px4": 20
+        },
+        "scoped_process_rss_kib": 1757136
+      },
+      "status": "PASS"
+    },
+    {
+      "N": 24,
+      "armed_offboard_count": 17,
+      "cleanup": "PASS",
+      "controller_process_count": 24,
+      "fresh_state_count": 18,
+      "gazebo_real_time_factor": {
+        "available": false,
+        "real_time_factor_samples": [],
+        "returncode": 124,
+        "stdout_sha256": "f2763ce4d378ec960b918c11ed80ea3c9e593af21b7d82e7e2090b2db2806f48"
+      },
+      "models_spawned": 24,
+      "px4_process_count": 24,
+      "readiness_elapsed_s": 300.0001045210229,
+      "resource_diagnostics": {
+        "cpu_count": 24,
+        "load_average": [
+          12.3,
+          8.07,
+          3.98
+        ],
+        "memory_kib": {
+          "MemAvailable": 17581100,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 1,
+          "allocator": 0,
+          "controllers": 24,
+          "gzserver": 1,
+          "px4": 24
+        },
+        "scoped_process_rss_kib": 2136100
+      },
+      "status": "FAIL"
+    },
+    {
+      "N": 28,
+      "armed_offboard_count": 16,
+      "cleanup": "PASS",
+      "controller_process_count": 28,
+      "fresh_state_count": 17,
+      "gazebo_real_time_factor": {
+        "available": false,
+        "real_time_factor_samples": [],
+        "returncode": 124,
+        "stdout_sha256": "6335013a729c57065ea193f9f211c02e409349dd60a9db469b92aaa2d5ef7995"
+      },
+      "models_spawned": 28,
+      "px4_process_count": 28,
+      "readiness_elapsed_s": 300.00039534899406,
+      "resource_diagnostics": {
+        "cpu_count": 24,
+        "load_average": [
+          8.68,
+          9.02,
+          5.73
+        ],
+        "memory_kib": {
+          "MemAvailable": 17291192,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 1,
+          "allocator": 0,
+          "controllers": 28,
+          "gzserver": 1,
+          "px4": 28
+        },
+        "scoped_process_rss_kib": 2565400
+      },
+      "status": "FAIL"
+    },
+    {
+      "N": 32,
+      "armed_offboard_count": 8,
+      "cleanup": "PASS",
+      "controller_process_count": 32,
+      "fresh_state_count": 21,
+      "gazebo_real_time_factor": {
+        "available": false,
+        "real_time_factor_samples": [],
+        "returncode": 124,
+        "stdout_sha256": "142212c65aa36e83afcc4e24c2dc5c366dabf64cdb30d8d060f5e4e434e43c24"
+      },
+      "models_spawned": 32,
+      "px4_process_count": 32,
+      "readiness_elapsed_s": 300.0005327499821,
+      "resource_diagnostics": {
+        "cpu_count": 24,
+        "load_average": [
+          12.87,
+          11.91,
+          8.19
+        ],
+        "memory_kib": {
+          "MemAvailable": 16874580,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 1,
+          "allocator": 0,
+          "controllers": 32,
+          "gzserver": 1,
+          "px4": 32
+        },
+        "scoped_process_rss_kib": 3052424
+      },
+      "status": "FAIL"
+    }
+  ],
+  "infrastructure_tested_N": [
+    20,
+    24,
+    28,
+    32
+  ],
+  "observed_largest_tested_stable_N": 20,
+  "primary_showcase_N": null,
+  "production_baseline": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+  "production_method_changes": 0,
+  "production_policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+  "scenario_feasibility": {
+    "D1": {
+      "24": true,
+      "28": true,
+      "32": true
+    },
+    "D2": {
+      "24": true,
+      "28": true,
+      "32": true
+    },
+    "D3": {
+      "24": true,
+      "28": true,
+      "32": true
+    }
+  },
+  "schema": "large_swarm_pre_demo_audit_v1",
+  "scientific_position": "SUPPLEMENTARY LARGE-SWARM SYSTEM DEMONSTRATION",
+  "scientific_showcase_missions_executed": 0,
+  "secondary_showcase_N": null,
+  "selection_status": "NO_SUITABLE_LARGE_SWARM_SHOWCASE_CONFIGURATION",
+  "showcase_launch_eligible": false,
+  "status": "PASS"
+}
