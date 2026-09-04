@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-REPO = Path(__file__).resolve().parents[4]
+REPO = Path(__file__).resolve().parents[3]
 PROTOCOL = ROOT / "infrastructure/large_swarm_infrastructure_sweep_protocol.yaml"
 RESULTS = ROOT / "results/infrastructure_sweep"
 POLICY = REPO / "lfs_policy/config/lfs_policy.paper_current.yaml"

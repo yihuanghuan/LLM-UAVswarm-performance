@@ -1,0 +1,15 @@
+{
+  "accepted_formal_result": false,
+  "candidate_command_submitted": false,
+  "classification": "supplementary_experiment_infrastructure_only",
+  "failure_stage": "preflight_before_output_directory_and_physical_side_effects",
+  "first_requested_N": 20,
+  "formation_commands": 0,
+  "llm_calls": 0,
+  "physical_processes_started": 0,
+  "reason": "large_swarm_common.py resolved REPO one parent above the actual repository, so the frozen policy identity gate raised FileNotFoundError",
+  "recovery_authorized_by_frozen_rule": true,
+  "recovery_change": "Correct only the supplementary REPO path from parents[4] to parents[3]",
+  "retry_disposition": "N=20 initial infrastructure smoke remains eligible because no smoke execution or physical side effect began",
+  "schema": "large_swarm_tooling_recovery_v1"
+}
