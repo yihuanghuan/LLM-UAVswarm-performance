@@ -1,0 +1,45 @@
+{
+  "D1_D2_D3_missions": 0,
+  "E5_v2_changes": 0,
+  "N24_v2": "FAIL",
+  "N28_v2": "NOT_RUN",
+  "N32_v2": "NOT_RUN",
+  "all_changes_confined_to_v2_directory": true,
+  "controller_or_safety_change": false,
+  "diagnostic_time_series_records": 465,
+  "infrastructure_only_changes": [
+    "per-instance PX4/XRCE writer gate",
+    "controller batches of four separated by five seconds",
+    "one-Hz file/process diagnostic summaries with zero DDS subscriptions"
+  ],
+  "largest_stable_N_under_profile_v2": null,
+  "middleware_change": false,
+  "physics_fidelity_reduction": false,
+  "primary_showcase_N_v2": null,
+  "production_baseline": "6cf402debf23851b1eff3edc6f3ab49eae7127c4",
+  "production_controller_sha256": "cc7a3b1c36126555749504d03b504c1c6c01e210ffb829b473d8980a87973dfa",
+  "production_method_changes": 0,
+  "production_policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+  "profile_v2_result_sha256": "21c6e785052082cd64a5afa7fcf3f246f3b196d8d24a125a5a09f735d7a4e048",
+  "profile_v2_sha256": "155817c38e9cfc456cc1988cff3a0a98f07559ee222cf90725787b471a383907",
+  "readiness_criteria_unchanged": true,
+  "readiness_timeout_s": 300,
+  "root_cause_classification": {
+    "broader_scalability_claim": "NOT_ESTABLISHED",
+    "method_external_xrce_startup_backlog": "SUPPORTED_AND_CORRECTED_BY_PROFILE_V2",
+    "supplementary_grid_vs_frozen_neighbor_offset_mismatch": "SUPPORTED_REQUIRES_PRODUCTION_METHOD_CHANGE"
+  },
+  "schema": "large_swarm_diagnostics_v2_audit",
+  "scientific_showcase_missions": 0,
+  "source_v1_commit": "adf56c7256ccb7f3e63d78ec2ffb254d1f88b647",
+  "source_v1_results": {
+    "20": "PASS",
+    "24": "FAIL",
+    "28": "FAIL",
+    "32": "FAIL"
+  },
+  "source_v1_results_unchanged": true,
+  "status": "PASS",
+  "timeout_inflation": false,
+  "xrce_topology_change": false
+}

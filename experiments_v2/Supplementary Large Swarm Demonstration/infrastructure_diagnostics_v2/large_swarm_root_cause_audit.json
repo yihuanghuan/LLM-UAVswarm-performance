@@ -9,8 +9,17 @@
     "32": "FAIL"
   },
   "first_failed_size": 24,
-  "root_cause_conclusion": "SUPPORTED method-external PX4-to-MicroXRCE entity-creation startup backlog; simultaneous controller discovery/activation is a possible amplifier",
-  "method_limitation_inferred": false,
+  "root_cause_conclusion": "Two mechanisms are supported: a method-external PX4-to-MicroXRCE startup backlog caused the v1 missing streams, and the supplementary 2-D parking layout is incompatible with the frozen controller's hard-coded neighbor y-offset mapping. Profile v2 removed the former but N24 still failed because the latter cannot be corrected without production-method change.",
+  "method_semantic_assumption_found": true,
+  "broader_method_scalability_limitation_inferred": false,
+  "method_change_required_for_grid_layout": true,
+  "exact_method_assumption": {
+    "path": "minisnap_LADRC/ladrc_controller/src/ladrc_position_controller_node.cpp",
+    "production_baseline_sha256": "cc7a3b1c36126555749504d03b504c1c6c01e210ffb829b473d8980a87973dfa",
+    "line": 241,
+    "expression": "msg->position[0] + 3.0 * neighbor_id",
+    "reason": "own position uses the launch-provided grid ENU offset while every neighbor position assumes the original 3 m ID-indexed line layout"
+  },
   "N24": {
     "px4_processes": 24,
     "controller_processes": 24,
@@ -59,8 +68,9 @@
       "evidence": "v1 created all controllers together (552 neighbor subscriptions at N24) and initiated arm/offboard concurrently. Writer backlog was already present before controller launch, so this cannot be the sole cause, but it can amplify discovery and activation contention."
     },
     "H4": {
-      "classification": "UNSUPPORTED",
-      "evidence": "The same audited deterministic grid and matching ENU offsets passed at N20; failures form a startup-order tail, not a spatial row/coordinate pattern; every simulator TCP port matched its UAV ID."
+      "classification": "SUPPORTED",
+      "pre_profile_classification": "UNSUPPORTED",
+      "evidence": "Source inspection found that own global position uses launch-provided enu_offset_x/y, but the unchanged neighbor callback hard-codes (x=msg.position[1], y=msg.position[0]+3*neighbor_id). The 2-D grid therefore gives mutually inconsistent own/neighbor coordinates. After profile v2 produced 24/24 fresh finite streams, controller logs still showed false close-neighbor distances, IAPF activation, height instability, and only 18/24 arm/offboard."
     },
     "H5": {
       "classification": "POSSIBLE",
@@ -73,6 +83,8 @@
     }
   },
   "profile_v2_justified": true,
+  "profile_v2_outcome": "FAIL_AT_N24_UNCHANGED_READINESS_GATE",
+  "further_profile_tuning_authorized": false,
   "allowed_change_classes": [
     "deterministic_staggered_process_startup",
     "deterministic_batched_controller_startup",

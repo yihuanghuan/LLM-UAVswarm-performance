@@ -1,0 +1,69 @@
+{
+  "accepted_formal_result": false,
+  "conditional_order": [
+    24,
+    28,
+    32
+  ],
+  "dataset_class": "supplementary_infrastructure_diagnostic",
+  "largest_stable_N_under_profile_v2": null,
+  "original_v1_largest_tested_stable_N": 20,
+  "primary_showcase_N_v2": null,
+  "profile_v2_sha256": "155817c38e9cfc456cc1988cff3a0a98f07559ee222cf90725787b471a383907",
+  "recommendation": [
+    "use N=20 only under a separately reviewed supplementary visual protocol",
+    "or omit the additional showcase and retain the completed E5-v2 N=16 evidence"
+  ],
+  "results": {
+    "24": {
+      "all_states_finite": true,
+      "armed_offboard": 18,
+      "cleanup_success": true,
+      "controller_processes": 24,
+      "failsafe_at_final_snapshot": 0,
+      "failure": "RuntimeError: one or more unchanged infrastructure PASS gates failed",
+      "fresh_states": 24,
+      "host_diagnostics": {
+        "cpu_count": 24,
+        "load_average": [
+          12.18,
+          8.47,
+          4.16
+        ],
+        "memory_kib": {
+          "MemAvailable": 17517104,
+          "MemTotal": 32051556
+        },
+        "scoped_process_counts": {
+          "agent": 1,
+          "allocator": 0,
+          "controllers": 24,
+          "gzserver": 1,
+          "px4": 24
+        },
+        "scoped_process_rss_kib": 2144496
+      },
+      "px4_processes": 24,
+      "px4_writer_gate_count": 24,
+      "px4_writer_gate_elapsed_s_max": 6.4099888400232885,
+      "px4_writer_gate_elapsed_s_min": 6.009338028001366,
+      "readiness_elapsed_s": 300.00010287901387,
+      "readiness_success": false,
+      "residual_processes": 0,
+      "stage_A_px4_xrce_writer_gate": "PASS",
+      "status": "FAIL"
+    },
+    "28": {
+      "reason": "conditional stop after N24 FAIL",
+      "status": "NOT_RUN"
+    },
+    "32": {
+      "reason": "conditional stop after N24 FAIL",
+      "status": "NOT_RUN"
+    }
+  },
+  "schema": "large_swarm_profile_v2_results",
+  "scientific_showcase_missions_executed": 0,
+  "showcase_launch_eligible_v2": false,
+  "stop_at_first_failure": true
+}

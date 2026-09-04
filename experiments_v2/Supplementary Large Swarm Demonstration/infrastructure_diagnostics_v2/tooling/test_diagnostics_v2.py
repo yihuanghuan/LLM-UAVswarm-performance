@@ -76,8 +76,42 @@ class DiagnosticsV2Tests(unittest.TestCase):
     def test_root_cause_audit_classifications(self):
         audit = json.loads((V2 / "large_swarm_root_cause_audit.json").read_text())
         self.assertEqual(audit["hypotheses"]["H2"]["classification"], "SUPPORTED")
-        self.assertEqual(audit["hypotheses"]["H4"]["classification"], "UNSUPPORTED")
-        self.assertFalse(audit["method_limitation_inferred"])
+        self.assertEqual(audit["hypotheses"]["H4"]["classification"], "SUPPORTED")
+        self.assertTrue(audit["method_semantic_assumption_found"])
+        self.assertFalse(audit["broader_method_scalability_limitation_inferred"])
+
+    def test_profile_v2_result_and_conditional_stop(self):
+        result = json.loads((V2 / "results/N24/result.json").read_text())
+        self.assertFalse(result["success"])
+        self.assertTrue(result["stage_A_success"])
+        self.assertEqual(len(result["px4_writer_gate_records"]), 24)
+        self.assertTrue(all(record["success"] for record in result["px4_writer_gate_records"]))
+        self.assertEqual(result["fresh_state_count"], 24)
+        self.assertTrue(result["all_states_finite"])
+        self.assertEqual(result["readiness_elapsed_s"], 300.00010287901387)
+        self.assertTrue(result["cleanup"]["success"])
+        self.assertFalse((V2 / "results/N28").exists())
+        self.assertFalse((V2 / "results/N32").exists())
+
+    def test_profile_identity_and_non_scientific_result(self):
+        result = json.loads((V2 / "results/N24/result.json").read_text())
+        self.assertEqual(result["profile_sha256"], sha(V2 / "infrastructure_profile_v2.yaml"))
+        self.assertEqual(result["dataset_class"], "supplementary_infrastructure_diagnostic")
+        self.assertFalse(result["accepted_formal_result"])
+        self.assertFalse(result["scientific_mission"])
+        self.assertEqual(result["llm_calls"], 0)
+        self.assertEqual(result["candidate_commands"], 0)
+        self.assertEqual(result["formation_commands"], 0)
+
+    def test_final_audit_and_no_showcase_protocol_v2(self):
+        audit = json.loads((V2 / "large_swarm_diagnostics_v2_audit.json").read_text())
+        self.assertEqual(audit["status"], "PASS")
+        self.assertEqual(audit["production_method_changes"], 0)
+        self.assertEqual(audit["E5_v2_changes"], 0)
+        self.assertEqual(audit["D1_D2_D3_missions"], 0)
+        self.assertFalse(audit["timeout_inflation"])
+        self.assertFalse(audit["physics_fidelity_reduction"])
+        self.assertFalse((V2.parents[0] / "scenarios/large_swarm_demo_protocol_v2.yaml").exists())
 
 
 if __name__ == "__main__":

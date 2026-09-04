@@ -1,0 +1,683 @@
+{
+  "N_requested": 24,
+  "accepted_formal_result": false,
+  "all_states_finite": true,
+  "armed_offboard_count": 18,
+  "candidate_commands": 0,
+  "cleanup": {
+    "after": {
+      "agent": [],
+      "allocator": [],
+      "controllers": [],
+      "gzserver": [],
+      "px4": []
+    },
+    "before": {
+      "agent": [],
+      "allocator": [],
+      "controllers": [],
+      "gzserver": [],
+      "px4": []
+    },
+    "success": true
+  },
+  "controller_batches": [
+    {
+      "batch_index": 1,
+      "launch_elapsed_wall_s": 184.0981638279918,
+      "uav_ids": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "batch_index": 2,
+      "launch_elapsed_wall_s": 189.10310405198834,
+      "uav_ids": [
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "batch_index": 3,
+      "launch_elapsed_wall_s": 194.10805411700858,
+      "uav_ids": [
+        9,
+        10,
+        11,
+        12
+      ]
+    },
+    {
+      "batch_index": 4,
+      "launch_elapsed_wall_s": 199.11314417800168,
+      "uav_ids": [
+        13,
+        14,
+        15,
+        16
+      ]
+    },
+    {
+      "batch_index": 5,
+      "launch_elapsed_wall_s": 204.11814862198662,
+      "uav_ids": [
+        17,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "batch_index": 6,
+      "launch_elapsed_wall_s": 209.12325835999218,
+      "uav_ids": [
+        21,
+        22,
+        23,
+        24
+      ]
+    }
+  ],
+  "dataset_class": "supplementary_infrastructure_diagnostic",
+  "elapsed_total_s": 516.2891782429942,
+  "evidence_file_hashes": {
+    "agent.log": "711de590fe42980a765f3632b18fafd4b0033b9334fe979a54f1253d0a42719f",
+    "controllers_batch_01.log": "0a1340568e64a0ae6e101adaa6b97c5278c50660bbbb9cf6c8dea1982ea129c6",
+    "controllers_batch_02.log": "68a2ac6f38c098cc6592186ff3676936f180975afeb5d5edb4febf2c1b4cdaf2",
+    "controllers_batch_03.log": "838256e3039f257ba50e2ad998841a5252b13c3e01049205e3e6f8124e4c7aa2",
+    "controllers_batch_04.log": "2faeaef1b0c464b89b25b7de693509e47d684c24185845085a3dbd1d20d010cb",
+    "controllers_batch_05.log": "299f642b8cf2ab5fe44bab5e34437477827374ffb6a827baeb263dd624779c9f",
+    "controllers_batch_06.log": "7b3dfd7703658d4934d53ea82b395758d5a70348cac3b06d74417d94f6cd6212",
+    "diagnostic_time_series.jsonl": "b3587334bde466d0574abe69e730db83c49fb66dd25a1c92b3e3eb0f0dcb2c22",
+    "gzserver.log": "851d2a72f0f19ba6456ce6c9a79227616375fa43a1708fd56d0d03b9f032969e",
+    "iris_1.sdf": "016f553ec7166967715a74b9da18670808921184c9fa7b2adbc53969d4f57fdf",
+    "iris_1.sdf.last_generated": "016f553ec7166967715a74b9da18670808921184c9fa7b2adbc53969d4f57fdf",
+    "iris_10.sdf": "db75178402ead23458ed1f044cbf641cf2550652edc9968a5615d3981315e25a",
+    "iris_10.sdf.last_generated": "db75178402ead23458ed1f044cbf641cf2550652edc9968a5615d3981315e25a",
+    "iris_11.sdf": "08bc574f7a3fec2535b08d712c2b5af819cb3834257f2ead00c2d653bf66f6c7",
+    "iris_11.sdf.last_generated": "08bc574f7a3fec2535b08d712c2b5af819cb3834257f2ead00c2d653bf66f6c7",
+    "iris_12.sdf": "589001ea16ab5b7757160c3801a95428d29ba48da15ab5d2b405dd2d5d737fa5",
+    "iris_12.sdf.last_generated": "589001ea16ab5b7757160c3801a95428d29ba48da15ab5d2b405dd2d5d737fa5",
+    "iris_13.sdf": "ad08c8dd9ee005c2c38f489e2bd5b795d7e64c877f9a881d4db67acd786e8172",
+    "iris_13.sdf.last_generated": "ad08c8dd9ee005c2c38f489e2bd5b795d7e64c877f9a881d4db67acd786e8172",
+    "iris_14.sdf": "10599f17d92a1f0dc4c53b6d25d4fc21fd34344c74f7bd368f2d094472422a8d",
+    "iris_14.sdf.last_generated": "10599f17d92a1f0dc4c53b6d25d4fc21fd34344c74f7bd368f2d094472422a8d",
+    "iris_15.sdf": "f935503e72c566b8ee7abe9ba07d644d6a7e48e0e0acc3ae0b4d10a6d1e1deb0",
+    "iris_15.sdf.last_generated": "f935503e72c566b8ee7abe9ba07d644d6a7e48e0e0acc3ae0b4d10a6d1e1deb0",
+    "iris_16.sdf": "fbf4a41acd5e4881a2cc0c5816e0d6962959f53717453da6e4a1f970caef673e",
+    "iris_16.sdf.last_generated": "fbf4a41acd5e4881a2cc0c5816e0d6962959f53717453da6e4a1f970caef673e",
+    "iris_17.sdf": "2aea3af310345b9507ebb88031bb7760e7233151e1736b36aa20563fd349769b",
+    "iris_17.sdf.last_generated": "2aea3af310345b9507ebb88031bb7760e7233151e1736b36aa20563fd349769b",
+    "iris_18.sdf": "923788c18f760db6d30bb91616fecb9cecf0ebb3a16a5c88d2e5d0330830ee2a",
+    "iris_18.sdf.last_generated": "923788c18f760db6d30bb91616fecb9cecf0ebb3a16a5c88d2e5d0330830ee2a",
+    "iris_19.sdf": "96b2edfbc2c5ab10d904047c9897fc7cc60b278a663f5efbe4892d788f27d200",
+    "iris_19.sdf.last_generated": "96b2edfbc2c5ab10d904047c9897fc7cc60b278a663f5efbe4892d788f27d200",
+    "iris_2.sdf": "e6cbdea262a93ce1960ab779841366bd749e22f0614372f004c7d665381ea856",
+    "iris_2.sdf.last_generated": "e6cbdea262a93ce1960ab779841366bd749e22f0614372f004c7d665381ea856",
+    "iris_20.sdf": "fa5173037ad33fa2255ea01fe7a75f5c25ddb89c45d69118929d513d81ac7a58",
+    "iris_20.sdf.last_generated": "fa5173037ad33fa2255ea01fe7a75f5c25ddb89c45d69118929d513d81ac7a58",
+    "iris_21.sdf": "b31c8e7031a04cdc64002a139a4bfc7b7b27d852f7be88577270e9d10b5a8f8e",
+    "iris_21.sdf.last_generated": "b31c8e7031a04cdc64002a139a4bfc7b7b27d852f7be88577270e9d10b5a8f8e",
+    "iris_22.sdf": "ca4ada3e2ffd020b9b8bb46dd97bf022b8a768a40721a955b55c842da6c80c59",
+    "iris_22.sdf.last_generated": "ca4ada3e2ffd020b9b8bb46dd97bf022b8a768a40721a955b55c842da6c80c59",
+    "iris_23.sdf": "e9bd45673d37108a7e43b44fa8ad636f422b9f211e9297af277a5c2e3b0bbff8",
+    "iris_23.sdf.last_generated": "e9bd45673d37108a7e43b44fa8ad636f422b9f211e9297af277a5c2e3b0bbff8",
+    "iris_24.sdf": "0aa5c688670e691567119cc2de979cf55aa0b7e202f839e098ad316f6d493d0b",
+    "iris_24.sdf.last_generated": "0aa5c688670e691567119cc2de979cf55aa0b7e202f839e098ad316f6d493d0b",
+    "iris_3.sdf": "193b34a1212b5d7146b8fd37481fe7a3509e7298aa4ff9614be8bb756fdd04f5",
+    "iris_3.sdf.last_generated": "193b34a1212b5d7146b8fd37481fe7a3509e7298aa4ff9614be8bb756fdd04f5",
+    "iris_4.sdf": "f6e23d4046d85f5f41841c8958c7f81ada697640929e27e109d0d8190f0dc741",
+    "iris_4.sdf.last_generated": "f6e23d4046d85f5f41841c8958c7f81ada697640929e27e109d0d8190f0dc741",
+    "iris_5.sdf": "c26db3c09abcd1ea4c0490bee75dff16f484cf1bc58db9b7b243f01e262d6b85",
+    "iris_5.sdf.last_generated": "c26db3c09abcd1ea4c0490bee75dff16f484cf1bc58db9b7b243f01e262d6b85",
+    "iris_6.sdf": "fc32ba3b8e4ee610da7b07e2c8fcba63b5097bae6dc1d6443728174108345378",
+    "iris_6.sdf.last_generated": "fc32ba3b8e4ee610da7b07e2c8fcba63b5097bae6dc1d6443728174108345378",
+    "iris_7.sdf": "d1d7fb571c6a14c203ef460bea89686293a3435f7a8b3d51e3e3ee78849c97f0",
+    "iris_7.sdf.last_generated": "d1d7fb571c6a14c203ef460bea89686293a3435f7a8b3d51e3e3ee78849c97f0",
+    "iris_8.sdf": "8824cd8be14a669761fb4656c190d0dd3b13c0c1449c4a4e3d6db848811f6c43",
+    "iris_8.sdf.last_generated": "8824cd8be14a669761fb4656c190d0dd3b13c0c1449c4a4e3d6db848811f6c43",
+    "iris_9.sdf": "a2dc96b8626138d94d381f4b310a772938575af97025cbd3c7a927c357103b09",
+    "iris_9.sdf.last_generated": "a2dc96b8626138d94d381f4b310a772938575af97025cbd3c7a927c357103b09",
+    "layout.json": "e344ee318cd372e3b95cbd629b88656148788ed290bca4041bd40cbf2534d355",
+    "px4_1.log": "5f27c32e4b038bfdfe2feb4fb9a268f495dcc3724faa67e4804559749010ebef",
+    "px4_10.log": "9bcb4195df244b3b9551d6ad33b6782e29547796eb68f21ddc1415fc2ae860f8",
+    "px4_11.log": "c65afb7b92a9585bfd0e4cec8ae6f175153a4940beb621e36f28a73ffff6abf3",
+    "px4_12.log": "04114417b0df3e2dc54df58e81f0d81bd063f51993ce8a5d2a5bb40db7042046",
+    "px4_13.log": "e91ec2a06bdc260b74ab09f71ae310705195a2e78b563bd17480aeffdf50727b",
+    "px4_14.log": "280f3ca879bc43bad2248b054bafc858bd4399b0b6c518634db439f7f2fd6898",
+    "px4_15.log": "004b51426035b7633d68934c74a0f89c37a9c7ded43ab02d85995665fe170608",
+    "px4_16.log": "c2d188c1ca38d3998e97e24a57d6415be814cbf401df319fb3bdf261fc53acad",
+    "px4_17.log": "ed7c260bbb90832d7e9f9d0d5e2e63ae9d0f0fa3f46c6daae66c5a78d39808ea",
+    "px4_18.log": "0e76c427c94704636fd55b6cf96b6fa4b1032c72f82c9b3f75a1b8d592690ef6",
+    "px4_19.log": "3a57a0660645ea5da3fa18c13a96801c2a404a9d3093b0ca11664c3d1d1ee706",
+    "px4_2.log": "001640cc5cae403be334339b9b95a64dc6bf295229e0791a6fc460b82763d420",
+    "px4_20.log": "45c6811fae92ca20757982fb5cca6f3fbfd936355f1b1d65d6b1872556c0ad5a",
+    "px4_21.log": "8be566722d4bcdbe9ac8506e15221e1a7ef7b287c529c7af1c0606c7a8472846",
+    "px4_22.log": "32bc59138311fc61ba7b37f3ab1c2e0cafae3eededc27b83654e3f978afc2c12",
+    "px4_23.log": "68d19c34395a29ef11cb975a791f224896a1c598317b3d9a1bba2a686d6cb407",
+    "px4_24.log": "3d3558a10ccc5cf594b76a28730a0b1953c9fe84cb5b14f15f418210942f7ccf",
+    "px4_3.log": "ea808262728a56b38c5ee5bd1046ea1006c962efff19b656f4ab08eb8dcba7bc",
+    "px4_4.log": "47b66d7e0608da9f85cf8dbd9343c758a1f2b0e8e48a17c310dd1679fdf88309",
+    "px4_5.log": "c98c4bf272970c6f347d92cb38e8fdb62e24bf39b4a59168c4cdf9756e8a2e0b",
+    "px4_6.log": "21bc1e098789e39d108ad85a5353b41c2089ce3b32879c606fe1d5652b1dac90",
+    "px4_7.log": "f9895ba54896ddb53e32f2b8b48c5e9751e8685ea23ea48b18b228a4b7ae831c",
+    "px4_8.log": "4c948c82d23c78b8b29628630786c2f877bdf3cfd4e6727d03b824005cd855a9",
+    "px4_9.log": "fc41e14f3a2e04d10c9a93f6f3e49a668f1fc02f4679a5819c5d81759a14f125",
+    "readiness.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "readiness.stdout.json": "f045326b3c53334b41261afcb2a4ee42b11f3a0773ff1e2371055b93e18c5487"
+  },
+  "failsafe_count": 0,
+  "failure": "RuntimeError: one or more unchanged infrastructure PASS gates failed",
+  "formation_commands": 0,
+  "fresh_state_count": 24,
+  "gazebo_real_time_factor": {
+    "available": false,
+    "reason": "no reliable low-intrusion parseable source"
+  },
+  "gzserver_alive": true,
+  "host_diagnostics_after": {
+    "cpu_count": 24,
+    "load_average": [
+      11.2,
+      8.33,
+      4.14
+    ],
+    "memory_kib": {
+      "MemAvailable": 19034308,
+      "MemTotal": 32051556
+    },
+    "scoped_process_counts": {
+      "agent": 0,
+      "allocator": 0,
+      "controllers": 0,
+      "gzserver": 0,
+      "px4": 0
+    },
+    "scoped_process_rss_kib": 0
+  },
+  "host_diagnostics_at_readiness": {
+    "cpu_count": 24,
+    "load_average": [
+      12.18,
+      8.47,
+      4.16
+    ],
+    "memory_kib": {
+      "MemAvailable": 17517104,
+      "MemTotal": 32051556
+    },
+    "scoped_process_counts": {
+      "agent": 1,
+      "allocator": 0,
+      "controllers": 24,
+      "gzserver": 1,
+      "px4": 24
+    },
+    "scoped_process_rss_kib": 2144496
+  },
+  "host_diagnostics_before": {
+    "cpu_count": 24,
+    "load_average": [
+      0.37,
+      0.28,
+      0.31
+    ],
+    "memory_kib": {
+      "MemAvailable": 19386396,
+      "MemTotal": 32051556
+    },
+    "scoped_process_counts": {
+      "agent": 0,
+      "allocator": 0,
+      "controllers": 0,
+      "gzserver": 0,
+      "px4": 0
+    },
+    "scoped_process_rss_kib": 0
+  },
+  "initial_process_counts": {
+    "agent": 0,
+    "allocator": 0,
+    "controllers": 0,
+    "gzserver": 0,
+    "px4": 0
+  },
+  "layout_sha256": "e344ee318cd372e3b95cbd629b88656148788ed290bca4041bd40cbf2534d355",
+  "llm_calls": 0,
+  "micro_xrce_agent_alive": true,
+  "models_spawned": 24,
+  "policy_sha256": "6b47d27f4253d7311e79ea51f6dd1cf0d0182e6df24374a94abae0aa6a135858",
+  "process_counts_after_controller_startup": {
+    "agent": 1,
+    "allocator": 0,
+    "controllers": 24,
+    "gzserver": 1,
+    "px4": 24
+  },
+  "process_counts_after_spawn": {
+    "agent": 1,
+    "allocator": 0,
+    "controllers": 0,
+    "gzserver": 1,
+    "px4": 24
+  },
+  "process_counts_at_readiness": {
+    "agent": 1,
+    "allocator": 0,
+    "controllers": 24,
+    "gzserver": 1,
+    "px4": 24
+  },
+  "process_exit_status": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    -2
+  ],
+  "profile_sha256": "155817c38e9cfc456cc1988cff3a0a98f07559ee222cf90725787b471a383907",
+  "px4_writer_gate_records": [
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.409912848001113,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 1,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.2088613669911865,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 2,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.408999442995992,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 3,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.208985773002496,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 4,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.207568842975888,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 5,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.20864663500106,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 6,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.209055359999184,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 7,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.209001453011297,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 8,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.2079803879896645,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 9,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.409418841009028,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 10,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.409192988998257,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 11,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.208887296001194,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 12,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.209099394996883,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 13,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.4099888400232885,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 14,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.4096883019956294,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 15,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.209439783997368,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 16,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.409463357005734,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 17,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.009338028001366,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 18,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.209415054006968,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 19,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.208985165983904,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 20,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.409759678004775,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 21,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.409635544987395,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 22,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.408793569979025,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 23,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    },
+    {
+      "dds_synchronized": true,
+      "elapsed_s": 6.2092031560023315,
+      "sim_connected": true,
+      "success": true,
+      "uav_id": 24,
+      "vehicle_odometry_writer": true,
+      "vehicle_status_writer": true
+    }
+  ],
+  "readiness_elapsed_s": 300.00010287901387,
+  "readiness_success": false,
+  "schema": "large_swarm_infrastructure_diagnostic_result_v2",
+  "scientific_mission": false,
+  "spawn_records": [
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 1
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 2
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 3
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 4
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 5
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 6
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 7
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 8
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 9
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 10
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 11
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 12
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 13
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 14
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 15
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 16
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 17
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 18
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 19
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 20
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 21
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 22
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 23
+    },
+    {
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uav_id": 24
+    }
+  ],
+  "stable_hover_duration_s": 5.0,
+  "stage_A_success": true,
+  "startup_failure_stage": "frozen_readiness",
+  "success": false
+}
