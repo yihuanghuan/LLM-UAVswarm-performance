@@ -1,0 +1,26 @@
+{
+  "accepted_formal_result": false,
+  "affected_retained_evidence": "results/infrastructure_sweep/N20",
+  "candidate_command_submitted": false,
+  "classification": "supplementary_readiness_diagnostic_only",
+  "failed_smoke_retained": true,
+  "failure_observation": {
+    "N": 20,
+    "armed_offboard": "20/20",
+    "controllers": "20/20",
+    "direct_fresh_finite_state_streams": "20/20",
+    "failsafe": "0/20",
+    "px4": "20/20",
+    "readiness_hold_s": 5.0,
+    "readiness_success": true,
+    "residual_processes_after_cleanup": 0
+  },
+  "formation_commands": 0,
+  "llm_calls": 0,
+  "reason": "An extra ros2 topic list name-count diagnostic was incorrectly included in PASS gates even though the frozen protocol uses direct readiness subscriptions. The CLI count returned zero while direct subscriptions simultaneously observed all 20 status and state streams.",
+  "recovery_change": "Retain ros2 topic list as a non-decisional DDS diagnostic; use directly observed readiness subscriptions as the connectivity gate.",
+  "recovery_run_directory": "results/infrastructure_sweep/N20_recovery1",
+  "schema": "large_swarm_tooling_recovery_v1",
+  "scientific_method_change": false,
+  "timeout_or_physics_change": false
+}

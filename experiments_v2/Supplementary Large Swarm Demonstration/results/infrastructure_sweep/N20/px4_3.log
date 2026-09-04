@@ -1,0 +1,67 @@
+INFO  [px4] instance: 3
+
+______  __   __    ___ 
+| ___ \ \ \ / /   /   |
+| |_/ /  \ V /   / /| |
+|  __/   /   \  / /_| |
+| |     / /^\ \ \___  |
+\_|     \/   \/     |_/
+
+px4 starting.
+
+INFO  [px4] startup script: /bin/sh etc/init.d-posix/rcS 3
+INFO  [init] found model autostart file as SYS_AUTOSTART=10015
+INFO  [param] selected parameter default file parameters.bson
+INFO  [param] importing from 'parameters.bson'
+INFO  [parameters] BSON document size 591 bytes, decoded 591 bytes (INT32:18, FLOAT:11)
+INFO  [param] selected parameter backup file parameters_backup.bson
+INFO  [dataman] data manager file './dataman' size is 7872608 bytes
+INFO  [init] PX4_SIM_HOSTNAME: localhost
+INFO  [simulator_mavlink] Waiting for simulator to accept connection on TCP port 4563
+INFO  [simulator_mavlink] Simulator connected on TCP port 4563.
+INFO  [lockstep_scheduler] setting initial absolute time to 6244000 us
+WARN  [vehicle_angular_velocity] no gyro selected, using sensor_gyro_fifo:0 1310988
+INFO  [commander] LED: open /dev/led0 failed (22)
+WARN  [health_and_arming_checks] Preflight Fail: ekf2 missing data
++ UXRCE_DDS_DOM_ID: curr: 86 -> new: 96
+INFO  [uxrce_dds_client] init UDP agent IP:127.0.0.1, port:8888
+INFO  [mavlink] mode: Normal, data rate: 4000000 B/s on udp port 18573 remote port 14550
+INFO  [mavlink] mode: Onboard, data rate: 4000000 B/s on udp port 14583 remote port 14543
+INFO  [mavlink] mode: Onboard, data rate: 4000 B/s on udp port 14283 remote port 14033
+INFO  [mavlink] mode: Gimbal, data rate: 400000 B/s on udp port 13033 remote port 13283
+INFO  [logger] logger started (mode=all)
+INFO  [logger] Start file log (type: full)
+INFO  [logger] [logger] ./log/2026-09-04/03_48_46.ulg	
+INFO  [logger] Opened full log file: ./log/2026-09-04/03_48_46.ulg
+INFO  [mavlink] MAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)
+INFO  [mavlink] MAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)
+INFO  [px4] Startup script returned successfully
+INFO  [tone_alarm] home set
+INFO  [commander] [32mReady for takeoff![0m
+INFO  [uxrce_dds_client] synchronized with time offset 1788493721829424us
+INFO  [uxrce_dds_client] successfully created rt/px4_3/fmu/out/battery_status data writer, topic id: 19
+INFO  [uxrce_dds_client] successfully created rt/px4_3/fmu/out/estimator_status_flags data writer, topic id: 87
+INFO  [uxrce_dds_client] successfully created rt/px4_3/fmu/out/failsafe_flags data writer, topic id: 93
+INFO  [uxrce_dds_client] successfully created rt/px4_3/fmu/out/manual_control_setpoint data writer, topic id: 141
+INFO  [uxrce_dds_client] successfully created rt/px4_3/fmu/out/position_setpoint_triplet data writer, topic id: 180
+INFO  [uxrce_dds_client] successfully created rt/px4_3/fmu/out/sensor_combined data writer, topic id: 203
+INFO  [uxrce_dds_client] successfully created rt/px4_3/fmu/out/timesync_status data writer, topic id: 226
+INFO  [uxrce_dds_client] successfully created rt/px4_3/fmu/out/vehicle_attitude data writer, topic id: 242
+INFO  [uxrce_dds_client] successfully created rt/px4_3/fmu/out/vehicle_control_mode data writer, topic id: 249
+INFO  [uxrce_dds_client] successfully created rt/px4_3/fmu/out/vehicle_global_position data writer, topic id: 250
+INFO  [uxrce_dds_client] successfully created rt/px4_3/fmu/out/vehicle_gps_position data writer, topic id: 252
+INFO  [uxrce_dds_client] successfully created rt/px4_3/fmu/out/vehicle_local_position data writer, topic id: 256
+INFO  [uxrce_dds_client] successfully created rt/px4_3/fmu/out/vehicle_odometry data writer, topic id: 261
+INFO  [uxrce_dds_client] successfully created rt/px4_3/fmu/out/vehicle_status data writer, topic id: 266
+INFO  [uxrce_dds_client] time sync converged
+WARN  [timesync] RTT too high for timesync: 56 ms
+WARN  [timesync] time jump detected. Resetting time synchroniser.
+WARN  [uxrce_dds_client] time sync no longer converged
+INFO  [uxrce_dds_client] time sync converged
+INFO  [commander] Armed by external command	
+INFO  [tone_alarm] arming warning
+INFO  [uxrce_dds_client] successfully created rt/px4_3/fmu/out/vehicle_command_ack data writer, topic id: 246
+INFO  [commander] Takeoff detected	
+
+PX4 Exiting...
+Exiting NOW.

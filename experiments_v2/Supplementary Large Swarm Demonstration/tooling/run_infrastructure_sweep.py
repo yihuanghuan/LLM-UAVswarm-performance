@@ -143,12 +143,12 @@ def generate_sdf(uid: int, px4_root: Path, output: Path, env: dict[str, str]) ->
     return sdf
 
 
-def run(n: int, install: Path, px4_root: Path) -> tuple[dict, Path]:
+def run(n: int, install: Path, px4_root: Path, recovery_id: str | None = None) -> tuple[dict, Path]:
     protocol = yaml.safe_load(PROTOCOL.read_text())
     assert protocol["status"] == "FROZEN_BEFORE_FIRST_N20_SWEEP"
     assert protocol["swarm_sizes"] == list(SIZES) and sha256_file(POLICY) == POLICY_SHA
     assert layout_audit()["status"] == "PASS"
-    output = RESULTS / f"N{n}"
+    output = RESULTS / (f"N{n}_{recovery_id}" if recovery_id else f"N{n}")
     if output.exists():
         raise RuntimeError(f"refusing to overwrite retained sweep evidence: {output}")
     output.mkdir(parents=True); (output / "ros_home").mkdir()
@@ -164,6 +164,7 @@ def run(n: int, install: Path, px4_root: Path) -> tuple[dict, Path]:
         "scientific_mission": False, "candidate_command_submitted": False, "llm_calls": 0,
         "formation_commands": 0, "protocol_sha256": sha256_file(PROTOCOL), "policy_sha256": POLICY_SHA,
         "layout_sha256": sha256_file(layout_path), "success": False, "startup_failure_stage": None,
+        "engineering_recovery_id": recovery_id,
         "host_diagnostics_before": host_diagnostics(),
     }
     initial = counts(); result["initial_process_counts"] = initial
@@ -222,14 +223,19 @@ def run(n: int, install: Path, px4_root: Path) -> tuple[dict, Path]:
             "host_diagnostics_at_readiness": host_diagnostics(), "gazebo_stats": gazebo_stats(env),
         })
         topics = subprocess.run(["ros2", "topic", "list"], env=env, capture_output=True, text=True, timeout=20)
+        (output / "ros2_topic_list.stdout.log").write_text(topics.stdout)
+        (output / "ros2_topic_list.stderr.log").write_text(topics.stderr)
         topic_names = set(topics.stdout.splitlines())
         result["topic_connectivity"] = {
             "command_returncode": topics.returncode,
-            "status_topics_present": sum(f"/uav{i}/status" in topic_names for i in range(1, n + 1)),
-            "state_topics_present": sum(f"/uav{i}/swarm_state" in topic_names for i in range(1, n + 1)),
+            "cli_status_topics_present": sum(f"/uav{i}/status" in topic_names for i in range(1, n + 1)),
+            "cli_state_topics_present": sum(f"/uav{i}/swarm_state" in topic_names for i in range(1, n + 1)),
+            "direct_status_streams_observed": len(diagnostics),
+            "direct_state_streams_observed": len(readiness.get("state_diagnostics", {})),
+            "authoritative_connectivity_gate": "direct readiness subscriptions",
             "total_topic_count": len(topic_names),
         }
-        gates = [result["models_spawned"] == n, current_counts["px4"] == n, current_counts["controllers"] == n, result["micro_xrce_agent_alive"], result["gzserver_alive"], result["armed_offboard_count"] == n, result["fresh_state_count"] == n, result["readiness_success"], result["all_states_finite"], result["failsafe_count"] == 0, result["topic_connectivity"]["status_topics_present"] == n, result["topic_connectivity"]["state_topics_present"] == n]
+        gates = [result["models_spawned"] == n, current_counts["px4"] == n, current_counts["controllers"] == n, result["micro_xrce_agent_alive"], result["gzserver_alive"], result["armed_offboard_count"] == n, result["fresh_state_count"] == n, result["readiness_success"], result["all_states_finite"], result["failsafe_count"] == 0, result["topic_connectivity"]["direct_status_streams_observed"] == n, result["topic_connectivity"]["direct_state_streams_observed"] == n]
         if not all(gates):
             raise RuntimeError("one or more frozen infrastructure PASS gates failed")
         result["success"] = True
@@ -254,8 +260,9 @@ def main() -> int:
     parser.add_argument("--n", type=int, required=True, choices=SIZES)
     parser.add_argument("--install", type=Path, default=Path("/home/yihuang/learning/LLM_swarm_ws/e5_v2_build/install"))
     parser.add_argument("--px4-root", type=Path, default=Path("/home/yihuang/PX4-Autopilot"))
+    parser.add_argument("--recovery-id", choices=("recovery1",))
     args = parser.parse_args()
-    result, output = run(args.n, args.install.resolve(), args.px4_root.resolve())
+    result, output = run(args.n, args.install.resolve(), args.px4_root.resolve(), args.recovery_id)
     print(json.dumps({"N": args.n, "success": result["success"], "failure": result.get("failure"), "output": str(output)}, sort_keys=True))
     return 0 if result["success"] else 2
 
