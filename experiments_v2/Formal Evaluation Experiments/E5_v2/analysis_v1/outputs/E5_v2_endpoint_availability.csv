@@ -1,0 +1,21 @@
+endpoint,kind,unit,registered_n,available_n,unavailable_n,status,reason
+scientific_completeness,binary,,60,60,0,AVAILABLE,
+infrastructure_failure,binary,,60,60,0,AVAILABLE,
+candidate_correctness,binary,,60,60,0,AVAILABLE,
+resolver_success,binary,,60,60,0,AVAILABLE,
+mission_completion,binary,,60,60,0,AVAILABLE,
+mission_success,binary,,60,60,0,AVAILABLE,
+failsafe,binary,,60,60,0,AVAILABLE,
+hard_failure,binary,,60,60,0,AVAILABLE,
+actual_d_min,continuous,m,60,60,0,AVAILABLE,
+tracking_rmse,continuous,m,60,60,0,AVAILABLE,
+final_error,continuous,m,60,60,0,AVAILABLE,
+completion_time,continuous,s,60,60,0,AVAILABLE,
+T_LLM,continuous,s,60,60,0,AVAILABLE,
+T_mission_execution,continuous,s,60,60,0,AVAILABLE,
+J_hard,continuous,,60,0,60,PREREGISTERED_ENDPOINT_UNAVAILABLE_DUE_TO_SEMANTIC_AMBIGUITY,preregistered continuous endpoint unavailable due to pre-analysis semantic ambiguity
+T_validation,continuous,s,60,0,60,PREREGISTERED_BUT_UNAVAILABLE,stage timestamp unavailable
+T_state_resolution,continuous,s,60,0,60,PREREGISTERED_BUT_UNAVAILABLE,stage timestamp unavailable
+T_geometry,continuous,s,60,0,60,PREREGISTERED_BUT_UNAVAILABLE,stage timestamp unavailable
+T_allocator,continuous,s,60,0,60,PREREGISTERED_BUT_UNAVAILABLE,stage timestamp unavailable
+T_profile,continuous,s,60,0,60,PREREGISTERED_BUT_UNAVAILABLE,stage timestamp unavailable
